@@ -1,0 +1,28 @@
+{
+	"extends": "@tsconfig/node16/tsconfig.json",
+	"compilerOptions": {
+		"allowJs": false,
+		"checkJs": false,
+		"esModuleInterop": false,
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": false,
+		"sourceMap": true,
+		"strict": true,
+		"strictFunctionTypes": true,
+		"strictPropertyInitialization": true,
+		"alwaysStrict": true,
+		"allowUnreachableCode": false,
+		"exactOptionalPropertyTypes": true,
+		"noImplicitAny": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"outDir": "dist"
+	},
+	"include": ["src/**/*", "assets/**/*"],
+	"exclude": ["node_modules"]
+}

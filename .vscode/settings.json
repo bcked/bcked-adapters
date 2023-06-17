@@ -1,0 +1,16 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "workbench.editor.labelFormat": "short",
+  "cSpell.words": ["bcked"],
+  "prettier.prettierPath": "./node_modules/prettier"
+}
