@@ -10,7 +10,7 @@
 		"job": "npx ts-node src/job.ts",
 		"build": "npx tsc",
 		"lint": "eslint . --fix",
-		"test": "jest"
+		"test": "jest --passWithNoTests"
 	},
 	"license": "GPL-3.0",
 	"engines": {
