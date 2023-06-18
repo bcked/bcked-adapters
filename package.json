@@ -14,7 +14,7 @@
 	},
 	"license": "GPL-3.0",
 	"engines": {
-		"npm": ">=9.0.0",
+		"npm": ">=8.0.0",
 		"node": ">=16.0.0"
 	},
 	"dependencies": {
