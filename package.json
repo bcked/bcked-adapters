@@ -8,6 +8,7 @@
 	"scripts": {
 		"dev": "nodemon",
 		"job": "npx ts-node src/job.ts",
+		"build": "npx tsc",
 		"lint": "eslint . --fix",
 		"test": "jest"
 	},
@@ -21,6 +22,7 @@
 		"@solana/spl-token": "^0.3.8",
 		"@solana/web3.js": "^1.77.3",
 		"axios": "^1.4.0",
+		"csv": "^6.3.1",
 		"date-fns": "^2.30.0",
 		"dotenv": "^16.3.0",
 		"ethers": "^5.7.2",
@@ -35,6 +37,8 @@
 		"@types/lodash": "^4.14.195",
 		"@types/morgan": "^1.9.4",
 		"@types/node": "^20.3.1",
+		"@types/node-fetch": "^2.6.4",
+		"@types/webextension-polyfill": "^0.10.0",
 		"@typescript-eslint/eslint-plugin": "^5.59.11",
 		"@typescript-eslint/parser": "^5.59.11",
 		"eslint": "^8.42.0",

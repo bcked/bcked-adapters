@@ -1,13 +1,15 @@
 {
 	"extends": "@tsconfig/node16/tsconfig.json",
 	"compilerOptions": {
+		"outDir": "dist",
+		"lib": ["es2021", "dom"],
 		"allowJs": false,
 		"checkJs": false,
 		"esModuleInterop": false,
 		"allowSyntheticDefaultImports": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
-		"skipLibCheck": false,
+		"skipLibCheck": true, // See how this can be turned off
 		"sourceMap": true,
 		"strict": true,
 		"strictFunctionTypes": true,
@@ -20,8 +22,7 @@
 		"noImplicitReturns": true,
 		"noImplicitThis": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUncheckedIndexedAccess": true,
-		"outDir": "dist"
+		"noUncheckedIndexedAccess": true
 	},
 	"include": ["src/**/*", "assets/**/*"],
 	"exclude": ["node_modules"]
