@@ -1,29 +1,32 @@
 {
-	"extends": "@tsconfig/node16/tsconfig.json",
-	"compilerOptions": {
-		"outDir": "dist",
-		"lib": ["es2021", "dom"],
-		"allowJs": false,
-		"checkJs": false,
-		"esModuleInterop": false,
-		"allowSyntheticDefaultImports": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true,
-		"skipLibCheck": true, // See how this can be turned off
-		"sourceMap": true,
-		"strict": true,
-		"strictFunctionTypes": true,
-		"strictPropertyInitialization": true,
-		"alwaysStrict": true,
-		"allowUnreachableCode": false,
-		"exactOptionalPropertyTypes": true,
-		"noImplicitAny": true,
-		"noImplicitOverride": true,
-		"noImplicitReturns": true,
-		"noImplicitThis": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUncheckedIndexedAccess": true
-	},
-	"include": ["src/**/*", "assets/**/*"],
-	"exclude": ["node_modules"]
+    "extends": "@tsconfig/node16/tsconfig.json",
+    "ts-node": {
+        "files": true
+    },
+    "compilerOptions": {
+        "outDir": "dist",
+        "lib": ["es2021", "dom"],
+        "allowJs": false,
+        "checkJs": false,
+        "esModuleInterop": false,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true, // See how this can be turned off
+        "sourceMap": true,
+        "strict": true,
+        "strictFunctionTypes": true,
+        "strictPropertyInitialization": true,
+        "alwaysStrict": true,
+        "allowUnreachableCode": false,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitAny": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true
+    },
+    "include": ["src/**/*.ts", "assets/**/*.ts"],
+    "exclude": ["node_modules", ".vscode"]
 }
