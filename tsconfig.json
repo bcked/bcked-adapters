@@ -9,7 +9,7 @@
         "allowJs": false,
         "checkJs": false,
         "esModuleInterop": false,
-        "allowSyntheticDefaultImports": true,
+        "allowSyntheticDefaultImports": false,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
         "skipLibCheck": true, // See how this can be turned off
