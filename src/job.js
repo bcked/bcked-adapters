@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const _ = require("lodash");
 const fs = require("node:fs/promises");
+const ts_node_1 = require("ts-node");
 const helper_1 = require("./utils/helper");
 const ts_worker_1 = require("./utils/primitive/ts_worker");
 async function queryAsset(assetId) {
@@ -38,6 +39,9 @@ async function queryAsset(assetId) {
     });
 }
 async function job() {
+    if (process[ts_node_1.REGISTER_INSTANCE]) {
+        process.env.DEV_MODE = "true";
+    }
     const assets = (await fs.readdir("assets"));
     await Promise.all(assets.map(queryAsset));
 }

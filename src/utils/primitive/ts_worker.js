@@ -1,8 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runWorker = exports.Worker = void 0;
+exports.runWorker = exports.Worker = exports.adaptFileExt = void 0;
 const path = require("path");
 const worker_threads_1 = require("worker_threads");
+function adaptFileExt(filename) {
+    return process.env.DEV_MODE ? filename : filename.replace(".ts", ".js");
+}
+exports.adaptFileExt = adaptFileExt;
 class Worker extends worker_threads_1.Worker {
     constructor(filename, options) {
         const resolvedPath = require.resolve(filename);
@@ -16,7 +20,7 @@ exports.Worker = Worker;
 async function runWorker(script, options) {
     // TODO look into worker pool execution to limit max number of workers
     return new Promise((resolve, reject) => {
-        const worker = new Worker(path.resolve("src", script), options);
+        const worker = new Worker(path.resolve("src", adaptFileExt(script)), options);
         worker.on("message", resolve);
         worker.on("error", reject);
         worker.on("exit", (code) => {
