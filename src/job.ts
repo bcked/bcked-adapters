@@ -1,6 +1,7 @@
 import "dotenv/config";
 import * as _ from "lodash";
 import * as fs from "node:fs/promises";
+import { REGISTER_INSTANCE } from "ts-node";
 import { fromId, getBackingCsvPath, getPriceCsvPath, getSupplyCsvPath, toId } from "./utils/helper";
 import { runWorker } from "./utils/primitive/ts_worker";
 
@@ -45,6 +46,10 @@ async function queryAsset(assetId: bcked.asset.Id) {
 }
 
 async function job() {
+    if (process[REGISTER_INSTANCE]) {
+        process.env.DEV_MODE = "true";
+    }
+
     const assets = (await fs.readdir("assets")) as bcked.asset.Id[];
     await Promise.all(assets.map(queryAsset));
 }

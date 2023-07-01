@@ -1,5 +1,6 @@
 import * as path from "path";
 import { parentPort, workerData } from "worker_threads";
+import { adaptFileExt } from "../utils/primitive/ts_worker";
 
 async function execute() {
     const { script, call } = workerData as { script: string; call: Record<string, string> };
@@ -7,7 +8,7 @@ async function execute() {
     if (parentPort == null)
         throw new Error(`Parent port for execution of script ${script} missing.`);
 
-    const { default: Adapter } = await import(path.resolve(script));
+    const { default: Adapter } = await import(path.resolve(adaptFileExt(script)));
 
     const adapter = new Adapter();
 
