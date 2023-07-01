@@ -2,8 +2,9 @@
 
 The official data adapters for [bcked.com](https://bcked.com/) - a community driven resource on cryptocurrency backing.
 
-[![Build](https://github.com/bcked/bcked-adapters/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/bcked/bcked-adapters/actions/workflows/build.yml)
 [![CodeQL](https://github.com/bcked/bcked-adapters/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/bcked/bcked-adapters/actions/workflows/codeql-analysis.yml)
+[![Deploy](https://github.com/bcked/bcked-adapters/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/bcked/bcked-adapters/actions/workflows/deploy.yml)
+[![Crawler](https://github.com/bcked/bcked-adapters/actions/workflows/crawler.yml/badge.svg?branch=records)](https://github.com/bcked/bcked-adapters/actions/workflows/crawler.yml)
 
 ## Contributing
 
