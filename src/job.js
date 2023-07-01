@@ -38,7 +38,6 @@ async function queryAsset(assetId) {
     });
 }
 async function job() {
-    console.log("Job started.");
     const assets = (await fs.readdir("assets"));
     await Promise.all(assets.map(queryAsset));
 }
