@@ -1,0 +1,1 @@
+{"version":3,"file":"requests.js","sourceRoot":"","sources":["../../../../src/utils/primitive/requests.ts"],"names":[],"mappings":";;;AAAA,mCAAqC;AAErC,MAAM,cAAc,GAAG,IAAI,CAAC;AAE5B,SAAgB,iBAAiB,CAAI,KAAU,EAAE,OAAe,EAAE,OAA+B;IAC7F,OAAO,IAAA,kBAAU,EAAC,KAAK,EAAE,CAAC,KAAK,EAAE,EAAE,CAAC,CAAC,OAAO,GAAG,OAAO,CAAC,KAAK,CAAC,CAAC,CAAC,MAAM,IAAI,cAAc,CAAC,CAAC;AAC7F,CAAC;AAFD,8CAEC"}
