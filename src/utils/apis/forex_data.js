@@ -6,11 +6,11 @@ exports.ForexData = void 0;
  * All attribution goes to the Swissquote API.
  */
 const _ = require("lodash");
-const json_api_1 = require("../primitive/json_api");
+const requests_1 = require("../primitive/requests");
 const string_formatting_1 = require("../primitive/string_formatting");
 class ForexData {
     constructor() {
-        this.api = new json_api_1.JsonApi(`https://forex-data-feed.swissquote.com`);
+        this.api = new requests_1.JsonApi(`https://forex-data-feed.swissquote.com`);
     }
     getUrl(asset) {
         return `/public-quotes/bboquotes/instrument/${asset}/USD`;

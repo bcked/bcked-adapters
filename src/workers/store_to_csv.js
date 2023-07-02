@@ -14,7 +14,7 @@ async function storeToCsv() {
     await Promise.all(Object.entries(data)
         .filter(([, value]) => value != null)
         .map(async ([key, value]) => {
-        if (!(await (0, cache_1.hasCached)(to[key])))
+        if (!(await (0, cache_1.hasCached)(to[key], value.timestamp)))
             await (0, csv_1.writeToCsv)(to[key], value);
     }));
     worker_threads_1.parentPort.close();

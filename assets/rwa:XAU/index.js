@@ -28,10 +28,12 @@ class Adapter {
     }
     /**
      * Source: https://www.usgs.gov/centers/national-minerals-information-center/gold-statistics-and-information
-     * t.oz/ton = 1 / (480 grain * 64.79891 milligrams) / 1000 / 1000 / 1000
+     *
+     *      t.oz/ton = 1 / (480 grain * 64.79891 milligrams) / 1000 / 1000 / 1000
      * It is assumed that around 0.02% of supply is unrecoverable lost.
-     * conv = lambda x: x / ((480 * 64.79891) / 1000 / 1000 / 1000)
-     * comp = lambda w: f",{0.02*conv(w)},{0.98*conv(w)},{conv(w)},"
+     *
+     *  	conv = lambda x: x / ((480 * 64.79891) / 1000 / 1000 / 1000)
+     *      comp = lambda w: f",{0.02*conv(w)},{0.98*conv(w)},{conv(w)},"
      */
     async getSupply() {
         return null; // Look up manually and enter in records

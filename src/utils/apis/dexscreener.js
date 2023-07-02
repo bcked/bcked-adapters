@@ -9,14 +9,14 @@ exports.Dexscreener = void 0;
 const _ = require("lodash");
 const helper_1 = require("../helper");
 const array_1 = require("../primitive/array");
-const json_api_1 = require("../primitive/json_api");
 const math_1 = require("../primitive/math");
+const requests_1 = require("../primitive/requests");
 const string_formatting_1 = require("../primitive/string_formatting");
 const URL_MAX_LENGTH = 2048;
 const FETCH_MAX_COUNT = 30;
 class Dexscreener {
     constructor() {
-        this.api = new json_api_1.JsonApi("https://api.dexscreener.com");
+        this.api = new requests_1.JsonApi("https://api.dexscreener.com");
     }
     getPriceRoute(tokens) {
         return `/latest/dex/tokens/${tokens}`;

@@ -7,14 +7,14 @@ exports.Etherscan = void 0;
  * For more details on the API check out the [API Documentation](https://docs.etherscan.io/api-endpoints/).
  */
 const ethers_1 = require("ethers");
-const json_api_1 = require("../primitive/json_api");
+const requests_1 = require("../primitive/requests");
 const string_formatting_1 = require("../primitive/string_formatting");
 class Etherscan {
     constructor() {
-        this.api = new json_api_1.JsonApi(`https://api.etherscan.io`);
+        this.api = new requests_1.JsonApi(`https://api.etherscan.io`);
     }
     getUrl(module, action, options) {
-        const opt = options ? "&" + Object.entries(options).join("&") : "";
+        const opt = options ? "&" + (0, requests_1.joinOptions)(options) : "";
         return `/api?module=${module}&action=${action}${opt}&apikey=${process.env.ETHERSCAN_API_KEY}`;
     }
     async fetch(module, action, options) {

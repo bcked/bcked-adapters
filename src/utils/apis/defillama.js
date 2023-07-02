@@ -8,12 +8,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DefiLlama = void 0;
 const _ = require("lodash");
 const helper_1 = require("../helper");
-const json_api_1 = require("../primitive/json_api");
 const requests_1 = require("../primitive/requests");
 const string_formatting_1 = require("../primitive/string_formatting");
 class DefiLlama {
     constructor() {
-        this.api = new json_api_1.JsonApi("https://coins.llama.fi");
+        this.api = new requests_1.JsonApi("https://coins.llama.fi");
     }
     getPriceRoute(tokens, searchWidth = "4h") {
         return `/prices/current/${tokens}?searchWidth=${searchWidth}`;
