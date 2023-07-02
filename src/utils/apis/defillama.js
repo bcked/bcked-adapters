@@ -1,6 +1,7 @@
 "use strict";
 /**
  * Provides an interface to the DefiLlama API.
+ * All attribution goes to the DefiLlama API.
  * API documentation: https://defillama.com/docs/api
  */
 Object.defineProperty(exports, "__esModule", { value: true });

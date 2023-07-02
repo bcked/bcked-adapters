@@ -1,6 +1,7 @@
 "use strict";
 /**
  * Provides an interface to the Dexscreener API.
+ * All attribution goes to the Dexscreener API.
  * API documentation: https://docs.dexscreener.com/api/reference
  */
 Object.defineProperty(exports, "__esModule", { value: true });

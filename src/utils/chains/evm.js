@@ -100,16 +100,21 @@ class EVMChain {
             throw Error(`Error for query of balance of ${system}:${token} on address ${address}.`);
         }
     }
+    async getBurned(token, system) {
+        return _.sumBy(await Promise.all(BURN_ADDRESSES.map((address) => this.getBalance(address, token, system))), "balance");
+    }
+    async getTokenSupply(token, system) {
+        const contract = this.getTokenContract(token, system);
+        const supply = contract.totalSupply();
+        const decimals = this._getDecimals(contract);
+        return parseFloat(ethers_1.utils.formatUnits(await supply, await decimals));
+    }
     async getSupply(token, system) {
         try {
-            const contract = this.getTokenContract(token, system);
-            const supply = contract.totalSupply();
-            const decimals = this._getDecimals(contract);
-            const burned = _.sumBy(await Promise.all(BURN_ADDRESSES.map((address) => this.getBalance(address, token, system))), "balance");
             return {
                 timestamp: (0, string_formatting_1.toISOString)(Date.now()),
-                burned: burned,
-                issued: parseFloat(ethers_1.utils.formatUnits(await supply, await decimals)),
+                burned: await this.getBurned(token, system),
+                issued: await this.getTokenSupply(token, system),
             };
         }
         catch (error) {
