@@ -42,12 +42,16 @@ export class Etherscan {
         this.api = new JsonApi(`https://api.etherscan.io`);
     }
 
-    getUrl(module: string, action: string, options?: Record<string, string>): string {
+    private getUrl(module: string, action: string, options?: Record<string, string>): string {
         const opt = options ? "&" + Object.entries(options).join("&") : "";
         return `/api?module=${module}&action=${action}${opt}&apikey=${process.env.ETHERSCAN_API_KEY}`;
     }
 
-    async fetch<T>(module: string, action: string, options?: Record<string, string>): Promise<T> {
+    private async fetch<T>(
+        module: string,
+        action: string,
+        options?: Record<string, string>
+    ): Promise<T> {
         const url = this.getUrl(module, action, options);
         const response = await this.api.fetchJson<Response<T>>(url);
         if (response.status == "1") {
