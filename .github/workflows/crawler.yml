@@ -27,6 +27,7 @@ jobs:
                   ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
                   ALCHEMY_SOLANA: ${{ secrets.ALCHEMY_SOLANA }}
                   ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
+                  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
               run: node ./src/job.js
             - uses: stefanzweifel/git-auto-commit-action@v4
               with:

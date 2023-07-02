@@ -226,7 +226,7 @@ declare namespace bcked {
         interface ChainModule {
             getBalance(
                 address: string,
-                token: bcked.asset.Address | null, // Null if balance of "chain native" is request (no ERC20 contract)
+                token: bcked.asset.Address | null, // Null if balance of "chain native" is requested (no ERC20 contract)
                 system: bcked.system.Id
             ): Promise<Balance>;
             getSupply(token: bcked.asset.Address, system: bcked.system.Id): Promise<Supply>;

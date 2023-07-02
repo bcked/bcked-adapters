@@ -113,25 +113,31 @@ export class EVMChain implements bcked.query.ChainModule {
         }
     }
 
+    async getBurned(token: bcked.asset.Address | null, system: bcked.system.Id): Promise<number> {
+        return _.sumBy(
+            await Promise.all(
+                BURN_ADDRESSES.map((address) => this.getBalance(address, token, system))
+            ),
+            "balance"
+        );
+    }
+
+    async getTokenSupply(token: bcked.asset.Address, system: bcked.system.Id): Promise<number> {
+        const contract = this.getTokenContract(token, system);
+        const supply: Promise<BigNumber> = contract.totalSupply();
+        const decimals: Promise<BigNumber> = this._getDecimals(contract);
+        return parseFloat(utils.formatUnits(await supply, await decimals));
+    }
+
     async getSupply(
         token: bcked.asset.Address,
         system: bcked.system.Id
     ): Promise<bcked.query.Supply> {
         try {
-            const contract = this.getTokenContract(token, system);
-            const supply: Promise<BigNumber> = contract.totalSupply();
-            const decimals: Promise<BigNumber> = this._getDecimals(contract);
-
-            const burned = _.sumBy(
-                await Promise.all(
-                    BURN_ADDRESSES.map((address) => this.getBalance(address, token, system))
-                ),
-                "balance"
-            );
             return {
                 timestamp: toISOString(Date.now()),
-                burned: burned,
-                issued: parseFloat(utils.formatUnits(await supply, await decimals)),
+                burned: await this.getBurned(token, system),
+                issued: await this.getTokenSupply(token, system),
             };
         } catch (error) {
             console.log(error);
