@@ -20,7 +20,7 @@ class ForexData {
             throw new Error(`Forex data for a non RWA was requested: ${identifier.address}`);
         const url = this.getUrl(identifier.address);
         const quotes = await this.api.fetchJson(url);
-        const quote = _.find(quotes, { platform: "MT5" });
+        const quote = _.find(quotes, { topo: { platform: "MT5" } });
         if (quote == undefined)
             throw new Error(`No Best Book Quote found for ${identifier.address}.`);
         const spreadProfilePrice = _.find(quote.spreadProfilePrices, { spreadProfile: "Standard" });
