@@ -3,6 +3,7 @@ import { parse as parseSync } from "csv/sync";
 
 import * as fs from "fs";
 import * as _ from "lodash";
+import * as path from "path";
 
 import { readFirstLine, readLastLines } from "./files";
 
@@ -66,6 +67,11 @@ export async function writeToCsv(pathToFile: string, row: object, index?: string
             // Rewrite CSV to fill old entries for new headers
             await rewriteCSV(pathToFile, header);
         }
+    }
+
+    const dir = path.dirname(pathToFile);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
     }
 
     await new Promise((resolve, reject) => {
