@@ -5,6 +5,7 @@ const csv_1 = require("csv");
 const sync_1 = require("csv/sync");
 const fs = require("fs");
 const _ = require("lodash");
+const path = require("path");
 const files_1 = require("./files");
 /**
  * Read the headers of a CSV file.
@@ -59,6 +60,10 @@ async function writeToCsv(pathToFile, row, index) {
             // Rewrite CSV to fill old entries for new headers
             await rewriteCSV(pathToFile, header);
         }
+    }
+    const dir = path.dirname(pathToFile);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
     }
     await new Promise((resolve, reject) => {
         const writableStream = fs.createWriteStream(pathToFile, {
