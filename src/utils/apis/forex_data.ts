@@ -3,7 +3,7 @@
  * All attribution goes to the Swissquote API.
  */
 import * as _ from "lodash";
-import { JsonApi } from "../primitive/json_api";
+import { JsonApi } from "../primitive/requests";
 import { toISOString } from "../primitive/string_formatting";
 
 interface SpreadProfilePrice {

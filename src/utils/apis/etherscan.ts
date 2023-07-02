@@ -4,7 +4,7 @@
  * For more details on the API check out the [API Documentation](https://docs.etherscan.io/api-endpoints/).
  */
 import { BigNumber, utils } from "ethers";
-import { JsonApi } from "../primitive/json_api";
+import { JsonApi, joinOptions } from "../primitive/requests";
 import { toISOString } from "../primitive/string_formatting";
 
 interface Error {
@@ -43,7 +43,7 @@ export class Etherscan {
     }
 
     private getUrl(module: string, action: string, options?: Record<string, string>): string {
-        const opt = options ? "&" + Object.entries(options).join("&") : "";
+        const opt = options ? "&" + joinOptions(options) : "";
         return `/api?module=${module}&action=${action}${opt}&apikey=${process.env.ETHERSCAN_API_KEY}`;
     }
 

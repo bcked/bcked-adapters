@@ -5,6 +5,7 @@
 import * as _ from "lodash";
 import { getCachedPrice } from "../cache";
 import { toId } from "../helper";
+import { toISOString } from "../primitive/string_formatting";
 
 export class Cache implements bcked.query.ApiModule {
     async getPrices(
@@ -12,7 +13,7 @@ export class Cache implements bcked.query.ApiModule {
     ): Promise<Record<bcked.asset.Id, bcked.asset.Price>> {
         const prices = await Promise.all(
             identifiers.map(async (identifier) => ({
-                [toId(identifier)]: await getCachedPrice(identifier),
+                [toId(identifier)]: await getCachedPrice(identifier, toISOString(Date.now())),
             }))
         );
 

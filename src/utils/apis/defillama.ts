@@ -6,8 +6,7 @@
 
 import * as _ from "lodash";
 import { toId } from "../helper";
-import { JsonApi } from "../primitive/json_api";
-import { urlLengthGrouping } from "../primitive/requests";
+import { JsonApi, urlLengthGrouping } from "../primitive/requests";
 import { toISOString } from "../primitive/string_formatting";
 
 interface Coin {

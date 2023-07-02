@@ -16,7 +16,8 @@ async function storeToCsv() {
         Object.entries(data)
             .filter(([, value]) => value != null)
             .map(async ([key, value]) => {
-                if (!(await hasCached(to[key]!))) await writeToCsv(to[key]!, value);
+                if (!(await hasCached(to[key]!, value.timestamp)))
+                    await writeToCsv(to[key]!, value);
             })
     );
 

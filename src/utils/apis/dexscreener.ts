@@ -7,8 +7,8 @@
 import * as _ from "lodash";
 import { toId } from "../helper";
 import { groupWhile } from "../primitive/array";
-import { JsonApi } from "../primitive/json_api";
 import { median } from "../primitive/math";
+import { JsonApi } from "../primitive/requests";
 import { toISOString } from "../primitive/string_formatting";
 
 const URL_MAX_LENGTH = 2048;
