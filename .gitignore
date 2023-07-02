@@ -1,6 +1,10 @@
+# bcked output
+**/records
+
+# Experimentation code
 /scratch
 
-# testing
+# Testing
 /coverage
 
 # Node artifact files
