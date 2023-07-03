@@ -42,6 +42,7 @@ class Adapter {
     async getBacking() {
         // Backing need to be manually parsed from attestation reports.
         // See: https://paxos.com/busd-transparency/
+        // Treasury Auctions can be looked up here: https://www.treasurydirect.gov/auctions/auction-query/
         return null;
     }
 }
