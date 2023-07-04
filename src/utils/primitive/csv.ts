@@ -5,6 +5,7 @@ import * as fs from "fs";
 import * as _ from "lodash";
 import * as path from "path";
 
+import { sortWithoutIndex } from "./array";
 import { readFirstLine, readLastLines } from "./files";
 
 /**
@@ -53,7 +54,7 @@ export async function rewriteCSV(pathToFile: string, targetHeader: string[]) {
 export async function writeToCsv(pathToFile: string, row: object, index?: string) {
     let header = Object.keys(row);
     // By default, take first key as index
-    index = index ?? header[0]!;
+    const headerIndex = index ?? header[0]!;
 
     const exists = fs.existsSync(pathToFile);
     if (exists) {
@@ -61,7 +62,7 @@ export async function writeToCsv(pathToFile: string, row: object, index?: string
         const newHeaders = _.difference(header, existingHeader);
 
         // Get combined header
-        header = _.concat(index, _.without(_.union(existingHeader, header), index).sort());
+        header = sortWithoutIndex(_.union(existingHeader, header), headerIndex);
 
         if (newHeaders.length) {
             // Rewrite CSV to fill old entries for new headers
@@ -81,7 +82,7 @@ export async function writeToCsv(pathToFile: string, row: object, index?: string
         });
         const stringifier = stringify({
             header: !exists, // Don't write the header on append
-            columns: header,
+            columns: sortWithoutIndex(header, headerIndex),
         });
         stringifier.write(row);
         stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);

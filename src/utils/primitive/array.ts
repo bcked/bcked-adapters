@@ -134,3 +134,7 @@ export function groupWhile<T>(array: T[], condition: (group: T[]) => boolean) {
     groups.push(bufferArray);
     return groups;
 }
+
+export function sortWithoutIndex(array: string[], index: string): string[] {
+    return _.concat(index, _.without(array, index).sort());
+}
