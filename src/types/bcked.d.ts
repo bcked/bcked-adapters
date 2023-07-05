@@ -113,8 +113,8 @@ declare namespace bcked {
             timestamp: primitive.ISODateTimeString;
             circulating: number | null; // Circulating = Issued - Locked - Burned; If unknown, this must be set to null.
             burned: number | null; // If unknown, this must be set to null.
-            total: number; // Total = Circulating + Locked = Issued - Burned
-            issued: number;
+            total: number | null; // Total = Circulating + Locked = Issued - Burned; If unknown, this must be set to null.
+            issued: number | null; // If unknown, this must be set to null.
             max: number | null; // Maximum number of supply; If unknown or N/A, this must be set to null.
         }
 
