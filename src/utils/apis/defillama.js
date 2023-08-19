@@ -4,9 +4,12 @@
  * All attribution goes to the DefiLlama API.
  * API documentation: https://defillama.com/docs/api
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DefiLlama = void 0;
-const _ = require("lodash");
+const lodash_1 = __importDefault(require("lodash"));
 const helper_1 = require("../helper");
 const requests_1 = require("../primitive/requests");
 const string_formatting_1 = require("../primitive/string_formatting");
@@ -41,7 +44,7 @@ class DefiLlama {
     async getPrices(identifiers) {
         const groups = (0, requests_1.urlLengthGrouping)(identifiers, this.api.baseURL, (group) => this.getPriceRoute(group.map((identifier) => `${identifier.system}:${identifier.address}`).join(",")));
         const prices = await Promise.all(groups.map((group) => this._getPrices(group)));
-        return _.merge({}, ...prices);
+        return lodash_1.default.merge({}, ...prices);
     }
     async getPrice(identifier) {
         return (await this.getPrices([identifier]))[(0, helper_1.toId)(identifier)];

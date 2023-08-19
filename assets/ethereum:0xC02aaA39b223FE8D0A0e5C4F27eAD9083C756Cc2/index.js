@@ -26,26 +26,30 @@ class Adapter {
     }
     async getPrice() {
         const price = await this.api.getPrice(details.identifier);
-        return price ?? null;
+        return price ? [price] : [];
     }
     async getSupply() {
         const { timestamp, issued, burned } = await this.chain.getSupply(details.identifier.address, details.identifier.system);
-        return {
-            timestamp,
-            circulating: null,
-            burned: burned ?? null,
-            total: burned ? issued - burned : issued,
-            issued: issued,
-            max: null,
-        };
+        return [
+            {
+                timestamp,
+                circulating: null,
+                burned: burned ?? null,
+                total: burned ? issued - burned : issued,
+                issued: issued,
+                max: null,
+            },
+        ];
     }
     async getBacking() {
         // Retrieve ETH holdings in WETH contract.
         const { timestamp, balance } = await this.chain.getBalance(details.identifier.address, null, details.identifier.system);
-        return {
-            timestamp,
-            "ethereum:ETH": balance,
-        };
+        return [
+            {
+                timestamp,
+                "ethereum:ETH": balance,
+            },
+        ];
     }
 }
 exports.default = Adapter;

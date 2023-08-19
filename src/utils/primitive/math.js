@@ -1,7 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.uniformity = exports.round = exports.zScoreNorm = exports.minMaxNorm = exports.rate = exports.median = void 0;
-const _ = require("lodash");
+const lodash_1 = __importDefault(require("lodash"));
 function median(arr) {
     if (!arr.length)
         return undefined;
@@ -68,8 +71,8 @@ function klDivergence(p, q) {
  * [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence).
  */
 function jsDivergence(p, q) {
-    const m = _.zip(p, q).map((values) => _.mean(values));
-    return _.mean([klDivergence(p, m), klDivergence(q, m)]);
+    const m = lodash_1.default.zip(p, q).map((values) => lodash_1.default.mean(values));
+    return lodash_1.default.mean([klDivergence(p, m), klDivergence(q, m)]);
 }
 function jsDistance(p, q) {
     return Math.sqrt(jsDivergence(p, q));
@@ -81,7 +84,7 @@ function jsDistance(p, q) {
 function uniformity(values) {
     if (!values.length || [0, 1].includes(values.length))
         return 1;
-    const sum = _.sum(values);
+    const sum = lodash_1.default.sum(values);
     if (sum == 0)
         return 1;
     const valuePercentages = values.map((v) => v / sum);

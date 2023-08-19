@@ -4,9 +4,12 @@
  * All attribution goes to the Dexscreener API.
  * API documentation: https://docs.dexscreener.com/api/reference
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Dexscreener = void 0;
-const _ = require("lodash");
+const lodash_1 = __importDefault(require("lodash"));
 const helper_1 = require("../helper");
 const array_1 = require("../primitive/array");
 const math_1 = require("../primitive/math");
@@ -30,7 +33,7 @@ class Dexscreener {
         const response = await this.api.fetchJson(priceRoute);
         const pairs = response.pairs ?? [];
         const tokenPairs = pairs.filter((pair) => pair.baseToken.address in keyToContracts);
-        const pairsPerToken = _.groupBy(tokenPairs, "baseToken.address");
+        const pairsPerToken = lodash_1.default.groupBy(tokenPairs, "baseToken.address");
         const pricePerToken = Object.fromEntries(Object.entries(pairsPerToken)
             .map(([address, pairs]) => [
             (0, helper_1.toId)(keyToContracts[address]),
@@ -45,16 +48,16 @@ class Dexscreener {
             id,
             {
                 timestamp: (0, string_formatting_1.toISOString)(Date.now()),
-                usd: (0, math_1.median)(_.map(pairs, "priceUsd")),
+                usd: (0, math_1.median)(lodash_1.default.map(pairs, "priceUsd")),
             },
         ]));
         return pricePerToken;
     }
     async getPrices(identifiers) {
-        const groups = (0, array_1.groupWhile)(identifiers, (group) => (this.api.baseURL + this.getPriceRoute(_.map(group, "token.address").join(",")))
+        const groups = (0, array_1.groupWhile)(identifiers, (group) => (this.api.baseURL + this.getPriceRoute(lodash_1.default.map(group, "token.address").join(",")))
             .length <= URL_MAX_LENGTH && group.length <= FETCH_MAX_COUNT);
         const prices = await Promise.all(groups.map((group) => this._getPrices(group)));
-        return _.merge({}, ...prices);
+        return lodash_1.default.merge({}, ...prices);
     }
     async getPrice(identifier) {
         return (await this.getPrices([identifier]))[(0, helper_1.toId)(identifier)];

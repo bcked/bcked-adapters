@@ -21,16 +21,18 @@ class Adapter {
         return details;
     }
     async getPrice() {
-        return {
-            timestamp: (0, string_formatting_1.toISOString)(new Date(0)),
-            usd: 1.0, // Assume a fixed price of $1.0.
-        };
+        return [
+            {
+                timestamp: (0, string_formatting_1.toISOString)(new Date(0)),
+                usd: 1.0, // Assume a fixed price of $1.0.
+            },
+        ];
     }
     async getSupply() {
-        return null;
+        return [];
     }
     async getBacking() {
-        return null;
+        return [];
     }
 }
 exports.default = Adapter;

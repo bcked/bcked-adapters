@@ -1,0 +1,21 @@
+{
+    "name": "Wrapped Ether",
+    "symbol": "WETH",
+    "identifier": {
+        "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "system": "ethereum"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "ethereum"
+    },
+    "reference": "https://ethereum.org/en/",
+    "tags": [
+        "wrapped-token"
+    ],
+    "listed": "2023-07-29T22:37:16.149Z",
+    "updated": "2023-07-29T22:37:16.149Z"
+}

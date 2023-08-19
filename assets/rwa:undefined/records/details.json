@@ -1,0 +1,14 @@
+{
+    "name": "Undefined US Dollar denominated Asset",
+    "symbol": "undef",
+    "identifier": {
+        "address": "undefined",
+        "system": "rwa"
+    },
+    "assetClasses": [],
+    "linkedEntities": {},
+    "reference": null,
+    "tags": [],
+    "listed": "2023-07-29T22:37:14.026Z",
+    "updated": "2023-07-29T22:37:14.026Z"
+}

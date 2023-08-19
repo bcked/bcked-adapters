@@ -1,7 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.groupWhile = exports.generate = exports.uniqueTimesWithInHours = exports.uniqueTimesWithInMs = exports.relativeInMonths = exports.relativeInDays = exports.relativeInHours = exports.relativeInMs = exports.closest = void 0;
-const _ = require("lodash");
+exports.fromAsync = exports.sortWithoutIndex = exports.groupWhile = exports.generate = exports.uniqueTimesWithInHours = exports.uniqueTimesWithInMs = exports.relativeInMonths = exports.relativeInDays = exports.relativeInHours = exports.relativeInMs = exports.closest = void 0;
+const lodash_1 = __importDefault(require("lodash"));
 const math_1 = require("./math");
 const string_formatting_1 = require("./string_formatting");
 const SECOND_IN_MS = 1000;
@@ -11,7 +14,7 @@ const DAY_IN_MS = 24 * HOUR_IN_MS;
 const MONTH_IN_MS = 30 * DAY_IN_MS;
 /** Get the closest element in time. */
 function closest(array, timestamp) {
-    return _.minBy(array, (item) => {
+    return lodash_1.default.minBy(array, (item) => {
         return Math.abs(new Date(item.timestamp).getTime() - new Date(timestamp).getTime());
     });
 }
@@ -88,7 +91,7 @@ function generate(min, max, n) {
 exports.generate = generate;
 function groupWhile(array, condition) {
     const groups = [];
-    const popArray = _.cloneDeep(array).reverse(); // reverse so that we can use pop for a better efficiency
+    const popArray = lodash_1.default.cloneDeep(array).reverse(); // reverse so that we can use pop for a better efficiency
     let bufferArray = [];
     while (popArray.length > 0) {
         const item = popArray.pop();
@@ -108,4 +111,16 @@ function groupWhile(array, condition) {
     return groups;
 }
 exports.groupWhile = groupWhile;
+function sortWithoutIndex(array, index) {
+    return lodash_1.default.concat(index, lodash_1.default.without(array, index).sort());
+}
+exports.sortWithoutIndex = sortWithoutIndex;
+async function fromAsync(iter) {
+    const out = [];
+    for await (const item of iter) {
+        out.push(item);
+    }
+    return out;
+}
+exports.fromAsync = fromAsync;
 //# sourceMappingURL=array.js.map

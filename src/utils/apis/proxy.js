@@ -3,13 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiProxy = void 0;
 const helper_1 = require("../helper");
 const instance_proxy_1 = require("../primitive/instance_proxy");
-const cache_1 = require("./cache");
 const defillama_1 = require("./defillama");
 const dexscreener_1 = require("./dexscreener");
 class ApiProxy extends instance_proxy_1.InstanceProxy {
-    constructor(cached = true) {
+    constructor() {
         super({
-            ...(cached && { cache: cache_1.Cache }),
             defillama: defillama_1.DefiLlama,
             dexscreener: dexscreener_1.Dexscreener,
         });

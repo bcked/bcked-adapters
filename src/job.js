@@ -1,49 +1,28 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
-const _ = require("lodash");
-const fs = require("node:fs/promises");
+const promises_1 = __importDefault(require("node:fs/promises"));
+const node_path_1 = __importDefault(require("node:path"));
 const ts_node_1 = require("ts-node");
-const helper_1 = require("./utils/helper");
-const ts_worker_1 = require("./utils/primitive/ts_worker");
-async function queryAsset(assetId) {
-    const identifier = (0, helper_1.fromId)(assetId);
-    const data = await (0, ts_worker_1.runWorker)("workers/execute_load.ts", {
-        workerData: {
-            script: `assets/${assetId}/index.ts`,
-            call: {
-                details: "getDetails",
-                price: "getPrice",
-                supply: "getSupply",
-                backing: "getBacking",
-            },
-        },
-    });
-    if (data == null)
-        throw new Error(`No result from worker for ${assetId}.`);
-    if (!_.isEqual(data.details.identifier, identifier))
-        throw new Error(`Directory name ${assetId} doesn't match identifier ${(0, helper_1.toId)(data.details.identifier)} in asset details.`);
-    await (0, ts_worker_1.runWorker)("workers/store_to_csv.ts", {
-        workerData: {
-            data: {
-                price: data.price,
-                supply: data.supply,
-                backing: data.backing,
-            },
-            to: {
-                price: (0, helper_1.getPriceCsvPath)(identifier),
-                supply: (0, helper_1.getSupplyCsvPath)(identifier),
-                backing: (0, helper_1.getBackingCsvPath)(identifier),
-            },
-        },
-    });
+const workerpool_1 = require("./utils/primitive/workerpool");
+async function query(dir, workerScript) {
+    const workerScriptPath = node_path_1.default.resolve("src/workers", workerScript);
+    const ids = await promises_1.default.readdir(dir);
+    const pool = new workerpool_1.WorkerPool(workerScriptPath, { min: 0, max: 4 });
+    const res = await Promise.all(ids.map((id) => pool.execute(id)));
+    await pool.close();
+    return res;
 }
 async function job() {
     if (process[ts_node_1.REGISTER_INSTANCE]) {
         process.env.DEV_MODE = "true";
     }
-    const assets = (await fs.readdir("assets"));
-    await Promise.all(assets.map(queryAsset));
+    await query("systems", "query_system.ts");
+    await query("entities", "query_entity.ts");
+    await query("assets", "query_asset.ts");
 }
-job().catch((err) => console.error(err));
+job();
 //# sourceMappingURL=job.js.map

@@ -1,12 +1,16 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeToCsv = exports.rewriteCSV = exports.readLastEntry = exports.readHeaders = void 0;
+exports.writeCsv = exports.writeToCsv = exports.rewriteCSV = exports.readCSV = exports.readClosestEntry = exports.readLastEntry = exports.readHeaders = void 0;
 const csv_1 = require("csv");
 const sync_1 = require("csv/sync");
-const fs = require("fs");
-const _ = require("lodash");
-const path = require("path");
+const fs_1 = __importDefault(require("fs"));
+const lodash_1 = __importDefault(require("lodash"));
+const array_1 = require("./array");
 const files_1 = require("./files");
+const time_1 = require("./time");
 /**
  * Read the headers of a CSV file.
  * @param pathToFile The file path to the file to be read.
@@ -17,6 +21,21 @@ async function readHeaders(pathToFile) {
     return (0, sync_1.parse)(line)[0];
 }
 exports.readHeaders = readHeaders;
+function castNumbers(value, context) {
+    if (context.header)
+        return value;
+    if (value == "")
+        return value;
+    try {
+        const asNumber = Number(value);
+        if (!isNaN(asNumber))
+            return asNumber;
+    }
+    catch {
+        return value;
+    }
+    return value;
+}
 /**
  * Read the last entry of a CSV file.
  * @param pathToFile The file path to the file to be read.
@@ -24,18 +43,44 @@ exports.readHeaders = readHeaders;
  */
 async function readLastEntry(pathToFile) {
     const lines = await Promise.all([(0, files_1.readFirstLine)(pathToFile), (0, files_1.readLastLines)(pathToFile, 1)]);
-    return (0, sync_1.parse)(lines.join("\n"), { columns: true })[0];
+    return (0, sync_1.parse)(lines.join("\n"), { columns: true, cast: castNumbers })[0];
 }
 exports.readLastEntry = readLastEntry;
+async function readClosestEntry(pathToFile, timestamp) {
+    let closest = null;
+    const parser = fs_1.default.createReadStream(pathToFile).pipe((0, csv_1.parse)({
+        columns: true,
+        cast: castNumbers,
+    }));
+    for await (const record of parser) {
+        if (closest == null || (0, time_1.isCloser)(timestamp, record.timestamp, closest.timestamp)) {
+            closest = record;
+        }
+        else {
+            // This expects the entries in the CSV to be sorted by timestamp.
+            break;
+        }
+    }
+    return closest;
+}
+exports.readClosestEntry = readClosestEntry;
+async function* readCSV(pathToFile) {
+    const parser = (0, csv_1.parse)({ columns: true, cast: castNumbers });
+    const stream = fs_1.default.createReadStream(pathToFile).pipe(parser);
+    for await (const data of stream) {
+        yield data;
+    }
+}
+exports.readCSV = readCSV;
 async function rewriteCSV(pathToFile, targetHeader) {
     const parser = (0, csv_1.parse)({ columns: true });
     const stringifier = (0, csv_1.stringify)({ header: true, columns: targetHeader });
     const tempPath = pathToFile.replace(".csv", "_temp.csv");
-    const writeStream = fs.createWriteStream(tempPath, {
+    const writeStream = fs_1.default.createWriteStream(tempPath, {
         encoding: "utf-8",
     });
     await new Promise((resolve, reject) => {
-        fs.createReadStream(pathToFile)
+        fs_1.default.createReadStream(pathToFile)
             .on("error", reject)
             .pipe(parser)
             .pipe(stringifier)
@@ -43,40 +88,62 @@ async function rewriteCSV(pathToFile, targetHeader) {
             .on("error", reject)
             .on("finish", resolve);
     });
-    await fs.promises.rename(tempPath, pathToFile);
+    await fs_1.default.promises.rename(tempPath, pathToFile);
 }
 exports.rewriteCSV = rewriteCSV;
 async function writeToCsv(pathToFile, row, index) {
     let header = Object.keys(row);
     // By default, take first key as index
-    index = index ?? header[0];
-    const exists = fs.existsSync(pathToFile);
+    const headerIndex = index ?? header[0];
+    const exists = fs_1.default.existsSync(pathToFile);
     if (exists) {
         const existingHeader = await readHeaders(pathToFile);
-        const newHeaders = _.difference(header, existingHeader);
+        const newHeaders = lodash_1.default.difference(header, existingHeader);
         // Get combined header
-        header = _.concat(index, _.without(_.union(existingHeader, header), index).sort());
+        header = (0, array_1.sortWithoutIndex)(lodash_1.default.union(existingHeader, header), headerIndex);
         if (newHeaders.length) {
             // Rewrite CSV to fill old entries for new headers
             await rewriteCSV(pathToFile, header);
         }
     }
-    const dir = path.dirname(pathToFile);
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-    }
+    await (0, files_1.ensurePath)(pathToFile);
     await new Promise((resolve, reject) => {
-        const writableStream = fs.createWriteStream(pathToFile, {
+        const writableStream = fs_1.default.createWriteStream(pathToFile, {
             flags: "a",
             encoding: "utf-8",
         });
         const stringifier = (0, csv_1.stringify)({
             header: !exists,
-            columns: header,
+            columns: (0, array_1.sortWithoutIndex)(header, headerIndex),
         });
         stringifier.write(row);
         stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);
+        stringifier.end();
     });
 }
 exports.writeToCsv = writeToCsv;
+async function writeCsv(pathToFile, rows, index) {
+    if (!rows.length)
+        return;
+    const header = lodash_1.default.uniq(lodash_1.default.flatMap(rows, lodash_1.default.keys));
+    // By default, take first key as index
+    const headerIndex = index ?? header[0];
+    await (0, files_1.ensurePath)(pathToFile);
+    await new Promise((resolve, reject) => {
+        const writableStream = fs_1.default.createWriteStream(pathToFile, {
+            flags: "w",
+            encoding: "utf-8",
+        });
+        const stringifier = (0, csv_1.stringify)({
+            header: true,
+            columns: (0, array_1.sortWithoutIndex)(header, headerIndex),
+        });
+        for (const row of rows) {
+            stringifier.write(row);
+        }
+        stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);
+        stringifier.end();
+    });
+}
+exports.writeCsv = writeCsv;
 //# sourceMappingURL=csv.js.map

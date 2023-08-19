@@ -1,9 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EVMChain = void 0;
 const multicall_1 = require("@0xsequence/multicall");
 const ethers_1 = require("ethers");
-const _ = require("lodash");
+const lodash_1 = __importDefault(require("lodash"));
 const helper_1 = require("../helper");
 const string_formatting_1 = require("../primitive/string_formatting");
 const BURN_ADDRESSES = [
@@ -101,7 +104,7 @@ class EVMChain {
         }
     }
     async getBurned(token, system) {
-        return _.sumBy(await Promise.all(BURN_ADDRESSES.map((address) => this.getBalance(address, token, system))), "balance");
+        return lodash_1.default.sumBy(await Promise.all(BURN_ADDRESSES.map((address) => this.getBalance(address, token, system))), "balance");
     }
     async getTokenSupply(token, system) {
         const contract = this.getTokenContract(token, system);

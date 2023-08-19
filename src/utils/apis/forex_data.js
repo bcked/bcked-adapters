@@ -1,11 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ForexData = void 0;
 /**
  * Provides an interface to the Swissquote API.
  * All attribution goes to the Swissquote API.
  */
-const _ = require("lodash");
+const lodash_1 = __importDefault(require("lodash"));
 const requests_1 = require("../primitive/requests");
 const string_formatting_1 = require("../primitive/string_formatting");
 class ForexData {
@@ -20,10 +23,10 @@ class ForexData {
             throw new Error(`Forex data for a non RWA was requested: ${identifier.address}`);
         const url = this.getUrl(identifier.address);
         const quotes = await this.api.fetchJson(url);
-        const quote = _.find(quotes, { topo: { platform: "MT5" } });
+        const quote = lodash_1.default.find(quotes, { topo: { platform: "MT5" } });
         if (quote == undefined)
             throw new Error(`No Best Book Quote found for ${identifier.address}.`);
-        const spreadProfilePrice = _.find(quote.spreadProfilePrices, { spreadProfile: "Standard" });
+        const spreadProfilePrice = lodash_1.default.find(quote.spreadProfilePrices, { spreadProfile: "Standard" });
         if (spreadProfilePrice == undefined)
             throw new Error(`No Spread Profile Price found for ${identifier.address}.`);
         return {

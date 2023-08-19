@@ -1,0 +1,21 @@
+{
+    "name": "Wrapped Bitcoin",
+    "symbol": "WBTC",
+    "identifier": {
+        "address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        "system": "ethereum"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "bitgo"
+    },
+    "reference": "https://wbtc.network/dashboard/audit",
+    "tags": [
+        "bridged-asset"
+    ],
+    "listed": "2023-07-29T22:37:16.265Z",
+    "updated": "2023-07-29T22:37:16.265Z"
+}

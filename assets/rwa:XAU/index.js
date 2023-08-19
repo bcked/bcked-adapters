@@ -24,7 +24,7 @@ class Adapter {
      * Gold price in USD/t.oz (troy ounce)
      */
     async getPrice() {
-        return this.api.getPrice(details.identifier);
+        return [await this.api.getPrice(details.identifier)];
     }
     /**
      * Source: https://www.usgs.gov/centers/national-minerals-information-center/gold-statistics-and-information
@@ -36,11 +36,11 @@ class Adapter {
      *      comp = lambda w: f",{0.02*conv(w)},{0.98*conv(w)},{conv(w)},"
      */
     async getSupply() {
-        return null; // Look up manually and enter in records
+        return []; // Look up manually and enter in records
     }
     async getBacking() {
         // There is no backing for Gold
-        return null;
+        return [];
     }
 }
 exports.default = Adapter;

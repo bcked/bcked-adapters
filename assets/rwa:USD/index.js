@@ -22,10 +22,12 @@ class Adapter {
         return details;
     }
     async getPrice() {
-        return {
-            timestamp: (0, string_formatting_1.toISOString)(new Date(0)),
-            usd: 1.0,
-        };
+        return [
+            {
+                timestamp: (0, string_formatting_1.toISOString)(new Date(0)),
+                usd: 1.0,
+            },
+        ];
     }
     getSupplyUrl(options) {
         return `/datadownload/Output.aspx?${(0, requests_1.joinOptions)(options)}`;
@@ -39,19 +41,25 @@ class Adapter {
             label: "omit",
             layout: "seriescolumn",
         });
-        const supply = await this.api.fetchCsv(url, { columns: true, from_line: 2 });
+        const supplies = await this.api.fetchCsv(url, { columns: true, from_line: 2 });
+        if (!supplies?.length)
+            return [];
+        const supply = supplies[0];
         const billion = 1000 * 1000 * 1000;
-        return {
-            timestamp: (0, string_formatting_1.toISOString)(new Date(supply["Time Period"])),
-            burned: null,
-            circulating: supply["MCU_N.WM"] * billion,
-            total: supply["M2_N.WM"] * billion,
-            issued: supply["M2_N.WM"] * billion,
-            max: null,
-        };
+        return [
+            {
+                timestamp: (0, string_formatting_1.toISOString)(new Date(supply["Time Period"])),
+                burned: null,
+                circulating: supply["MCU_N.WM"] * billion,
+                total: supply["M2_N.WM"] * billion,
+                issued: supply["M2_N.WM"] * billion,
+                max: null,
+            },
+        ];
     }
     async getBacking() {
-        return null;
+        // There is no backing for USD
+        return [];
     }
 }
 exports.default = Adapter;

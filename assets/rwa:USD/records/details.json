@@ -1,0 +1,19 @@
+{
+    "name": "U.S. dollar",
+    "symbol": "USD",
+    "identifier": {
+        "address": "USD",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "fiat-money",
+        "cash"
+    ],
+    "linkedEntities": {
+        "issuer": "fed"
+    },
+    "reference": null,
+    "tags": [],
+    "listed": "2023-07-29T22:37:14.455Z",
+    "updated": "2023-07-29T22:37:14.455Z"
+}

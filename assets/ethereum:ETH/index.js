@@ -28,22 +28,24 @@ class Adapter {
     }
     async getPrice() {
         // Use WETH as price proxy.
-        return this.etherscan.getEthPrice();
+        return [await this.etherscan.getEthPrice()];
     }
     async getSupply() {
         const { timestamp, issued, burned } = await this.etherscan.getEthSupply();
-        return {
-            timestamp,
-            circulating: null,
-            burned: burned ?? null,
-            total: burned ? issued - burned : issued,
-            issued: issued,
-            max: null,
-        };
+        return [
+            {
+                timestamp,
+                circulating: null,
+                burned: burned ?? null,
+                total: burned ? issued - burned : issued,
+                issued: issued,
+                max: null,
+            },
+        ];
     }
     async getBacking() {
         // There is no backing for ETH
-        return null;
+        return [];
     }
 }
 exports.default = Adapter;
