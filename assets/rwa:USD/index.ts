@@ -18,8 +18,8 @@ interface Options {
     rel: string;
     series: string;
     lastobs?: number;
-    from?: `${number}/${number}/${number}`; // MM/DD/YYYY
-    to?: `${number}/${number}/${number}`; // MM/DD/YYYY
+    from?: `${number}/${number}/${number}`; // mm/dd/yyyy
+    to?: `${number}/${number}/${number}`; // mm/dd/yyyy
     filetype: "csv" | "spreadsheetml" | "sdmx";
     label: "omit" | "include";
     layout: "seriescolumn" | "seriesrow" | "serieslist";
@@ -43,18 +43,20 @@ export default class Adapter implements bcked.asset.Adapter {
         return details;
     }
 
-    async getPrice(): Promise<bcked.asset.Price | null> {
-        return {
-            timestamp: toISOString(new Date(0)), // The price will always be 1.0. Set 1970-01-01 as date.
-            usd: 1.0,
-        };
+    async getPrice(): Promise<bcked.asset.Price[]> {
+        return [
+            {
+                timestamp: toISOString(new Date(0)), // The price will always be 1.0. Set 1970-01-01 as date.
+                usd: 1.0,
+            },
+        ];
     }
 
     private getSupplyUrl(options: Options) {
         return `/datadownload/Output.aspx?${joinOptions(options)}`;
     }
 
-    async getSupply(): Promise<bcked.asset.Supply | null> {
+    async getSupply(): Promise<bcked.asset.Supply[]> {
         const url = this.getSupplyUrl({
             rel: "H6",
             series: "f14e8c98effb12bfe9ff8ee15bc760a3",
@@ -64,20 +66,26 @@ export default class Adapter implements bcked.asset.Adapter {
             layout: "seriescolumn",
         });
 
-        const supply = await this.api.fetchCsv<Supply>(url, { columns: true, from_line: 2 });
+        const supplies = await this.api.fetchCsv<Supply[]>(url, { columns: true, from_line: 2 });
+        if (!supplies?.length) return [];
+
+        const supply = supplies[0]!;
 
         const billion = 1000 * 1000 * 1000;
-        return {
-            timestamp: toISOString(new Date(supply["Time Period"])),
-            burned: null,
-            circulating: supply["MCU_N.WM"] * billion,
-            total: supply["M2_N.WM"] * billion,
-            issued: supply["M2_N.WM"] * billion,
-            max: null,
-        };
+        return [
+            {
+                timestamp: toISOString(new Date(supply["Time Period"])),
+                burned: null,
+                circulating: supply["MCU_N.WM"] * billion,
+                total: supply["M2_N.WM"] * billion,
+                issued: supply["M2_N.WM"] * billion,
+                max: null,
+            },
+        ];
     }
 
-    async getBacking(): Promise<bcked.asset.Backing | null> {
-        return null;
+    async getBacking(): Promise<bcked.asset.Backing[]> {
+        // There is no backing for USD
+        return [];
     }
 }

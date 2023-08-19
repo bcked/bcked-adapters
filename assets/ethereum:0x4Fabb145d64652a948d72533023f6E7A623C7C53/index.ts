@@ -29,30 +29,32 @@ export default class Adapter implements bcked.asset.Adapter {
         return details;
     }
 
-    async getPrice(): Promise<bcked.asset.Price | null> {
+    async getPrice(): Promise<bcked.asset.Price[]> {
         const price = await this.api.getPrice(details.identifier);
-        return price ?? null;
+        return price ? [price] : [];
     }
 
-    async getSupply(): Promise<bcked.asset.Supply | null> {
+    async getSupply(): Promise<bcked.asset.Supply[]> {
         const { timestamp, issued, burned } = await this.chain.getSupply(
             details.identifier.address,
             details.identifier.system
         );
-        return {
-            timestamp,
-            circulating: null,
-            burned: burned ?? null,
-            total: burned ? issued - burned : issued,
-            issued: issued,
-            max: null,
-        };
+        return [
+            {
+                timestamp,
+                circulating: null,
+                burned: burned ?? null,
+                total: burned ? issued - burned : issued,
+                issued: issued,
+                max: null,
+            },
+        ];
     }
 
-    async getBacking(): Promise<bcked.asset.Backing | null> {
+    async getBacking(): Promise<bcked.asset.Backing[]> {
         // Backing need to be manually parsed from attestation reports.
         // See: https://paxos.com/busd-transparency/
         // Treasury Auctions can be looked up here: https://www.treasurydirect.gov/auctions/auction-query/
-        return null;
+        return [];
     }
 }

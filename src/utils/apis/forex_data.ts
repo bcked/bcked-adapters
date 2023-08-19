@@ -2,7 +2,7 @@
  * Provides an interface to the Swissquote API.
  * All attribution goes to the Swissquote API.
  */
-import * as _ from "lodash";
+import _ from "lodash";
 import { JsonApi } from "../primitive/requests";
 import { toISOString } from "../primitive/string_formatting";
 

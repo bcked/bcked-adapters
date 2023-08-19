@@ -4,7 +4,7 @@
  * API documentation: https://defillama.com/docs/api
  */
 
-import * as _ from "lodash";
+import _ from "lodash";
 import { toId } from "../helper";
 import { JsonApi, urlLengthGrouping } from "../primitive/requests";
 import { toISOString } from "../primitive/string_formatting";

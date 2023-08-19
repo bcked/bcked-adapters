@@ -30,25 +30,27 @@ export default class Adapter implements bcked.asset.Adapter {
         return details;
     }
 
-    async getPrice(): Promise<bcked.asset.Price | null> {
+    async getPrice(): Promise<bcked.asset.Price[]> {
         // Use WETH as price proxy.
-        return this.etherscan.getEthPrice();
+        return [await this.etherscan.getEthPrice()];
     }
 
-    async getSupply(): Promise<bcked.asset.Supply | null> {
+    async getSupply(): Promise<bcked.asset.Supply[]> {
         const { timestamp, issued, burned } = await this.etherscan.getEthSupply();
-        return {
-            timestamp,
-            circulating: null,
-            burned: burned ?? null,
-            total: burned ? issued - burned : issued,
-            issued: issued,
-            max: null,
-        };
+        return [
+            {
+                timestamp,
+                circulating: null,
+                burned: burned ?? null,
+                total: burned ? issued - burned : issued,
+                issued: issued,
+                max: null,
+            },
+        ];
     }
 
-    async getBacking(): Promise<bcked.asset.Backing | null> {
+    async getBacking(): Promise<bcked.asset.Backing[]> {
         // There is no backing for ETH
-        return null;
+        return [];
     }
 }

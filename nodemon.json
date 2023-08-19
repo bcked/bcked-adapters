@@ -1,5 +1,5 @@
 {
-    "watch": ["src", "assets"],
+    "watch": ["src", "entities", "systems", "assets"],
     "ext": ".ts",
     "ignore": [],
     "exec": "ts-node ./src/job.ts"

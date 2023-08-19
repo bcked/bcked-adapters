@@ -21,18 +21,20 @@ export default class Adapter implements bcked.asset.Adapter {
         return details;
     }
 
-    async getPrice(): Promise<bcked.asset.Price | null> {
-        return {
-            timestamp: toISOString(new Date(0)), // Set 1970-01-01 as date.
-            usd: 1.0, // Assume a fixed price of $1.0.
-        };
+    async getPrice(): Promise<bcked.asset.Price[]> {
+        return [
+            {
+                timestamp: toISOString(new Date(0)), // Set 1970-01-01 as date.
+                usd: 1.0, // Assume a fixed price of $1.0.
+            },
+        ];
     }
 
-    async getSupply(): Promise<bcked.asset.Supply | null> {
-        return null;
+    async getSupply(): Promise<bcked.asset.Supply[]> {
+        return [];
     }
 
-    async getBacking(): Promise<bcked.asset.Backing | null> {
-        return null;
+    async getBacking(): Promise<bcked.asset.Backing[]> {
+        return [];
     }
 }

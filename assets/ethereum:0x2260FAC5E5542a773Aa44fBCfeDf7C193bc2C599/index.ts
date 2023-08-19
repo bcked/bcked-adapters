@@ -2,11 +2,11 @@
  * The WBTC backing is queried using the WBTC API.
  * All attribution goes to the WBTC API.
  */
+import { utils } from "ethers";
 import { ApiProxy } from "../../src/utils/apis/proxy";
 import { ChainProxy } from "../../src/utils/chains/proxy";
 import { JsonApi } from "../../src/utils/primitive/requests";
 import { toISOString } from "../../src/utils/primitive/string_formatting";
-import { utils } from "ethers";
 
 const details: bcked.asset.Details = {
     name: "Wrapped Bitcoin",
@@ -47,27 +47,29 @@ export default class Adapter implements bcked.asset.Adapter {
         return details;
     }
 
-    async getPrice(): Promise<bcked.asset.Price | null> {
+    async getPrice(): Promise<bcked.asset.Price[]> {
         const price = await this.api.getPrice(details.identifier);
-        return price ?? null;
+        return price ? [price] : [];
     }
 
-    async getSupply(): Promise<bcked.asset.Supply | null> {
+    async getSupply(): Promise<bcked.asset.Supply[]> {
         const { timestamp, issued, burned } = await this.chain.getSupply(
             details.identifier.address,
             details.identifier.system
         );
-        return {
-            timestamp,
-            circulating: null,
-            burned: burned ?? null,
-            total: burned ? issued - burned : issued,
-            issued: issued,
-            max: null,
-        };
+        return [
+            {
+                timestamp,
+                circulating: null,
+                burned: burned ?? null,
+                total: burned ? issued - burned : issued,
+                issued: issued,
+                max: null,
+            },
+        ];
     }
 
-    async getBacking(): Promise<bcked.asset.Backing | null> {
+    async getBacking(): Promise<bcked.asset.Backing[]> {
         // As an alternative to relying on the wbtc API, one could do the following:
         // Track list (json or yml) of custodian addresses.
         // Load and update custodian list from: https://wbtc.network/api/chain/eth/token/wbtc/addresses?type=custodial
@@ -78,9 +80,11 @@ export default class Adapter implements bcked.asset.Adapter {
         );
         // Convert holdings from satoshis to bitcoins
         const holdings = parseFloat(utils.formatUnits(response.holdings, 8));
-        return {
-            timestamp: toISOString(Date.now()),
-            "bitcoin:BTC": holdings,
-        };
+        return [
+            {
+                timestamp: toISOString(Date.now()),
+                "bitcoin:BTC": holdings,
+            },
+        ];
     }
 }

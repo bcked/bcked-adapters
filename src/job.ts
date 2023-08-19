@@ -1,48 +1,16 @@
 import "dotenv/config";
-import * as _ from "lodash";
-import * as fs from "node:fs/promises";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { REGISTER_INSTANCE } from "ts-node";
-import { fromId, getBackingCsvPath, getPriceCsvPath, getSupplyCsvPath, toId } from "./utils/helper";
-import { runWorker } from "./utils/primitive/ts_worker";
+import { WorkerPool } from "./utils/primitive/workerpool";
 
-async function queryAsset(assetId: bcked.asset.Id) {
-    const identifier = fromId(assetId);
-
-    const data = await runWorker<bcked.Asset>("workers/execute_load.ts", {
-        workerData: {
-            script: `assets/${assetId}/index.ts`,
-            call: {
-                details: "getDetails",
-                price: "getPrice",
-                supply: "getSupply",
-                backing: "getBacking",
-            },
-        },
-    });
-
-    if (data == null) throw new Error(`No result from worker for ${assetId}.`);
-
-    if (!_.isEqual(data.details.identifier, identifier))
-        throw new Error(
-            `Directory name ${assetId} doesn't match identifier ${toId(
-                data.details.identifier
-            )} in asset details.`
-        );
-
-    await runWorker("workers/store_to_csv.ts", {
-        workerData: {
-            data: {
-                price: data.price,
-                supply: data.supply,
-                backing: data.backing,
-            },
-            to: {
-                price: getPriceCsvPath(identifier),
-                supply: getSupplyCsvPath(identifier),
-                backing: getBackingCsvPath(identifier),
-            },
-        },
-    });
+async function query(dir: string, workerScript: string) {
+    const workerScriptPath = path.resolve("src/workers", workerScript);
+    const ids = await fs.readdir(dir);
+    const pool = new WorkerPool(workerScriptPath, { min: 0, max: 4 });
+    const res = await Promise.all(ids.map((id) => pool.execute(id)));
+    await pool.close();
+    return res;
 }
 
 async function job() {
@@ -50,8 +18,9 @@ async function job() {
         process.env.DEV_MODE = "true";
     }
 
-    const assets = (await fs.readdir("assets")) as bcked.asset.Id[];
-    await Promise.all(assets.map(queryAsset));
+    await query("systems", "query_system.ts");
+    await query("entities", "query_entity.ts");
+    await query("assets", "query_asset.ts");
 }
 
-job().catch((err) => console.error(err));
+job();

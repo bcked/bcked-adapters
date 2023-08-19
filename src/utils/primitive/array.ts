@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import { round } from "./math";
 import { toISOString } from "./string_formatting";
 
@@ -137,4 +137,12 @@ export function groupWhile<T>(array: T[], condition: (group: T[]) => boolean) {
 
 export function sortWithoutIndex(array: string[], index: string): string[] {
     return _.concat(index, _.without(array, index).sort());
+}
+
+export async function fromAsync<T>(iter: AsyncIterable<T>): Promise<T[]> {
+    const out: T[] = [];
+    for await (const item of iter) {
+        out.push(item);
+    }
+    return out;
 }

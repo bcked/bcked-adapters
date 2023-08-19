@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 
 export function median(arr: number[]): number | undefined {
     if (!arr.length) return undefined;

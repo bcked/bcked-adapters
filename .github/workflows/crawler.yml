@@ -35,4 +35,4 @@ jobs:
                   commit_user_name: GitHub Action
                   commit_user_email: action@github.com
                   commit_author: actions-user <action@github.com>
-                  file_pattern: "*.csv"
+                  file_pattern: "*.csv *.json"

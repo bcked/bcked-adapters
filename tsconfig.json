@@ -8,8 +8,8 @@
         "lib": ["es2021", "dom"],
         "allowJs": false,
         "checkJs": false,
-        "esModuleInterop": false,
-        "allowSyntheticDefaultImports": false,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
         "skipLibCheck": true, // See how this can be turned off
@@ -27,6 +27,6 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedIndexedAccess": true
     },
-    "include": ["src/**/*.ts", "assets/**/*.ts"],
+    "include": ["src/**/*.ts", "entities/**/*.ts", "systems/**/*.ts", "assets/**/*.ts"],
     "exclude": ["node_modules", ".vscode"]
 }

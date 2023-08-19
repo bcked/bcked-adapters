@@ -27,8 +27,8 @@ export default class Adapter implements bcked.asset.Adapter {
     /**
      * Gold price in USD/t.oz (troy ounce)
      */
-    async getPrice(): Promise<bcked.asset.Price | null> {
-        return this.api.getPrice(details.identifier);
+    async getPrice(): Promise<bcked.asset.Price[]> {
+        return [await this.api.getPrice(details.identifier)];
     }
 
     /**
@@ -40,12 +40,12 @@ export default class Adapter implements bcked.asset.Adapter {
      *  	conv = lambda x: x / ((480 * 64.79891) / 1000 / 1000 / 1000)
      *      comp = lambda w: f",{0.02*conv(w)},{0.98*conv(w)},{conv(w)},"
      */
-    async getSupply(): Promise<bcked.asset.Supply | null> {
-        return null; // Look up manually and enter in records
+    async getSupply(): Promise<bcked.asset.Supply[]> {
+        return []; // Look up manually and enter in records
     }
 
-    async getBacking(): Promise<bcked.asset.Backing | null> {
+    async getBacking(): Promise<bcked.asset.Backing[]> {
         // There is no backing for Gold
-        return null;
+        return [];
     }
 }

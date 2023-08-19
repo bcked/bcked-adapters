@@ -1,8 +1,4 @@
 declare namespace bcked {
-    type Asset = asset.Asset;
-    type System = system.System;
-    type Entity = entity.Entity;
-
     declare namespace asset {
         // The folder names in `./assets` are all AssetIds
         type Id = `${system.Id}:${Address}`;
@@ -104,6 +100,11 @@ declare namespace bcked {
             tags: Tag[];
         }
 
+        type DetailsRecord = Details & {
+            listed: primitive.ISODateTimeString;
+            updated: primitive.ISODateTimeString;
+        };
+
         interface Price {
             timestamp: primitive.ISODateTimeString;
             usd: number;
@@ -122,19 +123,11 @@ declare namespace bcked {
             timestamp: primitive.ISODateTimeString;
         } & Partial<Record<Id, number>>;
 
-        interface Asset {
-            id?: Id; // Will be written by workflow
-            details: Details;
-            price: Price | null; // If not queryable, this must be set to null.
-            supply: Supply | null; // If not queryable, this must be set to null.
-            backing: Backing | null; // If not queryable, this must be set to null.
-        }
-
         interface Adapter {
-            getDetails(): Promise<Details>;
-            getPrice(): Promise<Price | null>;
-            getSupply(): Promise<Supply | null>;
-            getBacking(): Promise<Backing | null>;
+            getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;
+            getPrice(lastRecorded: Price | null): Promise<Price[]>;
+            getSupply(lastRecorded: Supply | null): Promise<Supply[]>;
+            getBacking(lastRecorded: Backing | null): Promise<Backing[]>;
         }
     }
 
@@ -144,13 +137,19 @@ declare namespace bcked {
 
         interface Details {
             name: string;
-            native: bcked.asset.Address;
+            native: bcked.asset.Address | null;
             explorer: string | null; // Webpage where one can look up an asset within the system. If not available, this must be set to null.
         }
 
-        interface System {
-            id?: bcked.system.Id; // Will be written by workflow
-            details: bcked.system.Details;
+        type DetailsRecord = Details & {
+            listed: primitive.ISODateTimeString;
+            updated: primitive.ISODateTimeString;
+        };
+
+        interface Adapter {
+            getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;
+            // Generic method to update any type of entity related data.
+            update(): Promise<void>;
         }
     }
 
@@ -198,13 +197,20 @@ declare namespace bcked {
 
         interface Details {
             name: string;
+            identifier: Id;
             reference: string;
-            tags: bcked.entity.Tag[];
+            tags: Tag[];
         }
 
-        interface Entity {
-            id?: bcked.entity.Id; // Will be written by workflow
-            details: bcked.entity.Details;
+        type DetailsRecord = Details & {
+            listed: primitive.ISODateTimeString;
+            updated: primitive.ISODateTimeString;
+        };
+
+        interface Adapter {
+            getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;
+            // Generic method to update any type of entity related data.
+            update(): Promise<void>;
         }
     }
 

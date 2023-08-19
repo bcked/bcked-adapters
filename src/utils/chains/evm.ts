@@ -1,6 +1,6 @@
 import { providers } from "@0xsequence/multicall";
 import { Contract, providers as ethersProviders, utils, type BigNumber } from "ethers";
-import * as _ from "lodash";
+import _ from "lodash";
 
 import type { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 import { toId } from "../helper";

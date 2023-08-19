@@ -4,7 +4,7 @@
  * API documentation: https://docs.dexscreener.com/api/reference
  */
 
-import * as _ from "lodash";
+import _ from "lodash";
 import { toId } from "../helper";
 import { groupWhile } from "../primitive/array";
 import { median } from "../primitive/math";

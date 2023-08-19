@@ -1,5 +1,6 @@
-import * as fs from "fs";
-import * as readline from "readline";
+import fs from "node:fs";
+import path from "node:path";
+import readline from "readline";
 
 const NEW_LINE_CHARACTERS = ["\n"];
 
@@ -103,4 +104,25 @@ export async function readFirstLine(pathToFile: string): Promise<string> {
     });
     readable.close();
     return line;
+}
+
+export async function ensurePath(pathToFile: string) {
+    const dir = path.dirname(pathToFile);
+    if (!fs.existsSync(dir)) {
+        await fs.promises.mkdir(dir, { recursive: true });
+    }
+}
+
+export async function writeJson(pathToFile: string, data: object) {
+    await ensurePath(pathToFile);
+    await fs.promises.writeFile(pathToFile, JSON.stringify(data, null, 4));
+}
+
+export async function readJson<T>(pathToFile: string): Promise<T | null> {
+    try {
+        return JSON.parse(await fs.promises.readFile(pathToFile, { encoding: "utf8" }));
+    } catch {
+        // Return null, in case the file doesn't exist.
+        return null;
+    }
 }

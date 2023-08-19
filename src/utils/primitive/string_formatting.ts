@@ -87,6 +87,6 @@ export function format(template: string, placeholders: Record<string, string>): 
     return template;
 }
 
-export function toISOString(timestamp: Date | number): primitive.ISODateTimeString {
+export function toISOString(timestamp: primitive.DateLike): primitive.ISODateTimeString {
     return new Date(timestamp).toISOString() as primitive.ISODateTimeString;
 }

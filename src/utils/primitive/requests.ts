@@ -1,5 +1,6 @@
 import type { AxiosInstance } from "axios";
 import Axios from "axios";
+import axiosRetry from "axios-retry";
 import { Options } from "csv-parse";
 import { parse as parseSync } from "csv/sync";
 import { groupWhile } from "./array";
@@ -20,6 +21,7 @@ export class JsonApi {
     private api: AxiosInstance;
     constructor(public baseURL: string) {
         this.api = Axios.create({ baseURL });
+        axiosRetry(this.api, { retryDelay: axiosRetry.exponentialDelay });
     }
 
     public async fetchJson<T>(route: string): Promise<T> {
@@ -35,13 +37,18 @@ export class CsvApi {
     private api: AxiosInstance;
     constructor(public baseURL: string) {
         this.api = Axios.create({ baseURL });
+        axiosRetry(this.api, { retryDelay: axiosRetry.exponentialDelay });
     }
 
-    public async fetchCsv<T>(route: string, options?: Options): Promise<T> {
+    public async fetchCsv<T>(route: string, options?: Options): Promise<T | undefined> {
         const response = await this.api.get(route, {
             headers: { accept: ".csv" },
         });
         const csvString = response.data;
-        return parseSync(csvString, options)[0];
+        if (csvString) {
+            return parseSync(csvString.trim(), options);
+        } else {
+            return undefined;
+        }
     }
 }

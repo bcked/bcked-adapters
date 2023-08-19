@@ -1,6 +1,5 @@
 import { toId } from "../helper";
 import { InstanceProxy } from "../primitive/instance_proxy";
-import { Cache } from "./cache";
 import { DefiLlama } from "./defillama";
 import { Dexscreener } from "./dexscreener";
 
@@ -8,9 +7,8 @@ export class ApiProxy
     extends InstanceProxy<bcked.query.ApiModule>
     implements bcked.query.ApiModule
 {
-    constructor(cached = true) {
+    constructor() {
         super({
-            ...(cached && { cache: Cache }),
             defillama: DefiLlama,
             dexscreener: Dexscreener,
         });
