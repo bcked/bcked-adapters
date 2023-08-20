@@ -7,7 +7,7 @@
     "author": "bcked",
     "scripts": {
         "dev": "nodemon",
-        "job": "npx ts-node src/job.ts",
+        "crawler": "npx ts-node src/crawler/job.ts",
         "build": "npx tsc",
         "lint": "eslint . --fix",
         "test": "jest --passWithNoTests"

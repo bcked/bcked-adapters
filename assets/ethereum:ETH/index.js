@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * The ETH price and supply is queried using the Etherscan API.
  * All attribution goes to the [Etherscan API](https://etherscan.io/apis).
  */
-const etherscan_1 = require("../../src/utils/apis/etherscan");
+const etherscan_1 = require("../../src/crawler/apis/etherscan");
 const details = {
     name: "Ether",
     symbol: "ETH",

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const requests_1 = require("../../src/utils/primitive/requests");
-const string_formatting_1 = require("../../src/utils/primitive/string_formatting");
+const requests_1 = require("../../src/utils/requests");
+const string_formatting_1 = require("../../src/utils/string_formatting");
 const details = {
     name: "U.S. dollar",
     symbol: "USD",

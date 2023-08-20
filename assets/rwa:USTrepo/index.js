@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Treasury Auctions can be looked up here: https://www.treasurydirect.gov/auctions/auction-query/
  */
-const string_formatting_1 = require("../../src/utils/primitive/string_formatting");
+const string_formatting_1 = require("../../src/utils/string_formatting");
 const details = {
     name: "U.S. Treasury Repurchase Agreement",
     symbol: "USTrepo",

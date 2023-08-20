@@ -15,11 +15,11 @@ const crawler_1 = __importDefault(require("crawler"));
 const dateformat_1 = __importDefault(require("dateformat"));
 const fs_1 = __importDefault(require("fs"));
 const lodash_1 = __importDefault(require("lodash"));
-const blackrock_1 = require("../../src/utils/apis/blackrock");
-const cache_1 = require("../../src/utils/primitive/cache");
-const csv_1 = require("../../src/utils/primitive/csv");
-const string_formatting_1 = require("../../src/utils/primitive/string_formatting");
-const time_1 = require("../../src/utils/primitive/time");
+const br_manager_1 = require("../../src/crawler/apis/br_manager");
+const cache_1 = require("../../src/utils/cache");
+const csv_1 = require("../../src/utils/csv");
+const string_formatting_1 = require("../../src/utils/string_formatting");
+const time_1 = require("../../src/utils/time");
 const details = {
     name: "Circle",
     identifier: "circle",
@@ -28,7 +28,7 @@ const details = {
 };
 class Adapter {
     constructor() {
-        this.treasuryManager = new blackrock_1.BRManager();
+        this.treasuryManager = new br_manager_1.BRManager();
         this.crawler = new crawler_1.default({ rateLimit: 1000 });
         this.recordsPath = `entities/${details.identifier}/records`;
     }

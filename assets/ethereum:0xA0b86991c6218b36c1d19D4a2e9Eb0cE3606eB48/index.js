@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const proxy_1 = require("../../src/utils/apis/proxy");
-const proxy_2 = require("../../src/utils/chains/proxy");
-const time_1 = require("../../src/utils/primitive/time");
+const proxy_1 = require("../../src/crawler/apis/proxy");
+const proxy_2 = require("../../src/crawler/chains/proxy");
+const time_1 = require("../../src/utils/time");
 const details = {
     name: "USD Coin",
     symbol: "USDC",

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const forex_data_1 = require("../../src/utils/apis/forex_data");
+const forex_data_1 = require("../../src/crawler/apis/forex_data");
 const details = {
     name: "Gold",
     symbol: "XAU",

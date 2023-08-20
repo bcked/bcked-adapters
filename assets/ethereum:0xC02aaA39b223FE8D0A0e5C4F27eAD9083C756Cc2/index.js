@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const proxy_1 = require("../../src/utils/apis/proxy");
-const proxy_2 = require("../../src/utils/chains/proxy");
+const proxy_1 = require("../../src/crawler/apis/proxy");
+const proxy_2 = require("../../src/crawler/chains/proxy");
 const details = {
     name: "Wrapped Ether",
     symbol: "WETH",

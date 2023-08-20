@@ -5,10 +5,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * All attribution goes to the WBTC API.
  */
 const ethers_1 = require("ethers");
-const proxy_1 = require("../../src/utils/apis/proxy");
-const proxy_2 = require("../../src/utils/chains/proxy");
-const requests_1 = require("../../src/utils/primitive/requests");
-const string_formatting_1 = require("../../src/utils/primitive/string_formatting");
+const proxy_1 = require("../../src/crawler/apis/proxy");
+const proxy_2 = require("../../src/crawler/chains/proxy");
+const requests_1 = require("../../src/utils/requests");
+const string_formatting_1 = require("../../src/utils/string_formatting");
 const details = {
     name: "Wrapped Bitcoin",
     symbol: "WBTC",

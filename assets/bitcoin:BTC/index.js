@@ -7,8 +7,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * The block height to calculate supply is queried using the Blockstream API.
  * All attribution goes to the [Blockstream API](https://github.com/Blockstream/esplora/blob/master/API.md).
  */
-const requests_1 = require("../../src/utils/primitive/requests");
-const string_formatting_1 = require("../../src/utils/primitive/string_formatting");
+const requests_1 = require("../../src/utils/requests");
+const string_formatting_1 = require("../../src/utils/string_formatting");
 const details = {
     name: "Bitcoin",
     symbol: "BTC",
