@@ -4,8 +4,8 @@
  * For more details on the API check out the [API Documentation](https://docs.etherscan.io/api-endpoints/).
  */
 import { BigNumber, utils } from "ethers";
-import { JsonApi, joinOptions } from "../primitive/requests";
-import { toISOString } from "../primitive/string_formatting";
+import { JsonApi, joinOptions } from "../../utils/requests";
+import { toISOString } from "../../utils/string_formatting";
 
 interface Error {
     status: "0";

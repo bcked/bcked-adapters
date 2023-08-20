@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { SystemAdapterProxy } from "../utils/adapters/proxy";
+import { SystemAdapterProxy } from "../adapters/proxy";
 
 const adapter = new SystemAdapterProxy();
 

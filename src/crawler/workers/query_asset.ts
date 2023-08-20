@@ -1,6 +1,6 @@
 import { parentPort } from "worker_threads";
-import { AssetAdapterProxy } from "../utils/adapters/proxy";
-import { fromId } from "../utils/helper";
+import { fromId } from "../../utils/helper";
+import { AssetAdapterProxy } from "../adapters/proxy";
 
 const adapter = new AssetAdapterProxy();
 

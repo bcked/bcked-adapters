@@ -1,7 +1,7 @@
 /**
  * This asset can be used as fallback for an undefined US dollar denominated asset.
  */
-import { toISOString } from "../../src/utils/primitive/string_formatting";
+import { toISOString } from "../../src/utils/string_formatting";
 
 const details: bcked.asset.Details = {
     name: "Undefined US Dollar denominated Asset",

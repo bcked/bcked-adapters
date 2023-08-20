@@ -1,4 +1,4 @@
-import { ForexData } from "../../src/utils/apis/forex_data";
+import { ForexData } from "../../src/crawler/apis/forex_data";
 
 const details: bcked.asset.Details = {
     name: "Gold",

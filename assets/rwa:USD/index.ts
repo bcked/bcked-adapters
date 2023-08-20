@@ -1,5 +1,5 @@
-import { CsvApi, joinOptions } from "../../src/utils/primitive/requests";
-import { toISOString } from "../../src/utils/primitive/string_formatting";
+import { CsvApi, joinOptions } from "../../src/utils/requests";
+import { toISOString } from "../../src/utils/string_formatting";
 
 const details: bcked.asset.Details = {
     name: "U.S. dollar",

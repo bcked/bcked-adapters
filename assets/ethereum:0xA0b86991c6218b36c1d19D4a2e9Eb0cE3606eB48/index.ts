@@ -1,6 +1,6 @@
-import { ApiProxy } from "../../src/utils/apis/proxy";
-import { ChainProxy } from "../../src/utils/chains/proxy";
-import { hoursInMs, isClose } from "../../src/utils/primitive/time";
+import { ApiProxy } from "../../src/crawler/apis/proxy";
+import { ChainProxy } from "../../src/crawler/chains/proxy";
+import { hoursInMs, isClose } from "../../src/utils/time";
 
 const details: bcked.asset.Details = {
     name: "USD Coin",

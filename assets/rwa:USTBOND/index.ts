@@ -1,7 +1,7 @@
 /**
  * Treasury Auctions can be looked up here: https://www.treasurydirect.gov/auctions/auction-query/
  */
-import { toISOString } from "../../src/utils/primitive/string_formatting";
+import { toISOString } from "../../src/utils/string_formatting";
 
 const details: bcked.asset.Details = {
     name: "U.S. Treasury Bonds",

@@ -5,9 +5,9 @@
  */
 
 import _ from "lodash";
-import { toId } from "../helper";
-import { JsonApi, urlLengthGrouping } from "../primitive/requests";
-import { toISOString } from "../primitive/string_formatting";
+import { toId } from "../../utils/helper";
+import { JsonApi, urlLengthGrouping } from "../../utils/requests";
+import { toISOString } from "../../utils/string_formatting";
 
 interface Coin {
     decimals: number;

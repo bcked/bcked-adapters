@@ -1,4 +1,4 @@
-import { InstanceProxy } from "../primitive/instance_proxy";
+import { InstanceProxy } from "../../utils/instance_proxy";
 import { EVMChain } from "./evm";
 import { SolanaChain } from "./solana";
 

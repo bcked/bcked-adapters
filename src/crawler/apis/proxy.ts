@@ -1,5 +1,5 @@
-import { toId } from "../helper";
-import { InstanceProxy } from "../primitive/instance_proxy";
+import { toId } from "../../utils/helper";
+import { InstanceProxy } from "../../utils/instance_proxy";
 import { DefiLlama } from "./defillama";
 import { Dexscreener } from "./dexscreener";
 

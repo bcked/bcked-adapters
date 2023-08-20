@@ -1,13 +1,13 @@
 {
-	"version": "0.1.0",
-	"configurations": [
-		{
-			"name": "Debug job.ts",
-			"type": "node",
-			"request": "launch",
-			"cwd": "${workspaceRoot}",
-			"runtimeArgs": ["-r", "ts-node/register"],
-			"args": ["${workspaceRoot}/src/job.ts"]
-		}
-	]
+    "version": "0.1.0",
+    "configurations": [
+        {
+            "name": "Debug crawler",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeArgs": ["-r", "ts-node/register"],
+            "args": ["${workspaceRoot}/src/crawler/job.ts"]
+        }
+    ]
 }

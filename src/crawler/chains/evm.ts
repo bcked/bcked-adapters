@@ -3,8 +3,8 @@ import { Contract, providers as ethersProviders, utils, type BigNumber } from "e
 import _ from "lodash";
 
 import type { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
-import { toId } from "../helper";
-import { format, toISOString } from "../primitive/string_formatting";
+import { toId } from "../../utils/helper";
+import { format, toISOString } from "../../utils/string_formatting";
 
 const BURN_ADDRESSES = [
     "0x000000000000000000000000000000000000dEaD",

@@ -5,11 +5,11 @@
  */
 
 import _ from "lodash";
-import { toId } from "../helper";
-import { groupWhile } from "../primitive/array";
-import { median } from "../primitive/math";
-import { JsonApi } from "../primitive/requests";
-import { toISOString } from "../primitive/string_formatting";
+import { groupWhile } from "../../utils/array";
+import { toId } from "../../utils/helper";
+import { median } from "../../utils/math";
+import { JsonApi } from "../../utils/requests";
+import { toISOString } from "../../utils/string_formatting";
 
 const URL_MAX_LENGTH = 2048;
 const FETCH_MAX_COUNT = 30;

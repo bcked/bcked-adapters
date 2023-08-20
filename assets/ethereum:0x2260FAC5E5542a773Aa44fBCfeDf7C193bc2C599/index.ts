@@ -3,10 +3,10 @@
  * All attribution goes to the WBTC API.
  */
 import { utils } from "ethers";
-import { ApiProxy } from "../../src/utils/apis/proxy";
-import { ChainProxy } from "../../src/utils/chains/proxy";
-import { JsonApi } from "../../src/utils/primitive/requests";
-import { toISOString } from "../../src/utils/primitive/string_formatting";
+import { ApiProxy } from "../../src/crawler/apis/proxy";
+import { ChainProxy } from "../../src/crawler/chains/proxy";
+import { JsonApi } from "../../src/utils/requests";
+import { toISOString } from "../../src/utils/string_formatting";
 
 const details: bcked.asset.Details = {
     name: "Wrapped Bitcoin",

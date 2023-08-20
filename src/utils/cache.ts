@@ -1,5 +1,5 @@
 import fs from "fs";
-import { readClosestEntry, readLastEntry } from "../primitive/csv";
+import { readClosestEntry, readLastEntry } from "./csv";
 import { isClose } from "./time";
 
 export async function getLatest<T extends object & { timestamp: primitive.DateLike }>(

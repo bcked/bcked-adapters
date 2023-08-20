@@ -5,8 +5,8 @@
  * The block height to calculate supply is queried using the Blockstream API.
  * All attribution goes to the [Blockstream API](https://github.com/Blockstream/esplora/blob/master/API.md).
  */
-import { JsonApi } from "../../src/utils/primitive/requests";
-import { toISOString } from "../../src/utils/primitive/string_formatting";
+import { JsonApi } from "../../src/utils/requests";
+import { toISOString } from "../../src/utils/string_formatting";
 
 const details: bcked.asset.Details = {
     name: "Bitcoin",

@@ -2,10 +2,10 @@ import "dotenv/config";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { REGISTER_INSTANCE } from "ts-node";
-import { WorkerPool } from "./utils/primitive/workerpool";
+import { WorkerPool } from "../utils/worker_pool";
 
 async function query(dir: string, workerScript: string) {
-    const workerScriptPath = path.resolve("src/workers", workerScript);
+    const workerScriptPath = path.resolve("src/crawler/workers", workerScript);
     const ids = await fs.readdir(dir);
     const pool = new WorkerPool(workerScriptPath, { min: 0, max: 4 });
     const res = await Promise.all(ids.map((id) => pool.execute(id)));

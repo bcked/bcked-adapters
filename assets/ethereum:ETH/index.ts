@@ -2,7 +2,7 @@
  * The ETH price and supply is queried using the Etherscan API.
  * All attribution goes to the [Etherscan API](https://etherscan.io/apis).
  */
-import { Etherscan } from "../../src/utils/apis/etherscan";
+import { Etherscan } from "../../src/crawler/apis/etherscan";
 
 const details: bcked.asset.Details = {
     name: "Ether",

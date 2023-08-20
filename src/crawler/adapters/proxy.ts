@@ -1,12 +1,12 @@
 import _ from "lodash";
 import path from "path";
-import { toId } from "../helper";
-import { getLatest } from "../primitive/cache";
-import { writeToCsv } from "../primitive/csv";
-import { readJson, writeJson } from "../primitive/files";
-import { toISOString } from "../primitive/string_formatting";
-import { isNewer, minInMs } from "../primitive/time";
-import { adaptFileExt } from "../primitive/ts_worker";
+import { getLatest } from "../../utils/cache";
+import { writeToCsv } from "../../utils/csv";
+import { readJson, writeJson } from "../../utils/files";
+import { toId } from "../../utils/helper";
+import { toISOString } from "../../utils/string_formatting";
+import { isNewer, minInMs } from "../../utils/time";
+import { adaptFileExt } from "../../utils/ts_worker";
 
 export async function getAdapter<Adapter>(pathToFile: string): Promise<Adapter> {
     const adapterPath = path.resolve(adaptFileExt(pathToFile));

@@ -3,7 +3,7 @@
  * All attribution goes to the BlackRock.
  */
 import path from "path";
-import { CsvApi, joinOptions } from "../primitive/requests";
+import { CsvApi, joinOptions } from "../../utils/requests";
 
 const descriptionAssetMapping: Record<string, bcked.asset.Id> = {
     "TREASURY BILL": "rwa:USTB",

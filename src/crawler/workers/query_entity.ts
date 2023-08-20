@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { EntityAdapterProxy } from "../utils/adapters/proxy";
+import { EntityAdapterProxy } from "../adapters/proxy";
 
 const adapter = new EntityAdapterProxy();
 

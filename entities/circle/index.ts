@@ -10,17 +10,11 @@ import Crawler from "crawler";
 import dateFormat from "dateformat";
 import fs from "fs";
 import _ from "lodash";
-import { BRManager } from "../../src/utils/apis/blackrock";
-import { getClosest, getLatest } from "../../src/utils/primitive/cache";
-import { writeToCsv } from "../../src/utils/primitive/csv";
-import { toISOString } from "../../src/utils/primitive/string_formatting";
-import {
-    daysInMs,
-    getDatesBetween,
-    hoursInMs,
-    isClose,
-    isNewer,
-} from "../../src/utils/primitive/time";
+import { BRManager } from "../../src/crawler/apis/br_manager";
+import { getClosest, getLatest } from "../../src/utils/cache";
+import { writeToCsv } from "../../src/utils/csv";
+import { toISOString } from "../../src/utils/string_formatting";
+import { daysInMs, getDatesBetween, hoursInMs, isClose, isNewer } from "../../src/utils/time";
 
 const details: bcked.entity.Details = {
     name: "Circle",

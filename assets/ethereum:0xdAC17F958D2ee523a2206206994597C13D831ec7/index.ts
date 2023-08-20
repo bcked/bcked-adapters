@@ -1,5 +1,5 @@
-import { ApiProxy } from "../../src/utils/apis/proxy";
-import { ChainProxy } from "../../src/utils/chains/proxy";
+import { ApiProxy } from "../../src/crawler/apis/proxy";
+import { ChainProxy } from "../../src/crawler/chains/proxy";
 
 const details: bcked.asset.Details = {
     name: "Tether USD",

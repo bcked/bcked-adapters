@@ -1,6 +1,6 @@
 import { unpackAccount } from "@solana/spl-token";
 import { Connection, PublicKey, type TokenAmount } from "@solana/web3.js";
-import { format, toISOString } from "../primitive/string_formatting";
+import { format, toISOString } from "../../utils/string_formatting";
 
 const RPC_URL = "https://solana-mainnet.g.alchemy.com/v2/{ALCHEMY_SOLANA}";
 
