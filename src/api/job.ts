@@ -20,7 +20,10 @@ async function jsonifyRefs(seedUri: string) {
 
 async function generateOasSchema() {
     const spec = _.omit(RESOURCES.spec, "loaders");
-    writeJson("api/openapi.json", _.pick(spec, ["openapi", "info", "paths", "components", "tags"]));
+    writeJson(
+        "api/openapi.json",
+        _.pick(spec, ["openapi", "info", "servers", "paths", "components", "tags"])
+    );
 }
 
 async function job() {
