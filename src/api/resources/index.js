@@ -22,6 +22,11 @@ exports.RESOURCES = new resources_1.JsonResources({
         // TODO maybe use the current commit hash here
         version: "1.0.0",
     },
+    servers: [
+        {
+            url: "https://api.bcked.com",
+        },
+    ],
     paths: {},
     components: {},
     tags: [],
