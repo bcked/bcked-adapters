@@ -35,7 +35,7 @@ const index_1 = require("../resources/index");
 const API_PATH = "api";
 worker_threads_1.parentPort?.on("message", async (uri) => {
     const resource = await index_1.RESOURCES.resolve(uri);
-    const filePath = path_1.default.join(API_PATH, resource.$id);
+    const filePath = path_1.default.join(API_PATH, resource.$id, "index.json");
     await (0, files_1.writeJson)(filePath, resource);
     const refs = JsonRefs.findRefs(resource, { filter: ["relative"] });
     worker_threads_1.parentPort?.postMessage(lodash_1.default.map(Object.values(refs), "uri"));

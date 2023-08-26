@@ -12,7 +12,7 @@ const ASSETS_PATH = "assets";
 const RECORDS = "records";
 exports.RESOURCES = new resources_1.JsonResources();
 exports.RESOURCES.register({
-    path: "/assets.json",
+    path: "/assets",
     summary: "Retrieve a list of assets",
     description: "Get a list of asset IDs and references",
     type: "Assets",
@@ -21,16 +21,16 @@ exports.RESOURCES.register({
     loader: async () => {
         const assetIds = await (0, promises_1.readdir)(ASSETS_PATH);
         const resource = {
-            $id: "/assets.json",
+            $id: "/assets",
             assets: assetIds.map((id) => ({
-                $ref: `/assets/${id}/index.json`,
+                $ref: `/assets/${id}`,
             })),
         };
         return resource;
     },
 });
 exports.RESOURCES.register({
-    path: "/assets/{id}/index.json",
+    path: "/assets/{id}",
     summary: "Get an asset",
     description: "Get an asset by its ID",
     type: "Asset",
@@ -39,9 +39,9 @@ exports.RESOURCES.register({
     loader: async ({ id }) => {
         // const recordsPath = path.join(ASSETS_PATH, id, RECORDS);
         const resource = {
-            $id: `/assets/${id}/index.json`,
+            $id: `/assets/${id}`,
             details: {
-                $ref: `/assets/${id}/details.json`,
+                $ref: `/assets/${id}/details`,
             },
             // price: {
             //     $ref: "/assets/{id}/prices/{timestamp}",
@@ -68,7 +68,7 @@ exports.RESOURCES.register({
 //  *           type: string
 //  *         description: The ID of the asset
 exports.RESOURCES.register({
-    path: "/assets/{id}/details.json",
+    path: "/assets/{id}/details",
     summary: "Get details of an asset",
     description: "Get details of an asset by its ID",
     type: "AssetDetails",
@@ -78,7 +78,7 @@ exports.RESOURCES.register({
         const filePath = path_1.default.join(ASSETS_PATH, id, RECORDS, "details.json");
         const details = await (0, files_1.readJson)(filePath);
         const resource = {
-            $id: `/assets/${id}/details.json`,
+            $id: `/assets/${id}/details`,
             name: details?.name,
             symbol: details?.symbol,
             identifier: {
