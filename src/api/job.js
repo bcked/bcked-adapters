@@ -22,7 +22,7 @@ async function jsonifyRefs(seedUri) {
 }
 async function generateOasSchema() {
     const spec = lodash_1.default.omit(resources_1.RESOURCES.spec, "loaders");
-    (0, files_1.writeJson)("api/openapi.json", lodash_1.default.pick(spec, ["openapi", "info", "paths", "components", "tags"]));
+    (0, files_1.writeJson)("api/openapi.json", lodash_1.default.pick(spec, ["openapi", "info", "servers", "paths", "components", "tags"]));
 }
 async function job() {
     if (process[ts_node_1.REGISTER_INSTANCE]) {
