@@ -2,9 +2,10 @@
 
 The official data adapters for [bcked.com](https://bcked.com/) - a community driven resource on cryptocurrency backing.
 
-[![CodeQL](https://github.com/bcked/bcked-adapters/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/bcked/bcked-adapters/actions/workflows/codeql-analysis.yml)
-[![Deploy](https://github.com/bcked/bcked-adapters/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/bcked/bcked-adapters/actions/workflows/deploy.yml)
-[![Crawler](https://github.com/bcked/bcked-adapters/actions/workflows/crawler.yml/badge.svg?branch=main)](https://github.com/bcked/bcked-adapters/actions/workflows/crawler.yml)
+[![Code Build and Deployment](https://github.com/bcked/bcked-adapters/actions/workflows/build.yml/badge.svg)](https://github.com/bcked/bcked-adapters/actions/workflows/build.yml)
+[![CodeQL](https://github.com/bcked/bcked-adapters/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/bcked/bcked-adapters/actions/workflows/codeql-analysis.yml)
+[![Crawler Execution](https://github.com/bcked/bcked-adapters/actions/workflows/crawler.yml/badge.svg)](https://github.com/bcked/bcked-adapters/actions/workflows/crawler.yml)
+[![API Build and Deployment](https://github.com/bcked/bcked-adapters/actions/workflows/api.yml/badge.svg)](https://github.com/bcked/bcked-adapters/actions/workflows/api.yml)
 
 ## Contributing
 
