@@ -9,7 +9,7 @@ const RECORDS = "records";
 export const RESOURCES = new JsonResources();
 
 RESOURCES.register({
-    path: "/assets.json",
+    path: "/assets",
     summary: "Retrieve a list of assets",
     description: "Get a list of asset IDs and references",
     type: "Assets",
@@ -19,9 +19,9 @@ RESOURCES.register({
         const assetIds = await readdir(ASSETS_PATH);
 
         const resource = {
-            $id: "/assets.json",
+            $id: "/assets",
             assets: assetIds.map((id) => ({
-                $ref: `/assets/${id}/index.json`,
+                $ref: `/assets/${id}`,
             })),
         };
 
@@ -30,7 +30,7 @@ RESOURCES.register({
 });
 
 RESOURCES.register({
-    path: "/assets/{id}/index.json",
+    path: "/assets/{id}",
     summary: "Get an asset",
     description: "Get an asset by its ID",
     type: "Asset",
@@ -39,9 +39,9 @@ RESOURCES.register({
     loader: async ({ id }) => {
         // const recordsPath = path.join(ASSETS_PATH, id, RECORDS);
         const resource = {
-            $id: `/assets/${id}/index.json`,
+            $id: `/assets/${id}`,
             details: {
-                $ref: `/assets/${id}/details.json`,
+                $ref: `/assets/${id}/details`,
             },
             // price: {
             //     $ref: "/assets/{id}/prices/{timestamp}",
@@ -70,7 +70,7 @@ RESOURCES.register({
 //  *           type: string
 //  *         description: The ID of the asset
 RESOURCES.register({
-    path: "/assets/{id}/details.json",
+    path: "/assets/{id}/details",
     summary: "Get details of an asset",
     description: "Get details of an asset by its ID",
     type: "AssetDetails",
@@ -82,7 +82,7 @@ RESOURCES.register({
         const details = await readJson<bcked.asset.Details>(filePath);
 
         const resource = {
-            $id: `/assets/${id}/details.json`,
+            $id: `/assets/${id}/details`,
             name: details?.name,
             symbol: details?.symbol,
             identifier: {

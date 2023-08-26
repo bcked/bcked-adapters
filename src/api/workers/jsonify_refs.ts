@@ -10,7 +10,7 @@ const API_PATH = "api";
 parentPort?.on("message", async (uri: string) => {
     const resource = await RESOURCES.resolve(uri);
 
-    const filePath = path.join(API_PATH, resource.$id);
+    const filePath = path.join(API_PATH, resource.$id, "index.json");
     await writeJson(filePath, resource);
 
     const refs = JsonRefs.findRefs(resource, { filter: ["relative"] });
