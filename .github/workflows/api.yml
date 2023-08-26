@@ -1,4 +1,4 @@
-name: API
+name: API Build and Deployment
 
 on:
     push:
@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
     build:
-        name: Build
+        name: API Build
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -37,21 +37,22 @@ jobs:
               run: npm ci
             - name: Execute Job
               run: node ./src/api/job.js
-            - name: Upload artifact
+            - name: Upload Artifact
               uses: actions/upload-pages-artifact@v2
               with:
                   # Upload artifacts of the api directory
                   path: "api"
 
     deploy:
+        needs: build
+
         # Deploy to the github-pages environment
         environment:
             name: github-pages
             url: ${{ steps.deployment.outputs.page_url }}
 
-        needs: build
+        name: API Deployment
         runs-on: ubuntu-latest
-        name: Deploy
         steps:
             - name: Deploy to GitHub Pages
               id: deployment

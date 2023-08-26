@@ -1,4 +1,4 @@
-name: Crawler
+name: Crawler Execution
 
 on:
     schedule:
@@ -14,7 +14,7 @@ concurrency:
 jobs:
     crawler:
         runs-on: ubuntu-latest
-        name: Crawler
+        name: Crawler Execution
         steps:
             - name: Checkout
               uses: actions/checkout@v3
@@ -35,7 +35,8 @@ jobs:
                   ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
                   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
               run: node ./src/crawler/job.js
-            - uses: stefanzweifel/git-auto-commit-action@v4
+            - name: Commit Results on records Branch
+              uses: stefanzweifel/git-auto-commit-action@v4
               with:
                   commit_message: Update data
                   commit_user_name: GitHub Action
