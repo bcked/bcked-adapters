@@ -6,12 +6,18 @@ on:
         - cron: "0 * * * *"
     workflow_dispatch:
 
+# Allow one concurrent deployment
+concurrency:
+    group: "crawler"
+    cancel-in-progress: true
+
 jobs:
     crawler:
         runs-on: ubuntu-latest
-
+        name: Crawler
         steps:
-            - uses: actions/checkout@v3
+            - name: Checkout
+              uses: actions/checkout@v3
               with:
                   ref: records
             - name: Use Node.js
