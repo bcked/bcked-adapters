@@ -21,6 +21,11 @@ export const RESOURCES = new JsonResources(
             // TODO maybe use the current commit hash here
             version: "1.0.0",
         },
+        servers: [
+            {
+                url: "https://api.bcked.com",
+            },
+        ],
         paths: {},
         components: {},
         tags: [],

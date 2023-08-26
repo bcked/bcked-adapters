@@ -28,7 +28,7 @@ async function job() {
         process.env.DEV_MODE = "true";
     }
 
-    await jsonifyRefs("/assets.json");
+    await jsonifyRefs("/assets");
 
     await generateOasSchema();
 }
