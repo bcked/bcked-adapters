@@ -6,8 +6,16 @@
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceRoot}",
-            "runtimeArgs": ["-r", "ts-node/register"],
+            "runtimeArgs": ["-r", "ts-node/register", "--trace-warnings"],
             "args": ["${workspaceRoot}/src/crawler/job.ts"]
+        },
+        {
+            "name": "Debug api",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeArgs": ["-r", "ts-node/register", "--trace-warnings"],
+            "args": ["${workspaceRoot}/src/api/job.ts"]
         }
     ]
 }

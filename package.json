@@ -8,6 +8,7 @@
     "scripts": {
         "dev": "nodemon",
         "crawler": "npx ts-node src/crawler/job.ts",
+        "api": "npx ts-node src/api/job.ts",
         "build": "npx tsc",
         "lint": "eslint . --fix",
         "test": "jest --passWithNoTests"
@@ -29,6 +30,7 @@
         "dateformat": "3.0.3",
         "dotenv": "^16.3.1",
         "ethers": "^5.7.2",
+        "json-refs": "^3.0.15",
         "lodash": "^4.17.21",
         "nodemon": "^2.0.22",
         "tarn": "^3.0.2",

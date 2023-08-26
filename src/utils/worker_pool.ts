@@ -17,23 +17,37 @@ export class WorkerPool {
         });
     }
 
-    async execute(data: string | object) {
+    async execute<T>(data: string | object): Promise<T | null> {
         const worker = await this.pool.acquire().promise;
 
         return new Promise((resolve, reject) => {
-            worker.on("message", (response) => {
-                // Release the worker back to the pool after the work is done.
-                this.pool.release(worker);
+            const onMessage = (response: T) => {
+                cleanup();
                 resolve(response);
-            });
-            worker.on("error", (err) => {
-                this.pool.release(worker);
+            };
+
+            const onError = (err: Error) => {
+                cleanup();
                 reject(err);
-            });
-            worker.on("exit", (code) => {
+            };
+
+            const onExit = (code: number) => {
+                cleanup();
                 if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`));
                 resolve(null);
-            });
+            };
+
+            const cleanup = () => {
+                worker.off("message", onMessage);
+                worker.off("error", onError);
+                worker.off("exit", onExit);
+                // Release the worker back to the pool after the work is done.
+                this.pool.release(worker);
+            };
+
+            worker.on("message", onMessage);
+            worker.on("error", onError);
+            worker.on("exit", onExit);
             worker.postMessage(data);
         });
     }
