@@ -23,14 +23,14 @@ exports.RESOURCES.register({
         const resource = {
             $id: "/assets.json",
             assets: assetIds.map((id) => ({
-                $ref: `/assets/${id}.json`,
+                $ref: `/assets/${id}/index.json`,
             })),
         };
         return resource;
     },
 });
 exports.RESOURCES.register({
-    path: "/assets/{id}.json",
+    path: "/assets/{id}/index.json",
     summary: "Get an asset",
     description: "Get an asset by its ID",
     type: "Asset",
@@ -39,7 +39,7 @@ exports.RESOURCES.register({
     loader: async ({ id }) => {
         // const recordsPath = path.join(ASSETS_PATH, id, RECORDS);
         const resource = {
-            $id: `/assets/${id}.json`,
+            $id: `/assets/${id}/index.json`,
             details: {
                 $ref: `/assets/${id}/details.json`,
             },
