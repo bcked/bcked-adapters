@@ -9,6 +9,7 @@
         "dev": "nodemon",
         "crawler": "npx ts-node src/crawler/job.ts",
         "api": "npx ts-node src/api/job.ts",
+        "icons": "npx ts-node src/icons/job.ts",
         "build": "npx tsc",
         "lint": "eslint . --fix",
         "test": "jest --passWithNoTests"
@@ -20,6 +21,7 @@
     },
     "dependencies": {
         "@0xsequence/multicall": "^0.43.34",
+        "@resvg/resvg-js": "^2.4.1",
         "@solana/spl-token": "^0.3.8",
         "@solana/web3.js": "^1.77.3",
         "axios": "^1.4.0",
@@ -41,6 +43,7 @@
         "@types/crawler": "^1.2.2",
         "@types/dateformat": "^5.0.0",
         "@types/express": "^4.17.17",
+        "@types/glob": "^8.1.0",
         "@types/jest": "^29.5.2",
         "@types/lodash": "^4.14.195",
         "@types/morgan": "^1.9.4",
