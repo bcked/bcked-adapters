@@ -31,4 +31,21 @@ exports.RESOURCES = new resources_1.JsonResources({
     components: {},
     tags: [],
 }, assets_1.RESOURCES);
+exports.RESOURCES.register({
+    path: "/",
+    summary: "Retrieve a list of all resources",
+    description: "Get a list of all resource references",
+    type: "Resources",
+    // TODO write schema
+    schema: {},
+    loader: async () => {
+        const resource = {
+            $id: "/",
+            assets: {
+                $ref: `/assets`,
+            },
+        };
+        return resource;
+    },
+});
 //# sourceMappingURL=index.js.map
