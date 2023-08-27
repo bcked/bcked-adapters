@@ -17,9 +17,18 @@ interface Spec {
 
 export class JsonResources {
     spec: Spec;
+    tag: oas.Tag | undefined;
 
-    constructor(spec?: oas.OAS3Definition | undefined, ...resources: JsonResources[]) {
+    constructor(
+        tag?: oas.Tag,
+        spec?: oas.OAS3Definition | undefined,
+        ...resources: JsonResources[]
+    ) {
+        this.tag = tag;
         this.spec = spec ? spec : {};
+        if (tag) {
+            this.extendSpec({ tags: this.tag ? [this.tag] : [] });
+        }
         if (resources) {
             this.extend(...resources);
         }
@@ -46,6 +55,7 @@ export class JsonResources {
             paths: {
                 [path]: {
                     get: {
+                        tags: this.tag ? [this.tag.name] : [],
                         summary: summary,
                         description: description,
                         responses: {

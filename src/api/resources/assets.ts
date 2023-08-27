@@ -6,7 +6,14 @@ import { JsonResources } from "../utils/resources";
 const ASSETS_PATH = "assets";
 const RECORDS = "records";
 
-export const RESOURCES = new JsonResources();
+export const RESOURCES = new JsonResources({
+    name: "Assets",
+    description: "Everything about assets",
+    externalDocs: {
+        description: "View on bcked.com",
+        url: "https://bcked.com/assets",
+    },
+});
 
 RESOURCES.register({
     path: "/assets",
