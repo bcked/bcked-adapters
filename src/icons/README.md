@@ -20,7 +20,13 @@
 -   All rasterized images in PNG format with transparent background
 -   PNG resolutions: 16, 32, 48, 64, 128, 256 (`icon16.png`, `icon32.png`, ...)
 
-## Helpful Resources
+## Helpful Libraries
 
 -   [@resvg/resvg-js](https://www.npmjs.com/package/@resvg/resvg-js)
 -   [sharp](https://www.npmjs.com/package/sharp)
+
+## Helpful Resources
+
+-   [coinwink/crypto-logos-cc](https://github.com/coinwink/crypto-logos-cc)
+-   [yearn/yearn-assets](https://github.com/yearn/yearn-assets)
+-   [curvefi/curve-assets](https://github.com/curvefi/curve-assets)

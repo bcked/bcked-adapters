@@ -13,7 +13,11 @@ If you would like to contribute, please read [our contribution guideline](CONTRI
 
 ## License
 
-This tool is an open source community project released under the [GNU General Public License, Version 3](LICENSE).
+This the code and data within this repository is released under the [GNU General Public License, Version 3](LICENSE).
+The logos are property of respective copyright holders, used under fair use or with permissions.
+
+If you have any concerns regarding the license or code, data and logos in this repository,
+please [contact us](mailto:contact@bcked.com).
 
 ## Legal Notice
 
