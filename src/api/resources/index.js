@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RESOURCES = void 0;
 const resources_1 = require("../utils/resources");
 const assets_1 = require("./assets");
-exports.RESOURCES = new resources_1.JsonResources({
+exports.RESOURCES = new resources_1.JsonResources(undefined, {
     openapi: "3.1.0",
     info: {
         title: "bcked API",
@@ -30,7 +30,7 @@ exports.RESOURCES = new resources_1.JsonResources({
     paths: {},
     components: {},
     tags: [],
-}, assets_1.RESOURCES);
+});
 exports.RESOURCES.register({
     path: "/",
     summary: "Retrieve a list of all resources",
@@ -48,4 +48,5 @@ exports.RESOURCES.register({
         return resource;
     },
 });
+exports.RESOURCES.extend(assets_1.RESOURCES);
 //# sourceMappingURL=index.js.map

@@ -7,8 +7,12 @@ exports.JsonResources = void 0;
 const lodash_1 = __importDefault(require("lodash"));
 const template_1 = require("../utils/template");
 class JsonResources {
-    constructor(spec, ...resources) {
+    constructor(tag, spec, ...resources) {
+        this.tag = tag;
         this.spec = spec ? spec : {};
+        if (tag) {
+            this.extendSpec({ tags: this.tag ? [this.tag] : [] });
+        }
         if (resources) {
             this.extend(...resources);
         }
@@ -19,6 +23,7 @@ class JsonResources {
             paths: {
                 [path]: {
                     get: {
+                        tags: this.tag ? [this.tag.name] : [],
                         summary: summary,
                         description: description,
                         responses: {

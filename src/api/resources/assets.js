@@ -10,7 +10,14 @@ const files_1 = require("../../utils/files");
 const resources_1 = require("../utils/resources");
 const ASSETS_PATH = "assets";
 const RECORDS = "records";
-exports.RESOURCES = new resources_1.JsonResources();
+exports.RESOURCES = new resources_1.JsonResources({
+    name: "Assets",
+    description: "Everything about assets",
+    externalDocs: {
+        description: "View on bcked.com",
+        url: "https://bcked.com/assets",
+    },
+});
 exports.RESOURCES.register({
     path: "/assets",
     summary: "Retrieve a list of assets",
