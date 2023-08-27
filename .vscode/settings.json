@@ -31,5 +31,12 @@
     },
     "[yaml]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "svg.preview.mode": "svg",
+    "svg.minify.moveElemsAttrsToGroup": false,
+    "svg.minify.removeOffCanvasPaths": true,
+    "svg.minify.removeScriptElement": true,
+    "svg.minify.sortAttrs": true,
+    "svg.preview.autoShow": true,
+    "svg.preview.background": "transparent"
 }

@@ -16,6 +16,14 @@
             "cwd": "${workspaceRoot}",
             "runtimeArgs": ["-r", "ts-node/register", "--trace-warnings"],
             "args": ["${workspaceRoot}/src/api/job.ts"]
+        },
+        {
+            "name": "Debug icons",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeArgs": ["-r", "ts-node/register", "--trace-warnings"],
+            "args": ["${workspaceRoot}/src/icons/job.ts"]
         }
     ]
 }

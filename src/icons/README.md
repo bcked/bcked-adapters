@@ -7,12 +7,20 @@
 -   If the original is only available as PNG or JPEG, either embed the SVG
     or trace the image.
 
-## Constraints on SVG
+## Rules for SVGs
 
--   Resolution set to 256x256 (square)
+-   Square view box
+-   All text should be presented as outlines
 -   File name `icon.svg`
 -   File size <=20kb
 -   Transparent background
+-   Prettified markup (not minified)
+-   Remove any unnecessary content like doctype, XML instructions, comments, editor data
+-   Include xmlns for HTML embedding
+
+To simplify the SVG, use the VS Code jock.svg extension command
+to minify the SVG as configured in the projects settings.
+Afterwards format with prettier.
 
 ## Generated and Published Versions
 
