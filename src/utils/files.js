@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readJson = exports.writeJson = exports.ensurePath = exports.readFirstLine = exports.readLastLines = void 0;
+exports.readJson = exports.writeJson = exports.writeBuffer = exports.ensurePath = exports.readFirstLine = exports.readLastLines = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const readline_1 = __importDefault(require("readline"));
@@ -94,6 +94,11 @@ async function ensurePath(pathToFile) {
     }
 }
 exports.ensurePath = ensurePath;
+async function writeBuffer(pathToFile, data) {
+    await ensurePath(pathToFile);
+    await node_fs_1.default.promises.writeFile(pathToFile, data);
+}
+exports.writeBuffer = writeBuffer;
 async function writeJson(pathToFile, data) {
     await ensurePath(pathToFile);
     await node_fs_1.default.promises.writeFile(pathToFile, JSON.stringify(data, null, 4));

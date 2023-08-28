@@ -8,6 +8,7 @@ const promises_1 = require("fs/promises");
 const path_1 = __importDefault(require("path"));
 const files_1 = require("../../utils/files");
 const resources_1 = require("../utils/resources");
+const icons_1 = require("./icons");
 const ASSETS_PATH = "assets";
 const RECORDS = "records";
 exports.RESOURCES = new resources_1.JsonResources({
@@ -49,6 +50,9 @@ exports.RESOURCES.register({
             $id: `/assets/${id}`,
             details: {
                 $ref: `/assets/${id}/details`,
+            },
+            icons: {
+                $ref: `/assets/${id}/icons`,
             },
             // price: {
             //     $ref: "/assets/{id}/prices/{timestamp}",
@@ -102,6 +106,15 @@ exports.RESOURCES.register({
         };
         return resource;
     },
+});
+exports.RESOURCES.register({
+    path: "/assets/{id}/icons",
+    summary: "Get icons of an asset",
+    description: "Get icons of an asset by its ID",
+    type: "AssetIcons",
+    // TODO write schema
+    schema: {},
+    loader: async ({ id }) => await (0, icons_1.icons)("assets", id),
 });
 // for await (const entry of readCSV(`${recordsPath}/supply.csv`)) {
 //     console.log(entry);
