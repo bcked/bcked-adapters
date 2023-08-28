@@ -37,6 +37,5 @@
     "svg.minify.removeOffCanvasPaths": true,
     "svg.minify.removeScriptElement": true,
     "svg.minify.sortAttrs": true,
-    "svg.preview.autoShow": true,
-    "svg.preview.background": "transparent"
+    "svg.preview.autoShow": true
 }
