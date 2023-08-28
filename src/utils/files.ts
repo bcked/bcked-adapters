@@ -113,6 +113,11 @@ export async function ensurePath(pathToFile: string) {
     }
 }
 
+export async function writeBuffer(pathToFile: string, data: Buffer) {
+    await ensurePath(pathToFile);
+    await fs.promises.writeFile(pathToFile, data);
+}
+
 export async function writeJson(pathToFile: string, data: object) {
     await ensurePath(pathToFile);
     await fs.promises.writeFile(pathToFile, JSON.stringify(data, null, 4));

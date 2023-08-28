@@ -2,7 +2,8 @@
 
 Any contribution is welcome.
 
-To avoid reliance on third party services, this project will require community support to extend and maintain the list of tracked asset backings.
+To avoid reliance on third party services, this project will require community support to extend
+and maintain the list of tracked asset backings.
 
 For the most part this only requires adding or updating data files.
 
@@ -10,7 +11,8 @@ For the most part this only requires adding or updating data files.
 
 ### Install nvm
 
-For the package management, we need to install Node. To install a specific version of Node, we will first install the [Node Version Management (nvm)](https://github.com/nvm-sh/nvm).
+For the package management, we need to install Node. To install a specific version of Node,
+we will first install the [Node Version Management (nvm)](https://github.com/nvm-sh/nvm).
 
 Download and install nvm:
 
@@ -26,7 +28,7 @@ source ~/.bashrc
 
 ### Install Node
 
-You should now be able to list all available Node versions like this (``--lts`` for versions with long term support):
+You should now be able to list all available Node versions like this (`--lts` for versions with long term support):
 
 ```shell
 nvm list-remote --lts
@@ -62,3 +64,33 @@ Execute:
 ```shell
 npm test
 ```
+
+## Icons
+
+### General Considerations
+
+-   Original image is stored in SVG format
+-   Original image must have a minimum resolution of 256
+-   If the original is only available as PNG or JPEG, either embed the SVG
+    or trace the image.
+
+### Rules for SVGs
+
+-   Square view box
+-   All text should be presented as outlines
+-   File name `icon.svg`
+-   File size <=20kb
+-   Transparent background
+-   Prettified markup (not minified)
+-   Remove any unnecessary content like doctype, XML instructions, comments, editor data
+-   Include xmlns for HTML embedding
+
+To simplify the SVG, use the VS Code jock.svg extension command
+to minify the SVG as configured in the projects settings.
+Afterwards format with prettier.
+
+### Helpful Resources
+
+-   [coinwink/crypto-logos-cc](https://github.com/coinwink/crypto-logos-cc)
+-   [yearn/yearn-assets](https://github.com/yearn/yearn-assets)
+-   [curvefi/curve-assets](https://github.com/curvefi/curve-assets)

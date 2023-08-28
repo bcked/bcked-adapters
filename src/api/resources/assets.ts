@@ -2,6 +2,7 @@ import { readdir } from "fs/promises";
 import path from "path";
 import { readJson } from "../../utils/files";
 import { JsonResources } from "../utils/resources";
+import { icons } from "./icons";
 
 const ASSETS_PATH = "assets";
 const RECORDS = "records";
@@ -49,6 +50,9 @@ RESOURCES.register({
             $id: `/assets/${id}`,
             details: {
                 $ref: `/assets/${id}/details`,
+            },
+            icons: {
+                $ref: `/assets/${id}/icons`,
             },
             // price: {
             //     $ref: "/assets/{id}/prices/{timestamp}",
@@ -107,6 +111,16 @@ RESOURCES.register({
 
         return resource;
     },
+});
+
+RESOURCES.register({
+    path: "/assets/{id}/icons",
+    summary: "Get icons of an asset",
+    description: "Get icons of an asset by its ID",
+    type: "AssetIcons",
+    // TODO write schema
+    schema: {},
+    loader: async ({ id }) => await icons("assets", id),
 });
 
 // for await (const entry of readCSV(`${recordsPath}/supply.csv`)) {
