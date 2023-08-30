@@ -1,139 +1,148 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 127">
-  <defs>
-    <linearGradient id="prefix__e" x1="230.32" x2="228.47" y1="-481.67" y2="-581.9"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#fff6d5" stop-opacity=".42" />
-      <stop offset="1" stop-color="#fff6d5" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="prefix__a" x1="392.68" x2="345.91" y1="-519.59" y2="-445.05"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ff0" />
-      <stop offset="1" stop-color="#ff0" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="prefix__f" x1="371" x2="350.17" y1="-552.08" y2="-386.8" xlink:href="#prefix__a" />
-    <linearGradient id="prefix__g" x1="324.74" x2="358.54" y1="-385.13" y2="-462.9"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#a05a2c" />
-      <stop offset="1" stop-color="#a05a2c" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="prefix__b" x1="251.87" x2="358.81" y1="-462.5" y2="-429.62"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#fff6d5" />
-      <stop offset="1" stop-color="#fff6d5" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="prefix__h" x1="324.49" x2="260.6" y1="-389.46" y2="-540.39" xlink:href="#prefix__b" />
-    <linearGradient id="prefix__i" x1="391.36" x2="341.36" y1="-510.32" y2="-442.73" xlink:href="#prefix__b" />
-    <linearGradient id="prefix__j" x1="405.31" x2="339.11" y1="-357.36" y2="-455.05" xlink:href="#prefix__b" />
-    <linearGradient id="prefix__l" x1="306.33" x2="290.59" y1="-492.69" y2="-491.29"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#d4aa00" />
-      <stop offset="1" stop-color="#fff6d5" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="prefix__m" x1="309.6" x2="290.16" y1="-469.26" y2="-489.17"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#b79024" />
-      <stop offset="1" stop-color="#b79024" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="prefix__n" x1="340.8" x2="345.43" y1="-407.95" y2="-505.64" xlink:href="#prefix__b" />
-    <linearGradient id="prefix__o" x1="393.09" x2="326.89" y1="-349.08" y2="-446.77" xlink:href="#prefix__b" />
-    <linearGradient id="prefix__c" x1="280.38" x2="270.2" y1="-394.46" y2="-437.05"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#fff" />
-      <stop offset="1" stop-color="#fff6d5" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="prefix__p" x1="158.44" x2="239" y1="-556.32" y2="-474.37" xlink:href="#prefix__b" />
-    <linearGradient id="prefix__q" x1="239.71" x2="247.11" y1="-426.17" y2="-506.26" xlink:href="#prefix__c" />
-    <linearGradient id="prefix__r" x1="379.99" x2="403.61" y1="-512.14" y2="-566.31"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#fff6d5" stop-opacity=".19" />
-      <stop offset="1" stop-color="#fff6d5" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="prefix__s" x1="225.26" x2="251.42" y1="-498.21" y2="-438.95"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#dfc33c" />
-      <stop offset="1" stop-color="#776614" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="prefix__t" x1="264.53" x2="281.2" y1="-490.26" y2="-490.72"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffd01b" />
-      <stop offset="1" stop-color="#504416" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="prefix__w" x1="288.31" x2="288.31" y1="-451.36" y2="-519.89"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" xlink:href="#prefix__d" />
-    <linearGradient id="prefix__x" x1="45.29" x2="276.78" y1="-583" y2="-459.85"
-      gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" xlink:href="#prefix__d" />
-    <radialGradient id="prefix__k" cx="298.89" cy="-468.16" r="16.07"
-      gradientTransform="matrix(1.12 0 0 -5.87 -223.02 -2565.74)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#f4eed7" />
-      <stop offset="1" stop-color="#f4eed7" stop-opacity="0" />
-    </radialGradient>
-    <radialGradient id="prefix__d" cx="304.96" cy="-513.82" r="28.16"
-      gradientTransform="matrix(.33 .36 .66 -.69 341.99 -354.82)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#fff" />
-      <stop offset="1" stop-color="#fff" stop-opacity="0" />
-    </radialGradient>
-    <radialGradient id="prefix__u" cx="473.09" cy="-468.1" r="28.16"
-      gradientTransform="matrix(-.29 .39 .8 .52 617.07 169.42)" xlink:href="#prefix__d" />
-    <radialGradient id="prefix__v" cx="274.19" cy="-653.61" r="113.26"
-      gradientTransform="matrix(.89 -.19 -.04 -.18 -161.13 47.33)" xlink:href="#prefix__d" />
-  </defs>
-  <path fill="#5f5705" fill-rule="evenodd"
-    d="M0 85.5l89.8 38.9s12.1 7.4 32.4-2.8 132.5-70.4 132.5-70.4 8.3-3.7-16.7-3.7c-64.8 0-187.1 20.4-193.5 20.4s-38 14.8-38 14.8S.9 80.9 0 85.5z" />
-  <path fill="#c0a421" fill-rule="evenodd" d="M26.5 20.8L167.7 0l72.4 6.6-132.2 31.5-81.4-17.3z" />
-  <path fill="#c0a421" fill-rule="evenodd" d="M26.7 20.9l-8.3 8.3L101 50.1l5.6-12.8-79.9-16.4z" />
-  <path fill="#fff6d5" fill-rule="evenodd" d="M101 50.1c0-3.7 4.9-12.2 4.9-12.2l4.7-.8 6.7 13z" />
-  <path fill="#c0a421" fill-rule="evenodd"
-    d="M116.8 50.1l127.4-37.9-4.3-5.7-129.6 30.6 6.5 13zM18.6 29.2L2.9 82l.9 3.7 87.1 33.8 10.4-69.4-82.7-20.9z" />
-  <path fill="url(#prefix__e)" fill-rule="evenodd" d="M18.6 93.7L2.9 146.5l.9 3.7L90.9 184l10.4-69.4-82.7-20.9z"
-    transform="translate(0 -64.5)" />
-  <path fill="#c0a421" fill-rule="evenodd" d="M101.3 49.6l-10.4 69.7s20.3 3 31.4-2.6c-.9-14.8-6-66.9-6-66.9z" />
-  <path fill="#c0a421" fill-rule="evenodd" d="M122.3 116.7l130.6-67.1-8.6-37.6-128 37.6 6 67.1z" />
-  <path fill="url(#prefix__a)" fill-rule="evenodd" d="M122.3 181.2l130.6-67.1-8.6-37.6-128 37.6 6 67.1z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__f)" fill-rule="evenodd" d="M116.8 114.6l127.4-37.9-4.3-5.7-129.6 30.6 6.5 13z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__g)" fill-rule="evenodd" d="M122.3 181.2l130.6-67.1-8.6-37.6-128 37.6 6 67.1z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__b)" fill-rule="evenodd" d="M116.8 114.6l127.4-37.9-4.3-5.7-129.6 30.6 6.5 13z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__h)" fill-rule="evenodd" d="M26.5 85.3l141.2-20.8 72.4 6.6-132.2 31.5-81.4-17.3z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__i)" fill-rule="evenodd" d="M122.3 181.2l130.6-67.1-8.6-37.6-128 37.6 6 67.1z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__j)" fill-rule="evenodd" d="M116.8 114.6l127.4-37.9-4.3-5.7-129.6 30.6 6.5 13z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__k)" fill-rule="evenodd" d="M101.3 114.1l-10.4 69.7s20.3 3 31.4-2.6c-.9-14.8-6-66.9-6-66.9z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__l)" fill-rule="evenodd" d="M101.3 114.1l-10.4 69.7s20.3 3 31.4-2.6c-.9-14.8-6-66.9-6-66.9z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__m)" fill-rule="evenodd" d="M101.3 114.1l-10.4 69.7s20.3 3 31.4-2.6c-.9-14.8-6-66.9-6-66.9z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__n)" fill-rule="evenodd"
-    d="M131.3 109.7l-15 4.4 6 67.1 91.6-47c-33.3-3.2-62.4-12.1-82.6-24.5z" transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__o)" fill-rule="evenodd" d="M116.8 114.6l83-24.9-31.6-1.5-57.9 13.4z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__c)" fill-rule="evenodd"
-    d="M83.2 78h-7.6l-49.1 7.3 81.4 17.3L160.8 90c-17.4-7.3-45.7-12-77.6-12z" transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__p)" fill-rule="evenodd" d="M18.6 93.7L2.9 146.5l.9 3.7L90.9 184l10.4-69.4-82.7-20.9z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__q)" fill-rule="evenodd" d="M26.7 85.4l-8.3 8.3 82.6 20.9 5.6-12.8-79.9-16.4z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__r)" fill-rule="evenodd" d="M122.3 181.2l130.6-67.1-8.6-37.6-128 37.6 6 67.1z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__s)" fill-rule="evenodd" d="M18.6 93.7L2.9 146.5l.9 3.7L90.9 184l10.4-69.4-82.7-20.9z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__t)" fill-rule="evenodd" d="M101.3 114.1l-10.4 69.7s20.3 3 31.4-2.6c-.9-14.8-6-66.9-6-66.9z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__d)" fill-rule="evenodd"
-    d="M113.5 120.1c-10.3 10.8-22.8 14.9-28 9.4s-1-18.9 9.3-29.6 22.8-15 27.9-9.4 1.1 18.9-9.2 29.6z"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__u)" fill-rule="evenodd"
-    d="M95.9 121c-12.4-8.1-18.8-19.7-14.3-25.8s18.3-4.4 30.8 3.7 18.8 19.7 14.3 25.8-18.4 4.5-30.8-3.7z"
-    transform="translate(0 -64.5)" />
-  <path fill="none" stroke="url(#prefix__v)" stroke-width="3.8" d="M243.6 76.1L116.8 115s-8.4 1.9-13.9.5L20.5 94.6"
-    transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__w)" fill-rule="evenodd"
-    d="M104.3 116.9s8.3 0 10.6-.5-3.2 67.6-3.2 67.6h-5.1s-.9-63-2.3-67.1z" transform="translate(0 -64.5)" />
-  <path fill="url(#prefix__x)" fill-rule="evenodd" d="M22.3 156.2l83.4-18.5v-19.4l-31.5-10.2-64.8 44.4 12.9 3.7z"
-    transform="translate(0 -64.5)" />
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 256">
+   <defs>
+      <linearGradient id="prefix__e" x1="230.32" x2="228.47" y1="-481.67" y2="-581.9"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#fff6d5" stop-opacity=".42" />
+         <stop offset="1" stop-color="#fff6d5" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="prefix__a" x1="392.68" x2="345.91" y1="-519.59" y2="-445.05"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#ff0" />
+         <stop offset="1" stop-color="#ff0" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="prefix__g" x1="371" x2="350.17" y1="-552.08" y2="-386.8" xlink:href="#prefix__a" />
+      <linearGradient id="prefix__h" x1="324.74" x2="358.54" y1="-385.13" y2="-462.9"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#a05a2c" />
+         <stop offset="1" stop-color="#a05a2c" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="prefix__b" x1="251.87" x2="358.81" y1="-462.5" y2="-429.62"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#fff6d5" />
+         <stop offset="1" stop-color="#fff6d5" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="prefix__j" x1="324.49" x2="260.6" y1="-389.46" y2="-540.39" xlink:href="#prefix__b" />
+      <linearGradient id="prefix__k" x1="391.36" x2="341.36" y1="-510.32" y2="-442.73" xlink:href="#prefix__b" />
+      <linearGradient id="prefix__l" x1="405.31" x2="339.11" y1="-357.36" y2="-455.05" xlink:href="#prefix__b" />
+      <linearGradient id="prefix__n" x1="306.33" x2="290.59" y1="-492.69" y2="-491.29"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#d4aa00" />
+         <stop offset="1" stop-color="#fff6d5" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="prefix__o" x1="309.6" x2="290.16" y1="-469.26" y2="-489.17"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#b79024" />
+         <stop offset="1" stop-color="#b79024" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="prefix__p" x1="340.8" x2="345.43" y1="-407.95" y2="-505.64" xlink:href="#prefix__b" />
+      <linearGradient id="prefix__q" x1="393.09" x2="326.89" y1="-349.08" y2="-446.77" xlink:href="#prefix__b" />
+      <linearGradient id="prefix__c" x1="280.38" x2="270.2" y1="-394.46" y2="-437.05"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#fff" />
+         <stop offset="1" stop-color="#fff6d5" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="prefix__s" x1="158.44" x2="239" y1="-556.32" y2="-474.37" xlink:href="#prefix__b" />
+      <linearGradient id="prefix__t" x1="239.71" x2="247.11" y1="-426.17" y2="-506.26" xlink:href="#prefix__c" />
+      <linearGradient id="prefix__u" x1="379.99" x2="403.61" y1="-512.14" y2="-566.31"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#fff6d5" stop-opacity=".19" />
+         <stop offset="1" stop-color="#fff6d5" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="prefix__v" x1="225.26" x2="251.42" y1="-498.21" y2="-438.95"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#dfc33c" />
+         <stop offset="1" stop-color="#776614" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="prefix__w" x1="264.53" x2="281.2" y1="-490.26" y2="-490.72"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#ffd01b" />
+         <stop offset="1" stop-color="#504416" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="prefix__A" x1="288.31" x2="288.31" y1="-451.36" y2="-519.89"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" xlink:href="#prefix__d" />
+      <linearGradient id="prefix__B" x1="45.29" x2="276.78" y1="-583" y2="-459.85"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" xlink:href="#prefix__d" />
+      <linearGradient id="prefix__f" x1="392.68" x2="345.91" y1="-519.59" y2="-445.05"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse" xlink:href="#prefix__a" />
+      <linearGradient id="prefix__i" x1="251.87" x2="358.81" y1="-462.5" y2="-429.62"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse" xlink:href="#prefix__b" />
+      <linearGradient id="prefix__r" x1="280.38" x2="270.2" y1="-394.46" y2="-437.05"
+         gradientTransform="matrix(1 0 0 -1 -178.42 -341.44)" gradientUnits="userSpaceOnUse" xlink:href="#prefix__c" />
+      <radialGradient id="prefix__m" cx="298.89" cy="-468.16" r="16.07"
+         gradientTransform="matrix(1.12 0 0 -5.87 -223.02 -2565.74)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#f4eed7" />
+         <stop offset="1" stop-color="#f4eed7" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="prefix__d" cx="304.96" cy="-513.82" r="28.16"
+         gradientTransform="matrix(.33 .36 .66 -.69 341.99 -354.82)" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#fff" />
+         <stop offset="1" stop-color="#fff" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="prefix__y" cx="473.09" cy="-468.1" r="28.16"
+         gradientTransform="matrix(-.29 .39 .8 .52 617.07 169.42)" xlink:href="#prefix__d" />
+      <radialGradient id="prefix__z" cx="274.19" cy="-653.61" r="113.26"
+         gradientTransform="matrix(.89 -.19 -.04 -.18 -161.13 47.33)" xlink:href="#prefix__d" />
+      <radialGradient id="prefix__x" cx="304.96" cy="-513.82" r="28.16"
+         gradientTransform="matrix(.33 .36 .66 -.69 341.99 -354.82)" gradientUnits="userSpaceOnUse"
+         xlink:href="#prefix__d" />
+   </defs>
+   <path fill="#5f5705" fill-rule="evenodd"
+      d="M-.01 150.003l89.8 38.9s12.1 7.4 32.4-2.8c20.3-10.2 132.5-70.4 132.5-70.4s8.3-3.7-16.7-3.7c-64.8 0-187.1 20.4-193.5 20.4-6.4 0-38 14.8-38 14.8s-5.6-1.8-6.5 2.8z" />
+   <path fill="#c0a421" fill-rule="evenodd" d="M26.49 85.303l141.2-20.8 72.4 6.6-132.2 31.5z" />
+   <path fill="#c0a421" fill-rule="evenodd" d="M26.69 85.403l-8.3 8.3 82.6 20.9 5.6-12.8z" />
+   <path fill="#fff6d5" fill-rule="evenodd" d="M100.99 114.603c0-3.7 4.9-12.2 4.9-12.2l4.7-.8 6.7 13z" />
+   <path fill="#c0a421" fill-rule="evenodd"
+      d="M116.79 114.603l127.4-37.9-4.3-5.7-129.6 30.6zm-98.2-20.9l-15.7 52.8.9 3.7 87.1 33.8 10.4-69.4z" />
+   <path fill="url(#prefix__e)" fill-rule="evenodd" d="M18.6 93.7L2.9 146.5l.9 3.7L90.9 184l10.4-69.4z"
+      transform="translate(-.01 .003)" />
+   <path fill="#c0a421" fill-rule="evenodd" d="M101.29 114.103l-10.4 69.7s20.3 3 31.4-2.6c-.9-14.8-6-66.9-6-66.9z" />
+   <path fill="#c0a421" fill-rule="evenodd" d="M122.29 181.203l130.6-67.1-8.6-37.6-128 37.6z" />
+   <path fill="url(#prefix__f)" fill-rule="evenodd" d="M122.3 181.2l130.6-67.1-8.6-37.6-128 37.6z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__g)" fill-rule="evenodd" d="M116.8 114.6l127.4-37.9-4.3-5.7-129.6 30.6z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__h)" fill-rule="evenodd" d="M122.3 181.2l130.6-67.1-8.6-37.6-128 37.6z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__i)" fill-rule="evenodd" d="M116.8 114.6l127.4-37.9-4.3-5.7-129.6 30.6z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__j)" fill-rule="evenodd" d="M26.5 85.3l141.2-20.8 72.4 6.6-132.2 31.5z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__k)" fill-rule="evenodd" d="M122.3 181.2l130.6-67.1-8.6-37.6-128 37.6z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__l)" fill-rule="evenodd" d="M116.8 114.6l127.4-37.9-4.3-5.7-129.6 30.6z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__m)" fill-rule="evenodd" d="M101.3 114.1l-10.4 69.7s20.3 3 31.4-2.6c-.9-14.8-6-66.9-6-66.9z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__n)" fill-rule="evenodd" d="M101.3 114.1l-10.4 69.7s20.3 3 31.4-2.6c-.9-14.8-6-66.9-6-66.9z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__o)" fill-rule="evenodd" d="M101.3 114.1l-10.4 69.7s20.3 3 31.4-2.6c-.9-14.8-6-66.9-6-66.9z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__p)" fill-rule="evenodd"
+      d="M131.3 109.7l-15 4.4 6 67.1 91.6-47c-33.3-3.2-62.4-12.1-82.6-24.5z" transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__q)" fill-rule="evenodd" d="M116.8 114.6l83-24.9-31.6-1.5-57.9 13.4z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__r)" fill-rule="evenodd"
+      d="M83.2 78h-7.6l-49.1 7.3 81.4 17.3L160.8 90c-17.4-7.3-45.7-12-77.6-12z" transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__s)" fill-rule="evenodd" d="M18.6 93.7L2.9 146.5l.9 3.7L90.9 184l10.4-69.4z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__t)" fill-rule="evenodd" d="M26.7 85.4l-8.3 8.3 82.6 20.9 5.6-12.8z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__u)" fill-rule="evenodd" d="M122.3 181.2l130.6-67.1-8.6-37.6-128 37.6z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__v)" fill-rule="evenodd" d="M18.6 93.7L2.9 146.5l.9 3.7L90.9 184l10.4-69.4z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__w)" fill-rule="evenodd" d="M101.3 114.1l-10.4 69.7s20.3 3 31.4-2.6c-.9-14.8-6-66.9-6-66.9z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__x)" fill-rule="evenodd"
+      d="M113.5 120.1c-10.3 10.8-22.8 14.9-28 9.4-5.2-5.5-1-18.9 9.3-29.6 10.3-10.7 22.8-15 27.9-9.4 5.1 5.6 1.1 18.9-9.2 29.6z"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__y)" fill-rule="evenodd"
+      d="M95.9 121c-12.4-8.1-18.8-19.7-14.3-25.8 4.5-6.1 18.3-4.4 30.8 3.7 12.5 8.1 18.8 19.7 14.3 25.8-4.5 6.1-18.4 4.5-30.8-3.7z"
+      transform="translate(-.01 .003)" />
+   <path fill="none" stroke="url(#prefix__z)" stroke-width="3.8" d="M243.6 76.1L116.8 115s-8.4 1.9-13.9.5L20.5 94.6"
+      transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__A)" fill-rule="evenodd"
+      d="M104.3 116.9s8.3 0 10.6-.5c2.3-.5-3.2 67.6-3.2 67.6h-5.1s-.9-63-2.3-67.1z" transform="translate(-.01 .003)" />
+   <path fill="url(#prefix__B)" fill-rule="evenodd" d="M22.3 156.2l83.4-18.5v-19.4l-31.5-10.2-64.8 44.4z"
+      transform="translate(-.01 .003)" />
 </svg>
