@@ -76,7 +76,8 @@ npm test
 
 ### Rules for SVGs
 
--   Square view box
+-   Square view box (if not already, can be done using Inkscape)
+-   Optional: Normalized view box of 256x256 (can be done using Inkscape)
 -   All text should be presented as outlines
 -   File name `icon.svg`
 -   File size <=20kb
@@ -91,6 +92,13 @@ Afterwards format with prettier.
 
 ### Helpful Resources
 
+#### Crypo related
+
 -   [coinwink/crypto-logos-cc](https://github.com/coinwink/crypto-logos-cc)
 -   [yearn/yearn-assets](https://github.com/yearn/yearn-assets)
 -   [curvefi/curve-assets](https://github.com/curvefi/curve-assets)
+
+#### General SVG icons
+
+-   [publicdomainvectors.org](https://publicdomainvectors.org/)
+-   [SVG Repo](https://www.svgrepo.com/)
