@@ -103,6 +103,8 @@ exports.RESOURCES.register({
             linkedEntities: details?.linkedEntities,
             reference: details?.reference,
             tags: details?.tags,
+            listed: details?.listed,
+            updated: details?.updated,
         };
         return resource;
     },
