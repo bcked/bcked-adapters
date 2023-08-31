@@ -97,6 +97,7 @@ Afterwards format with prettier.
 -   [coinwink/crypto-logos-cc](https://github.com/coinwink/crypto-logos-cc)
 -   [yearn/yearn-assets](https://github.com/yearn/yearn-assets)
 -   [curvefi/curve-assets](https://github.com/curvefi/curve-assets)
+-   [logotyp.us](https://logotyp.us/)
 
 #### General SVG icons
 
