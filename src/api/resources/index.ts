@@ -1,5 +1,7 @@
 import { JsonResources } from "../utils/resources";
 import { RESOURCES as ASSET_RESOURCES } from "./assets";
+import { RESOURCES as ENTITY_RESOURCES } from "./entities";
+import { RESOURCES as SYSTEM_RESOURCES } from "./systems";
 
 export const RESOURCES = new JsonResources(undefined, {
     openapi: "3.1.0",
@@ -43,10 +45,16 @@ RESOURCES.register({
             assets: {
                 $ref: `/assets`,
             },
+            entities: {
+                $ref: `/entities`,
+            },
+            systems: {
+                $ref: `/systems`,
+            },
         };
 
         return resource;
     },
 });
 
-RESOURCES.extend(ASSET_RESOURCES);
+RESOURCES.extend(ASSET_RESOURCES, ENTITY_RESOURCES, SYSTEM_RESOURCES);

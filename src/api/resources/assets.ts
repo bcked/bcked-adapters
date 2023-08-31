@@ -90,7 +90,7 @@ RESOURCES.register({
     loader: async ({ id }) => {
         const filePath = path.join(ASSETS_PATH, id, RECORDS, "details.json");
 
-        const details = await readJson<bcked.asset.Details>(filePath);
+        const details = await readJson<bcked.asset.DetailsRecord>(filePath);
 
         const resource = {
             $id: `/assets/${id}/details`,
@@ -107,6 +107,8 @@ RESOURCES.register({
             linkedEntities: details?.linkedEntities,
             reference: details?.reference,
             tags: details?.tags,
+            listed: details?.listed,
+            updated: details?.updated,
         };
 
         return resource;
