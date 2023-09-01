@@ -35,10 +35,6 @@ class Adapter {
     async getDetails() {
         return details;
     }
-    fromHoldingsFileName(filename) {
-        const [, year, month, day] = filename.match(/(\d{4})(\d{2})(\d{2})/);
-        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    }
     async fetchLatestTreasuryReserves() {
         const csvPath = `${this.recordsPath}/reserves.csv`;
         const lastEntry = await (0, cache_1.getLatest)(csvPath);
