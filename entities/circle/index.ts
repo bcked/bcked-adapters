@@ -43,11 +43,6 @@ export default class Adapter implements bcked.entity.Adapter {
         return details;
     }
 
-    private fromHoldingsFileName(filename: string): Date {
-        const [, year, month, day] = filename.match(/(\d{4})(\d{2})(\d{2})/)!;
-        return new Date(parseInt(year!), parseInt(month!) - 1, parseInt(day!));
-    }
-
     async fetchLatestTreasuryReserves(): Promise<void> {
         const csvPath = `${this.recordsPath}/reserves.csv`;
 
