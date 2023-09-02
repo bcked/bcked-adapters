@@ -3,8 +3,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uniformity = exports.round = exports.zScoreNorm = exports.minMaxNorm = exports.rate = exports.median = void 0;
+exports.uniformity = exports.round = exports.zScoreNorm = exports.minMaxNorm = exports.rate = exports.median = exports.statsBy = void 0;
 const lodash_1 = __importDefault(require("lodash"));
+function statsBy(collection, ...iteratees) {
+    if (!collection?.length)
+        return null;
+    const sorted = lodash_1.default.sortBy(collection, ...iteratees);
+    const mid = Math.floor(sorted.length / 2);
+    return {
+        low: sorted.at(0),
+        median: sorted.at(mid),
+        high: sorted.at(-1),
+    };
+}
+exports.statsBy = statsBy;
 function median(arr) {
     if (!arr.length)
         return undefined;

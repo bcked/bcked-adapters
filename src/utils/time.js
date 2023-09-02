@@ -1,6 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDatesBetween = exports.isCloser = exports.isClose = exports.isNewer = exports.duration = exports.daysInMs = exports.hoursInMs = exports.minInMs = exports.secInMs = void 0;
+exports.partsToDate = exports.setDateParts = exports.getDateParts = exports.getDatesBetween = exports.isCloser = exports.isClose = exports.isNewer = exports.duration = exports.daysInMs = exports.hoursInMs = exports.minInMs = exports.secInMs = void 0;
+const dateformat_1 = __importDefault(require("dateformat"));
+const template_1 = require("../api/utils/template");
 function secInMs(seconds) {
     return seconds * 1000;
 }
@@ -41,4 +46,23 @@ function* getDatesBetween(start, end, stepSizeInMs) {
     }
 }
 exports.getDatesBetween = getDatesBetween;
+function getDateParts(timestamp) {
+    return {
+        year: (0, dateformat_1.default)(timestamp, "UTC:yyyy"),
+        month: (0, dateformat_1.default)(timestamp, "UTC:mm"),
+        day: (0, dateformat_1.default)(timestamp, "UTC:dd"),
+        hour: (0, dateformat_1.default)(timestamp, "UTC:HH"),
+    };
+}
+exports.getDateParts = getDateParts;
+function setDateParts(template, timestamp) {
+    const parts = getDateParts(timestamp);
+    return new template_1.Template(template).format(parts);
+}
+exports.setDateParts = setDateParts;
+function partsToDate(parts) {
+    const isoString = new template_1.Template("{year}-{month}-{day}T{hour}:00:00.000Z").format(parts);
+    return new Date(isoString);
+}
+exports.partsToDate = partsToDate;
 //# sourceMappingURL=time.js.map

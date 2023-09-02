@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeCsv = exports.writeToCsv = exports.rewriteCSV = exports.readCSV = exports.readClosestEntry = exports.readLastEntry = exports.readHeaders = void 0;
+exports.writeCsv = exports.writeToCsv = exports.rewriteCSV = exports.readCSVForDates = exports.readCSV = exports.readClosestEntry = exports.readLastEntry = exports.readHeaders = void 0;
 const csv_1 = require("csv");
 const sync_1 = require("csv/sync");
 const fs_1 = __importDefault(require("fs"));
@@ -72,6 +72,17 @@ async function* readCSV(pathToFile) {
     }
 }
 exports.readCSV = readCSV;
+async function* readCSVForDates(pathToFile, filter) {
+    for await (const data of readCSV(pathToFile)) {
+        const parts = (0, time_1.getDateParts)(data.timestamp);
+        if (Object.keys(filter)
+            .map((key) => key)
+            .every((key) => Number(filter[key]) === Number(parts[key]))) {
+            yield data;
+        }
+    }
+}
+exports.readCSVForDates = readCSVForDates;
 async function rewriteCSV(pathToFile, targetHeader) {
     const parser = (0, csv_1.parse)({ columns: true });
     const stringifier = (0, csv_1.stringify)({ header: true, columns: targetHeader });

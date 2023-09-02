@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RESOURCES = void 0;
+const fs_1 = __importDefault(require("fs"));
 const promises_1 = require("fs/promises");
 const path_1 = __importDefault(require("path"));
 const files_1 = require("../../utils/files");
@@ -45,7 +46,7 @@ exports.RESOURCES.register({
     // TODO write schema
     schema: {},
     loader: async ({ id }) => {
-        // const recordsPath = path.join(ASSETS_PATH, id, RECORDS);
+        const recordsPath = path_1.default.join(ASSETS_PATH, id, RECORDS);
         const resource = {
             $id: `/assets/${id}`,
             details: {
@@ -54,18 +55,19 @@ exports.RESOURCES.register({
             icons: {
                 $ref: `/assets/${id}/icons`,
             },
-            // price: {
-            //     $ref: "/assets/{id}/prices/{timestamp}",
-            //     timestamp: "ISO Timestamp",
-            //     usd: "price in USD",
-            // },
+            price: fs_1.default.existsSync(path_1.default.join(recordsPath, "price.csv"))
+                ? {
+                    $ref: `/assets/${id}/price`,
+                }
+                : null,
             // supply: {
-            //     timestamp: "ISO Timestamp",
-            //     supply: "count",
+            //     $ref: `/assets/{id}/supply`,
+            // },
+            // mcap: {
+            //     $ref: `/assets/{id}/mcap`,
             // },
             // backing: {
-            //     timestamp: "ISO Timestamp",
-            //     assetId: "count",
+            //     $ref: `/assets/${id}/backing`,
             // },
         };
         return resource;

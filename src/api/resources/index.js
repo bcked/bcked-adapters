@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RESOURCES = void 0;
 const resources_1 = require("../utils/resources");
 const assets_1 = require("./assets");
+const assetsPrice_1 = require("./assetsPrice");
 const entities_1 = require("./entities");
 const systems_1 = require("./systems");
 exports.RESOURCES = new resources_1.JsonResources(undefined, {
@@ -56,5 +57,5 @@ exports.RESOURCES.register({
         return resource;
     },
 });
-exports.RESOURCES.extend(assets_1.RESOURCES, entities_1.RESOURCES, systems_1.RESOURCES);
+exports.RESOURCES.extend(assets_1.RESOURCES, entities_1.RESOURCES, systems_1.RESOURCES, assetsPrice_1.RESOURCES);
 //# sourceMappingURL=index.js.map
