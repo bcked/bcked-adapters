@@ -1,10 +1,17 @@
 import { parentPort } from "worker_threads";
+import { sendErrorReport } from "../../watcher/bot";
 import { SystemAdapterProxy } from "../adapters/proxy";
 
 const adapter = new SystemAdapterProxy();
 
 parentPort?.on("message", async (systemId: bcked.system.Id) => {
-    const res = await Promise.all([adapter.getDetails(systemId), adapter.update(systemId)]);
+    try {
+        const res = await Promise.all([adapter.getDetails(systemId), adapter.update(systemId)]);
 
-    parentPort?.postMessage(res);
+        parentPort?.postMessage(res);
+    } catch (error) {
+        console.error(error);
+        await sendErrorReport(error);
+        parentPort?.postMessage(null);
+    }
 });

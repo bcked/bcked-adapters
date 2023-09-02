@@ -34,6 +34,7 @@ jobs:
                   ALCHEMY_SOLANA: ${{ secrets.ALCHEMY_SOLANA }}
                   ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
                   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+                  BCKED_WATCHER_BOT_TOKEN: ${{ secrets.BCKED_WATCHER_BOT_TOKEN }}
               run: node ./src/crawler/job.js
             - name: Commit Results on records Branch
               uses: stefanzweifel/git-auto-commit-action@v4

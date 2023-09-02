@@ -1,10 +1,17 @@
 import { parentPort } from "worker_threads";
+import { sendErrorReport } from "../../watcher/bot";
 import { EntityAdapterProxy } from "../adapters/proxy";
 
 const adapter = new EntityAdapterProxy();
 
 parentPort?.on("message", async (entityId: bcked.entity.Id) => {
-    const res = await Promise.all([adapter.getDetails(entityId), adapter.update(entityId)]);
+    try {
+        const res = await Promise.all([adapter.getDetails(entityId), adapter.update(entityId)]);
 
-    parentPort?.postMessage(res);
+        parentPort?.postMessage(res);
+    } catch (error) {
+        console.error(error);
+        await sendErrorReport(error);
+        parentPort?.postMessage(null);
+    }
 });

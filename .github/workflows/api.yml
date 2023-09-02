@@ -40,6 +40,8 @@ jobs:
             - name: Install Dependencies
               run: npm ci
             - name: Execute API Job
+              env:
+                  BCKED_WATCHER_BOT_TOKEN: ${{ secrets.BCKED_WATCHER_BOT_TOKEN }}
               run: node ./src/api/job.js
             - name: Upload Artifact
               uses: actions/upload-pages-artifact@v2
