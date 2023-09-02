@@ -1,4 +1,19 @@
-import _ from "lodash";
+import _, { List, ListIteratee, Many } from "lodash";
+
+export function statsBy<T>(
+    collection: List<T> | null | undefined,
+    ...iteratees: Array<Many<ListIteratee<T>>>
+): { low: T; median: T; high: T } | null {
+    if (!collection?.length) return null;
+
+    const sorted = _.sortBy(collection, ...iteratees);
+    const mid = Math.floor(sorted.length / 2);
+    return {
+        low: sorted.at(0)!,
+        median: sorted.at(mid)!,
+        high: sorted.at(-1)!,
+    };
+}
 
 export function median(arr: number[]): number | undefined {
     if (!arr.length) return undefined;

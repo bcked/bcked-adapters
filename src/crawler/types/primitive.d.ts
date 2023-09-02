@@ -6,5 +6,12 @@ declare namespace primitive {
 
     type DateLike = string | number | Date | ISODateTimeString | ISODateString;
 
+    interface DateParts {
+        year?: string;
+        month?: string;
+        day?: string;
+        hour?: string;
+    }
+
     type URL = `https://${string}.${string}`;
 }

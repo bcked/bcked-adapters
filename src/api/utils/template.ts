@@ -11,11 +11,13 @@ export class Template {
     }
 
     keys(): string[] {
-        return ID.exec(this.template)?.slice(1) ?? [];
+        return _.map([...this.template.matchAll(ID)], 1);
     }
 
     values(str: string): string[] {
         const matcher = this.template.replaceAll(ID, ID_KEY);
+        // If no placeholder in template string, there can be no value parsing.
+        if (matcher == this.template) return [];
         return new RegExp(`^${matcher}$`).exec(str)?.slice(1) ?? [];
     }
 

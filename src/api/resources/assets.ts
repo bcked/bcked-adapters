@@ -1,3 +1,4 @@
+import fs from "fs";
 import { readdir } from "fs/promises";
 import path from "path";
 import { readJson } from "../../utils/files";
@@ -45,7 +46,7 @@ RESOURCES.register({
     // TODO write schema
     schema: {},
     loader: async ({ id }) => {
-        // const recordsPath = path.join(ASSETS_PATH, id, RECORDS);
+        const recordsPath = path.join(ASSETS_PATH, id, RECORDS);
         const resource = {
             $id: `/assets/${id}`,
             details: {
@@ -54,18 +55,19 @@ RESOURCES.register({
             icons: {
                 $ref: `/assets/${id}/icons`,
             },
-            // price: {
-            //     $ref: "/assets/{id}/prices/{timestamp}",
-            //     timestamp: "ISO Timestamp",
-            //     usd: "price in USD",
-            // },
+            price: fs.existsSync(path.join(recordsPath, "price.csv"))
+                ? {
+                      $ref: `/assets/${id}/price`,
+                  }
+                : null,
             // supply: {
-            //     timestamp: "ISO Timestamp",
-            //     supply: "count",
+            //     $ref: `/assets/{id}/supply`,
+            // },
+            // mcap: {
+            //     $ref: `/assets/{id}/mcap`,
             // },
             // backing: {
-            //     timestamp: "ISO Timestamp",
-            //     assetId: "count",
+            //     $ref: `/assets/${id}/backing`,
             // },
         };
 

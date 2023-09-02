@@ -7,7 +7,7 @@ import _ from "lodash";
 
 import { sortWithoutIndex } from "./array";
 import { ensurePath, readFirstLine, readLastLines } from "./files";
-import { isCloser } from "./time";
+import { getDateParts, isCloser } from "./time";
 
 /**
  * Read the headers of a CSV file.
@@ -72,6 +72,22 @@ export async function* readCSV<T>(pathToFile: string): AsyncGenerator<T> {
 
     for await (const data of stream) {
         yield data;
+    }
+}
+
+export async function* readCSVForDates<T extends { timestamp: primitive.ISODateTimeString }>(
+    pathToFile: string,
+    filter: primitive.DateParts
+): AsyncGenerator<T> {
+    for await (const data of readCSV<T>(pathToFile)) {
+        const parts = getDateParts(data.timestamp);
+        if (
+            Object.keys(filter)
+                .map((key) => key as "year" | "month" | "day" | "hour")
+                .every((key) => Number(filter[key]) === Number(parts[key]))
+        ) {
+            yield data;
+        }
     }
 }
 

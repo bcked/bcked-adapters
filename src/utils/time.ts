@@ -1,3 +1,6 @@
+import dateFormat from "dateformat";
+import { Template } from "../api/utils/template";
+
 export function secInMs(seconds: number): number {
     return seconds * 1000;
 }
@@ -57,4 +60,25 @@ export function* getDatesBetween(
     ) {
         yield new Date(timestamp);
     }
+}
+
+export function getDateParts(timestamp: primitive.DateLike): primitive.DateParts {
+    return {
+        year: dateFormat(timestamp, "UTC:yyyy"),
+        month: dateFormat(timestamp, "UTC:mm"),
+        day: dateFormat(timestamp, "UTC:dd"),
+        hour: dateFormat(timestamp, "UTC:HH"),
+    };
+}
+
+export function setDateParts(template: string, timestamp: primitive.DateLike): string {
+    const parts = getDateParts(timestamp);
+    return new Template(template).format(parts as Record<string, string>);
+}
+
+export function partsToDate(parts: primitive.DateParts): Date {
+    const isoString = new Template("{year}-{month}-{day}T{hour}:00:00.000Z").format(
+        parts as Record<string, string>
+    );
+    return new Date(isoString);
 }

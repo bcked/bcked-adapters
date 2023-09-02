@@ -1,5 +1,6 @@
 import { JsonResources } from "../utils/resources";
 import { RESOURCES as ASSET_RESOURCES } from "./assets";
+import { RESOURCES as ASSET_PRICE_RESOURCES } from "./assetsPrice";
 import { RESOURCES as ENTITY_RESOURCES } from "./entities";
 import { RESOURCES as SYSTEM_RESOURCES } from "./systems";
 
@@ -57,4 +58,4 @@ RESOURCES.register({
     },
 });
 
-RESOURCES.extend(ASSET_RESOURCES, ENTITY_RESOURCES, SYSTEM_RESOURCES);
+RESOURCES.extend(ASSET_RESOURCES, ENTITY_RESOURCES, SYSTEM_RESOURCES, ASSET_PRICE_RESOURCES);
