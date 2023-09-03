@@ -1,4 +1,4 @@
-timestamp,rwa:USTB,rwa:USTNOTE,rwa:USTrepo
+timestamp,underlying.rwa:USTB,underlying.rwa:USTNOTE,underlying.rwa:USTrepo
 2022-11-03T00:00:00.000Z,2509000000,,
 2022-11-04T00:00:00.000Z,2509000000,,
 2022-11-07T00:00:00.000Z,2959000000,,
