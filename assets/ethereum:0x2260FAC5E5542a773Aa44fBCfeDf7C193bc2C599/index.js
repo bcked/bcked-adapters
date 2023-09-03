@@ -60,7 +60,9 @@ class Adapter {
         return [
             {
                 timestamp: (0, string_formatting_1.toISOString)(Date.now()),
-                "bitcoin:BTC": holdings,
+                underlying: {
+                    "bitcoin:BTC": holdings,
+                },
             },
         ];
     }

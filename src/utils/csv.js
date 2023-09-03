@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.writeCsv = exports.writeToCsv = exports.rewriteCSV = exports.readCSVForDates = exports.readCSV = exports.readClosestEntry = exports.readLastEntry = exports.readHeaders = void 0;
 const csv_1 = require("csv");
 const sync_1 = require("csv/sync");
+const flat_1 = require("flat"); // Serialize nested data structures
 const fs_1 = __importDefault(require("fs"));
 const lodash_1 = __importDefault(require("lodash"));
 const array_1 = require("./array");
@@ -43,7 +44,7 @@ function castNumbers(value, context) {
  */
 async function readLastEntry(pathToFile) {
     const lines = await Promise.all([(0, files_1.readFirstLine)(pathToFile), (0, files_1.readLastLines)(pathToFile, 1)]);
-    return (0, sync_1.parse)(lines.join("\n"), { columns: true, cast: castNumbers })[0];
+    return (0, flat_1.unflatten)((0, sync_1.parse)(lines.join("\n"), { columns: true, cast: castNumbers })[0]);
 }
 exports.readLastEntry = readLastEntry;
 async function readClosestEntry(pathToFile, timestamp) {
@@ -61,14 +62,14 @@ async function readClosestEntry(pathToFile, timestamp) {
             break;
         }
     }
-    return closest;
+    return (0, flat_1.unflatten)(closest);
 }
 exports.readClosestEntry = readClosestEntry;
 async function* readCSV(pathToFile) {
     const parser = (0, csv_1.parse)({ columns: true, cast: castNumbers });
     const stream = fs_1.default.createReadStream(pathToFile).pipe(parser);
     for await (const data of stream) {
-        yield data;
+        yield (0, flat_1.unflatten)(data);
     }
 }
 exports.readCSV = readCSV;
@@ -103,7 +104,8 @@ async function rewriteCSV(pathToFile, targetHeader) {
 }
 exports.rewriteCSV = rewriteCSV;
 async function writeToCsv(pathToFile, row, index) {
-    let header = Object.keys(row);
+    const rowFlattened = (0, flat_1.flatten)(row);
+    let header = Object.keys(rowFlattened);
     // By default, take first key as index
     const headerIndex = index ?? header[0];
     const exists = fs_1.default.existsSync(pathToFile);
@@ -127,7 +129,7 @@ async function writeToCsv(pathToFile, row, index) {
             header: !exists,
             columns: (0, array_1.sortWithoutIndex)(header, headerIndex),
         });
-        stringifier.write(row);
+        stringifier.write(rowFlattened);
         stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);
         stringifier.end();
     });
@@ -136,7 +138,8 @@ exports.writeToCsv = writeToCsv;
 async function writeCsv(pathToFile, rows, index) {
     if (!rows.length)
         return;
-    const header = lodash_1.default.uniq(lodash_1.default.flatMap(rows, lodash_1.default.keys));
+    const rowsFlattened = rows.map((row) => (0, flat_1.flatten)(row));
+    const header = lodash_1.default.uniq(lodash_1.default.flatMap(rowsFlattened, lodash_1.default.keys));
     // By default, take first key as index
     const headerIndex = index ?? header[0];
     await (0, files_1.ensurePath)(pathToFile);
@@ -149,7 +152,7 @@ async function writeCsv(pathToFile, rows, index) {
             header: true,
             columns: (0, array_1.sortWithoutIndex)(header, headerIndex),
         });
-        for (const row of rows) {
+        for (const row of rowsFlattened) {
             stringifier.write(row);
         }
         stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);

@@ -47,7 +47,9 @@ class Adapter {
         return [
             {
                 timestamp,
-                "ethereum:ETH": balance,
+                underlying: {
+                    "ethereum:ETH": balance,
+                },
             },
         ];
     }
