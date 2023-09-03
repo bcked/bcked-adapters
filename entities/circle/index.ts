@@ -71,9 +71,9 @@ export default class Adapter implements bcked.entity.Adapter {
                 Object.entries(grouped).map(([asset, group]) => [asset, _.sumBy(group, "par")])
             );
 
-            const res = {
+            const res: bcked.asset.Backing = {
                 timestamp: toISOString(timestamp),
-                ...summed,
+                underlying: summed,
             };
 
             await writeToCsv(csvPath, res, "timestamp");
@@ -116,7 +116,9 @@ export default class Adapter implements bcked.entity.Adapter {
         const cashUsd = parseFloat(cashText) * 1000000000;
         const entry = {
             timestamp: dateFormat(parsedDate, "yyyy-mm-dd"),
-            "rwa:USD": cashUsd,
+            underlying: {
+                "rwa:USD": cashUsd,
+            },
         };
 
         await writeToCsv(csvPath, entry, "timestamp");
@@ -147,9 +149,13 @@ export default class Adapter implements bcked.entity.Adapter {
             );
             if (!cashReserves) continue;
 
-            const res = {
-                ..._.mergeWith(treasuryReserves, cashReserves, (a, b) => _.sum([a, b])),
+            const res: bcked.asset.Backing = {
                 timestamp: toISOString(timestamp),
+                underlying: _.mergeWith(
+                    treasuryReserves.underlying,
+                    cashReserves.underlying,
+                    (a, b) => _.sum([a, b])
+                ),
             };
 
             await writeToCsv(csvPath, res, "timestamp");
