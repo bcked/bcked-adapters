@@ -58,7 +58,7 @@ class Adapter {
             const summed = Object.fromEntries(Object.entries(grouped).map(([asset, group]) => [asset, lodash_1.default.sumBy(group, "par")]));
             const res = {
                 timestamp: (0, string_formatting_1.toISOString)(timestamp),
-                ...summed,
+                underlying: summed,
             };
             await (0, csv_1.writeToCsv)(csvPath, res, "timestamp");
         }
@@ -92,7 +92,9 @@ class Adapter {
         const cashUsd = parseFloat(cashText) * 1000000000;
         const entry = {
             timestamp: (0, dateformat_1.default)(parsedDate, "yyyy-mm-dd"),
-            "rwa:USD": cashUsd,
+            underlying: {
+                "rwa:USD": cashUsd,
+            },
         };
         await (0, csv_1.writeToCsv)(csvPath, entry, "timestamp");
     }
@@ -112,8 +114,8 @@ class Adapter {
             if (!cashReserves)
                 continue;
             const res = {
-                ...lodash_1.default.mergeWith(treasuryReserves, cashReserves, (a, b) => lodash_1.default.sum([a, b])),
                 timestamp: (0, string_formatting_1.toISOString)(timestamp),
+                underlying: lodash_1.default.mergeWith(treasuryReserves.underlying, cashReserves.underlying, (a, b) => lodash_1.default.sum([a, b])),
             };
             await (0, csv_1.writeToCsv)(csvPath, res, "timestamp");
         }
