@@ -83,7 +83,9 @@ export default class Adapter implements bcked.asset.Adapter {
         return [
             {
                 timestamp: toISOString(Date.now()),
-                "bitcoin:BTC": holdings,
+                underlying: {
+                    "bitcoin:BTC": holdings,
+                },
             },
         ];
     }

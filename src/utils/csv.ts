@@ -1,6 +1,7 @@
 import { parse, stringify } from "csv";
 import { CastingContext } from "csv-parse";
 import { parse as parseSync } from "csv/sync";
+import { flatten, unflatten } from "flat"; // Serialize nested data structures
 
 import fs from "fs";
 import _ from "lodash";
@@ -41,7 +42,7 @@ function castNumbers(value: string, context: CastingContext): string | number {
  */
 export async function readLastEntry<T extends object>(pathToFile: string): Promise<T> {
     const lines = await Promise.all([readFirstLine(pathToFile), readLastLines(pathToFile, 1)]);
-    return parseSync(lines.join("\n"), { columns: true, cast: castNumbers })[0];
+    return unflatten(parseSync(lines.join("\n"), { columns: true, cast: castNumbers })[0]);
 }
 
 export async function readClosestEntry<T extends object & { timestamp: primitive.DateLike }>(
@@ -63,7 +64,7 @@ export async function readClosestEntry<T extends object & { timestamp: primitive
             break;
         }
     }
-    return closest;
+    return unflatten(closest);
 }
 
 export async function* readCSV<T>(pathToFile: string): AsyncGenerator<T> {
@@ -71,7 +72,7 @@ export async function* readCSV<T>(pathToFile: string): AsyncGenerator<T> {
     const stream = fs.createReadStream(pathToFile).pipe(parser);
 
     for await (const data of stream) {
-        yield data;
+        yield unflatten(data);
     }
 }
 
@@ -115,7 +116,8 @@ export async function rewriteCSV(pathToFile: string, targetHeader: string[]) {
 }
 
 export async function writeToCsv(pathToFile: string, row: object, index?: string) {
-    let header = Object.keys(row);
+    const rowFlattened = flatten<object, object>(row);
+    let header = Object.keys(rowFlattened);
     // By default, take first key as index
     const headerIndex = index ?? header[0]!;
 
@@ -143,7 +145,7 @@ export async function writeToCsv(pathToFile: string, row: object, index?: string
             header: !exists, // Don't write the header on append
             columns: sortWithoutIndex(header, headerIndex),
         });
-        stringifier.write(row);
+        stringifier.write(rowFlattened);
         stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);
         stringifier.end();
     });
@@ -152,7 +154,9 @@ export async function writeToCsv(pathToFile: string, row: object, index?: string
 export async function writeCsv(pathToFile: string, rows: object[], index?: string) {
     if (!rows.length) return;
 
-    const header = _.uniq(_.flatMap(rows, _.keys));
+    const rowsFlattened = rows.map((row) => flatten(row));
+
+    const header = _.uniq(_.flatMap(rowsFlattened, _.keys));
     // By default, take first key as index
     const headerIndex = index ?? header[0]!;
 
@@ -166,7 +170,7 @@ export async function writeCsv(pathToFile: string, rows: object[], index?: strin
             header: true,
             columns: sortWithoutIndex(header, headerIndex),
         });
-        for (const row of rows) {
+        for (const row of rowsFlattened) {
             stringifier.write(row);
         }
         stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);

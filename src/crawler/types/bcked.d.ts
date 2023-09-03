@@ -121,7 +121,8 @@ declare namespace bcked {
 
         type Backing = {
             timestamp: primitive.ISODateTimeString;
-        } & Partial<Record<Id, number>>;
+            underlying: Partial<Record<Id, number>>;
+        };
 
         interface Adapter {
             getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;

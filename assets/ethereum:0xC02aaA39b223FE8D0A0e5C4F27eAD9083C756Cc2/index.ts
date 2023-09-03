@@ -61,7 +61,9 @@ export default class Adapter implements bcked.asset.Adapter {
         return [
             {
                 timestamp,
-                "ethereum:ETH": balance,
+                underlying: {
+                    "ethereum:ETH": balance,
+                },
             },
         ];
     }
