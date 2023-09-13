@@ -38,6 +38,16 @@ RESOURCES.register({
     },
 });
 
+async function preProcess(id: bcked.asset.Id) {
+    const recordsPath = path.join(ASSETS_PATH, id, RECORDS);
+    const priceCsv = path.join(recordsPath, "price.csv");
+    const supplyCsv = path.join(recordsPath, "supply.csv");
+    const backingCsv = path.join(recordsPath, "backing.csv");
+
+    // TODO match for backing table in asset dir
+    // TODO match for mcap table in asset dir
+}
+
 RESOURCES.register({
     path: "/assets/{id}",
     summary: "Get an asset",
@@ -46,6 +56,7 @@ RESOURCES.register({
     // TODO write schema
     schema: {},
     loader: async ({ id }) => {
+        await preProcess(id);
         const recordsPath = path.join(ASSETS_PATH, id, RECORDS);
         const resource = {
             $id: `/assets/${id}`,

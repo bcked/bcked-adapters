@@ -1,4 +1,5 @@
 import dateFormat from "dateformat";
+import _ from "lodash";
 import { Template } from "../api/utils/template";
 
 export function secInMs(seconds: number): number {
@@ -21,6 +22,22 @@ export function duration(first: primitive.DateLike, second: primitive.DateLike):
     return new Date(first).getTime() - new Date(second).getTime();
 }
 
+export function distance(reference: primitive.DateLike, date: primitive.DateLike): number {
+    return Math.abs(duration(reference, date));
+}
+
+export function distances(reference: primitive.DateLike, dates: primitive.DateLike[]): number[] {
+    return _.map(dates, (date) => distance(reference, date));
+}
+
+export function totalDistance(reference: primitive.DateLike, dates: primitive.DateLike[]): number {
+    return _.sum(distances(reference, dates));
+}
+
+export function maxDistance(reference: primitive.DateLike, dates: primitive.DateLike[]): number {
+    return _.max(distances(reference, dates))!;
+}
+
 export function isNewer(
     first: primitive.DateLike,
     second: primitive.DateLike,
@@ -34,7 +51,7 @@ export function isClose(
     second: primitive.DateLike,
     threshold: number
 ): boolean {
-    return Math.abs(duration(second, first)) <= threshold;
+    return distance(second, first) <= threshold;
 }
 
 export function isCloser(
@@ -42,7 +59,7 @@ export function isCloser(
     first: primitive.DateLike,
     second: primitive.DateLike
 ): boolean {
-    return Math.abs(duration(reference, first)) < Math.abs(duration(reference, second));
+    return distance(reference, first) < distance(reference, second);
 }
 
 export function* getDatesBetween(
@@ -81,4 +98,8 @@ export function partsToDate(parts: primitive.DateParts): Date {
         parts as Record<string, string>
     );
     return new Date(isoString);
+}
+
+export function minDate<T>(collection: (T | undefined)[] | null | undefined, iteratee: string) {
+    return _.min(_.map(_.map(_.compact(collection), iteratee), (item) => new Date(item).getTime()));
 }

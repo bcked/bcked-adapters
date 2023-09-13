@@ -37,6 +37,8 @@ RESOURCES.register({
     },
 });
 
+async function preProcess(id: bcked.system.Id) {}
+
 RESOURCES.register({
     path: "/systems/{id}",
     summary: "Get a system",
@@ -45,6 +47,7 @@ RESOURCES.register({
     // TODO write schema
     schema: {},
     loader: async ({ id }) => {
+        await preProcess(id);
         const resource = {
             $id: `/systems/${id}`,
             details: {

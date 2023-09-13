@@ -1,6 +1,8 @@
+import { hoursToMilliseconds } from "date-fns";
 import _ from "lodash";
-import { round } from "./math";
+import { inverse, round } from "./math";
 import { toISOString } from "./string_formatting";
+import { duration, isNewer, maxDistance, minDate, totalDistance } from "./time";
 
 const SECOND_IN_MS = 1000;
 const MINUTE_IN_MS = 60 * SECOND_IN_MS;
@@ -139,10 +141,193 @@ export function sortWithoutIndex(array: string[], index: string): string[] {
     return _.concat(index, _.without(array, index).sort());
 }
 
-export async function fromAsync<T>(iter: AsyncIterable<T>): Promise<T[]> {
+export async function fromAsync<T>(iter: AsyncIterableIterator<T>): Promise<T[]> {
     const out: T[] = [];
     for await (const item of iter) {
         out.push(item);
     }
     return out;
+}
+
+export async function* toAsync<T>(arr: Iterable<T>): AsyncIterableIterator<T> {
+    for (const item of arr) {
+        yield item;
+    }
+}
+
+/**
+ * Read time series entries with timestamps of multiple lists with dynamically adjusted read speed.
+ *
+ * The lists are required to be sorted based on the timestamp, starting with the oldest.
+ *
+ * @param lists
+ */
+export async function* readTimeSeries<T extends { timestamp: primitive.DateLike }>(
+    lists: AsyncIterableIterator<T>[],
+    resolutionUpdateWeight = 0.9
+): AsyncIterableIterator<{ index: number; item: T }> {
+    let resolutionAvg: number[] = Array(lists.length).fill(hoursToMilliseconds(1)); // Start with equal weighting
+    let moreEntries: boolean[] = Array(lists.length);
+    let latestEntries: number[] = Array(lists.length); // Read head of the latest timestamps in MS
+    do {
+        // Compute ratio between average resolutions to dynamically adjust iteration speed for each list (lower bound by 1)
+        const minRes = _.min(resolutionAvg)!;
+        // There is an inverse relation between duration and ratio. The smaller the duration, the larger the batch should be.
+        const resolutionRatio = inverse(
+            resolutionAvg.map((avg) => Math.max(Math.floor(avg / minRes), 1))
+        );
+
+        for (const [index, list] of lists.entries()) {
+            for (let i = 0; i < resolutionRatio[index]!; i++) {
+                const { value: item, done } = await list.next();
+                moreEntries[index] = !done!;
+
+                if (done) break;
+
+                yield { index, item };
+
+                if (latestEntries[index] != undefined) {
+                    const currentDuration = duration(item.timestamp, latestEntries[index]!);
+                    resolutionAvg[index] =
+                        resolutionUpdateWeight * resolutionAvg[index]! +
+                        (1.0 - resolutionUpdateWeight) * currentDuration;
+                }
+                latestEntries[index] = new Date(item.timestamp).getTime();
+            }
+        }
+    } while (moreEntries.includes(true));
+}
+
+export async function* combinations<T>(
+    lists: AsyncIterableIterator<T>[],
+    index = 0,
+    current: T[] = []
+): AsyncIterableIterator<T[]> {
+    if (index === lists.length) {
+        yield current;
+        return;
+    }
+
+    for await (const item of lists[index]!) {
+        yield* combinations(lists, index + 1, [...current, item]);
+    }
+}
+
+/**
+ * Read time series entries with timestamps of multiple lists with dynamically adjusted read speed.
+ *
+ * The lists are required to be sorted based on the timestamp, starting with the oldest.
+ *
+ * @param lists
+ */
+export async function* combinationsForTimeWindow<T extends { timestamp: primitive.DateLike }>(
+    indexedEntries: AsyncIterableIterator<{ index: number; item: T }>,
+    length: number,
+    window: number = hoursToMilliseconds(12)
+): AsyncIterableIterator<T[]> {
+    let cache: T[][] = _.map(Array(length), () => []); // this is needed like that to create independent list instances
+
+    for await (const { index, item } of indexedEntries) {
+        let lastEntries = cache.map((list) => list.at(-1));
+        lastEntries[index] = item;
+        const minTimeOfLatestsEntries = minDate(lastEntries, "timestamp")!;
+
+        // When latest entries are newer than the time window, remove respective items from the cache.
+        for (const list of cache) {
+            let removeIndex: number | undefined = undefined;
+            for (const [cacheIndex, entry] of list.entries()) {
+                if (!isNewer(entry.timestamp, minTimeOfLatestsEntries, window)) break;
+                removeIndex = cacheIndex;
+            }
+            if (removeIndex != undefined) {
+                list.splice(0, removeIndex + 1); // Remove from cache
+            }
+        }
+
+        cache[index]!.push(item);
+
+        // If there aren't items in all lists, continue.
+        if (cache.some(_.isEmpty)) continue;
+
+        // Build combinations. For the current index only provide the current item to combine with.
+        for await (const combination of combinations(
+            cache.map((value, i) => toAsync(i === index ? [item] : value))
+        )) {
+            if (maxDistance(combination[0]!.timestamp, _.map(combination, "timestamp")) <= window) {
+                yield combination;
+            }
+        }
+    }
+}
+
+export function* closestForTimestamps<T extends { timestamp: primitive.DateLike }>(
+    list: Array<T[]>
+): IterableIterator<{ index: number; match: T[] }> {
+    let match: T[] | undefined = undefined;
+    let index: number | undefined = undefined;
+    for (const [entryIndex, entry] of list.entries()) {
+        index = entryIndex;
+        const entryTime = entry[0]!.timestamp;
+
+        if (match == undefined) {
+            match = entry;
+            continue;
+        }
+
+        const closestTime = match[0]!.timestamp;
+        if (closestTime != entryTime) {
+            yield { index, match };
+            match = entry;
+            continue;
+        }
+
+        if (
+            totalDistance(closestTime, _.map(entry, "timestamp")) <
+            totalDistance(closestTime, _.map(match, "timestamp"))
+        ) {
+            match = entry;
+            continue;
+        }
+    }
+    // When not yielded yet, yield the closest match
+    if (index != undefined && match != undefined) {
+        yield { index, match };
+    }
+}
+
+/**
+ * Match entries with timestamps of multiple lists.
+ *
+ * The lists are required to be sorted based on the timestamp, starting with the oldest.
+ *
+ * @param lists
+ */
+export async function* matchOnTimestamp<T extends { timestamp: primitive.DateLike }>(
+    lists: AsyncIterableIterator<T>[],
+    window: number = hoursToMilliseconds(12),
+    resolutionUpdateWeight = 0.9
+): AsyncIterableIterator<T[]> {
+    const entries = readTimeSeries(lists, resolutionUpdateWeight);
+    const combinations = combinationsForTimeWindow(entries, lists.length, window);
+
+    let cache = Array<T[]>();
+
+    for await (const combination of combinations) {
+        const minTime = minDate(combination, "timestamp")!;
+
+        let removeIndex: number | undefined = undefined;
+        for (const { index, match } of closestForTimestamps(cache)) {
+            if (!isNewer(minTime!, match[0]!.timestamp, window)) break;
+            yield match;
+            removeIndex = index;
+        }
+        if (removeIndex != undefined) {
+            cache.splice(0, removeIndex + 1);
+        }
+        cache.push(combination);
+    }
+
+    for (const { match } of closestForTimestamps(cache)) {
+        yield match;
+    }
 }

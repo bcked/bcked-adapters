@@ -37,6 +37,8 @@ RESOURCES.register({
     },
 });
 
+async function preProcess(id: bcked.entity.Id) {}
+
 RESOURCES.register({
     path: "/entities/{id}",
     summary: "Get a entity",
@@ -45,6 +47,7 @@ RESOURCES.register({
     // TODO write schema
     schema: {},
     loader: async ({ id }) => {
+        await preProcess(id);
         const resource = {
             $id: `/entities/${id}`,
             details: {

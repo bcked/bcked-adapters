@@ -38,5 +38,6 @@
     "svg.minify.removeScriptElement": true,
     "svg.minify.sortAttrs": true,
     "svg.minify.removeViewBox": false,
-    "svg.preview.autoShow": true
+    "svg.preview.autoShow": true,
+    "jest.autoRun": "off"
 }

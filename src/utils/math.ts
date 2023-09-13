@@ -106,3 +106,30 @@ export function uniformity(values: number[]): number {
     const uniformDistribution = Array(values.length).fill(1 / values.length);
     return 1 - jsDistance(valuePercentages, uniformDistribution);
 }
+
+/**
+ * Swap values based on their values.
+ *
+ * The smallest value should swap place with the largest.
+ * The second smallest with the second largest.
+ * And so on.
+ */
+export function inverse(inputList: number[]): number[] {
+    // Input example: [8, 5, 30, 1, 70, 4]
+
+    // Create an array of objects to store the original values and indices
+    // Example: [{ value: 8, index: 0}, { value: 5, index: 1}, { value: 30, index: 2}, { value: 1, index: 3}, { value: 70, index: 4}, { value: 4, index: 5}]
+    const indexedList = inputList.map((value, index) => ({ value, index }));
+
+    // Sort the indexed list by values in ascending order
+    // Example: [{ value: 1, index: 3}, { value: 4, index: 5}, { value: 5, index: 1}, { value: 8, index: 0}, { value: 30, index: 2}, { value: 70, index: 4}]
+    indexedList.sort((a, b) => a.value - b.value);
+
+    // Write back to index in inverted index order.
+    let result = Array(inputList.length);
+    for (const [index, item] of indexedList.entries()) {
+        result[indexedList[indexedList.length - 1 - index]!.index] = item.value;
+    }
+
+    return result;
+}
