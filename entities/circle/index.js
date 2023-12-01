@@ -71,7 +71,7 @@ class Adapter {
             return;
         const $ = await new Promise((resolve, reject) => {
             this.crawler.direct({
-                uri: "https://www.circle.com/en/usdc",
+                uri: "https://www.circle.com/en/transparency",
                 callback: (error, response) => {
                     if (error) {
                         reject(error);
