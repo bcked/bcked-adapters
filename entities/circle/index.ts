@@ -90,7 +90,7 @@ export default class Adapter implements bcked.entity.Adapter {
 
         const $ = await new Promise<cheerio.CheerioAPI>((resolve, reject) => {
             this.crawler.direct({
-                uri: "https://www.circle.com/en/usdc",
+                uri: "https://www.circle.com/en/transparency",
                 callback: (error, response) => {
                     if (error as Error | null) {
                         reject(error);
