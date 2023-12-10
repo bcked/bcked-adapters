@@ -402,7 +402,6 @@ export async function* matchOnTimestamp(
         let removeIndex: number | undefined = undefined;
         for (const { index, match } of closestForTimestamps(cache)) {
             if (!isNewer(match[0]!.timestamp, combination[0]!.timestamp!, window)) break;
-            console.log(`match: ${match}`);
             yield match;
             removeIndex = index;
         }

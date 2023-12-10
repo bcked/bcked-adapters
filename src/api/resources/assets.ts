@@ -61,6 +61,11 @@ type BackingPriceEntry = {
     underlying: {
         [underlyingId: bcked.asset.Id]: {
             amount: number;
+            price: // TODO remove again
+            | {
+                      usd: number;
+                  }
+                | undefined;
             value:
                 | {
                       usd: number;
@@ -114,10 +119,6 @@ async function* matchBackingPrices(
             underlying: {},
         };
 
-        if (backing.timestamp.startsWith("2023-07-09T08")) {
-            console.log(backing.timestamp);
-        }
-
         for (const [underlyingId, underlyingPriceMatch] of _.zip(
             underlyingIds,
             underlyingPriceMatches
@@ -137,6 +138,7 @@ async function* matchBackingPrices(
             }
 
             const amount = backing.underlying[underlyingId!]!;
+            // console.log(`${entry.timestamp}: ${amount} at $${element.price.usd}`);
             var value = undefined;
             if (element.price?.timestamp === backing.timestamp) {
                 value = {
@@ -144,7 +146,7 @@ async function* matchBackingPrices(
                 };
             }
 
-            entry.underlying[underlyingId!] = { amount, value };
+            entry.underlying[underlyingId!] = { amount, value, price: element.price };
         }
 
         yield entry;
@@ -173,6 +175,9 @@ async function preProcess(id: bcked.asset.Id) {
 
     if (!fs.existsSync(priceCsv) || !fs.existsSync(supplyCsv) || !fs.existsSync(backingCsv)) return;
 
+    // for await (const t of matchBackingPrices(id)){
+    //     console.log(`${t.timestamp}: ${t.underlying['bitcoin:BTC'].}`);
+    // }
     const test = await fromAsync(matchBackingPrices(id));
     console.log(test);
     // readCSV(priceCsv);
