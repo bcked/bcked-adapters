@@ -1,5 +1,6 @@
 import { hoursToMilliseconds } from "date-fns";
 import _ from "lodash";
+import MersenneTwister from "mersenne-twister";
 import { inverse, round } from "./math";
 import { toISOString } from "./string_formatting";
 import { duration, isNewer, maxDistance, minDate, totalDistance } from "./time";
@@ -414,5 +415,34 @@ export async function* matchOnTimestamp(
     // Yield the rest of the matches in cache
     for (const { match } of closestForTimestamps(cache)) {
         yield match;
+    }
+}
+
+export class ReservoirSampler<T> {
+    private reservoir: T[];
+    private count: number; // Number of items inserted so far
+    private generator: MersenneTwister; // Make sampler deterministic
+
+    constructor(private readonly size: number) {
+        this.reservoir = [];
+        this.count = 0;
+        this.generator = new MersenneTwister(1234567890);
+    }
+
+    insert(value: T) {
+        this.count++;
+        if (this.reservoir.length < this.size) {
+            this.reservoir.push(value);
+        } else {
+            const index = Math.floor(this.generator.random() * this.count);
+            // Items are inserted with a decreasing probability
+            if (index < this.size) {
+                this.reservoir[index] = value;
+            }
+        }
+    }
+
+    get values(): T[] {
+        return this.reservoir;
     }
 }

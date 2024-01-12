@@ -1,4 +1,4 @@
-import _, { List, ListIteratee, Many } from "lodash";
+import _, { List, ListIteratee, Many, PropertyPath } from "lodash";
 
 export function statsBy<T>(
     collection: List<T> | null | undefined,
@@ -13,6 +13,17 @@ export function statsBy<T>(
         median: sorted.at(mid)!,
         high: sorted.at(-1)!,
     };
+}
+
+export function medianBy<TObject extends object, TKey extends keyof TObject>(
+    collection: TObject[] | null | undefined,
+    path: TKey | PropertyPath
+): TObject | null {
+    if (!collection?.length) return null;
+
+    const sorted = _.sortBy(collection, path);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.at(mid)!;
 }
 
 export function median(arr: number[]): number | undefined {
