@@ -6,7 +6,7 @@ import { flatten, unflatten } from "flat"; // Serialize nested data structures
 import fs from "fs";
 import _ from "lodash";
 
-import { sortWithoutIndex } from "./array";
+import { enumerate, sortWithoutIndex } from "./array";
 import { ensurePath, readFirstLine, readLastLines } from "./files";
 import { getDateParts, isCloser } from "./time";
 
@@ -67,12 +67,55 @@ export async function readClosestEntry<T extends object & { timestamp: primitive
     return unflatten(closest);
 }
 
+/**
+ * Counts the number of rows in a CSV file, excluding the header.
+ *
+ * @param pathToFile - The path to the CSV file.
+ * @returns A promise that resolves to the number of rows in the file.
+ */
+async function countRows(pathToFile: string): Promise<number> {
+    const stream = fs.createReadStream(pathToFile);
+    let linesCount = 0;
+    let endedWithLineBreak = false;
+
+    for await (const chunk of stream) {
+        const chunkString = chunk.toString();
+        endedWithLineBreak = chunkString.endsWith("\n");
+        // Count the line breaks in the current chunk of data
+        linesCount += (chunkString.match(/\n/g) || []).length;
+    }
+
+    if (!endedWithLineBreak) {
+        // Add 1 if the file didn't end with a line break
+        linesCount += 1;
+    }
+
+    return linesCount - 1; // Don't count the header
+}
+
 export async function* readCSV<T>(pathToFile: string): AsyncGenerator<T> {
     const parser = parse({ columns: true, cast: castNumbers });
     const stream = fs.createReadStream(pathToFile).pipe(parser);
 
-    for await (const data of stream) {
-        yield unflatten(data);
+    for await (const row of stream) {
+        yield unflatten(row);
+    }
+}
+
+/**
+ * Asynchronously reads a CSV file and yields each row along with its index and total number of rows.
+ * @template T The type of data in each row.
+ * @param pathToFile The path to the CSV file.
+ * @returns {AsyncGenerator<{ data: T; index: number; total: number }>} An async generator that yields each row along with its index and total number of rows.
+ */
+export async function* readCSVWithMeta<T>(
+    pathToFile: string
+): AsyncGenerator<{ row: T; index: number; total: number }> {
+    const total = await countRows(pathToFile);
+    let index = 0;
+    for await (const row of readCSV<T>(pathToFile)) {
+        yield { row, index, total };
+        index++;
     }
 }
 
@@ -115,65 +158,50 @@ export async function rewriteCSV(pathToFile: string, targetHeader: string[]) {
     await fs.promises.rename(tempPath, pathToFile);
 }
 
-export async function writeToCsv(pathToFile: string, row: object, index?: string) {
-    const rowFlattened = flatten<object, object>(row);
-    let header = Object.keys(rowFlattened);
-    // By default, take first key as index
-    const headerIndex = index ?? header[0]!;
+export async function writeToCsv(
+    pathToFile: string,
+    rows: AsyncIterableIterator<object>,
+    index?: string
+) {
+    await ensurePath(pathToFile);
 
-    const exists = fs.existsSync(pathToFile);
-    if (exists) {
-        const existingHeader = await readHeaders(pathToFile);
-        const newHeaders = _.difference(header, existingHeader);
+    const writableStream = fs.createWriteStream(pathToFile, {
+        flags: "a",
+        encoding: "utf-8",
+    });
+    let stringifier;
 
-        // Get combined header
-        header = sortWithoutIndex(_.union(existingHeader, header), headerIndex);
+    for await (const [i, row] of enumerate(rows)) {
+        const rowFlattened = flatten<object, object>(row);
+        if (i === 0) {
+            // Ensure header consistency
+            let header = Object.keys(rowFlattened);
+            // By default, take first key as index
+            const headerIndex = index ?? header[0]!;
 
-        if (newHeaders.length) {
-            // Rewrite CSV to fill old entries for new headers
-            await rewriteCSV(pathToFile, header);
+            const exists = fs.existsSync(pathToFile);
+            if (exists) {
+                const existingHeader = await readHeaders(pathToFile);
+                const newHeaders = _.difference(header, existingHeader);
+
+                // Get combined header
+                header = sortWithoutIndex(_.union(existingHeader, header), headerIndex);
+
+                if (newHeaders.length) {
+                    // Rewrite CSV to fill old entries for new headers
+                    await rewriteCSV(pathToFile, header);
+                }
+            }
+
+            stringifier = stringify({
+                header: !exists, // Don't write the header on append
+                columns: sortWithoutIndex(header, headerIndex),
+            });
+            stringifier.pipe(writableStream);
         }
+
+        stringifier!.write(rowFlattened);
     }
 
-    await ensurePath(pathToFile);
-    await new Promise((resolve, reject) => {
-        const writableStream = fs.createWriteStream(pathToFile, {
-            flags: "a",
-            encoding: "utf-8",
-        });
-        const stringifier = stringify({
-            header: !exists, // Don't write the header on append
-            columns: sortWithoutIndex(header, headerIndex),
-        });
-        stringifier.write(rowFlattened);
-        stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);
-        stringifier.end();
-    });
-}
-
-export async function writeCsv(pathToFile: string, rows: object[], index?: string) {
-    if (!rows.length) return;
-
-    const rowsFlattened = rows.map((row) => flatten(row));
-
-    const header = _.uniq(_.flatMap(rowsFlattened, _.keys));
-    // By default, take first key as index
-    const headerIndex = index ?? header[0]!;
-
-    await ensurePath(pathToFile);
-    await new Promise((resolve, reject) => {
-        const writableStream = fs.createWriteStream(pathToFile, {
-            flags: "w",
-            encoding: "utf-8",
-        });
-        const stringifier = stringify({
-            header: true,
-            columns: sortWithoutIndex(header, headerIndex),
-        });
-        for (const row of rowsFlattened) {
-            stringifier.write(row);
-        }
-        stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);
-        stringifier.end();
-    });
+    stringifier!.end();
 }

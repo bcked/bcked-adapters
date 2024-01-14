@@ -1,5 +1,6 @@
 import _ from "lodash";
 import path from "path";
+import { toAsync } from "../../utils/array";
 import { getLatest } from "../../utils/cache";
 import { writeToCsv } from "../../utils/csv";
 import { readJson, writeJson } from "../../utils/files";
@@ -142,13 +143,11 @@ export class AssetAdapterProxy extends AdapterCache<bcked.asset.Adapter> {
         const adapter = await this.getAdapterInstance("assets", assetId);
 
         const price = await adapter.getPrice(lastRecorded);
-        const entries = _.sortBy(price, "timestamp");
+        const entries = _.sortBy(price, "timestamp").filter((entry) =>
+            isNewEntry(lastRecorded, entry, minInMs(10))
+        );
 
-        for (const entry of entries) {
-            if (isNewEntry(lastRecorded, entry, minInMs(10))) {
-                await writeToCsv(csvPath, entry, "timestamp");
-            }
-        }
+        await writeToCsv(csvPath, toAsync(entries), "timestamp");
 
         return entries;
     }
@@ -164,13 +163,11 @@ export class AssetAdapterProxy extends AdapterCache<bcked.asset.Adapter> {
         const adapter = await this.getAdapterInstance("assets", assetId);
 
         const supply = await adapter.getSupply(lastRecorded);
-        const entries = _.sortBy(supply, "timestamp");
+        const entries = _.sortBy(supply, "timestamp").filter((entry) =>
+            isNewEntry(lastRecorded, entry, minInMs(10))
+        );
 
-        for (const entry of entries) {
-            if (isNewEntry(lastRecorded, entry, minInMs(10))) {
-                await writeToCsv(csvPath, entry, "timestamp");
-            }
-        }
+        await writeToCsv(csvPath, toAsync(entries), "timestamp");
 
         return entries;
     }
@@ -186,13 +183,11 @@ export class AssetAdapterProxy extends AdapterCache<bcked.asset.Adapter> {
         const adapter = await this.getAdapterInstance("assets", assetId);
 
         const backing = await adapter.getBacking(lastRecorded);
-        const entries = _.sortBy(backing, "timestamp");
+        const entries = _.sortBy(backing, "timestamp").filter((entry) =>
+            isNewEntry(lastRecorded, entry, minInMs(10))
+        );
 
-        for (const entry of entries) {
-            if (isNewEntry(lastRecorded, entry, minInMs(10))) {
-                await writeToCsv(csvPath, entry, "timestamp");
-            }
-        }
+        await writeToCsv(csvPath, toAsync(entries), "timestamp");
 
         return entries;
     }

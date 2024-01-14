@@ -1,7 +1,13 @@
 import _ from "lodash";
 import path from "node:path";
 import { fromAsync } from "../../utils/array";
-import { readCSV, readCSVForDates, readClosestEntry, readLastEntry } from "../../utils/csv";
+import {
+    readCSV,
+    readCSVForDates,
+    readCSVWithMeta,
+    readClosestEntry,
+    readLastEntry,
+} from "../../utils/csv";
 import { statsBy } from "../../utils/math";
 import { getDateParts, partsToDate, setDateParts } from "../../utils/time";
 import { JsonResources } from "../utils/resources";
@@ -77,8 +83,34 @@ RESOURCES.register({
     type: "AssetPriceSummary",
     // TODO write schema
     schema: {},
-    loader: async ({ id }) => {
+    populateCache: async function* ({ id }) {
+        while (true) {
+            const { row, index, total } = yield;
+
+            console.log(row);
+
+            const { year, month, day, hour } = getDateParts(row.timestamp);
+
+            // TODO call other populateCache functions
+            `/assets/${id}/price/${year}/${month}/${day}/${hour}`;
+
+            // Reached the end of the file
+            if (index === total - 1) break;
+        }
+
+        // TODO store to cache
+    },
+    loader: async ({ id, populateCache }) => {
         const filePath = path.join(ASSETS_PATH, id, RECORDS, "price.csv");
+
+        // const { populateCache } = RESOURCES.matchLoader(`/assets/{id}/price/all-time`);
+
+        // const priceCache = populateCache(id);
+
+        for await (const entry of readCSVWithMeta<bcked.asset.Price>(filePath)) {
+            populateCache.next(entry);
+            console.log(entry);
+        }
 
         const entries = await fromAsync(readCSV<bcked.asset.Price>(filePath));
 

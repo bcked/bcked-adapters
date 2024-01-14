@@ -28,7 +28,9 @@ async function generateOasSchema() {
     );
 }
 
-async function job() {
+async function job(name: string) {
+    console.time(name);
+
     if (process[REGISTER_INSTANCE]) {
         process.env.DEV_MODE = "true";
     }
@@ -36,6 +38,8 @@ async function job() {
     await jsonifyRefs("/");
 
     await generateOasSchema();
+
+    console.timeEnd(name);
 }
 
-job();
+job("API Job");

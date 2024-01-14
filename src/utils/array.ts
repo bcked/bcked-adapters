@@ -418,6 +418,23 @@ export async function* matchOnTimestamp(
     }
 }
 
+/**
+ * The enumerate method adds a counter to an iterable and returns it in the form of an enumerating object.
+ * @param items The async iterable to enumerate.
+ * @param start The index to start with.
+ * @returns Returns an iterator with index and element pairs from the original iterable.
+ */
+export async function* enumerate<T>(
+    items: AsyncIterableIterator<T>,
+    start: number = 0
+): AsyncIterableIterator<[number, T]> {
+    let index = start;
+    for await (const item of items) {
+        yield [index, item];
+        index++;
+    }
+}
+
 export class ReservoirSampler<T> {
     private reservoir: T[];
     private count: number; // Number of items inserted so far

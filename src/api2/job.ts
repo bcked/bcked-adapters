@@ -1,0 +1,54 @@
+import _ from "lodash";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { PATHS } from "../paths";
+import { writeJson } from "../utils/files";
+import { job } from "../utils/job";
+import { executeInWorkerPool } from "../utils/worker_pool";
+import { INDEX_RESOURCES } from "./resources";
+import { ASSET_RESOURCES } from "./resources/assets";
+import { ENTITY_RESOURCES } from "./resources/entities";
+import { SYSTEM_RESOURCES } from "./resources/systems";
+import { JsonResources } from "./utils/resources";
+
+const WORKERS_PATH = "src/api2/workers";
+
+async function compile<Result>(
+    dir: string,
+    workerScript: string,
+    resources: JsonResources | undefined = undefined
+): Promise<Array<Result | null>> {
+    const ids = await fs.readdir(dir);
+
+    if (resources) {
+        await resources.index(ids);
+    }
+
+    const workerScriptPath = path.resolve(WORKERS_PATH, workerScript);
+    return executeInWorkerPool<string, Result>(workerScriptPath, ids);
+}
+
+async function generateOasSchema() {
+    INDEX_RESOURCES.extend(ENTITY_RESOURCES, SYSTEM_RESOURCES, ASSET_RESOURCES);
+    const oasSchema = _.pick(INDEX_RESOURCES.spec, [
+        "openapi",
+        "info",
+        "servers",
+        "paths",
+        "components",
+        "tags",
+    ]);
+    writeJson(`${PATHS.api}/openapi.json`, oasSchema);
+    return oasSchema;
+}
+
+job("API Job", async () => {
+    await Promise.all([
+        INDEX_RESOURCES.index(),
+        compile(PATHS.entities, "compile_entity.ts", ENTITY_RESOURCES),
+        compile(PATHS.systems, "compile_system.ts", SYSTEM_RESOURCES),
+        compile(PATHS.assets, "compile_asset.ts", ASSET_RESOURCES),
+        compile(PATHS.assets, "precompile_backing.ts"),
+        generateOasSchema(),
+    ]);
+});
