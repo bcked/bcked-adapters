@@ -11,7 +11,7 @@ parentPort?.on("message", async (entityId: bcked.entity.Id) => {
         parentPort?.postMessage(res);
     } catch (error) {
         console.error(error);
-        await sendErrorReport(error);
+        await sendErrorReport(`/entities/${entityId}`, error);
         parentPort?.postMessage(null);
     }
 });

@@ -5,7 +5,7 @@ const LOGS_CHANNEL = "@bcked_logs";
 
 const bot = new TelegramBot(process.env.BCKED_WATCHER_BOT_TOKEN!, { polling: false });
 
-export async function sendErrorReport(error: any) {
+export async function sendErrorReport(subject: string, error: any) {
     try {
         let logMessage = "";
         if (axios.isAxiosError(error)) {
@@ -31,6 +31,12 @@ export async function sendErrorReport(error: any) {
         } else {
             logMessage = error.toString();
         }
+
+        logMessage = [
+            `Subject: ${subject}`,
+            `Date: ${new Date().toISOString()}`,
+            `Log: ${logMessage}`,
+        ].join("\n");
 
         await bot.sendMessage(LOGS_CHANNEL, logMessage);
     } catch (error) {

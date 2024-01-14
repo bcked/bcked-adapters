@@ -11,7 +11,7 @@ parentPort?.on("message", async (systemId: bcked.system.Id) => {
         parentPort?.postMessage(res);
     } catch (error) {
         console.error(error);
-        await sendErrorReport(error);
+        await sendErrorReport(`/systems/${systemId}`, error);
         parentPort?.postMessage(null);
     }
 });

@@ -18,7 +18,7 @@ parentPort?.on("message", async (assetId: bcked.asset.Id) => {
         parentPort?.postMessage(res);
     } catch (error) {
         console.error(error);
-        await sendErrorReport(error);
+        await sendErrorReport(`/assets/${assetId}`, error);
         parentPort?.postMessage(null);
     }
 });
