@@ -4,6 +4,7 @@ import { sendErrorReport } from "../../watcher/bot";
 
 import { hoursToMilliseconds } from "date-fns";
 import { existsSync } from "fs";
+import { unlink } from "fs/promises";
 import path from "path";
 import { readCSV, writeToCsv } from "../../utils/csv";
 import { distance, isNewer } from "../../utils/time";
@@ -146,12 +147,14 @@ async function* matchBackingPrices(
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     try {
         console.log(`Precompiling backing prices for asset ${id}`);
+        const filePath = path.join(PATHS.assets, id, "records", "backing_value.csv");
+
+        // Delete file if it already exists
+        // TODO Later change this to start at the current date and only append changes
+        await unlink(filePath).catch(() => {});
+
         const backingPrices = matchBackingPrices(id);
-        await writeToCsv(
-            path.join(PATHS.assets, id, "records", "backing_value.csv"),
-            backingPrices,
-            "timestamp"
-        );
+        await writeToCsv(filePath, backingPrices, "timestamp");
 
         parentPort?.postMessage(null);
     } catch (error) {

@@ -443,10 +443,10 @@ export function isAsyncIterator(obj: any) {
     return aIter === obj;
 }
 
-export async function* concat<T>(...iterables: (AsyncIterableIterator<T> | T)[]) {
+export async function* concat<T>(...iterables: (AsyncIterable<T> | T)[]) {
     for (const iterable of iterables) {
         if (isAsyncIterator(iterable)) {
-            yield* iterable as AsyncIterableIterator<T>;
+            yield* iterable as AsyncIterable<T>;
         } else {
             yield iterable as T;
         }

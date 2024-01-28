@@ -79,3 +79,11 @@ export class Stats<TObject extends object, TKey extends keyof TObject> {
         };
     }
 }
+
+export async function getFirstElement<T>(
+    stream: AsyncIterable<T>
+): Promise<[T | undefined, AsyncIterable<T>]> {
+    const iterator = stream[Symbol.asyncIterator]();
+    const firstElement = await iterator.next();
+    return [firstElement.value, stream];
+}

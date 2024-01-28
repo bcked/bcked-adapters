@@ -12,16 +12,7 @@ import { ensurePath, readFirstLine, readLastLines } from "./files";
 import { getDateParts, isCloser } from "./time";
 
 import { pipeline } from "stream/promises";
-
-/**
- * Read the headers of a CSV file.
- * @param pathToFile The file path to the file to be read.
- * @returns The headers in an array.
- */
-export async function readHeaders(pathToFile: string): Promise<string[]> {
-    const line = await readFirstLine(pathToFile);
-    return parseSync(line)[0];
-}
+import { getFirstElement } from "./stream";
 
 function castNumbers(value: string, context: CastingContext): string | number {
     if (context.header) return value;
@@ -77,6 +68,7 @@ export async function readClosestEntry<T extends object & { timestamp: primitive
  * @returns A promise that resolves to the number of rows in the file.
  */
 async function countRows(pathToFile: string): Promise<number> {
+    // TODO still needed?
     const stream = fs.createReadStream(pathToFile);
     let linesCount = 0;
     let endedWithLineBreak = false;
@@ -111,6 +103,19 @@ export async function* readCSV<T>(pathToFile: string): AsyncGenerator<T> {
     }
 }
 
+async function readHeadersFromStream<T>(
+    rows: AsyncIterable<T>
+): Promise<[AsyncGenerator<T, void, undefined>, string[]] | [undefined, undefined]> {
+    // Read the first row to get the header
+    const [value, _rows] = await getFirstElement(rows);
+    if (!value || !_rows) return [undefined, undefined];
+
+    const rowFlattened = flatten<object, object>(value);
+    // Ensure header consistency
+    let header = Object.keys(rowFlattened);
+    return [concat(value, _rows), header];
+}
+
 /**
  * Asynchronously reads a CSV file and yields each row along with its index and total number of rows.
  * @template T The type of data in each row.
@@ -133,6 +138,7 @@ export async function* readCSVForDates<T extends { timestamp: primitive.ISODateT
     pathToFile: string,
     filter: primitive.DateParts
 ): AsyncGenerator<T> {
+    // TODO still needed?
     for await (const data of readCSV<T>(pathToFile)) {
         const parts = getDateParts(data.timestamp);
         if (
@@ -150,8 +156,14 @@ export async function* readCSVForDates<T extends { timestamp: primitive.ISODateT
  * @param pathToFile The path to the CSV file.
  * @param header The new header to be written to the CSV file.
  */
-export async function rewriteCSV(pathToFile: string, header: string[]) {
-    const readStream = fs.createReadStream(pathToFile);
+export async function rewriteCSV<T>(
+    pathToFile: string,
+    header: string[],
+    readStream: AsyncIterable<T> | undefined = undefined
+) {
+    if (!readStream) {
+        readStream = fs.createReadStream(pathToFile);
+    }
 
     const parser = parse({ columns: true });
 
@@ -168,28 +180,24 @@ export async function rewriteCSV(pathToFile: string, header: string[]) {
     await fs.promises.rename(tempPath, pathToFile);
 }
 
-export async function writeToCsv(
-    pathToFile: string,
-    rows: AsyncIterableIterator<object>,
-    index?: string
-) {
-    // Read the first row to get the header
-    const { value, done } = await rows.next();
-    if (!value) return;
+export async function writeToCsv<T>(pathToFile: string, rows: AsyncIterable<T>, index?: string) {
+    let [_rows, header] = await readHeadersFromStream(rows);
+    if (!_rows || !header) return;
 
-    const rowFlattened = flatten<object, object>(value);
-    // Ensure header consistency
-    let header = Object.keys(rowFlattened);
     // By default, take first key as index
     const headerIndex = index ?? header[0]!;
 
     header = sortWithoutIndex(header, headerIndex);
 
-    await appendCsv(pathToFile, done ? concat(value) : concat(value, rows), header);
+    await appendCsv(pathToFile, _rows, header);
 }
 
 export async function ensureSameHeader(pathToFile: string, header: string[]) {
-    const existingHeader = await readHeaders(pathToFile);
+    const csvStream = readCSV(pathToFile);
+    const [rows, existingHeader] = await readHeadersFromStream(csvStream);
+
+    if (!existingHeader) return;
+
     const newHeaders = _.difference(header, existingHeader);
 
     // If no new headers, return
@@ -199,14 +207,10 @@ export async function ensureSameHeader(pathToFile: string, header: string[]) {
     const combinedHeader = sortWithoutIndex(_.union(existingHeader, header), header[0]!);
 
     // Rewrite CSV to fill old entries for new headers
-    await rewriteCSV(pathToFile, combinedHeader);
+    await rewriteCSV(pathToFile, combinedHeader, rows);
 }
 
-export async function appendCsv(
-    pathToFile: string,
-    rows: AsyncIterableIterator<object>,
-    header: string[]
-) {
+export async function appendCsv<T>(pathToFile: string, rows: AsyncIterable<T>, header: string[]) {
     const exists = fs.existsSync(pathToFile);
 
     if (exists) {
@@ -229,11 +233,7 @@ export async function appendCsv(
     await pipeline(rowsReadable, stringifier, writeStream);
 }
 
-export async function createCsv(
-    pathToFile: string,
-    rows: AsyncIterableIterator<object>,
-    header: string[]
-) {
+export async function createCsv<T>(pathToFile: string, rows: AsyncIterable<T>, header: string[]) {
     await ensurePath(pathToFile);
 
     const rowsReadable = Readable.from(rows);

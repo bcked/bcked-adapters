@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import readline from "readline";
+import { getFirstElement } from "./stream";
 
 const NEW_LINE_CHARACTERS = ["\n"];
 
@@ -93,16 +94,14 @@ export async function readLastLines(
     return lines;
 }
 
-export async function getFirstElement(stream: AsyncIterable<any>): Promise<any | undefined> {
-    for await (const element of stream) {
-        return element;
-    }
-}
-
-export async function readFirstLine(pathToFile: string): Promise<string> {
+export async function readFirstLine(pathToFile: string): Promise<string | undefined> {
     const readable = fs.createReadStream(pathToFile);
     const reader = readline.createInterface({ input: readable });
-    const line = await getFirstElement(reader);
+    const [line] = await getFirstElement(reader);
+
+    // TODO this doesn't close the stream
+    // await readable.close();
+    // await Readable.once(readable, "close");
     return line;
 }
 
