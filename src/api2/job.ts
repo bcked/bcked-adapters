@@ -43,12 +43,15 @@ async function generateOasSchema() {
 }
 
 job("API Job", async () => {
-    await Promise.all([
-        INDEX_RESOURCES.index(),
-        compile(PATHS.entities, "compile_entity.ts", ENTITY_RESOURCES),
-        compile(PATHS.systems, "compile_system.ts", SYSTEM_RESOURCES),
-        compile(PATHS.assets, "compile_asset.ts", ASSET_RESOURCES),
-        compile(PATHS.assets, "precompile_backing.ts"),
-        generateOasSchema(),
-    ]);
+    await Promise.all([compile(PATHS.assets, "precompile_backing.ts")]);
+
+    // return;
+
+    // await Promise.all([
+    //     INDEX_RESOURCES.index(),
+    //     compile(PATHS.entities, "compile_entity.ts", ENTITY_RESOURCES),
+    //     compile(PATHS.systems, "compile_system.ts", SYSTEM_RESOURCES),
+    //     compile(PATHS.assets, "compile_asset.ts", ASSET_RESOURCES),
+    //     generateOasSchema(),
+    // ]);
 });

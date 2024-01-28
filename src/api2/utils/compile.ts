@@ -24,14 +24,16 @@ export async function compileIcons<Resources extends JsonResources & { icons: Fu
 ) {
     const resource = await resources.icons(id);
 
-    const svgPath = `${group}/${id}/icon.svg`;
-    const svg = await readFile(svgPath);
-    await writeBuffer(path.join(PATHS.api, resource.svg), svg);
-    await Promise.all(
-        Object.entries(resource.pngs).map(([key, value]) =>
-            renderSvgToPng(svg, parseInt(key), path.join(PATHS.api, value as string))
-        )
-    );
+    if (resource.svg) {
+        const svgPath = `${group}/${id}/icon.svg`;
+        const svg = await readFile(svgPath);
+        await writeBuffer(path.join(PATHS.api, resource.svg), svg);
+        await Promise.all(
+            Object.entries(resource.pngs).map(([key, value]) =>
+                renderSvgToPng(svg, parseInt(key), path.join(PATHS.api, value as string))
+            )
+        );
+    }
 
     return resource;
 }

@@ -6,6 +6,7 @@ import { compileDetails, compileIcons } from "../utils/compile";
 
 parentPort?.on("message", async (id: bcked.system.Id) => {
     try {
+        console.log(`Compile system ${id}`);
         const res = await Promise.all([
             compileDetails(SYSTEM_RESOURCES, id),
             compileIcons(SYSTEM_RESOURCES, PATHS.systems, id),

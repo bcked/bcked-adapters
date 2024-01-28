@@ -435,6 +435,24 @@ export async function* enumerate<T>(
     }
 }
 
+export function isAsyncIterator(obj: any) {
+    if (Object(obj) !== obj) return false;
+    const method = obj[Symbol.asyncIterator];
+    if (typeof method != "function") return false;
+    const aIter = method.call(obj);
+    return aIter === obj;
+}
+
+export async function* concat<T>(...iterables: (AsyncIterableIterator<T> | T)[]) {
+    for (const iterable of iterables) {
+        if (isAsyncIterator(iterable)) {
+            yield* iterable as AsyncIterableIterator<T>;
+        } else {
+            yield iterable as T;
+        }
+    }
+}
+
 export class ReservoirSampler<T> {
     private reservoir: T[];
     private count: number; // Number of items inserted so far

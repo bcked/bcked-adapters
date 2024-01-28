@@ -101,6 +101,8 @@ RESOURCES.register({
         // TODO store to cache
     },
     loader: async ({ id, populateCache }) => {
+        // TODO still needed?
+
         const filePath = path.join(ASSETS_PATH, id, RECORDS, "price.csv");
 
         // const { populateCache } = RESOURCES.matchLoader(`/assets/{id}/price/all-time`);

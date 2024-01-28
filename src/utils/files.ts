@@ -93,16 +93,16 @@ export async function readLastLines(
     return lines;
 }
 
+export async function getFirstElement(stream: AsyncIterable<any>): Promise<any | undefined> {
+    for await (const element of stream) {
+        return element;
+    }
+}
+
 export async function readFirstLine(pathToFile: string): Promise<string> {
     const readable = fs.createReadStream(pathToFile);
     const reader = readline.createInterface({ input: readable });
-    const line = await new Promise<string>((resolve) => {
-        reader.on("line", (line) => {
-            reader.close();
-            resolve(line);
-        });
-    });
-    readable.close();
+    const line = await getFirstElement(reader);
     return line;
 }
 

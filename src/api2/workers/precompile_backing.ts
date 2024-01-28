@@ -3,6 +3,7 @@ import { PATHS } from "../../paths";
 import { sendErrorReport } from "../../watcher/bot";
 
 import { hoursToMilliseconds } from "date-fns";
+import { existsSync } from "fs";
 import path from "path";
 import { readCSV, writeToCsv } from "../../utils/csv";
 import { distance, isNewer } from "../../utils/time";
@@ -104,6 +105,9 @@ async function* matchBackingPrices(
     window: number = hoursToMilliseconds(12)
 ): AsyncIterableIterator<BackingPriceEntry> {
     const backingCsv = path.join(ASSETS_PATH, id, "records", "backing.csv");
+
+    if (!existsSync(backingCsv)) return;
+
     const backingEntries = readCSV<bcked.asset.Backing>(backingCsv);
 
     let priceLookup: ConsecutivePriceLookup[] | undefined = undefined;
@@ -141,6 +145,7 @@ async function* matchBackingPrices(
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     try {
+        console.log(`Precompiling backing prices for asset ${id}`);
         const backingPrices = matchBackingPrices(id);
         await writeToCsv(
             path.join(PATHS.assets, id, "records", "backing_value.csv"),

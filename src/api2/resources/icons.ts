@@ -1,11 +1,22 @@
+import fs from "fs";
 import path from "path";
 
 export async function icons(group: string, id: bcked.entity.Id) {
     const $id = `/${group}/${id}/icons`;
+    const svg = path.join($id, "icon.svg");
+
+    if (!fs.existsSync(svg)) {
+        console.info(`No SVG found for ${$id}`);
+        return {
+            $id,
+            svg: null,
+            pngs: null,
+        };
+    }
 
     return {
         $id,
-        svg: path.join($id, "icon.svg"),
+        svg,
         pngs: {
             "16": path.join($id, "icon16.png"),
             "32": path.join($id, "icon32.png"),

@@ -6,6 +6,7 @@ import { compileDetails, compileIcons } from "../utils/compile";
 
 parentPort?.on("message", async (id: bcked.entity.Id) => {
     try {
+        console.log(`Compile entity ${id}`);
         const res = await Promise.all([
             compileDetails(ENTITY_RESOURCES, id),
             compileIcons(ENTITY_RESOURCES, PATHS.entities, id),

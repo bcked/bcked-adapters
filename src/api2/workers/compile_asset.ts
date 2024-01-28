@@ -6,6 +6,7 @@ import { compileDetails, compileIcons } from "../utils/compile";
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     try {
+        console.log(`Compile asset ${id}`);
         const res = await Promise.all([
             compileDetails(ASSET_RESOURCES, id),
             compileIcons(ASSET_RESOURCES, PATHS.assets, id),
