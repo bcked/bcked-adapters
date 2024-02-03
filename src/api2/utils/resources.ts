@@ -104,6 +104,7 @@ export abstract class JsonResources {
             // Extend the resource methods with a function that writes the resource to a file.
             return async function (this: any, ...args: any[]) {
                 const resource = await target.call(this, ...args);
+                if (!resource) return;
                 const filePath = path.join(PATHS.api, resource.$id, "index.json");
                 await writeJson(filePath, resource);
                 return resource;

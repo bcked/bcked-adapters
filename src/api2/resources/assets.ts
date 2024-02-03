@@ -1,7 +1,9 @@
+import { Stats } from "../../utils/stream";
+import { setDateParts } from "../../utils/time";
 import { JsonResources } from "../utils/resources";
 import { icons } from "./icons";
 
-class Asset extends JsonResources {
+export class Asset extends JsonResources {
     constructor() {
         super({
             name: "Assets",
@@ -47,9 +49,9 @@ class Asset extends JsonResources {
             icons: {
                 $ref: `/assets/${id}/icons`,
             },
-            // price: {
-            //     $ref: `/assets/${id}/price`,
-            // },
+            price: {
+                $ref: `/assets/${id}/price`,
+            },
             // supply: {
             //     $ref: `/assets/{id}/supply`,
             // },
@@ -101,6 +103,204 @@ class Asset extends JsonResources {
     })
     async icons(id: bcked.entity.Id) {
         return icons("assets", id);
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/price",
+        summary: "Get price of an asset",
+        description: "Get price of an asset by its ID",
+        type: "AssetPrice",
+        // TODO write schema
+        schema: {},
+    })
+    async price(id: bcked.entity.Id) {
+        return {
+            $id: `/assets/${id}/price`,
+            latest: {
+                $ref: `/assets/${id}/price/latest`,
+            },
+            allTime: {
+                $ref: `/assets/${id}/price/all-time`,
+            },
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/price/latest",
+        summary: "Get price of an asset",
+        description: "Get price of an asset by its ID",
+        type: "AssetPriceLatest",
+        // TODO write schema
+        schema: {},
+    })
+    async priceLatest(id: bcked.entity.Id, timestamp: primitive.ISODateTimeString | undefined) {
+        if (!timestamp) return;
+
+        return {
+            $id: `/assets/${id}/price/latest`,
+            $ref: setDateParts(`/assets/${id}/price/{year}/{month}/{day}/{hour}`, timestamp),
+        };
+    }
+
+    statsToSummary<T extends { timestamp: primitive.ISODateTimeString }>(
+        id: bcked.entity.Id,
+        stats: Stats<T>
+    ) {
+        if (!stats || !stats.min || !stats.max || !stats.median) {
+            throw new Error("Stats missing. This should have been checked prior.");
+        }
+
+        return {
+            low: {
+                $ref: setDateParts(
+                    `/assets/${id}/price/{year}/{month}/{day}/{hour}`,
+                    stats.min.timestamp
+                ),
+            },
+            median: {
+                $ref: setDateParts(
+                    `/assets/${id}/price/{year}/{month}/{day}/{hour}`,
+                    stats.median.timestamp
+                ),
+            },
+            high: {
+                $ref: setDateParts(
+                    `/assets/${id}/price/{year}/{month}/{day}/{hour}`,
+                    stats.max.timestamp
+                ),
+            },
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/price/all-time",
+        summary: "Get price of an asset",
+        description: "Get price of an asset by its ID",
+        type: "AssetPriceSummary",
+        // TODO write schema
+        schema: {},
+    })
+    async priceHistory(
+        id: bcked.entity.Id,
+        stats: Stats<bcked.asset.Price> | undefined,
+        years: string[]
+    ) {
+        if (!stats || !stats.min || !stats.max || !stats.median || !years.length) return;
+
+        return {
+            $id: `/assets/${id}/price/all-time`,
+            ...this.statsToSummary(id, stats),
+            data: years.map((year) => ({
+                $ref: `/assets/${id}/price/${year}`,
+            })),
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/price/{year}",
+        summary: "Get price of an asset",
+        description: "Get price of an asset by its ID",
+        type: "AssetPriceSummary",
+        // TODO write schema
+        schema: {},
+    })
+    async priceYear(
+        id: bcked.entity.Id,
+        stats: Stats<bcked.asset.Price> | undefined,
+        year: string | undefined,
+        months: string[]
+    ) {
+        if (!year || !months.length) return;
+
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        return {
+            $id: `/assets/${id}/price/${year}`,
+            ...this.statsToSummary(id, stats),
+            data: months.map((month) => ({
+                $ref: `/assets/${id}/price/${year}/${month}`,
+            })),
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/price/{year}/{month}",
+        summary: "Get price of an asset",
+        description: "Get price of an asset by its ID",
+        type: "AssetPriceSummary",
+        // TODO write schema
+        schema: {},
+    })
+    async priceMonth(
+        id: bcked.entity.Id,
+        stats: Stats<bcked.asset.Price> | undefined,
+        year: string | undefined,
+        month: string | undefined,
+        days: string[]
+    ) {
+        if (!year || !month || !days.length) return;
+
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        return {
+            $id: `/assets/${id}/price/${year}/${month}`,
+            ...this.statsToSummary(id, stats),
+            data: days.map((day) => ({
+                $ref: `/assets/${id}/price/${year}/${month}/${day}`,
+            })),
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/price/{year}/{month}/{day}",
+        summary: "Get price of an asset",
+        description: "Get price of an asset by its ID",
+        type: "AssetPriceSummary",
+        // TODO write schema
+        schema: {},
+    })
+    async priceDay(
+        id: bcked.entity.Id,
+        stats: Stats<bcked.asset.Price> | undefined,
+        year: string | undefined,
+        month: string | undefined,
+        day: string | undefined,
+        hours: string[]
+    ) {
+        if (!year || !month || !day || !hours.length) return;
+
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        return {
+            $id: `/assets/${id}/price/${year}/${month}/${day}`,
+            ...this.statsToSummary(id, stats),
+            data: hours.map((hour) => ({
+                $ref: `/assets/${id}/price/${year}/${month}/${day}/${hour}`,
+            })),
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/price/{year}/{month}/{day}/{hour}",
+        summary: "Get price of an asset",
+        description: "Get price of an asset by its ID",
+        type: "AssetPrice",
+        // TODO write schema
+        schema: {},
+    })
+    async priceHour(id: bcked.entity.Id, stats: Stats<bcked.asset.Price> | undefined) {
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        return {
+            $id: setDateParts(
+                `/assets/${id}/price/{year}/{month}/{day}/{hour}`,
+                stats.median.timestamp
+            ),
+            timestamp: stats.median.timestamp,
+            value: {
+                "rwa:USD": stats.median.usd,
+            },
+        };
     }
 }
 

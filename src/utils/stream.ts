@@ -2,7 +2,7 @@ import _, { PropertyPath } from "lodash";
 import { ReservoirSampler } from "./array";
 import { medianBy } from "./math";
 
-export class Median<TObject extends object, TKey extends keyof TObject> {
+export class StreamMedian<TObject extends object, TKey extends keyof TObject> {
     private sampler: ReservoirSampler<TObject>;
 
     constructor(private path: TKey | PropertyPath, sampleSize: number) {
@@ -18,7 +18,7 @@ export class Median<TObject extends object, TKey extends keyof TObject> {
     }
 }
 
-export class Min<TObject extends object, TKey extends keyof TObject> {
+export class StreamMin<TObject extends object, TKey extends keyof TObject> {
     private value: TObject | null;
 
     constructor(private path: TKey | PropertyPath) {
@@ -36,7 +36,7 @@ export class Min<TObject extends object, TKey extends keyof TObject> {
     }
 }
 
-export class Max<TObject extends object, TKey extends keyof TObject> {
+export class StreamMax<TObject extends object, TKey extends keyof TObject> {
     private value: TObject | null;
 
     constructor(private path: TKey | PropertyPath) {
@@ -54,15 +54,21 @@ export class Max<TObject extends object, TKey extends keyof TObject> {
     }
 }
 
-export class Stats<TObject extends object, TKey extends keyof TObject> {
-    private min: Min<TObject, TKey>;
-    private median: Median<TObject, TKey>;
-    private max: Max<TObject, TKey>;
+export interface Stats<TObject extends object> {
+    min: TObject | null;
+    median: TObject | null;
+    max: TObject | null;
+}
+
+export class StreamStats<TObject extends object, TKey extends keyof TObject> {
+    private min: StreamMin<TObject, TKey>;
+    private median: StreamMedian<TObject, TKey>;
+    private max: StreamMax<TObject, TKey>;
 
     constructor(path: TKey | PropertyPath, sampleSize: number) {
-        this.min = new Min(path);
-        this.median = new Median(path, sampleSize);
-        this.max = new Max(path);
+        this.min = new StreamMin(path);
+        this.median = new StreamMedian(path, sampleSize);
+        this.max = new StreamMax(path);
     }
 
     public add(value: TObject) {
@@ -71,7 +77,7 @@ export class Stats<TObject extends object, TKey extends keyof TObject> {
         this.max.add(value);
     }
 
-    public get(): { min: TObject | null; median: TObject | null; max: TObject | null } {
+    public get(): Stats<TObject> {
         return {
             min: this.min.get(),
             median: this.median.get(),
