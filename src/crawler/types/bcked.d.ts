@@ -124,6 +124,39 @@ declare namespace bcked {
             underlying: Partial<Record<Id, number>>;
         };
 
+        // Generated from supply and price data
+        type Mcap = {
+            timestamp: primitive.ISODateTimeString;
+            price: {
+                usd: number;
+            };
+            supply: {
+                amount: number;
+            };
+            value: {
+                usd: number;
+            };
+        };
+
+        // Generated from backing and price data
+        type UnderlyingPrice = {
+            amount: number;
+            price?: {
+                usd: number;
+            };
+            value?: {
+                usd: number;
+            };
+        };
+
+        // Generated from backing and price data
+        type BackingPrice = {
+            timestamp: primitive.ISODateTimeString;
+            underlying: {
+                [underlyingId: bcked.asset.Id]: UnderlyingPrice;
+            };
+        };
+
         interface Adapter {
             getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;
             getPrice(lastRecorded: Price | null): Promise<Price[]>;

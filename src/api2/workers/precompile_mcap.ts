@@ -8,22 +8,14 @@ import { unlink } from "fs/promises";
 import path from "path";
 import { readCSV, writeToCsv } from "../../utils/csv";
 import { ConsecutivePriceLookup } from "../utils/priceLookup";
+import { supplyAmount } from "../utils/supply";
 
 const ASSETS_PATH = "assets";
-
-type McapEntry = {
-    timestamp: primitive.ISODateTimeString;
-    price?: bcked.asset.Price;
-    supply: bcked.asset.Supply;
-    value?: {
-        usd: number;
-    };
-};
 
 async function* matchSupplyAndPrice(
     id: bcked.asset.Id,
     window: number = hoursToMilliseconds(12)
-): AsyncIterableIterator<McapEntry> {
+): AsyncIterableIterator<bcked.asset.Mcap> {
     const supplyCsv = path.join(ASSETS_PATH, id, "records", "supply.csv");
 
     if (!existsSync(supplyCsv)) return;
@@ -35,7 +27,9 @@ async function* matchSupplyAndPrice(
     for await (const supplyEntry of supplyEntries) {
         // Get closest prices to the current entry for all underlying assets
 
-        if (!supplyEntry.total) continue;
+        const amount = supplyAmount(supplyEntry);
+
+        if (!amount) continue;
 
         const price = await priceLookup.getClosest(supplyEntry.timestamp, window);
 
@@ -43,10 +37,12 @@ async function* matchSupplyAndPrice(
 
         yield {
             timestamp: supplyEntry.timestamp,
-            price,
-            supply: supplyEntry,
+            price: {
+                usd: price.usd,
+            },
+            supply: { amount },
             value: {
-                usd: price.usd * supplyEntry.total,
+                usd: price.usd * amount,
             },
         };
     }

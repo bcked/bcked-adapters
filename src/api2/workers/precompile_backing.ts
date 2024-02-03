@@ -11,29 +11,12 @@ import { ConsecutivePriceLookup } from "../utils/priceLookup";
 
 const ASSETS_PATH = "assets";
 
-type UnderlyingPriceEntry = {
-    amount: number;
-    price?: {
-        usd: number;
-    };
-    value?: {
-        usd: number;
-    };
-};
-
-type BackingPriceEntry = {
-    timestamp: primitive.ISODateTimeString;
-    underlying: {
-        [underlyingId: bcked.asset.Id]: UnderlyingPriceEntry;
-    };
-};
-
 async function lookupUnderlyingPrice(
     timestamp: string,
     amount: number,
     lookup: ConsecutivePriceLookup,
     window: number = hoursToMilliseconds(12)
-): Promise<UnderlyingPriceEntry> {
+): Promise<bcked.asset.UnderlyingPrice> {
     const price = await lookup.getClosest(timestamp, window);
     if (!price) return { amount };
 
@@ -51,7 +34,7 @@ async function lookupUnderlyingPrice(
 async function* matchBackingPrices(
     id: bcked.asset.Id,
     window: number = hoursToMilliseconds(12)
-): AsyncIterableIterator<BackingPriceEntry> {
+): AsyncIterableIterator<bcked.asset.BackingPrice> {
     const backingCsv = path.join(ASSETS_PATH, id, "records", "backing.csv");
 
     if (!existsSync(backingCsv)) return;

@@ -52,9 +52,9 @@ export class Asset extends JsonResources {
             price: {
                 $ref: `/assets/${id}/price`,
             },
-            // supply: {
-            //     $ref: `/assets/{id}/supply`,
-            // },
+            supply: {
+                $ref: `/assets/{id}/supply`,
+            },
             // mcap: {
             //     $ref: `/assets/{id}/mcap`,
             // },
@@ -180,9 +180,9 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async priceHistory(
+    async priceHistory<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
-        stats: Stats<bcked.asset.Price> | undefined,
+        stats: Stats<T> | undefined,
         years: string[]
     ) {
         if (!stats || !stats.min || !stats.max || !stats.median || !years.length) return;
@@ -204,9 +204,9 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async priceYear(
+    async priceYear<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
-        stats: Stats<bcked.asset.Price> | undefined,
+        stats: Stats<T> | undefined,
         year: string | undefined,
         months: string[]
     ) {
@@ -231,9 +231,9 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async priceMonth(
+    async priceMonth<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
-        stats: Stats<bcked.asset.Price> | undefined,
+        stats: Stats<T> | undefined,
         year: string | undefined,
         month: string | undefined,
         days: string[]
@@ -259,9 +259,9 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async priceDay(
+    async priceDay<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
-        stats: Stats<bcked.asset.Price> | undefined,
+        stats: Stats<T> | undefined,
         year: string | undefined,
         month: string | undefined,
         day: string | undefined,
@@ -288,7 +288,10 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async priceHour(id: bcked.entity.Id, stats: Stats<bcked.asset.Price> | undefined) {
+    async priceHour<T extends { timestamp: primitive.ISODateTimeString; usd: number }>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined
+    ) {
         if (!stats || !stats.min || !stats.max || !stats.median) return;
 
         return {
@@ -300,6 +303,177 @@ export class Asset extends JsonResources {
             value: {
                 "rwa:USD": stats.median.usd,
             },
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/supply",
+        summary: "Get supply of an asset",
+        description: "Get supply of an asset by its ID",
+        type: "AssetSupply",
+        // TODO write schema
+        schema: {},
+    })
+    async supply(id: bcked.entity.Id) {
+        return {
+            $id: `/assets/${id}/supply`,
+            latest: {
+                $ref: `/assets/${id}/supply/latest`,
+            },
+            allTime: {
+                $ref: `/assets/${id}/supply/all-time`,
+            },
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/supply/latest",
+        summary: "Get supply of an asset",
+        description: "Get supply of an asset by its ID",
+        type: "AssetSupply",
+        // TODO write schema
+        schema: {},
+    })
+    async supplyLatest(id: bcked.entity.Id, timestamp: primitive.ISODateTimeString | undefined) {
+        if (!timestamp) return;
+
+        return {
+            $id: `/assets/${id}/supply/latest`,
+            $ref: setDateParts(`/assets/${id}/supply/{year}/{month}/{day}/{hour}`, timestamp),
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/supply/all-time",
+        summary: "Get supply of an asset",
+        description: "Get supply of an asset by its ID",
+        type: "AssetSupply",
+        // TODO write schema
+        schema: {},
+    })
+    async supplyHistory<T extends { timestamp: primitive.ISODateTimeString }>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        years: string[]
+    ) {
+        if (!stats || !stats.min || !stats.max || !stats.median || !years.length) return;
+
+        return {
+            $id: `/assets/${id}/supply/all-time`,
+            ...this.statsToSummary(id, stats),
+            data: years.map((year) => ({
+                $ref: `/assets/${id}/supply/${year}`,
+            })),
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/supply/{year}",
+        summary: "Get supply of an asset",
+        description: "Get supply of an asset by its ID",
+        type: "AssetSupply",
+        // TODO write schema
+        schema: {},
+    })
+    async supplyYear<T extends { timestamp: primitive.ISODateTimeString }>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        months: string[]
+    ) {
+        if (!year || !months.length) return;
+
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        return {
+            $id: `/assets/${id}/supply/${year}`,
+            ...this.statsToSummary(id, stats),
+            data: months.map((month) => ({
+                $ref: `/assets/${id}/supply/${year}/${month}`,
+            })),
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/supply/{year}/{month}",
+        summary: "Get supply of an asset",
+        description: "Get supply of an asset by its ID",
+        type: "AssetSupply",
+        // TODO write schema
+        schema: {},
+    })
+    async supplyMonth<T extends { timestamp: primitive.ISODateTimeString }>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        month: string | undefined,
+        days: string[]
+    ) {
+        if (!year || !month || !days.length) return;
+
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        return {
+            $id: `/assets/${id}/supply/${year}/${month}`,
+            ...this.statsToSummary(id, stats),
+            data: days.map((day) => ({
+                $ref: `/assets/${id}/supply/${year}/${month}/${day}`,
+            })),
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/supply/{year}/{month}/{day}",
+        summary: "Get supply of an asset",
+        description: "Get supply of an asset by its ID",
+        type: "AssetSupply",
+        // TODO write schema
+        schema: {},
+    })
+    async supplyDay<T extends { timestamp: primitive.ISODateTimeString }>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        month: string | undefined,
+        day: string | undefined,
+        hours: string[]
+    ) {
+        if (!year || !month || !day || !hours.length) return;
+
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        return {
+            $id: `/assets/${id}/supply/${year}/${month}/${day}`,
+            ...this.statsToSummary(id, stats),
+            data: hours.map((hour) => ({
+                $ref: `/assets/${id}/supply/${year}/${month}/${day}/${hour}`,
+            })),
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/supply/{year}/{month}/{day}/{hour}",
+        summary: "Get supply of an asset",
+        description: "Get supply of an asset by its ID",
+        type: "AssetSupply",
+        // TODO write schema
+        schema: {},
+    })
+    async supplyHour<T extends { timestamp: primitive.ISODateTimeString; amount: number | null }>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined
+    ) {
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        if (!stats.median.amount) return;
+
+        return {
+            $id: setDateParts(
+                `/assets/${id}/supply/{year}/{month}/{day}/{hour}`,
+                stats.median.timestamp
+            ),
+            timestamp: stats.median.timestamp,
+            amount: stats.median.amount,
         };
     }
 }
