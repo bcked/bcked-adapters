@@ -3,35 +3,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("dotenv/config");
 const lodash_1 = __importDefault(require("lodash"));
+const promises_1 = __importDefault(require("node:fs/promises"));
 const node_path_1 = __importDefault(require("node:path"));
-const ts_node_1 = require("ts-node");
+const paths_1 = require("../paths");
 const files_1 = require("../utils/files");
+const job_1 = require("../utils/job");
 const worker_pool_1 = require("../utils/worker_pool");
 const resources_1 = require("./resources");
-const queue_1 = require("./utils/queue");
-async function jsonifyRefs(seedUri) {
-    const workerScriptPath = node_path_1.default.resolve("src/api/workers/jsonify_refs.ts");
-    const pool = new worker_pool_1.WorkerPool(workerScriptPath, { min: 0, max: 4 });
-    const queue = new queue_1.UniqueQueue();
-    queue.add(seedUri);
-    for (const item of queue.items) {
-        const res = await pool.execute(item);
-        queue.add(...res);
+const assets_1 = require("./resources/assets");
+const entities_1 = require("./resources/entities");
+const systems_1 = require("./resources/systems");
+const WORKERS_PATH = "src/api/workers";
+async function compile(dir, workerScript, resources = undefined) {
+    const ids = await promises_1.default.readdir(dir);
+    if (resources) {
+        await resources.index(ids);
     }
-    await pool.close();
+    const workerScriptPath = node_path_1.default.resolve(WORKERS_PATH, workerScript);
+    return (0, worker_pool_1.executeInWorkerPool)(workerScriptPath, ids);
 }
 async function generateOasSchema() {
-    const spec = lodash_1.default.omit(resources_1.RESOURCES.spec, "loaders");
-    (0, files_1.writeJson)("api/openapi.json", lodash_1.default.pick(spec, ["openapi", "info", "servers", "paths", "components", "tags"]));
+    resources_1.INDEX_RESOURCES.extend(entities_1.ENTITY_RESOURCES, systems_1.SYSTEM_RESOURCES, assets_1.ASSET_RESOURCES);
+    const oasSchema = lodash_1.default.pick(resources_1.INDEX_RESOURCES.spec, [
+        "openapi",
+        "info",
+        "servers",
+        "paths",
+        "components",
+        "tags",
+    ]);
+    (0, files_1.writeJson)(`${paths_1.PATHS.api}/openapi.json`, oasSchema);
+    return oasSchema;
 }
-async function job() {
-    if (process[ts_node_1.REGISTER_INSTANCE]) {
-        process.env.DEV_MODE = "true";
-    }
-    await jsonifyRefs("/");
-    await generateOasSchema();
-}
-job();
+(0, job_1.job)("API Job", async () => {
+    // TODO this could already be done during data collection, not requiring a post-processing step
+    await Promise.all([compile(paths_1.PATHS.assets, "precompile_supply.ts")]);
+    await Promise.all([
+        compile(paths_1.PATHS.assets, "precompile_market_cap.ts"),
+        compile(paths_1.PATHS.assets, "precompile_underlying_assets.ts"),
+    ]);
+    await Promise.all([
+        resources_1.INDEX_RESOURCES.index(),
+        compile(paths_1.PATHS.entities, "compile_entity.ts", entities_1.ENTITY_RESOURCES),
+        compile(paths_1.PATHS.systems, "compile_system.ts", systems_1.SYSTEM_RESOURCES),
+        compile(paths_1.PATHS.assets, "compile_asset.ts", assets_1.ASSET_RESOURCES),
+        generateOasSchema(),
+    ]);
+    // TODO continue by adding derivative-assets json as API resource and to compile_asset using the precomputed data
+    // TODO optimize code to only run for new entries and not for all entries
+});
 //# sourceMappingURL=job.js.map

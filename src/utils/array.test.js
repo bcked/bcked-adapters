@@ -84,4 +84,10 @@ describe("generate test", () => {
         expect((0, array_1.generate)(0, 1, 10).length).toBe(10);
     });
 });
+describe("async array test", () => {
+    it("roundtrip", async () => {
+        const expected = [1, 2, 3, 4, undefined, null];
+        expect(await (0, array_1.fromAsync)((0, array_1.toAsync)(expected))).toEqual(expected);
+    });
+});
 //# sourceMappingURL=array.test.js.map

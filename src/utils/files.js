@@ -7,6 +7,7 @@ exports.readJson = exports.writeJson = exports.writeBuffer = exports.ensurePath 
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const readline_1 = __importDefault(require("readline"));
+const stream_1 = require("./stream");
 const NEW_LINE_CHARACTERS = ["\n"];
 async function readPreviousChar(stat, file, currentCharacterCount, encoding = "utf-8") {
     return new Promise((resolve, reject) => {
@@ -77,13 +78,10 @@ exports.readLastLines = readLastLines;
 async function readFirstLine(pathToFile) {
     const readable = node_fs_1.default.createReadStream(pathToFile);
     const reader = readline_1.default.createInterface({ input: readable });
-    const line = await new Promise((resolve) => {
-        reader.on("line", (line) => {
-            reader.close();
-            resolve(line);
-        });
-    });
-    readable.close();
+    const [line] = await (0, stream_1.getFirstElement)(reader);
+    // TODO this doesn't close the stream
+    // await readable.close();
+    // await Readable.once(readable, "close");
     return line;
 }
 exports.readFirstLine = readFirstLine;

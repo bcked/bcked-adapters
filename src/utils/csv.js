@@ -3,25 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeCsv = exports.writeToCsv = exports.rewriteCSV = exports.readCSVForDates = exports.readCSV = exports.readClosestEntry = exports.readLastEntry = exports.readHeaders = void 0;
+exports.createCsv = exports.appendCsv = exports.ensureSameHeader = exports.writeToCsv = exports.rewriteCSV = exports.readCSV = exports.readClosestEntry = exports.readLastEntry = void 0;
 const csv_1 = require("csv");
 const sync_1 = require("csv/sync");
 const flat_1 = require("flat"); // Serialize nested data structures
 const fs_1 = __importDefault(require("fs"));
 const lodash_1 = __importDefault(require("lodash"));
+const stream_1 = require("stream");
 const array_1 = require("./array");
 const files_1 = require("./files");
 const time_1 = require("./time");
-/**
- * Read the headers of a CSV file.
- * @param pathToFile The file path to the file to be read.
- * @returns The headers in an array.
- */
-async function readHeaders(pathToFile) {
-    const line = await (0, files_1.readFirstLine)(pathToFile);
-    return (0, sync_1.parse)(line)[0];
-}
-exports.readHeaders = readHeaders;
+const promises_1 = require("stream/promises");
+const stream_2 = require("./stream");
 function castNumbers(value, context) {
     if (context.header)
         return value;
@@ -66,98 +59,101 @@ async function readClosestEntry(pathToFile, timestamp) {
 }
 exports.readClosestEntry = readClosestEntry;
 async function* readCSV(pathToFile) {
-    const parser = (0, csv_1.parse)({ columns: true, cast: castNumbers });
-    const stream = fs_1.default.createReadStream(pathToFile).pipe(parser);
-    for await (const data of stream) {
-        yield (0, flat_1.unflatten)(data);
+    const stream = fs_1.default.createReadStream(pathToFile).pipe((0, csv_1.parse)({
+        columns: true,
+        cast: castNumbers,
+        skipEmptyLines: true,
+        skipRecordsWithError: true,
+    }));
+    for await (const row of stream) {
+        yield (0, flat_1.unflatten)(row);
     }
 }
 exports.readCSV = readCSV;
-async function* readCSVForDates(pathToFile, filter) {
-    for await (const data of readCSV(pathToFile)) {
-        const parts = (0, time_1.getDateParts)(data.timestamp);
-        if (Object.keys(filter)
-            .map((key) => key)
-            .every((key) => Number(filter[key]) === Number(parts[key]))) {
-            yield data;
-        }
-    }
+async function readHeadersFromStream(rows) {
+    // Read the first row to get the header
+    const [value, _rows] = await (0, stream_2.getFirstElement)(rows);
+    if (!value || !_rows)
+        return [undefined, undefined];
+    const rowFlattened = (0, flat_1.flatten)(value);
+    // Ensure header consistency
+    let header = Object.keys(rowFlattened);
+    return [(0, array_1.concat)(value, _rows), header];
 }
-exports.readCSVForDates = readCSVForDates;
-async function rewriteCSV(pathToFile, targetHeader) {
-    const parser = (0, csv_1.parse)({ columns: true });
-    const stringifier = (0, csv_1.stringify)({ header: true, columns: targetHeader });
+/**
+ * Change the header of a CSV file.
+ * @param pathToFile The path to the CSV file.
+ * @param header The new header to be written to the CSV file.
+ */
+async function rewriteCSV(pathToFile, header, readStream = undefined) {
+    if (!readStream) {
+        readStream = readCSV(pathToFile);
+    }
+    const stringifier = (0, csv_1.stringify)({ header: true, columns: header });
     const tempPath = pathToFile.replace(".csv", "_temp.csv");
     const writeStream = fs_1.default.createWriteStream(tempPath, {
         encoding: "utf-8",
     });
-    await new Promise((resolve, reject) => {
-        fs_1.default.createReadStream(pathToFile)
-            .on("error", reject)
-            .pipe(parser)
-            .pipe(stringifier)
-            .pipe(writeStream)
-            .on("error", reject)
-            .on("finish", resolve);
-    });
+    await (0, promises_1.pipeline)(readStream, stringifier, writeStream);
     await fs_1.default.promises.rename(tempPath, pathToFile);
 }
 exports.rewriteCSV = rewriteCSV;
-async function writeToCsv(pathToFile, row, index) {
-    const rowFlattened = (0, flat_1.flatten)(row);
-    let header = Object.keys(rowFlattened);
+async function writeToCsv(pathToFile, rows, index) {
+    let [_rows, header] = await readHeadersFromStream(rows);
+    if (!_rows || !header)
+        return;
     // By default, take first key as index
     const headerIndex = index ?? header[0];
-    const exists = fs_1.default.existsSync(pathToFile);
-    if (exists) {
-        const existingHeader = await readHeaders(pathToFile);
-        const newHeaders = lodash_1.default.difference(header, existingHeader);
-        // Get combined header
-        header = (0, array_1.sortWithoutIndex)(lodash_1.default.union(existingHeader, header), headerIndex);
-        if (newHeaders.length) {
-            // Rewrite CSV to fill old entries for new headers
-            await rewriteCSV(pathToFile, header);
-        }
-    }
-    await (0, files_1.ensurePath)(pathToFile);
-    await new Promise((resolve, reject) => {
-        const writableStream = fs_1.default.createWriteStream(pathToFile, {
-            flags: "a",
-            encoding: "utf-8",
-        });
-        const stringifier = (0, csv_1.stringify)({
-            header: !exists,
-            columns: (0, array_1.sortWithoutIndex)(header, headerIndex),
-        });
-        stringifier.write(rowFlattened);
-        stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);
-        stringifier.end();
-    });
+    header = (0, array_1.sortWithoutIndex)(header, headerIndex);
+    await appendCsv(pathToFile, _rows, header);
 }
 exports.writeToCsv = writeToCsv;
-async function writeCsv(pathToFile, rows, index) {
-    if (!rows.length)
-        return;
-    const rowsFlattened = rows.map((row) => (0, flat_1.flatten)(row));
-    const header = lodash_1.default.uniq(lodash_1.default.flatMap(rowsFlattened, lodash_1.default.keys));
-    // By default, take first key as index
-    const headerIndex = index ?? header[0];
-    await (0, files_1.ensurePath)(pathToFile);
-    await new Promise((resolve, reject) => {
-        const writableStream = fs_1.default.createWriteStream(pathToFile, {
-            flags: "w",
-            encoding: "utf-8",
-        });
-        const stringifier = (0, csv_1.stringify)({
-            header: true,
-            columns: (0, array_1.sortWithoutIndex)(header, headerIndex),
-        });
-        for (const row of rowsFlattened) {
-            stringifier.write(row);
-        }
-        stringifier.pipe(writableStream).on("error", reject).on("finish", resolve);
-        stringifier.end();
-    });
+async function ensureSameHeader(pathToFile, header) {
+    const csvStream = readCSV(pathToFile);
+    const [rows, existingHeader] = await readHeadersFromStream(csvStream);
+    if (!existingHeader)
+        return header;
+    const newHeaders = lodash_1.default.xor(header, existingHeader);
+    // If no new headers, return
+    if (!newHeaders.length)
+        return header;
+    // Get combined header
+    const combinedHeader = (0, array_1.sortWithoutIndex)(lodash_1.default.union(existingHeader, header), header[0]);
+    // Rewrite CSV to fill old entries for new headers
+    await rewriteCSV(pathToFile, combinedHeader, rows);
+    return combinedHeader;
 }
-exports.writeCsv = writeCsv;
+exports.ensureSameHeader = ensureSameHeader;
+async function appendCsv(pathToFile, rows, header) {
+    const exists = fs_1.default.existsSync(pathToFile);
+    if (exists) {
+        header = await ensureSameHeader(pathToFile, header);
+    }
+    else {
+        await (0, files_1.ensurePath)(pathToFile);
+    }
+    const rowsReadable = stream_1.Readable.from(rows);
+    const stringifier = (0, csv_1.stringify)({
+        header: !exists,
+        columns: header,
+    });
+    const writeStream = fs_1.default.createWriteStream(pathToFile, {
+        flags: "a",
+    });
+    await (0, promises_1.pipeline)(rowsReadable, stringifier, writeStream);
+}
+exports.appendCsv = appendCsv;
+async function createCsv(pathToFile, rows, header) {
+    await (0, files_1.ensurePath)(pathToFile);
+    const rowsReadable = stream_1.Readable.from(rows);
+    const stringifier = (0, csv_1.stringify)({
+        header: true,
+        columns: header,
+    });
+    const writableStream = fs_1.default.createWriteStream(pathToFile, {
+        flags: "w",
+    });
+    await (0, promises_1.pipeline)(rowsReadable, stringifier, writableStream);
+}
+exports.createCsv = createCsv;
 //# sourceMappingURL=csv.js.map

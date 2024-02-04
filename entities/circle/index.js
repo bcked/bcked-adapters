@@ -16,6 +16,7 @@ const dateformat_1 = __importDefault(require("dateformat"));
 const fs_1 = __importDefault(require("fs"));
 const lodash_1 = __importDefault(require("lodash"));
 const br_manager_1 = require("../../src/crawler/apis/br_manager");
+const array_1 = require("../../src/utils/array");
 const cache_1 = require("../../src/utils/cache");
 const csv_1 = require("../../src/utils/csv");
 const string_formatting_1 = require("../../src/utils/string_formatting");
@@ -60,7 +61,7 @@ class Adapter {
                 timestamp: (0, string_formatting_1.toISOString)(timestamp),
                 underlying: summed,
             };
-            await (0, csv_1.writeToCsv)(csvPath, res, "timestamp");
+            await (0, csv_1.writeToCsv)(csvPath, (0, array_1.toAsync)([res]), "timestamp");
         }
     }
     async fetchLatestCashReserves() {
@@ -96,7 +97,7 @@ class Adapter {
                 "rwa:USD": cashUsd,
             },
         };
-        await (0, csv_1.writeToCsv)(csvPath, entry, "timestamp");
+        await (0, csv_1.writeToCsv)(csvPath, (0, array_1.toAsync)([entry]), "timestamp");
     }
     async fetchLatestBacking() {
         const csvPath = `${this.recordsPath}/backing.csv`;
@@ -117,7 +118,7 @@ class Adapter {
                 timestamp: (0, string_formatting_1.toISOString)(timestamp),
                 underlying: lodash_1.default.mergeWith(treasuryReserves.underlying, cashReserves.underlying, (a, b) => lodash_1.default.sum([a, b])),
             };
-            await (0, csv_1.writeToCsv)(csvPath, res, "timestamp");
+            await (0, csv_1.writeToCsv)(csvPath, (0, array_1.toAsync)([res]), "timestamp");
         }
     }
     async update() {

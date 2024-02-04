@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uniformity = exports.round = exports.zScoreNorm = exports.minMaxNorm = exports.rate = exports.median = exports.statsBy = void 0;
+exports.inverse = exports.uniformity = exports.round = exports.zScoreNorm = exports.minMaxNorm = exports.rate = exports.median = exports.medianBy = exports.statsBy = void 0;
 const lodash_1 = __importDefault(require("lodash"));
 function statsBy(collection, ...iteratees) {
     if (!collection?.length)
@@ -17,6 +17,14 @@ function statsBy(collection, ...iteratees) {
     };
 }
 exports.statsBy = statsBy;
+function medianBy(collection, path) {
+    if (!collection?.length)
+        return null;
+    const sorted = lodash_1.default.sortBy(collection, path);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.at(mid);
+}
+exports.medianBy = medianBy;
 function median(arr) {
     if (!arr.length)
         return undefined;
@@ -104,4 +112,27 @@ function uniformity(values) {
     return 1 - jsDistance(valuePercentages, uniformDistribution);
 }
 exports.uniformity = uniformity;
+/**
+ * Swap values based on their values.
+ *
+ * The smallest value should swap place with the largest.
+ * The second smallest with the second largest.
+ * And so on.
+ */
+function inverse(inputList) {
+    // Input example: [8, 5, 30, 1, 70, 4]
+    // Create an array of objects to store the original values and indices
+    // Example: [{ value: 8, index: 0}, { value: 5, index: 1}, { value: 30, index: 2}, { value: 1, index: 3}, { value: 70, index: 4}, { value: 4, index: 5}]
+    const indexedList = inputList.map((value, index) => ({ value, index }));
+    // Sort the indexed list by values in ascending order
+    // Example: [{ value: 1, index: 3}, { value: 4, index: 5}, { value: 5, index: 1}, { value: 8, index: 0}, { value: 30, index: 2}, { value: 70, index: 4}]
+    indexedList.sort((a, b) => a.value - b.value);
+    // Write back to index in inverted index order.
+    let result = Array(inputList.length);
+    for (const [index, item] of indexedList.entries()) {
+        result[indexedList[indexedList.length - 1 - index].index] = item.value;
+    }
+    return result;
+}
+exports.inverse = inverse;
 //# sourceMappingURL=math.js.map

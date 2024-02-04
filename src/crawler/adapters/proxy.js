@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetAdapterProxy = exports.EntityAdapterProxy = exports.SystemAdapterProxy = exports.isNewEntry = exports.AdapterCache = exports.getAdapter = void 0;
 const lodash_1 = __importDefault(require("lodash"));
 const path_1 = __importDefault(require("path"));
+const array_1 = require("../../utils/array");
 const cache_1 = require("../../utils/cache");
 const csv_1 = require("../../utils/csv");
 const files_1 = require("../../utils/files");
@@ -138,12 +139,8 @@ class AssetAdapterProxy extends AdapterCache {
             return [lastRecorded];
         const adapter = await this.getAdapterInstance("assets", assetId);
         const price = await adapter.getPrice(lastRecorded);
-        const entries = lodash_1.default.sortBy(price, "timestamp");
-        for (const entry of entries) {
-            if (isNewEntry(lastRecorded, entry, (0, time_1.minInMs)(10))) {
-                await (0, csv_1.writeToCsv)(csvPath, entry, "timestamp");
-            }
-        }
+        const entries = lodash_1.default.sortBy(price, "timestamp").filter((entry) => isNewEntry(lastRecorded, entry, (0, time_1.minInMs)(10)));
+        await (0, csv_1.writeToCsv)(csvPath, (0, array_1.toAsync)(entries), "timestamp");
         return entries;
     }
     async getSupply(identifier) {
@@ -154,12 +151,8 @@ class AssetAdapterProxy extends AdapterCache {
             return [lastRecorded];
         const adapter = await this.getAdapterInstance("assets", assetId);
         const supply = await adapter.getSupply(lastRecorded);
-        const entries = lodash_1.default.sortBy(supply, "timestamp");
-        for (const entry of entries) {
-            if (isNewEntry(lastRecorded, entry, (0, time_1.minInMs)(10))) {
-                await (0, csv_1.writeToCsv)(csvPath, entry, "timestamp");
-            }
-        }
+        const entries = lodash_1.default.sortBy(supply, "timestamp").filter((entry) => isNewEntry(lastRecorded, entry, (0, time_1.minInMs)(10)));
+        await (0, csv_1.writeToCsv)(csvPath, (0, array_1.toAsync)(entries), "timestamp");
         return entries;
     }
     async getBacking(identifier) {
@@ -170,12 +163,8 @@ class AssetAdapterProxy extends AdapterCache {
             return [lastRecorded];
         const adapter = await this.getAdapterInstance("assets", assetId);
         const backing = await adapter.getBacking(lastRecorded);
-        const entries = lodash_1.default.sortBy(backing, "timestamp");
-        for (const entry of entries) {
-            if (isNewEntry(lastRecorded, entry, (0, time_1.minInMs)(10))) {
-                await (0, csv_1.writeToCsv)(csvPath, entry, "timestamp");
-            }
-        }
+        const entries = lodash_1.default.sortBy(backing, "timestamp").filter((entry) => isNewEntry(lastRecorded, entry, (0, time_1.minInMs)(10)));
+        await (0, csv_1.writeToCsv)(csvPath, (0, array_1.toAsync)(entries), "timestamp");
         return entries;
     }
 }

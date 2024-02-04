@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fromAsync = exports.sortWithoutIndex = exports.groupWhile = exports.generate = exports.uniqueTimesWithInHours = exports.uniqueTimesWithInMs = exports.relativeInMonths = exports.relativeInDays = exports.relativeInHours = exports.relativeInMs = exports.closest = void 0;
+exports.ReservoirSampler = exports.concat = exports.isAsyncIterator = exports.enumerate = exports.combinations = exports.cycleIndex = exports.toAsync = exports.fromAsync = exports.sortWithoutIndex = exports.groupWhile = exports.generate = exports.uniqueTimesWithInHours = exports.uniqueTimesWithInMs = exports.relativeInMonths = exports.relativeInDays = exports.relativeInHours = exports.relativeInMs = exports.closest = void 0;
 const lodash_1 = __importDefault(require("lodash"));
+const mersenne_twister_1 = __importDefault(require("mersenne-twister"));
 const math_1 = require("./math");
 const string_formatting_1 = require("./string_formatting");
 const SECOND_IN_MS = 1000;
@@ -123,4 +124,125 @@ async function fromAsync(iter) {
     return out;
 }
 exports.fromAsync = fromAsync;
+async function* toAsync(arr) {
+    for (const item of arr) {
+        yield item;
+    }
+}
+exports.toAsync = toAsync;
+/**
+ * Generates an infinite sequence of indices within the specified bounds, starting from a given index and with a specified step.
+ * @param bounds - The lower and upper bounds of the index range.
+ * @param start - The starting index (default: 0).
+ * @param step - The step size between indices (default: 1).
+ * @throws Error if the starting index is outside the bounds or if the step size is larger than the range of bounds.
+ * @returns An iterable iterator that generates the indices.
+ */
+function* cycleIndex(bounds, start = 0, step = 1) {
+    const [lower, upper] = bounds;
+    if (start < lower || start > upper)
+        throw Error(`Start ${start} outside bounds ${bounds}.`);
+    if (step > upper - lower)
+        throw Error(`Step larger than range of bounds ${bounds}.`);
+    let index = start;
+    while (true) {
+        yield index;
+        index += step;
+        if (index < lower) {
+            // Stepped outside on the lower end. Reenter on the upper.
+            index = upper;
+        }
+        else if (index > upper) {
+            // Stepped outside on the upper end. Reenter on the lower.
+            index = lower;
+        }
+    }
+}
+exports.cycleIndex = cycleIndex;
+/**
+ * Generates combinations of elements from multiple async iterables.
+ *
+ * @template T - The type of elements in the iterables.
+ * @param lists - An array of async iterables.
+ * @param index - The current index in the iteration (default: 0).
+ * @param current - The current combination of elements (default: []).
+ * @returns An async iterable that yields combinations of elements.
+ */
+async function* combinations(lists, index = 0, current = []) {
+    if (index === lists.length) {
+        yield current;
+        return;
+    }
+    for await (const item of lists[index]) {
+        yield* combinations(lists, index + 1, [...current, item]);
+    }
+}
+exports.combinations = combinations;
+/**
+ * The enumerate method adds a counter to an iterable and returns it in the form of an enumerating object.
+ * @param items The async iterable to enumerate.
+ * @param start The index to start with.
+ * @returns Returns an iterator with index and element pairs from the original iterable.
+ */
+async function* enumerate(items, start = 0) {
+    let index = start;
+    for await (const item of items) {
+        yield [index, item];
+        index++;
+    }
+}
+exports.enumerate = enumerate;
+function isAsyncIterator(obj) {
+    if (Object(obj) !== obj)
+        return false;
+    const method = obj[Symbol.asyncIterator];
+    if (typeof method != "function")
+        return false;
+    const aIter = method.call(obj);
+    return aIter === obj;
+}
+exports.isAsyncIterator = isAsyncIterator;
+async function* concat(...iterables) {
+    for (const iterable of iterables) {
+        if (isAsyncIterator(iterable)) {
+            yield* iterable;
+        }
+        else {
+            yield iterable;
+        }
+    }
+}
+exports.concat = concat;
+/**
+ * ReservoirSampler is a class that implements the reservoir sampling algorithm.
+ * It is used to randomly select a fixed-size sample from a stream of elements.
+ * The algorithm ensures that each element in the stream has an equal probability of being selected.
+ *
+ * @template T The type of elements in the reservoir.
+ */
+class ReservoirSampler {
+    constructor(size) {
+        this.size = size;
+        this.reservoir = [];
+        this.count = 0;
+        this.generator = new mersenne_twister_1.default(1234567890);
+    }
+    insert(value) {
+        this.count++;
+        if (this.reservoir.length < this.size) {
+            this.reservoir.push(value);
+        }
+        else {
+            const index = Math.floor(this.generator.random() * this.count);
+            // Items are inserted with a decreasing probability
+            if (index < this.size) {
+                this.reservoir[index] = value;
+            }
+        }
+    }
+    get values() {
+        return this.reservoir;
+    }
+}
+exports.ReservoirSampler = ReservoirSampler;
 //# sourceMappingURL=array.js.map

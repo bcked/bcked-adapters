@@ -8,7 +8,11 @@ const axios_1 = __importDefault(require("axios"));
 const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
 const LOGS_CHANNEL = "@bcked_logs";
 const bot = new node_telegram_bot_api_1.default(process.env.BCKED_WATCHER_BOT_TOKEN, { polling: false });
-async function sendErrorReport(error) {
+async function sendErrorReport(subject, error) {
+    if (process.env.DEV_MODE) {
+        console.info("Error report not sent in DEV_MODE");
+        return;
+    }
     try {
         let logMessage = "";
         if (axios_1.default.isAxiosError(error)) {
@@ -32,6 +36,11 @@ async function sendErrorReport(error) {
         else {
             logMessage = error.toString();
         }
+        logMessage = [
+            `Subject: ${subject}`,
+            `Date: ${new Date().toISOString()}`,
+            `Log: ${logMessage}`,
+        ].join("\n");
         await bot.sendMessage(LOGS_CHANNEL, logMessage);
     }
     catch (error) {

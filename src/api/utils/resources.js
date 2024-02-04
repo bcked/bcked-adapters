@@ -5,7 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JsonResources = void 0;
 const lodash_1 = __importDefault(require("lodash"));
-const template_1 = require("../utils/template");
+const path_1 = __importDefault(require("path"));
+const paths_1 = require("../../paths");
+const files_1 = require("../../utils/files");
 class JsonResources {
     constructor(tag, spec, ...resources) {
         this.tag = tag;
@@ -17,8 +19,10 @@ class JsonResources {
             this.extend(...resources);
         }
     }
-    register({ path, summary, description, parameters, // TODO needed?
-    type, schema, loader, }) {
+    register({ path, summary, description, parameters, type, schema }) {
+        // Only register if not already registered
+        if (this.spec.paths && this.spec.paths[path])
+            return;
         this.extendSpec({
             paths: {
                 [path]: {
@@ -46,7 +50,6 @@ class JsonResources {
                     [type]: schema,
                 },
             },
-            loaders: [{ template: new template_1.Template(path), loader }],
         });
     }
     extend(...resources) {
@@ -60,11 +63,25 @@ class JsonResources {
             return;
         });
     }
-    async resolve(uri) {
-        const { template, loader } = (this.spec.loaders ?? []).find(({ template }) => template.test(uri));
-        const params = template.entries(uri);
-        const resource = await loader(params);
-        return resource;
+    /**
+     * Decorator for registering a resource.
+     */
+    static register(params) {
+        return function (target, context) {
+            // Register the resource schema when the context is initialized.
+            context.addInitializer(function () {
+                this.register(params);
+            });
+            // Extend the resource methods with a function that writes the resource to a file.
+            return async function (...args) {
+                const resource = await target.call(this, ...args);
+                if (!resource)
+                    return;
+                const filePath = path_1.default.join(paths_1.PATHS.api, resource.$id, "index.json");
+                await (0, files_1.writeJson)(filePath, resource);
+                return resource;
+            };
+        };
     }
 }
 exports.JsonResources = JsonResources;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WorkerPool = void 0;
+exports.executeInWorkerPool = exports.WorkerPool = void 0;
 const tarn_1 = require("tarn");
 const ts_worker_1 = require("./ts_worker");
 class WorkerPool {
@@ -46,4 +46,11 @@ class WorkerPool {
     }
 }
 exports.WorkerPool = WorkerPool;
+async function executeInWorkerPool(workerScriptPath, workItems, options = { min: 0, max: 4 }) {
+    const pool = new WorkerPool(workerScriptPath, options);
+    const res = await Promise.all(workItems.map((workItem) => pool.execute(workItem)));
+    await pool.close();
+    return res;
+}
+exports.executeInWorkerPool = executeInWorkerPool;
 //# sourceMappingURL=worker_pool.js.map
