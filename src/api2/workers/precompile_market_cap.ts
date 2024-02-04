@@ -14,7 +14,7 @@ const ASSETS_PATH = "assets";
 async function* matchSupplyAndPrice(
     id: bcked.asset.Id,
     window: number = hoursToMilliseconds(12)
-): AsyncIterableIterator<bcked.asset.Mcap> {
+): AsyncIterableIterator<bcked.asset.MarketCap> {
     const supplyCsv = path.join(ASSETS_PATH, id, "records", "supply_amount.csv");
 
     if (!existsSync(supplyCsv)) return;
@@ -42,14 +42,14 @@ async function* matchSupplyAndPrice(
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     try {
         console.log(`Precompiling backing prices for asset ${id}`);
-        const filePath = path.join(PATHS.assets, id, "records", "mcap.csv");
+        const filePath = path.join(PATHS.assets, id, "records", "market_cap.csv");
 
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
         await unlink(filePath).catch(() => {});
 
-        const mcapEntries = matchSupplyAndPrice(id);
-        await writeToCsv(filePath, mcapEntries, "timestamp");
+        const marketCapEntries = matchSupplyAndPrice(id);
+        await writeToCsv(filePath, marketCapEntries, "timestamp");
 
         parentPort?.postMessage(null);
     } catch (error) {

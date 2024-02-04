@@ -204,31 +204,31 @@ async function compileSupply(resource: Asset, id: bcked.asset.Id) {
     await resource.supply(id);
 }
 
-async function compileMcap(resource: Asset, id: bcked.asset.Id) {
-    const csvPath = path.join(PATHS.assets, id, "records", "mcap.csv");
+async function compileMarketCap(resource: Asset, id: bcked.asset.Id) {
+    const csvPath = path.join(PATHS.assets, id, "records", "market_cap.csv");
 
     if (!existsSync(csvPath)) return;
 
-    const historyStats: StreamStats<bcked.asset.Mcap, "usd"> = new StreamStats("usd", 100);
+    const historyStats: StreamStats<bcked.asset.MarketCap, "usd"> = new StreamStats("usd", 100);
 
     let yearsOfHistory: string[] = [];
-    let yearsStats: StreamStats<bcked.asset.Mcap, "usd"> | undefined;
+    let yearsStats: StreamStats<bcked.asset.MarketCap, "usd"> | undefined;
     let monthsOfYear: string[] = [];
-    let monthsStats: StreamStats<bcked.asset.Mcap, "usd"> | undefined;
+    let monthsStats: StreamStats<bcked.asset.MarketCap, "usd"> | undefined;
     let daysOfMonth: string[] = [];
-    let daysStats: StreamStats<bcked.asset.Mcap, "usd"> | undefined;
+    let daysStats: StreamStats<bcked.asset.MarketCap, "usd"> | undefined;
     let hoursOfDay: string[] = [];
-    let hoursStats: StreamStats<bcked.asset.Mcap, "usd"> | undefined;
-    let mcap: bcked.asset.Mcap | undefined;
+    let hoursStats: StreamStats<bcked.asset.MarketCap, "usd"> | undefined;
+    let marketCap: bcked.asset.MarketCap | undefined;
 
     async function addHourToDay(hour: string) {
-        await resource.mcapHour(id, hoursStats?.get());
+        await resource.marketCapHour(id, hoursStats?.get());
         hoursOfDay.push(hour);
         hoursStats = new StreamStats("usd", 100);
     }
 
     async function addDayToMonth(day: string, hour: string) {
-        await resource.mcapDay(
+        await resource.marketCapDay(
             id,
             daysStats?.get(),
             yearsOfHistory.at(-1),
@@ -243,7 +243,7 @@ async function compileMcap(resource: Asset, id: bcked.asset.Id) {
     }
 
     async function addMonthToYear(month: string, day: string, hour: string) {
-        await resource.mcapMonth(
+        await resource.marketCapMonth(
             id,
             monthsStats?.get(),
             yearsOfHistory.at(-1),
@@ -257,15 +257,15 @@ async function compileMcap(resource: Asset, id: bcked.asset.Id) {
     }
 
     async function addYearToHistory(year: string, month: string, day: string, hour: string) {
-        await resource.mcapYear(id, yearsStats?.get(), yearsOfHistory.at(-1), monthsOfYear);
+        await resource.marketCapYear(id, yearsStats?.get(), yearsOfHistory.at(-1), monthsOfYear);
         await addMonthToYear(month, day, hour);
         monthsOfYear = [month];
         yearsOfHistory.push(year);
         yearsStats = new StreamStats("usd", 100);
     }
 
-    for await (mcap of readCSV<bcked.asset.Mcap>(csvPath)) {
-        const { year, month, day, hour } = getDateParts(mcap.timestamp);
+    for await (marketCap of readCSV<bcked.asset.MarketCap>(csvPath)) {
+        const { year, month, day, hour } = getDateParts(marketCap.timestamp);
 
         if (yearsOfHistory.at(-1) !== year) {
             await addYearToHistory(year!, month!, day!, hour!);
@@ -283,17 +283,17 @@ async function compileMcap(resource: Asset, id: bcked.asset.Id) {
             await addHourToDay(hour!);
         }
 
-        historyStats.add(mcap);
-        yearsStats!.add(mcap);
-        monthsStats!.add(mcap);
-        daysStats!.add(mcap);
-        hoursStats!.add(mcap);
+        historyStats.add(marketCap);
+        yearsStats!.add(marketCap);
+        monthsStats!.add(marketCap);
+        daysStats!.add(marketCap);
+        hoursStats!.add(marketCap);
     }
 
     if (!yearsOfHistory.length) return;
 
-    await resource.mcapLatest(id, mcap?.timestamp);
-    await resource.mcapHistory(id, historyStats.get(), yearsOfHistory);
+    await resource.marketCapLatest(id, marketCap?.timestamp);
+    await resource.marketCapHistory(id, historyStats.get(), yearsOfHistory);
     // Finalize by storing last year, month, day, hour
     await addYearToHistory("N/A", "N/A", "N/A", "N/A");
 }
@@ -307,7 +307,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
             compileIcons(ASSET_RESOURCES, PATHS.assets, id),
             compilePrice(ASSET_RESOURCES, id),
             compileSupply(ASSET_RESOURCES, id),
-            compileMcap(ASSET_RESOURCES, id),
+            compileMarketCap(ASSET_RESOURCES, id),
         ]);
 
         parentPort?.postMessage(res);

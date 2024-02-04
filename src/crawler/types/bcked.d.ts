@@ -127,7 +127,7 @@ declare namespace bcked {
         };
 
         // Generated from supply and price data
-        type Mcap = {
+        type MarketCap = {
             timestamp: primitive.ISODateTimeString;
             price: Price;
             supply: SupplyAmount;

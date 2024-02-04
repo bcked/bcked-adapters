@@ -47,7 +47,7 @@ job("API Job", async () => {
     await Promise.all([compile(PATHS.assets, "precompile_supply.ts")]);
 
     await Promise.all([
-        compile(PATHS.assets, "precompile_mcap.ts"),
+        compile(PATHS.assets, "precompile_market_cap.ts"),
         compile(PATHS.assets, "precompile_backing.ts"),
     ]);
 
@@ -59,7 +59,7 @@ job("API Job", async () => {
         generateOasSchema(),
     ]);
 
-    // TODO continue by adding mcap and backing jsons as API resources and to compile_asset using the precomputed data
+    // TODO continue by adding backing json as API resource and to compile_asset using the precomputed data
     // TODO think about derivative assets
     // TODO think about if price and supply is needed as independent resources? Reference or directly include info?
     // TODO delete old api code if no longer needed

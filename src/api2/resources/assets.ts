@@ -55,9 +55,9 @@ export class Asset extends JsonResources {
             supply: {
                 $ref: `/assets/{id}/supply`,
             },
-            // mcap: {
-            //     $ref: `/assets/{id}/mcap`,
-            // },
+            "market-cap": {
+                $ref: `/assets/{id}/market-cap`,
+            },
             // backing: {
             //     $ref: `/assets/${id}/backing`,
             // },
@@ -465,89 +465,89 @@ export class Asset extends JsonResources {
     }
 
     @JsonResources.register({
-        path: "/assets/{id}/mcap",
+        path: "/assets/{id}/market-cap",
         summary: "Get market cap of an asset",
         description: "Get market cap of an asset by its ID",
         type: "AssetMarketCap",
         // TODO write schema
         schema: {},
     })
-    async mcap(id: bcked.entity.Id) {
-        return this.historyIndex(`/assets/${id}/mcap`);
+    async marketCap(id: bcked.entity.Id) {
+        return this.historyIndex(`/assets/${id}/market-cap`);
     }
 
     @JsonResources.register({
-        path: "/assets/{id}/mcap/latest",
+        path: "/assets/{id}/market-cap/latest",
         summary: "Get market cap of an asset",
         description: "Get market cap of an asset by its ID",
         type: "AssetMarketCap",
         // TODO write schema
         schema: {},
     })
-    async mcapLatest(id: bcked.entity.Id, timestamp: primitive.ISODateTimeString | undefined) {
-        return this.latest(`/assets/${id}/mcap`, timestamp);
+    async marketCapLatest(id: bcked.entity.Id, timestamp: primitive.ISODateTimeString | undefined) {
+        return this.latest(`/assets/${id}/market-cap`, timestamp);
     }
 
     @JsonResources.register({
-        path: "/assets/{id}/mcap/history",
+        path: "/assets/{id}/market-cap/history",
         summary: "Get market cap of an asset",
         description: "Get market cap of an asset by its ID",
         type: "AssetMarketCap",
         // TODO write schema
         schema: {},
     })
-    async mcapHistory<T extends { timestamp: primitive.ISODateTimeString }>(
+    async marketCapHistory<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        return this.history(`/assets/${id}/mcap`, stats, years);
+        return this.history(`/assets/${id}/market-cap`, stats, years);
     }
 
     @JsonResources.register({
-        path: "/assets/{id}/mcap/{year}",
+        path: "/assets/{id}/market-cap/{year}",
         summary: "Get market cap of an asset",
         description: "Get market cap of an asset by its ID",
         type: "AssetMarketCap",
         // TODO write schema
         schema: {},
     })
-    async mcapYear<T extends { timestamp: primitive.ISODateTimeString }>(
+    async marketCapYear<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
         months: string[]
     ) {
-        return this.year(`/assets/${id}/mcap`, stats, year, months);
+        return this.year(`/assets/${id}/market-cap`, stats, year, months);
     }
 
     @JsonResources.register({
-        path: "/assets/{id}/mcap/{year}/{month}",
+        path: "/assets/{id}/market-cap/{year}/{month}",
         summary: "Get market cap of an asset",
         description: "Get market cap of an asset by its ID",
         type: "AssetMarketCap",
         // TODO write schema
         schema: {},
     })
-    async mcapMonth<T extends { timestamp: primitive.ISODateTimeString }>(
+    async marketCapMonth<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
         month: string | undefined,
         days: string[]
     ) {
-        return this.month(`/assets/${id}/mcap`, stats, year, month, days);
+        return this.month(`/assets/${id}/market-cap`, stats, year, month, days);
     }
 
     @JsonResources.register({
-        path: "/assets/{id}/mcap/{year}/{month}/{day}",
+        path: "/assets/{id}/market-cap/{year}/{month}/{day}",
         summary: "Get market cap of an asset",
         description: "Get market cap of an asset by its ID",
         type: "AssetMarketCap",
         // TODO write schema
         schema: {},
     })
-    async mcapDay<T extends { timestamp: primitive.ISODateTimeString }>(
+    async marketCapDay<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -555,22 +555,22 @@ export class Asset extends JsonResources {
         day: string | undefined,
         hours: string[]
     ) {
-        return this.day(`/assets/${id}/mcap`, stats, year, month, day, hours);
+        return this.day(`/assets/${id}/market-cap`, stats, year, month, day, hours);
     }
 
     @JsonResources.register({
-        path: "/assets/{id}/mcap/{year}/{month}/{day}/{hour}",
+        path: "/assets/{id}/market-cap/{year}/{month}/{day}/{hour}",
         summary: "Get market cap of an asset",
         description: "Get market cap of an asset by its ID",
         type: "AssetMarketCap",
         // TODO write schema
         schema: {},
     })
-    async mcapHour(id: bcked.entity.Id, stats: Stats<bcked.asset.Mcap> | undefined) {
+    async marketCapHour(id: bcked.entity.Id, stats: Stats<bcked.asset.MarketCap> | undefined) {
         if (!stats || !stats.min || !stats.max || !stats.median) return;
 
         return {
-            ...this.hourBase(`/assets/${id}/mcap`, stats.median.timestamp),
+            ...this.hourBase(`/assets/${id}/market-cap`, stats.median.timestamp),
             price: {
                 $ref: setDateParts(
                     `/assets/${id}/price/{year}/{month}/{day}/{hour}`,
