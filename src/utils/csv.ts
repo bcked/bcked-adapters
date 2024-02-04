@@ -9,7 +9,7 @@ import _ from "lodash";
 import { Readable } from "stream";
 import { concat, sortWithoutIndex } from "./array";
 import { ensurePath, readFirstLine, readLastLines } from "./files";
-import { getDateParts, isCloser } from "./time";
+import { isCloser } from "./time";
 
 import { pipeline } from "stream/promises";
 import { getFirstElement } from "./stream";
@@ -61,33 +61,6 @@ export async function readClosestEntry<T extends object & { timestamp: primitive
     return unflatten(closest);
 }
 
-/**
- * Counts the number of rows in a CSV file, excluding the header.
- *
- * @param pathToFile - The path to the CSV file.
- * @returns A promise that resolves to the number of rows in the file.
- */
-async function countRows(pathToFile: string): Promise<number> {
-    // TODO still needed?
-    const stream = fs.createReadStream(pathToFile);
-    let linesCount = 0;
-    let endedWithLineBreak = false;
-
-    for await (const chunk of stream) {
-        const chunkString = chunk.toString();
-        endedWithLineBreak = chunkString.endsWith("\n");
-        // Count the line breaks in the current chunk of data
-        linesCount += (chunkString.match(/\n/g) || []).length;
-    }
-
-    if (!endedWithLineBreak) {
-        // Add 1 if the file didn't end with a line break
-        linesCount += 1;
-    }
-
-    return linesCount - 1; // Don't count the header
-}
-
 export async function* readCSV<T>(pathToFile: string): AsyncGenerator<T> {
     const stream = fs.createReadStream(pathToFile).pipe(
         parse({
@@ -114,41 +87,6 @@ async function readHeadersFromStream<T>(
     // Ensure header consistency
     let header = Object.keys(rowFlattened);
     return [concat(value, _rows), header];
-}
-
-/**
- * Asynchronously reads a CSV file and yields each row along with its index and total number of rows.
- * @template T The type of data in each row.
- * @param pathToFile The path to the CSV file.
- * @returns {AsyncGenerator<{ data: T; index: number; total: number }>} An async generator that yields each row along with its index and total number of rows.
- */
-export async function* readCSVWithMeta<T>(
-    pathToFile: string
-): AsyncGenerator<{ row: T; index: number; total: number }> {
-    // TODO still needed?
-    const total = await countRows(pathToFile);
-    let index = 0;
-    for await (const row of readCSV<T>(pathToFile)) {
-        yield { row, index, total };
-        index++;
-    }
-}
-
-export async function* readCSVForDates<T extends { timestamp: primitive.ISODateTimeString }>(
-    pathToFile: string,
-    filter: primitive.DateParts
-): AsyncGenerator<T> {
-    // TODO still needed?
-    for await (const data of readCSV<T>(pathToFile)) {
-        const parts = getDateParts(data.timestamp);
-        if (
-            Object.keys(filter)
-                .map((key) => key as "year" | "month" | "day" | "hour")
-                .every((key) => Number(filter[key]) === Number(parts[key]))
-        ) {
-            yield data;
-        }
-    }
 }
 
 /**

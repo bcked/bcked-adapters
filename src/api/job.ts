@@ -59,7 +59,6 @@ job("API Job", async () => {
         generateOasSchema(),
     ]);
 
-    // TODO Fix crawler
     // TODO continue by adding derivative-assets json as API resource and to compile_asset using the precomputed data
     // TODO optimize code to only run for new entries and not for all entries
 });
