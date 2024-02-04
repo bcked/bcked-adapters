@@ -8,7 +8,7 @@
     "scripts": {
         "dev": "nodemon",
         "crawler": "npx ts-node src/crawler/job.ts",
-        "api": "npx ts-node src/api2/job.ts",
+        "api": "npx ts-node src/api/job.ts",
         "build": "npx tsc",
         "lint": "eslint . --fix",
         "test": "jest --passWithNoTests"

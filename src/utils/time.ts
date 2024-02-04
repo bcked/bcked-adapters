@@ -1,6 +1,6 @@
 import dateFormat from "dateformat";
 import _ from "lodash";
-import { Template } from "../api/utils/template";
+import { Template } from "./template";
 
 export function secInMs(seconds: number): number {
     return seconds * 1000;
