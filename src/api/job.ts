@@ -59,10 +59,6 @@ job("API Job", async () => {
         generateOasSchema(),
     ]);
 
-    // TODO continue by adding backing json as API resource and to compile_asset using the precomputed data
-    // TODO think about derivative assets
-    // TODO think about if price and supply is needed as independent resources? Reference or directly include info?
-    // TODO delete old api code if no longer needed
-    // TODO reduce code redundancy/duplication
+    // TODO continue by adding derivative-assets json as API resource and to compile_asset using the precomputed data
     // TODO optimize code to only run for new entries and not for all entries
 });
