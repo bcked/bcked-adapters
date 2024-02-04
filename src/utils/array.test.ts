@@ -1,4 +1,4 @@
-import { closest, generate, relativeInMs } from "./array";
+import { closest, fromAsync, generate, relativeInMs, toAsync } from "./array";
 
 describe("closest", () => {
     const mockData = [
@@ -97,5 +97,12 @@ describe("relativeInMs", () => {
 describe("generate test", () => {
     it("generate array with 10 numbers and expect array length of 10", () => {
         expect(generate(0, 1, 10).length).toBe(10);
+    });
+});
+
+describe("async array test", () => {
+    it("roundtrip", async () => {
+        const expected = [1, 2, 3, 4, undefined, null];
+        expect(await fromAsync(toAsync(expected))).toEqual(expected);
     });
 });

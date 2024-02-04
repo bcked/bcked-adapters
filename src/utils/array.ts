@@ -1,4 +1,5 @@
 import _ from "lodash";
+import MersenneTwister from "mersenne-twister";
 import { round } from "./math";
 import { toISOString } from "./string_formatting";
 
@@ -139,10 +140,141 @@ export function sortWithoutIndex(array: string[], index: string): string[] {
     return _.concat(index, _.without(array, index).sort());
 }
 
-export async function fromAsync<T>(iter: AsyncIterable<T>): Promise<T[]> {
+export async function fromAsync<T>(iter: AsyncIterableIterator<T>): Promise<T[]> {
     const out: T[] = [];
     for await (const item of iter) {
         out.push(item);
     }
     return out;
+}
+
+export async function* toAsync<T>(arr: Iterable<T>): AsyncIterableIterator<T> {
+    for (const item of arr) {
+        yield item;
+    }
+}
+
+/**
+ * Generates an infinite sequence of indices within the specified bounds, starting from a given index and with a specified step.
+ * @param bounds - The lower and upper bounds of the index range.
+ * @param start - The starting index (default: 0).
+ * @param step - The step size between indices (default: 1).
+ * @throws Error if the starting index is outside the bounds or if the step size is larger than the range of bounds.
+ * @returns An iterable iterator that generates the indices.
+ */
+export function* cycleIndex(
+    bounds: [number, number],
+    start: number = 0,
+    step: number = 1
+): IterableIterator<number> {
+    const [lower, upper] = bounds;
+    if (start < lower || start > upper) throw Error(`Start ${start} outside bounds ${bounds}.`);
+    if (step > upper - lower) throw Error(`Step larger than range of bounds ${bounds}.`);
+    let index = start;
+    while (true) {
+        yield index;
+        index += step;
+        if (index < lower) {
+            // Stepped outside on the lower end. Reenter on the upper.
+            index = upper;
+        } else if (index > upper) {
+            // Stepped outside on the upper end. Reenter on the lower.
+            index = lower;
+        }
+    }
+}
+
+/**
+ * Generates combinations of elements from multiple async iterables.
+ *
+ * @template T - The type of elements in the iterables.
+ * @param lists - An array of async iterables.
+ * @param index - The current index in the iteration (default: 0).
+ * @param current - The current combination of elements (default: []).
+ * @returns An async iterable that yields combinations of elements.
+ */
+export async function* combinations<T>(
+    lists: AsyncIterableIterator<T>[],
+    index = 0,
+    current: T[] = []
+): AsyncIterableIterator<T[]> {
+    if (index === lists.length) {
+        yield current;
+        return;
+    }
+
+    for await (const item of lists[index]!) {
+        yield* combinations(lists, index + 1, [...current, item]);
+    }
+}
+
+/**
+ * The enumerate method adds a counter to an iterable and returns it in the form of an enumerating object.
+ * @param items The async iterable to enumerate.
+ * @param start The index to start with.
+ * @returns Returns an iterator with index and element pairs from the original iterable.
+ */
+export async function* enumerate<T>(
+    items: AsyncIterableIterator<T>,
+    start: number = 0
+): AsyncIterableIterator<[number, T]> {
+    let index = start;
+    for await (const item of items) {
+        yield [index, item];
+        index++;
+    }
+}
+
+export function isAsyncIterator(obj: any) {
+    if (Object(obj) !== obj) return false;
+    const method = obj[Symbol.asyncIterator];
+    if (typeof method != "function") return false;
+    const aIter = method.call(obj);
+    return aIter === obj;
+}
+
+export async function* concat<T>(...iterables: (AsyncIterable<T> | T)[]) {
+    for (const iterable of iterables) {
+        if (isAsyncIterator(iterable)) {
+            yield* iterable as AsyncIterable<T>;
+        } else {
+            yield iterable as T;
+        }
+    }
+}
+
+/**
+ * ReservoirSampler is a class that implements the reservoir sampling algorithm.
+ * It is used to randomly select a fixed-size sample from a stream of elements.
+ * The algorithm ensures that each element in the stream has an equal probability of being selected.
+ *
+ * @template T The type of elements in the reservoir.
+ */
+export class ReservoirSampler<T> {
+    private reservoir: T[];
+    private count: number; // Number of items inserted so far
+    private generator: MersenneTwister; // Make sampler deterministic
+
+    constructor(private readonly size: number) {
+        this.reservoir = [];
+        this.count = 0;
+        this.generator = new MersenneTwister(1234567890);
+    }
+
+    insert(value: T) {
+        this.count++;
+        if (this.reservoir.length < this.size) {
+            this.reservoir.push(value);
+        } else {
+            const index = Math.floor(this.generator.random() * this.count);
+            // Items are inserted with a decreasing probability
+            if (index < this.size) {
+                this.reservoir[index] = value;
+            }
+        }
+    }
+
+    get values(): T[] {
+        return this.reservoir;
+    }
 }

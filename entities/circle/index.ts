@@ -11,6 +11,7 @@ import dateFormat from "dateformat";
 import fs from "fs";
 import _ from "lodash";
 import { BRManager } from "../../src/crawler/apis/br_manager";
+import { toAsync } from "../../src/utils/array";
 import { getClosest, getLatest } from "../../src/utils/cache";
 import { writeToCsv } from "../../src/utils/csv";
 import { toISOString } from "../../src/utils/string_formatting";
@@ -76,7 +77,7 @@ export default class Adapter implements bcked.entity.Adapter {
                 underlying: summed,
             };
 
-            await writeToCsv(csvPath, res, "timestamp");
+            await writeToCsv(csvPath, toAsync([res]), "timestamp");
         }
     }
 
@@ -121,7 +122,7 @@ export default class Adapter implements bcked.entity.Adapter {
             },
         };
 
-        await writeToCsv(csvPath, entry, "timestamp");
+        await writeToCsv(csvPath, toAsync([entry]), "timestamp");
     }
 
     async fetchLatestBacking(): Promise<void> {
@@ -158,7 +159,7 @@ export default class Adapter implements bcked.entity.Adapter {
                 ),
             };
 
-            await writeToCsv(csvPath, res, "timestamp");
+            await writeToCsv(csvPath, toAsync([res]), "timestamp");
         }
     }
 

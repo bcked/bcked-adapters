@@ -1,6 +1,8 @@
 import _ from "lodash";
+import path from "path";
 import oas from "swagger-jsdoc";
-import { Template } from "../utils/template";
+import { PATHS } from "../../paths";
+import { writeJson } from "../../utils/files";
 
 interface Spec {
     openapi?: string | undefined;
@@ -11,11 +13,19 @@ interface Spec {
     security?: ReadonlyArray<oas.SecurityRequirement> | undefined;
     tags?: ReadonlyArray<oas.Tag> | undefined;
     externalDocs?: oas.ExternalDocumentation | undefined;
-    loaders?: { template: Template; loader: api.ResourceFn }[];
     [key: string]: any;
 }
 
-export class JsonResources {
+interface RegistrationParams {
+    path: string;
+    summary?: string | undefined;
+    description?: string | undefined;
+    parameters?: oas.Parameter | undefined; // TODO needed?
+    type: string;
+    schema: oas.Schema;
+}
+
+export abstract class JsonResources {
     spec: Spec;
     tag: oas.Tag | undefined;
 
@@ -34,23 +44,10 @@ export class JsonResources {
         }
     }
 
-    register({
-        path,
-        summary,
-        description,
-        parameters, // TODO needed?
-        type,
-        schema,
-        loader,
-    }: {
-        path: string;
-        summary?: string | undefined;
-        description?: string | undefined;
-        parameters?: oas.Parameter | undefined;
-        type: string;
-        schema: oas.Schema;
-        loader: api.ResourceFn;
-    }) {
+    register({ path, summary, description, parameters, type, schema }: RegistrationParams) {
+        // Only register if not already registered
+        if (this.spec.paths && this.spec.paths[path]) return;
+
         this.extendSpec({
             paths: {
                 [path]: {
@@ -78,7 +75,6 @@ export class JsonResources {
                     [type]: schema,
                 },
             },
-            loaders: [{ template: new Template(path), loader }],
         });
     }
 
@@ -95,15 +91,26 @@ export class JsonResources {
         });
     }
 
-    async resolve(uri: string) {
-        const { template, loader } = (this.spec.loaders ?? []).find(({ template }) =>
-            template.test(uri)
-        )!;
+    /**
+     * Decorator for registering a resource.
+     */
+    static register(params: RegistrationParams) {
+        return function (target: Function, context: ClassMethodDecoratorContext<JsonResources>) {
+            // Register the resource schema when the context is initialized.
+            context.addInitializer(function () {
+                this.register(params);
+            });
 
-        const params = template.entries(uri);
-
-        const resource = await loader(params);
-
-        return resource;
+            // Extend the resource methods with a function that writes the resource to a file.
+            return async function (this: any, ...args: any[]) {
+                const resource = await target.call(this, ...args);
+                if (!resource) return;
+                const filePath = path.join(PATHS.api, resource.$id, "index.json");
+                await writeJson(filePath, resource);
+                return resource;
+            };
+        };
     }
+
+    abstract index(ids: string[]): Promise<any>;
 }

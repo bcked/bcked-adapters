@@ -1,8 +1,8 @@
 {
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true,
-        "source.fixAll.eslint": true
+        "source.organizeImports": "explicit",
+        "source.fixAll.eslint": "explicit"
     },
     "files.exclude": {
         "**/node_modules": true,
@@ -38,5 +38,6 @@
     "svg.minify.removeScriptElement": true,
     "svg.minify.sortAttrs": true,
     "svg.minify.removeViewBox": false,
-    "svg.preview.autoShow": true
+    "svg.preview.autoShow": true,
+    "jest.autoRun": "off"
 }

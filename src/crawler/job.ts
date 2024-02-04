@@ -1,26 +1,18 @@
-import "dotenv/config";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { REGISTER_INSTANCE } from "ts-node";
-import { WorkerPool } from "../utils/worker_pool";
+import { job } from "../utils/job";
+import { executeInWorkerPool } from "../utils/worker_pool";
 
-async function query(dir: string, workerScript: string) {
-    const workerScriptPath = path.resolve("src/crawler/workers", workerScript);
+const WORKERS_PATH = "src/crawler/workers";
+
+async function query<Result>(dir: string, workerScript: string): Promise<void> {
+    const workerScriptPath = path.resolve(WORKERS_PATH, workerScript);
     const ids = await fs.readdir(dir);
-    const pool = new WorkerPool(workerScriptPath, { min: 0, max: 4 });
-    const res = await Promise.all(ids.map((id) => pool.execute(id)));
-    await pool.close();
-    return res;
+    await executeInWorkerPool<string, Result>(workerScriptPath, ids);
 }
 
-async function job() {
-    if (process[REGISTER_INSTANCE]) {
-        process.env.DEV_MODE = "true";
-    }
-
+job("Crawler Job", async () => {
     await query("systems", "query_system.ts");
     await query("entities", "query_entity.ts");
     await query("assets", "query_asset.ts");
-}
-
-job();
+});

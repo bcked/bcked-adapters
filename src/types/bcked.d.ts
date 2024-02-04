@@ -119,9 +119,35 @@ declare namespace bcked {
             max: number | null; // Maximum number of supply; If unknown or N/A, this must be set to null.
         }
 
+        type SupplyAmount = Supply & { amount: number };
+
         type Backing = {
             timestamp: primitive.ISODateTimeString;
             underlying: Partial<Record<Id, number>>;
+        };
+
+        // Generated from supply and price data
+        type MarketCap = {
+            timestamp: primitive.ISODateTimeString;
+            price: Price;
+            supply: SupplyAmount;
+            usd: number;
+        };
+
+        // Generated from backing and price data to cover underlying and derivative assets
+        type Relationship = {
+            amount: number;
+            price?: Price;
+            usd?: number;
+        };
+
+        // Generated from backing and price data to cover underlying and derivative assets
+        type Relationships = {
+            timestamp: primitive.ISODateTimeString;
+            usd: number;
+            breakdown: {
+                [assetId: bcked.asset.Id]: Relationship;
+            };
         };
 
         interface Adapter {

@@ -1,16 +1,18 @@
 import { parentPort } from "worker_threads";
 import { PATHS } from "../../paths";
 import { sendErrorReport } from "../../watcher/bot";
-import { SystemAdapterProxy } from "../adapters/proxy";
-
-const adapter = new SystemAdapterProxy();
+import { SYSTEM_RESOURCES } from "../resources/systems";
+import { compileDetails, compileIcons } from "../utils/compile";
 
 parentPort?.on("message", async (id: bcked.system.Id) => {
-    console.log(`Query system ${id}`);
+    console.log(`Compile system ${id}`);
     try {
-        await Promise.all([adapter.getDetails(id), adapter.update(id)]);
+        const res = await Promise.all([
+            compileDetails(SYSTEM_RESOURCES, id),
+            compileIcons(SYSTEM_RESOURCES, PATHS.systems, id),
+        ]);
 
-        parentPort?.postMessage(null);
+        parentPort?.postMessage(res);
     } catch (error) {
         console.error(`/${PATHS.systems}/${id}`, error);
         await sendErrorReport(`/${PATHS.systems}/${id}`, error);

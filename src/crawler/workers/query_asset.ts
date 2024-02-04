@@ -1,24 +1,26 @@
 import { parentPort } from "worker_threads";
+import { PATHS } from "../../paths";
 import { fromId } from "../../utils/helper";
 import { sendErrorReport } from "../../watcher/bot";
 import { AssetAdapterProxy } from "../adapters/proxy";
 
 const adapter = new AssetAdapterProxy();
 
-parentPort?.on("message", async (assetId: bcked.asset.Id) => {
-    const identifier = fromId(assetId);
+parentPort?.on("message", async (id: bcked.asset.Id) => {
+    console.log(`Query asset ${id}`);
+    const identifier = fromId(id);
     try {
-        const res = await Promise.all([
+        await Promise.all([
             adapter.getDetails(identifier),
             adapter.getPrice(identifier),
             adapter.getSupply(identifier),
             adapter.getBacking(identifier),
         ]);
 
-        parentPort?.postMessage(res);
+        parentPort?.postMessage(null);
     } catch (error) {
-        console.error(error);
-        await sendErrorReport(error);
+        console.error(`/${PATHS.assets}/${id}`, error);
+        await sendErrorReport(`/${PATHS.assets}/${id}`, error);
         parentPort?.postMessage(null);
     }
 });
