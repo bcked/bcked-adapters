@@ -134,18 +134,19 @@ declare namespace bcked {
             usd: number;
         };
 
-        // Generated from backing and price data
-        type UnderlyingPrice = {
+        // Generated from backing and price data to cover underlying and derivative assets
+        type Relationship = {
             amount: number;
             price?: Price;
             usd?: number;
         };
 
-        // Generated from backing and price data
-        type BackingPrice = {
+        // Generated from backing and price data to cover underlying and derivative assets
+        type Relationships = {
             timestamp: primitive.ISODateTimeString;
-            underlying: {
-                [underlyingId: bcked.asset.Id]: UnderlyingPrice;
+            usd: number;
+            breakdown: {
+                [assetId: bcked.asset.Id]: Relationship;
             };
         };
 

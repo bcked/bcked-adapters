@@ -48,7 +48,7 @@ job("API Job", async () => {
 
     await Promise.all([
         compile(PATHS.assets, "precompile_market_cap.ts"),
-        compile(PATHS.assets, "precompile_backing.ts"),
+        compile(PATHS.assets, "precompile_underlying_assets.ts"),
     ]);
 
     await Promise.all([

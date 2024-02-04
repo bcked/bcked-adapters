@@ -58,8 +58,11 @@ export class Asset extends JsonResources {
             "market-cap": {
                 $ref: `/assets/{id}/market-cap`,
             },
-            // backing: {
-            //     $ref: `/assets/${id}/backing`,
+            "underlying-assets": {
+                $ref: `/assets/${id}/underlying-assets`,
+            },
+            // "derivative-assets": {
+            //     $ref: `/assets/${id}/derivative-assets`,
             // },
         };
     }
@@ -584,6 +587,146 @@ export class Asset extends JsonResources {
                 ),
             },
             value: {
+                "rwa:USD": stats.median.usd,
+            },
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/underlying-assets",
+        summary: "Get underlying assets of an asset",
+        description: "Get underlying assets of an asset by its ID",
+        type: "AssetUnderlyingAssets",
+        // TODO write schema
+        schema: {},
+    })
+    async underlyingAssets(id: bcked.entity.Id) {
+        return this.historyIndex(`/assets/${id}/underlying-assets`);
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/underlying-assets/latest",
+        summary: "Get latest underlying assets of an asset",
+        description: "Get latest underlying assets of an asset by its ID",
+        type: "AssetUnderlyingAssets",
+        // TODO write schema
+        schema: {},
+    })
+    async underlyingAssetsLatest(
+        id: bcked.entity.Id,
+        timestamp: primitive.ISODateTimeString | undefined
+    ) {
+        return this.latest(`/assets/${id}/underlying-assets`, timestamp);
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/underlying-assets/history",
+        summary: "Get historical underlying assets of an asset",
+        description: "Get historical underlying assets of an asset by its ID",
+        type: "AssetUnderlyingAssets",
+        // TODO write schema
+        schema: {},
+    })
+    async underlyingAssetsHistory<T extends { timestamp: primitive.ISODateTimeString }>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        years: string[]
+    ) {
+        return this.history(`/assets/${id}/underlying-assets`, stats, years);
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/underlying-assets/{year}",
+        summary: "Get underlying assets of an asset",
+        description: "Get underlying assets of an asset by its ID",
+        type: "AssetUnderlyingAssets",
+        // TODO write schema
+        schema: {},
+    })
+    async underlyingAssetsYear<T extends { timestamp: primitive.ISODateTimeString }>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        months: string[]
+    ) {
+        return this.year(`/assets/${id}/underlying-assets`, stats, year, months);
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/underlying-assets/{year}/{month}",
+        summary: "Get underlying assets of an asset",
+        description: "Get underlying assets of an asset by its ID",
+        type: "AssetUnderlyingAssets",
+        // TODO write schema
+        schema: {},
+    })
+    async underlyingAssetsMonth<T extends { timestamp: primitive.ISODateTimeString }>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        month: string | undefined,
+        days: string[]
+    ) {
+        return this.month(`/assets/${id}/underlying-assets`, stats, year, month, days);
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/underlying-assets/{year}/{month}/{day}",
+        summary: "Get underlying assets of an asset",
+        description: "Get underlying assets of an asset by its ID",
+        type: "AssetUnderlyingAssets",
+        // TODO write schema
+        schema: {},
+    })
+    async underlyingAssetsDay<T extends { timestamp: primitive.ISODateTimeString }>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        month: string | undefined,
+        day: string | undefined,
+        hours: string[]
+    ) {
+        return this.day(`/assets/${id}/underlying-assets`, stats, year, month, day, hours);
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/underlying-assets/{year}/{month}/{day}/{hour}",
+        summary: "Get underlying assets of an asset",
+        description: "Get underlying assets of an asset by its ID",
+        type: "AssetUnderlyingAssets",
+        // TODO write schema
+        schema: {},
+    })
+    async underlyingAssetsHour(
+        id: bcked.entity.Id,
+        stats: Stats<bcked.asset.Relationships> | undefined
+    ) {
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        return {
+            ...this.hourBase(`/assets/${id}/underlying-assets`, stats.median.timestamp),
+            breakdown: Object.entries(stats.median.breakdown).map(([assetId, underlying]) => ({
+                asset: {
+                    $ref: `/assets/${assetId}`,
+                },
+                amount: underlying.amount,
+                // TODO what about the graph?
+                // TODO How to handle non-matching timepoints within the backing tree?
+                ...(underlying.price
+                    ? {
+                          price: {
+                              $ref: setDateParts(
+                                  `/assets/${assetId}/price/{year}/{month}/{day}/{hour}`,
+                                  underlying.price.timestamp
+                              ),
+                          },
+                          value: {
+                              "rwa:USD": underlying.usd,
+                          },
+                      }
+                    : {}),
+            })),
+            total: {
                 "rwa:USD": stats.median.usd,
             },
         };

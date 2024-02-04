@@ -296,6 +296,109 @@ async function compileMarketCap(resource: Asset, id: bcked.asset.Id) {
     await resource.marketCapHistory(id, historyStats.get(), yearsOfHistory);
     // Finalize by storing last year, month, day, hour
     await addYearToHistory("N/A", "N/A", "N/A", "N/A");
+
+    await resource.marketCap(id);
+}
+
+async function compileUnderlyingAssets(resource: Asset, id: bcked.asset.Id) {
+    const csvPath = path.join(PATHS.assets, id, "records", "underlying_assets.csv");
+
+    if (!existsSync(csvPath)) return;
+
+    const historyStats: StreamStats<bcked.asset.Relationships, "usd"> = new StreamStats("usd", 100);
+
+    let yearsOfHistory: string[] = [];
+    let yearsStats: StreamStats<bcked.asset.Relationships, "usd"> | undefined;
+    let monthsOfYear: string[] = [];
+    let monthsStats: StreamStats<bcked.asset.Relationships, "usd"> | undefined;
+    let daysOfMonth: string[] = [];
+    let daysStats: StreamStats<bcked.asset.Relationships, "usd"> | undefined;
+    let hoursOfDay: string[] = [];
+    let hoursStats: StreamStats<bcked.asset.Relationships, "usd"> | undefined;
+    let underlyingAssets: bcked.asset.Relationships | undefined;
+
+    async function addHourToDay(hour: string) {
+        await resource.underlyingAssetsHour(id, hoursStats?.get());
+        hoursOfDay.push(hour);
+        hoursStats = new StreamStats("usd", 100);
+    }
+
+    async function addDayToMonth(day: string, hour: string) {
+        await resource.underlyingAssetsDay(
+            id,
+            daysStats?.get(),
+            yearsOfHistory.at(-1),
+            monthsOfYear.at(-1),
+            daysOfMonth.at(-1),
+            hoursOfDay
+        );
+        await addHourToDay(hour);
+        hoursOfDay = [hour];
+        daysOfMonth.push(day);
+        daysStats = new StreamStats("usd", 100);
+    }
+
+    async function addMonthToYear(month: string, day: string, hour: string) {
+        await resource.underlyingAssetsMonth(
+            id,
+            monthsStats?.get(),
+            yearsOfHistory.at(-1),
+            monthsOfYear.at(-1),
+            daysOfMonth
+        );
+        await addDayToMonth(day, hour);
+        daysOfMonth = [day];
+        monthsOfYear.push(month);
+        monthsStats = new StreamStats("usd", 100);
+    }
+
+    async function addYearToHistory(year: string, month: string, day: string, hour: string) {
+        await resource.underlyingAssetsYear(
+            id,
+            yearsStats?.get(),
+            yearsOfHistory.at(-1),
+            monthsOfYear
+        );
+        await addMonthToYear(month, day, hour);
+        monthsOfYear = [month];
+        yearsOfHistory.push(year);
+        yearsStats = new StreamStats("usd", 100);
+    }
+
+    for await (underlyingAssets of readCSV<bcked.asset.Relationships>(csvPath)) {
+        const { year, month, day, hour } = getDateParts(underlyingAssets.timestamp);
+
+        if (yearsOfHistory.at(-1) !== year) {
+            await addYearToHistory(year!, month!, day!, hour!);
+        }
+
+        if (monthsOfYear.at(-1) !== month) {
+            await addMonthToYear(month!, day!, hour!);
+        }
+
+        if (daysOfMonth.at(-1) !== day) {
+            await addDayToMonth(day!, hour!);
+        }
+
+        if (hoursOfDay.at(-1) !== hour) {
+            await addHourToDay(hour!);
+        }
+
+        historyStats.add(underlyingAssets);
+        yearsStats!.add(underlyingAssets);
+        monthsStats!.add(underlyingAssets);
+        daysStats!.add(underlyingAssets);
+        hoursStats!.add(underlyingAssets);
+    }
+
+    if (!yearsOfHistory.length) return;
+
+    await resource.underlyingAssetsLatest(id, underlyingAssets?.timestamp);
+    await resource.underlyingAssetsHistory(id, historyStats.get(), yearsOfHistory);
+    // Finalize by storing last year, month, day, hour
+    await addYearToHistory("N/A", "N/A", "N/A", "N/A");
+
+    await resource.underlyingAssets(id);
 }
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
@@ -308,6 +411,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
             compilePrice(ASSET_RESOURCES, id),
             compileSupply(ASSET_RESOURCES, id),
             compileMarketCap(ASSET_RESOURCES, id),
+            compileUnderlyingAssets(ASSET_RESOURCES, id),
         ]);
 
         parentPort?.postMessage(res);

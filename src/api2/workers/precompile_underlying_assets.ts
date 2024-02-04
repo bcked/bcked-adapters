@@ -5,6 +5,7 @@ import { sendErrorReport } from "../../watcher/bot";
 import { hoursToMilliseconds } from "date-fns";
 import { existsSync } from "fs";
 import { unlink } from "fs/promises";
+import _ from "lodash";
 import path from "path";
 import { readCSV, writeToCsv } from "../../utils/csv";
 import { ConsecutivePriceLookup } from "../utils/priceLookup";
@@ -16,7 +17,7 @@ async function lookupUnderlyingPrice(
     amount: number,
     lookup: ConsecutivePriceLookup,
     window: number = hoursToMilliseconds(12)
-): Promise<bcked.asset.UnderlyingPrice> {
+): Promise<bcked.asset.Relationship> {
     const price = await lookup.getClosest(timestamp, window);
     if (!price) return { amount };
 
@@ -30,7 +31,7 @@ async function lookupUnderlyingPrice(
 async function* matchBackingPrices(
     id: bcked.asset.Id,
     window: number = hoursToMilliseconds(12)
-): AsyncIterableIterator<bcked.asset.BackingPrice> {
+): AsyncIterableIterator<bcked.asset.Relationships> {
     const backingCsv = path.join(ASSETS_PATH, id, "records", "backing.csv");
 
     if (!existsSync(backingCsv)) return;
@@ -65,7 +66,8 @@ async function* matchBackingPrices(
 
         yield {
             timestamp: backingEntry.timestamp,
-            underlying,
+            breakdown: underlying,
+            usd: _.sumBy(Object.values(underlying), "usd"),
         };
     }
 }
@@ -73,7 +75,7 @@ async function* matchBackingPrices(
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     try {
         console.log(`Precompiling backing prices for asset ${id}`);
-        const filePath = path.join(PATHS.assets, id, "records", "backing_value.csv");
+        const filePath = path.join(PATHS.assets, id, "records", "underlying_assets.csv");
 
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
