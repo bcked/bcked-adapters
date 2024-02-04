@@ -240,7 +240,7 @@ export class Asset extends JsonResources {
         path: "/assets/{id}/price/{year}",
         summary: "Get price of an asset",
         description: "Get price of an asset by its ID",
-        type: "AssetPriceSummary",
+        type: "AssetPrice",
         // TODO write schema
         schema: {},
     })
@@ -257,7 +257,7 @@ export class Asset extends JsonResources {
         path: "/assets/{id}/price/{year}/{month}",
         summary: "Get price of an asset",
         description: "Get price of an asset by its ID",
-        type: "AssetPriceSummary",
+        type: "AssetPrice",
         // TODO write schema
         schema: {},
     })
@@ -275,7 +275,7 @@ export class Asset extends JsonResources {
         path: "/assets/{id}/price/{year}/{month}/{day}",
         summary: "Get price of an asset",
         description: "Get price of an asset by its ID",
-        type: "AssetPriceSummary",
+        type: "AssetPrice",
         // TODO write schema
         schema: {},
     })
