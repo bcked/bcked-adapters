@@ -8,7 +8,6 @@ import { unlink } from "fs/promises";
 import path from "path";
 import { readCSV, writeToCsv } from "../../utils/csv";
 import { ConsecutivePriceLookup } from "../utils/priceLookup";
-import { supplyAmount } from "../utils/supply";
 
 const ASSETS_PATH = "assets";
 
@@ -16,20 +15,16 @@ async function* matchSupplyAndPrice(
     id: bcked.asset.Id,
     window: number = hoursToMilliseconds(12)
 ): AsyncIterableIterator<bcked.asset.Mcap> {
-    const supplyCsv = path.join(ASSETS_PATH, id, "records", "supply.csv");
+    const supplyCsv = path.join(ASSETS_PATH, id, "records", "supply_amount.csv");
 
     if (!existsSync(supplyCsv)) return;
 
-    const supplyEntries = readCSV<bcked.asset.Supply>(supplyCsv);
+    const supplyEntries = readCSV<bcked.asset.SupplyAmount>(supplyCsv);
 
     let priceLookup = new ConsecutivePriceLookup(id);
 
     for await (const supplyEntry of supplyEntries) {
         // Get closest prices to the current entry for all underlying assets
-
-        const amount = supplyAmount(supplyEntry);
-
-        if (!amount) continue;
 
         const price = await priceLookup.getClosest(supplyEntry.timestamp, window);
 
@@ -37,13 +32,9 @@ async function* matchSupplyAndPrice(
 
         yield {
             timestamp: supplyEntry.timestamp,
-            price: {
-                usd: price.usd,
-            },
-            supply: { amount },
-            value: {
-                usd: price.usd * amount,
-            },
+            price: price,
+            supply: supplyEntry,
+            usd: price.usd * supplyEntry.amount,
         };
     }
 }
@@ -57,8 +48,8 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
         // TODO Later change this to start at the current date and only append changes
         await unlink(filePath).catch(() => {});
 
-        const backingPrices = matchSupplyAndPrice(id);
-        await writeToCsv(filePath, backingPrices, "timestamp");
+        const mcapEntries = matchSupplyAndPrice(id);
+        await writeToCsv(filePath, mcapEntries, "timestamp");
 
         parentPort?.postMessage(null);
     } catch (error) {

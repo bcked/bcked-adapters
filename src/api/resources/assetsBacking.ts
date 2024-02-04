@@ -177,7 +177,7 @@ RESOURCES.register({
                 $ref: `/assets/${id}/backing/latest`,
             },
             allTime: {
-                $ref: `/assets/${id}/backing/all-time`,
+                $ref: `/assets/${id}/backing/history`,
             },
         };
 
@@ -207,7 +207,7 @@ RESOURCES.register({
 });
 
 RESOURCES.register({
-    path: "/assets/{id}/backing/all-time",
+    path: "/assets/{id}/backing/history",
     summary: "Get backing of an asset",
     description: "Get backing of an asset by its ID",
     type: "AssetBacking",
@@ -219,7 +219,7 @@ RESOURCES.register({
         // const details = await readJson<bcked.asset.DetailsRecord>(filePath);
 
         const resource = {
-            $id: `/assets/${id}/backing/all-time`,
+            $id: `/assets/${id}/backing/history`,
             high: {
                 $ref: `/assets/${id}/backing/{year}/{month}/{day}/{hour}`,
             },

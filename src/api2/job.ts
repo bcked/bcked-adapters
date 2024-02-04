@@ -43,9 +43,12 @@ async function generateOasSchema() {
 }
 
 job("API Job", async () => {
+    // TODO this could already be done during data collection, not requiring a post-processing step
+    await Promise.all([compile(PATHS.assets, "precompile_supply.ts")]);
+
     await Promise.all([
-        compile(PATHS.assets, "precompile_backing.ts"),
         compile(PATHS.assets, "precompile_mcap.ts"),
+        compile(PATHS.assets, "precompile_backing.ts"),
     ]);
 
     await Promise.all([
@@ -60,4 +63,6 @@ job("API Job", async () => {
     // TODO think about derivative assets
     // TODO think about if price and supply is needed as independent resources? Reference or directly include info?
     // TODO delete old api code if no longer needed
+    // TODO reduce code redundancy/duplication
+    // TODO optimize code to only run for new entries and not for all entries
 });

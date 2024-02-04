@@ -22,12 +22,8 @@ async function lookupUnderlyingPrice(
 
     return {
         amount,
-        price: {
-            usd: price.usd,
-        },
-        value: {
-            usd: price.usd * amount,
-        },
+        price: price,
+        usd: price.usd * amount,
     };
 }
 

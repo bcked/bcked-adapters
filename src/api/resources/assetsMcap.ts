@@ -41,7 +41,7 @@ RESOURCES.register({
                 $ref: `/assets/${id}/mcap/latest`,
             },
             allTime: {
-                $ref: `/assets/${id}/mcap/all-time`,
+                $ref: `/assets/${id}/mcap/history`,
             },
         };
 
@@ -71,7 +71,7 @@ RESOURCES.register({
 });
 
 RESOURCES.register({
-    path: "/assets/{id}/mcap/all-time",
+    path: "/assets/{id}/mcap/history",
     summary: "Get mcap of an asset",
     description: "Get mcap of an asset by its ID",
     type: "AssetMcap",
@@ -83,7 +83,7 @@ RESOURCES.register({
         // const details = await readJson<bcked.asset.DetailsRecord>(filePath);
 
         const resource = {
-            $id: `/assets/${id}/mcap/all-time`,
+            $id: `/assets/${id}/mcap/history`,
             high: {
                 $ref: `/assets/${id}/mcap/{year}/{month}/{day}/{hour}`,
             },

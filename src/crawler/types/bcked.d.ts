@@ -119,6 +119,8 @@ declare namespace bcked {
             max: number | null; // Maximum number of supply; If unknown or N/A, this must be set to null.
         }
 
+        type SupplyAmount = Supply & { amount: number };
+
         type Backing = {
             timestamp: primitive.ISODateTimeString;
             underlying: Partial<Record<Id, number>>;
@@ -127,26 +129,16 @@ declare namespace bcked {
         // Generated from supply and price data
         type Mcap = {
             timestamp: primitive.ISODateTimeString;
-            price: {
-                usd: number;
-            };
-            supply: {
-                amount: number;
-            };
-            value: {
-                usd: number;
-            };
+            price: Price;
+            supply: SupplyAmount;
+            usd: number;
         };
 
         // Generated from backing and price data
         type UnderlyingPrice = {
             amount: number;
-            price?: {
-                usd: number;
-            };
-            value?: {
-                usd: number;
-            };
+            price?: Price;
+            usd?: number;
         };
 
         // Generated from backing and price data

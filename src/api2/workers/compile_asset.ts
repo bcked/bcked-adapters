@@ -8,7 +8,6 @@ import { getDateParts } from "../../utils/time";
 import { sendErrorReport } from "../../watcher/bot";
 import { ASSET_RESOURCES, Asset } from "../resources/assets";
 import { compileDetails, compileIcons } from "../utils/compile";
-import { supplyAmount } from "../utils/supply";
 
 async function compilePrice(resource: Asset, id: bcked.asset.Id) {
     const csvPath = path.join(PATHS.assets, id, "records", "price.csv");
@@ -106,27 +105,25 @@ async function compilePrice(resource: Asset, id: bcked.asset.Id) {
     await resource.price(id);
 }
 
-interface Supply {
-    timestamp: primitive.ISODateTimeString;
-    amount: number | null;
-}
-
 async function compileSupply(resource: Asset, id: bcked.asset.Id) {
-    const csvPath = path.join(PATHS.assets, id, "records", "supply.csv");
+    const csvPath = path.join(PATHS.assets, id, "records", "supply_amount.csv");
 
     if (!existsSync(csvPath)) return;
 
-    const historyStats: StreamStats<Supply, "amount"> = new StreamStats("amount", 100);
+    const historyStats: StreamStats<bcked.asset.SupplyAmount, "amount"> = new StreamStats(
+        "amount",
+        100
+    );
 
     let yearsOfHistory: string[] = [];
-    let yearsStats: StreamStats<Supply, "amount"> | undefined;
+    let yearsStats: StreamStats<bcked.asset.SupplyAmount, "amount"> | undefined;
     let monthsOfYear: string[] = [];
-    let monthsStats: StreamStats<Supply, "amount"> | undefined;
+    let monthsStats: StreamStats<bcked.asset.SupplyAmount, "amount"> | undefined;
     let daysOfMonth: string[] = [];
-    let daysStats: StreamStats<Supply, "amount"> | undefined;
+    let daysStats: StreamStats<bcked.asset.SupplyAmount, "amount"> | undefined;
     let hoursOfDay: string[] = [];
-    let hoursStats: StreamStats<Supply, "amount"> | undefined;
-    let supply: Supply | undefined;
+    let hoursStats: StreamStats<bcked.asset.SupplyAmount, "amount"> | undefined;
+    let supply: bcked.asset.SupplyAmount | undefined;
 
     async function addHourToDay(hour: string) {
         await resource.supplyHour(id, hoursStats?.get());
@@ -171,14 +168,7 @@ async function compileSupply(resource: Asset, id: bcked.asset.Id) {
         yearsStats = new StreamStats("amount", 100);
     }
 
-    for await (const supplyEntry of readCSV<bcked.asset.Supply>(csvPath)) {
-        supply = {
-            timestamp: supplyEntry.timestamp,
-            amount: supplyAmount(supplyEntry),
-        };
-
-        if (!supply.amount) continue;
-
+    for await (supply of readCSV<bcked.asset.SupplyAmount>(csvPath)) {
         const { year, month, day, hour } = getDateParts(supply.timestamp);
 
         if (yearsOfHistory.at(-1) !== year) {
@@ -214,6 +204,100 @@ async function compileSupply(resource: Asset, id: bcked.asset.Id) {
     await resource.supply(id);
 }
 
+async function compileMcap(resource: Asset, id: bcked.asset.Id) {
+    const csvPath = path.join(PATHS.assets, id, "records", "mcap.csv");
+
+    if (!existsSync(csvPath)) return;
+
+    const historyStats: StreamStats<bcked.asset.Mcap, "usd"> = new StreamStats("usd", 100);
+
+    let yearsOfHistory: string[] = [];
+    let yearsStats: StreamStats<bcked.asset.Mcap, "usd"> | undefined;
+    let monthsOfYear: string[] = [];
+    let monthsStats: StreamStats<bcked.asset.Mcap, "usd"> | undefined;
+    let daysOfMonth: string[] = [];
+    let daysStats: StreamStats<bcked.asset.Mcap, "usd"> | undefined;
+    let hoursOfDay: string[] = [];
+    let hoursStats: StreamStats<bcked.asset.Mcap, "usd"> | undefined;
+    let mcap: bcked.asset.Mcap | undefined;
+
+    async function addHourToDay(hour: string) {
+        await resource.mcapHour(id, hoursStats?.get());
+        hoursOfDay.push(hour);
+        hoursStats = new StreamStats("usd", 100);
+    }
+
+    async function addDayToMonth(day: string, hour: string) {
+        await resource.mcapDay(
+            id,
+            daysStats?.get(),
+            yearsOfHistory.at(-1),
+            monthsOfYear.at(-1),
+            daysOfMonth.at(-1),
+            hoursOfDay
+        );
+        await addHourToDay(hour);
+        hoursOfDay = [hour];
+        daysOfMonth.push(day);
+        daysStats = new StreamStats("usd", 100);
+    }
+
+    async function addMonthToYear(month: string, day: string, hour: string) {
+        await resource.mcapMonth(
+            id,
+            monthsStats?.get(),
+            yearsOfHistory.at(-1),
+            monthsOfYear.at(-1),
+            daysOfMonth
+        );
+        await addDayToMonth(day, hour);
+        daysOfMonth = [day];
+        monthsOfYear.push(month);
+        monthsStats = new StreamStats("usd", 100);
+    }
+
+    async function addYearToHistory(year: string, month: string, day: string, hour: string) {
+        await resource.mcapYear(id, yearsStats?.get(), yearsOfHistory.at(-1), monthsOfYear);
+        await addMonthToYear(month, day, hour);
+        monthsOfYear = [month];
+        yearsOfHistory.push(year);
+        yearsStats = new StreamStats("usd", 100);
+    }
+
+    for await (mcap of readCSV<bcked.asset.Mcap>(csvPath)) {
+        const { year, month, day, hour } = getDateParts(mcap.timestamp);
+
+        if (yearsOfHistory.at(-1) !== year) {
+            await addYearToHistory(year!, month!, day!, hour!);
+        }
+
+        if (monthsOfYear.at(-1) !== month) {
+            await addMonthToYear(month!, day!, hour!);
+        }
+
+        if (daysOfMonth.at(-1) !== day) {
+            await addDayToMonth(day!, hour!);
+        }
+
+        if (hoursOfDay.at(-1) !== hour) {
+            await addHourToDay(hour!);
+        }
+
+        historyStats.add(mcap);
+        yearsStats!.add(mcap);
+        monthsStats!.add(mcap);
+        daysStats!.add(mcap);
+        hoursStats!.add(mcap);
+    }
+
+    if (!yearsOfHistory.length) return;
+
+    await resource.mcapLatest(id, mcap?.timestamp);
+    await resource.mcapHistory(id, historyStats.get(), yearsOfHistory);
+    // Finalize by storing last year, month, day, hour
+    await addYearToHistory("N/A", "N/A", "N/A", "N/A");
+}
+
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     try {
         console.log(`Compile asset ${id}`);
@@ -223,6 +307,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
             compileIcons(ASSET_RESOURCES, PATHS.assets, id),
             compilePrice(ASSET_RESOURCES, id),
             compileSupply(ASSET_RESOURCES, id),
+            compileMcap(ASSET_RESOURCES, id),
         ]);
 
         parentPort?.postMessage(res);
