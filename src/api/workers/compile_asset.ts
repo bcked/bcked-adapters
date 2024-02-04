@@ -139,8 +139,8 @@ async function compileHistory<
 }
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
+    console.log(`Compile asset ${id}`);
     try {
-        console.log(`Compile asset ${id}`);
         const res = await Promise.all([
             ASSET_RESOURCES.asset(id),
             compileDetails(ASSET_RESOURCES, id),
@@ -189,7 +189,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
 
         parentPort?.postMessage(res);
     } catch (error) {
-        console.error(error);
+        console.error(`/${PATHS.assets}/${id}`, error);
         await sendErrorReport(`/${PATHS.assets}/${id}`, error);
         parentPort?.postMessage(null);
     }

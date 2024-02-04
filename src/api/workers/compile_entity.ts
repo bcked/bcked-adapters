@@ -5,8 +5,8 @@ import { ENTITY_RESOURCES } from "../resources/entities";
 import { compileDetails, compileIcons } from "../utils/compile";
 
 parentPort?.on("message", async (id: bcked.entity.Id) => {
+    console.log(`Compile entity ${id}`);
     try {
-        console.log(`Compile entity ${id}`);
         const res = await Promise.all([
             compileDetails(ENTITY_RESOURCES, id),
             compileIcons(ENTITY_RESOURCES, PATHS.entities, id),
@@ -14,7 +14,7 @@ parentPort?.on("message", async (id: bcked.entity.Id) => {
 
         parentPort?.postMessage(res);
     } catch (error) {
-        console.error(error);
+        console.error(`/${PATHS.entities}/${id}`, error);
         await sendErrorReport(`/${PATHS.entities}/${id}`, error);
         parentPort?.postMessage(null);
     }

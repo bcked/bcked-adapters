@@ -35,10 +35,9 @@ async function* computeSupplyFallback(
 }
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
+    console.log(`Precompiling supply amount for asset ${id}`);
+    const filePath = path.join(PATHS.assets, id, "records", "supply_amount.csv");
     try {
-        console.log(`Precompiling supply amount for asset ${id}`);
-        const filePath = path.join(PATHS.assets, id, "records", "supply_amount.csv");
-
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
         await unlink(filePath).catch(() => {});
@@ -48,7 +47,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
 
         parentPort?.postMessage(null);
     } catch (error) {
-        console.error(error);
+        console.error(`/${PATHS.assets}/${id}`, error);
         await sendErrorReport(`/${PATHS.assets}/${id}`, error);
         parentPort?.postMessage(null);
     }

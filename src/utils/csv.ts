@@ -162,10 +162,8 @@ export async function rewriteCSV<T>(
     readStream: AsyncIterable<T> | undefined = undefined
 ) {
     if (!readStream) {
-        readStream = fs.createReadStream(pathToFile);
+        readStream = readCSV(pathToFile);
     }
-
-    const parser = parse({ columns: true });
 
     const stringifier = stringify({ header: true, columns: header });
 
@@ -175,7 +173,7 @@ export async function rewriteCSV<T>(
         encoding: "utf-8",
     });
 
-    await pipeline(readStream, parser, stringifier, writeStream);
+    await pipeline(readStream, stringifier, writeStream);
 
     await fs.promises.rename(tempPath, pathToFile);
 }

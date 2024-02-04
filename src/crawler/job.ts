@@ -5,10 +5,10 @@ import { executeInWorkerPool } from "../utils/worker_pool";
 
 const WORKERS_PATH = "src/crawler/workers";
 
-async function query<Result>(dir: string, workerScript: string): Promise<Array<Result | null>> {
+async function query<Result>(dir: string, workerScript: string): Promise<void> {
     const workerScriptPath = path.resolve(WORKERS_PATH, workerScript);
     const ids = await fs.readdir(dir);
-    return executeInWorkerPool<string, Result>(workerScriptPath, ids);
+    await executeInWorkerPool<string, Result>(workerScriptPath, ids);
 }
 
 job("Crawler Job", async () => {

@@ -40,10 +40,9 @@ async function* matchSupplyAndPrice(
 }
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
+    console.log(`Precompiling market cap for asset ${id}`);
+    const filePath = path.join(PATHS.assets, id, "records", "market_cap.csv");
     try {
-        console.log(`Precompiling backing prices for asset ${id}`);
-        const filePath = path.join(PATHS.assets, id, "records", "market_cap.csv");
-
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
         await unlink(filePath).catch(() => {});
@@ -53,7 +52,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
 
         parentPort?.postMessage(null);
     } catch (error) {
-        console.error(error);
+        console.error(`/${PATHS.assets}/${id}`, error);
         await sendErrorReport(`/${PATHS.assets}/${id}`, error);
         parentPort?.postMessage(null);
     }

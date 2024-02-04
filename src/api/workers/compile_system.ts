@@ -5,8 +5,8 @@ import { SYSTEM_RESOURCES } from "../resources/systems";
 import { compileDetails, compileIcons } from "../utils/compile";
 
 parentPort?.on("message", async (id: bcked.system.Id) => {
+    console.log(`Compile system ${id}`);
     try {
-        console.log(`Compile system ${id}`);
         const res = await Promise.all([
             compileDetails(SYSTEM_RESOURCES, id),
             compileIcons(SYSTEM_RESOURCES, PATHS.systems, id),
@@ -14,7 +14,7 @@ parentPort?.on("message", async (id: bcked.system.Id) => {
 
         parentPort?.postMessage(res);
     } catch (error) {
-        console.error(error);
+        console.error(`/${PATHS.systems}/${id}`, error);
         await sendErrorReport(`/${PATHS.systems}/${id}`, error);
         parentPort?.postMessage(null);
     }
