@@ -97,12 +97,9 @@ async function compilePrice(resource: Asset, id: bcked.asset.Id) {
 
     if (!yearsOfHistory.length) return;
 
-    await resource.priceLatest(id, price?.timestamp);
-    await resource.priceHistory(id, historyStats.get(), yearsOfHistory);
+    await resource.priceHistory(id, price?.timestamp, historyStats.get(), yearsOfHistory);
     // Finalize by storing last year, month, day, hour
     await addYearToHistory("N/A", "N/A", "N/A", "N/A");
-
-    await resource.price(id);
 }
 
 async function compileSupply(resource: Asset, id: bcked.asset.Id) {
@@ -196,12 +193,9 @@ async function compileSupply(resource: Asset, id: bcked.asset.Id) {
 
     if (!yearsOfHistory.length) return;
 
-    await resource.supplyLatest(id, supply?.timestamp);
-    await resource.supplyHistory(id, historyStats.get(), yearsOfHistory);
+    await resource.supplyHistory(id, supply?.timestamp, historyStats.get(), yearsOfHistory);
     // Finalize by storing last year, month, day, hour
     await addYearToHistory("N/A", "N/A", "N/A", "N/A");
-
-    await resource.supply(id);
 }
 
 async function compileMarketCap(resource: Asset, id: bcked.asset.Id) {
@@ -292,12 +286,9 @@ async function compileMarketCap(resource: Asset, id: bcked.asset.Id) {
 
     if (!yearsOfHistory.length) return;
 
-    await resource.marketCapLatest(id, marketCap?.timestamp);
-    await resource.marketCapHistory(id, historyStats.get(), yearsOfHistory);
+    await resource.marketCapHistory(id, marketCap?.timestamp, historyStats.get(), yearsOfHistory);
     // Finalize by storing last year, month, day, hour
     await addYearToHistory("N/A", "N/A", "N/A", "N/A");
-
-    await resource.marketCap(id);
 }
 
 async function compileUnderlyingAssets(resource: Asset, id: bcked.asset.Id) {
@@ -393,12 +384,14 @@ async function compileUnderlyingAssets(resource: Asset, id: bcked.asset.Id) {
 
     if (!yearsOfHistory.length) return;
 
-    await resource.underlyingAssetsLatest(id, underlyingAssets?.timestamp);
-    await resource.underlyingAssetsHistory(id, historyStats.get(), yearsOfHistory);
+    await resource.underlyingAssetsHistory(
+        id,
+        underlyingAssets?.timestamp,
+        historyStats.get(),
+        yearsOfHistory
+    );
     // Finalize by storing last year, month, day, hour
     await addYearToHistory("N/A", "N/A", "N/A", "N/A");
-
-    await resource.underlyingAssets(id);
 }
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {

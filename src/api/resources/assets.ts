@@ -108,27 +108,6 @@ export class Asset extends JsonResources {
         return icons("assets", id);
     }
 
-    historyIndex(path: string) {
-        return {
-            $id: path,
-            latest: {
-                $ref: `${path}/latest`,
-            },
-            history: {
-                $ref: `${path}/history`,
-            },
-        };
-    }
-
-    latest(path: string, timestamp: primitive.ISODateTimeString | undefined) {
-        if (!timestamp) return;
-
-        return {
-            $id: `${path}/latest`,
-            $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, timestamp),
-        };
-    }
-
     statsToSummary<T extends { timestamp: primitive.ISODateTimeString }>(
         path: string,
         stats: Stats<T>
@@ -152,17 +131,31 @@ export class Asset extends JsonResources {
 
     history<T extends { timestamp: primitive.ISODateTimeString }>(
         path: string,
+        latestTimestamp: primitive.ISODateTimeString | undefined,
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        if (!stats || !stats.min || !stats.max || !stats.median || !years.length) return;
+        if (
+            !latestTimestamp ||
+            !stats ||
+            !stats.min ||
+            !stats.max ||
+            !stats.median ||
+            !years.length
+        )
+            return;
 
         return {
-            $id: `${path}/history`,
-            ...this.statsToSummary(path, stats),
-            data: years.map((year) => ({
-                $ref: `${path}/${year}`,
-            })),
+            $id: path,
+            latest: {
+                $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, latestTimestamp),
+            },
+            history: {
+                ...this.statsToSummary(path, stats),
+                data: years.map((year) => ({
+                    $ref: `${path}/${year}`,
+                })),
+            },
         };
     }
 
@@ -241,36 +234,13 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async price(id: bcked.entity.Id) {
-        return this.historyIndex(`/assets/${id}/price`);
-    }
-
-    @JsonResources.register({
-        path: "/assets/{id}/price/latest",
-        summary: "Get price of an asset",
-        description: "Get price of an asset by its ID",
-        type: "AssetPrice",
-        // TODO write schema
-        schema: {},
-    })
-    async priceLatest(id: bcked.entity.Id, timestamp: primitive.ISODateTimeString | undefined) {
-        return this.latest(`/assets/${id}/price`, timestamp);
-    }
-
-    @JsonResources.register({
-        path: "/assets/{id}/price/history",
-        summary: "Get price of an asset",
-        description: "Get price of an asset by its ID",
-        type: "AssetPrice",
-        // TODO write schema
-        schema: {},
-    })
     async priceHistory<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
+        latestTimestamp: primitive.ISODateTimeString | undefined,
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        return this.history(`/assets/${id}/price`, stats, years);
+        return this.history(`/assets/${id}/price`, latestTimestamp, stats, years);
     }
 
     @JsonResources.register({
@@ -357,36 +327,13 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async supply(id: bcked.entity.Id) {
-        return this.historyIndex(`/assets/${id}/supply`);
-    }
-
-    @JsonResources.register({
-        path: "/assets/{id}/supply/latest",
-        summary: "Get supply of an asset",
-        description: "Get supply of an asset by its ID",
-        type: "AssetSupply",
-        // TODO write schema
-        schema: {},
-    })
-    async supplyLatest(id: bcked.entity.Id, timestamp: primitive.ISODateTimeString | undefined) {
-        return this.latest(`/assets/${id}/supply`, timestamp);
-    }
-
-    @JsonResources.register({
-        path: "/assets/{id}/supply/history",
-        summary: "Get supply of an asset",
-        description: "Get supply of an asset by its ID",
-        type: "AssetSupply",
-        // TODO write schema
-        schema: {},
-    })
     async supplyHistory<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
+        latestTimestamp: primitive.ISODateTimeString | undefined,
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        return this.history(`/assets/${id}/supply`, stats, years);
+        return this.history(`/assets/${id}/supply`, latestTimestamp, stats, years);
     }
 
     @JsonResources.register({
@@ -475,36 +422,13 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async marketCap(id: bcked.entity.Id) {
-        return this.historyIndex(`/assets/${id}/market-cap`);
-    }
-
-    @JsonResources.register({
-        path: "/assets/{id}/market-cap/latest",
-        summary: "Get market cap of an asset",
-        description: "Get market cap of an asset by its ID",
-        type: "AssetMarketCap",
-        // TODO write schema
-        schema: {},
-    })
-    async marketCapLatest(id: bcked.entity.Id, timestamp: primitive.ISODateTimeString | undefined) {
-        return this.latest(`/assets/${id}/market-cap`, timestamp);
-    }
-
-    @JsonResources.register({
-        path: "/assets/{id}/market-cap/history",
-        summary: "Get market cap of an asset",
-        description: "Get market cap of an asset by its ID",
-        type: "AssetMarketCap",
-        // TODO write schema
-        schema: {},
-    })
     async marketCapHistory<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
+        latestTimestamp: primitive.ISODateTimeString | undefined,
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        return this.history(`/assets/${id}/market-cap`, stats, years);
+        return this.history(`/assets/${id}/market-cap`, latestTimestamp, stats, years);
     }
 
     @JsonResources.register({
@@ -600,39 +524,13 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async underlyingAssets(id: bcked.entity.Id) {
-        return this.historyIndex(`/assets/${id}/underlying-assets`);
-    }
-
-    @JsonResources.register({
-        path: "/assets/{id}/underlying-assets/latest",
-        summary: "Get latest underlying assets of an asset",
-        description: "Get latest underlying assets of an asset by its ID",
-        type: "AssetUnderlyingAssets",
-        // TODO write schema
-        schema: {},
-    })
-    async underlyingAssetsLatest(
-        id: bcked.entity.Id,
-        timestamp: primitive.ISODateTimeString | undefined
-    ) {
-        return this.latest(`/assets/${id}/underlying-assets`, timestamp);
-    }
-
-    @JsonResources.register({
-        path: "/assets/{id}/underlying-assets/history",
-        summary: "Get historical underlying assets of an asset",
-        description: "Get historical underlying assets of an asset by its ID",
-        type: "AssetUnderlyingAssets",
-        // TODO write schema
-        schema: {},
-    })
     async underlyingAssetsHistory<T extends { timestamp: primitive.ISODateTimeString }>(
         id: bcked.entity.Id,
+        latestTimestamp: primitive.ISODateTimeString | undefined,
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        return this.history(`/assets/${id}/underlying-assets`, stats, years);
+        return this.history(`/assets/${id}/underlying-assets`, latestTimestamp, stats, years);
     }
 
     @JsonResources.register({
