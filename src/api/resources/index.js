@@ -75,9 +75,9 @@ let Index = (() => {
             async index() {
                 return {
                     $id: "/",
-                    // assets: {
-                    //     $ref: `/assets`,
-                    // },
+                    assets: {
+                        $ref: `/assets`,
+                    },
                     entities: {
                         $ref: `/entities`,
                     },
