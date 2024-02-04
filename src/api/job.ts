@@ -59,6 +59,7 @@ job("API Job", async () => {
         generateOasSchema(),
     ]);
 
+    // TODO fix issues reported here: https://editor.swagger.io/?url=https://api.bcked.com/openapi.json
     // TODO continue by adding derivative-assets json as API resource and to compile_asset using the precomputed data
     // TODO optimize code to only run for new entries and not for all entries
 });

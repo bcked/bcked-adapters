@@ -7,6 +7,8 @@ The official data adapters for [bcked.com](https://bcked.com/) - a community dri
 [![Crawler Execution](https://github.com/bcked/bcked-adapters/actions/workflows/crawler.yml/badge.svg)](https://github.com/bcked/bcked-adapters/actions/workflows/crawler.yml)
 [![API Build and Deployment](https://github.com/bcked/bcked-adapters/actions/workflows/api.yml/badge.svg)](https://github.com/bcked/bcked-adapters/actions/workflows/api.yml)
 
+View the [OpenAPI docs via Swagger](https://petstore.swagger.io/?url=https://api.bcked.com/openapi.json).
+
 ## Contributing
 
 If you would like to contribute, please read [our contribution guideline](CONTRIBUTING.md).

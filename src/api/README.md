@@ -16,4 +16,7 @@
 -   Use [json-refs](https://github.com/whitlockjc/json-refs/tree/master) to parse and resolve JSON refs.
 -   Use [joi](https://github.com/hapijs/joi) to generate JSON-schema.
 -   [NPM Joi](https://www.npmjs.com/package/joi)
--   Verify openapi.json via [Swagger Demo](https://petstore.swagger.io/#/) and [Swagger Editor](https://editor-next.swagger.io/).
+-   Verify openapi.json via
+    -   [Swagger Editor](https://editor.swagger.io/?url=https://api.bcked.com/openapi.json),
+    -   [Swagger Demo](https://petstore.swagger.io/?url=https://api.bcked.com/openapi.json) and
+    -   [Swagger Editor (Beta)](https://editor-next.swagger.io/).
