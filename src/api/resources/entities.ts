@@ -4,7 +4,7 @@ import { JsonResources } from "../utils/resources";
 class Entity extends JsonResources {
     constructor() {
         super({
-            name: "Entity",
+            name: "Entities",
             description: "Everything about entities",
             externalDocs: {
                 description: "View on bcked.com",
