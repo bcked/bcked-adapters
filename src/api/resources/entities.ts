@@ -1,5 +1,5 @@
+import { icons } from "../utils/icons";
 import { JsonResources } from "../utils/resources";
-import { icons } from "./icons";
 
 class Entity extends JsonResources {
     constructor() {

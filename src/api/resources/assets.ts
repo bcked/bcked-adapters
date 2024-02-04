@@ -1,7 +1,7 @@
 import { Stats } from "../../utils/stream";
 import { setDateParts } from "../../utils/time";
+import { icons } from "../utils/icons";
 import { JsonResources } from "../utils/resources";
-import { icons } from "./icons";
 
 export class Asset extends JsonResources {
     constructor() {
