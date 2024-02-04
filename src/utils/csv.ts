@@ -194,25 +194,27 @@ export async function ensureSameHeader(pathToFile: string, header: string[]) {
     const csvStream = readCSV(pathToFile);
     const [rows, existingHeader] = await readHeadersFromStream(csvStream);
 
-    if (!existingHeader) return;
+    if (!existingHeader) return header;
 
-    const newHeaders = _.difference(header, existingHeader);
+    const newHeaders = _.xor(header, existingHeader);
 
     // If no new headers, return
-    if (!newHeaders.length) return;
+    if (!newHeaders.length) return header;
 
     // Get combined header
     const combinedHeader = sortWithoutIndex(_.union(existingHeader, header), header[0]!);
 
     // Rewrite CSV to fill old entries for new headers
     await rewriteCSV(pathToFile, combinedHeader, rows);
+
+    return combinedHeader;
 }
 
 export async function appendCsv<T>(pathToFile: string, rows: AsyncIterable<T>, header: string[]) {
     const exists = fs.existsSync(pathToFile);
 
     if (exists) {
-        await ensureSameHeader(pathToFile, header);
+        header = await ensureSameHeader(pathToFile, header);
     } else {
         await ensurePath(pathToFile);
     }
