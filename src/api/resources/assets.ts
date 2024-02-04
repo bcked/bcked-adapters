@@ -3,6 +3,117 @@ import { setDateParts } from "../../utils/time";
 import { icons } from "../utils/icons";
 import { JsonResources } from "../utils/resources";
 
+function statsToSummary<T extends { timestamp: primitive.ISODateTimeString }>(
+    path: string,
+    stats: Stats<T>
+) {
+    if (!stats || !stats.min || !stats.max || !stats.median) {
+        throw new Error("Stats missing. This should have been checked prior.");
+    }
+
+    return {
+        low: {
+            $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, stats.min.timestamp),
+        },
+        median: {
+            $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, stats.median.timestamp),
+        },
+        high: {
+            $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, stats.max.timestamp),
+        },
+    };
+}
+
+function historyResource<T extends { timestamp: primitive.ISODateTimeString }>(
+    path: string,
+    latestTimestamp: primitive.ISODateTimeString | undefined,
+    stats: Stats<T> | undefined,
+    years: string[]
+) {
+    if (!latestTimestamp || !stats || !stats.min || !stats.max || !stats.median || !years.length)
+        return;
+
+    return {
+        $id: path,
+        latest: {
+            $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, latestTimestamp),
+        },
+        history: {
+            ...statsToSummary(path, stats),
+            data: years.map((year) => ({
+                $ref: `${path}/${year}`,
+            })),
+        },
+    };
+}
+
+function yearResource<T extends { timestamp: primitive.ISODateTimeString }>(
+    path: string,
+    stats: Stats<T> | undefined,
+    year: string | undefined,
+    months: string[]
+) {
+    if (!year || !months.length) return;
+
+    if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+    return {
+        $id: `${path}/${year}`,
+        ...statsToSummary(path, stats),
+        data: months.map((month) => ({
+            $ref: `${path}/${year}/${month}`,
+        })),
+    };
+}
+
+function monthResource<T extends { timestamp: primitive.ISODateTimeString }>(
+    path: string,
+    stats: Stats<T> | undefined,
+    year: string | undefined,
+    month: string | undefined,
+    days: string[]
+) {
+    if (!year || !month || !days.length) return;
+
+    if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+    return {
+        $id: `${path}/${year}/${month}`,
+        ...statsToSummary(path, stats),
+        data: days.map((day) => ({
+            $ref: `${path}/${year}/${month}/${day}`,
+        })),
+    };
+}
+
+function dayResource<T extends { timestamp: primitive.ISODateTimeString }>(
+    path: string,
+    stats: Stats<T> | undefined,
+    year: string | undefined,
+    month: string | undefined,
+    day: string | undefined,
+    hours: string[]
+) {
+    if (!year || !month || !day || !hours.length) return;
+
+    if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+    return {
+        $id: `${path}/${year}/${month}/${day}`,
+        ...statsToSummary(path, stats),
+        data: hours.map((hour) => ({
+            $ref: `${path}/${year}/${month}/${day}/${hour}`,
+        })),
+    };
+}
+
+function hourBaseResource(path: string, timestamp: primitive.ISODateTimeString) {
+    return {
+        $id: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, timestamp),
+        timestamp,
+    };
+}
+
 export class Asset extends JsonResources {
     constructor() {
         super({
@@ -108,124 +219,6 @@ export class Asset extends JsonResources {
         return icons("assets", id);
     }
 
-    statsToSummary<T extends { timestamp: primitive.ISODateTimeString }>(
-        path: string,
-        stats: Stats<T>
-    ) {
-        if (!stats || !stats.min || !stats.max || !stats.median) {
-            throw new Error("Stats missing. This should have been checked prior.");
-        }
-
-        return {
-            low: {
-                $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, stats.min.timestamp),
-            },
-            median: {
-                $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, stats.median.timestamp),
-            },
-            high: {
-                $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, stats.max.timestamp),
-            },
-        };
-    }
-
-    history<T extends { timestamp: primitive.ISODateTimeString }>(
-        path: string,
-        latestTimestamp: primitive.ISODateTimeString | undefined,
-        stats: Stats<T> | undefined,
-        years: string[]
-    ) {
-        if (
-            !latestTimestamp ||
-            !stats ||
-            !stats.min ||
-            !stats.max ||
-            !stats.median ||
-            !years.length
-        )
-            return;
-
-        return {
-            $id: path,
-            latest: {
-                $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, latestTimestamp),
-            },
-            history: {
-                ...this.statsToSummary(path, stats),
-                data: years.map((year) => ({
-                    $ref: `${path}/${year}`,
-                })),
-            },
-        };
-    }
-
-    year<T extends { timestamp: primitive.ISODateTimeString }>(
-        path: string,
-        stats: Stats<T> | undefined,
-        year: string | undefined,
-        months: string[]
-    ) {
-        if (!year || !months.length) return;
-
-        if (!stats || !stats.min || !stats.max || !stats.median) return;
-
-        return {
-            $id: `${path}/${year}`,
-            ...this.statsToSummary(path, stats),
-            data: months.map((month) => ({
-                $ref: `${path}/${year}/${month}`,
-            })),
-        };
-    }
-
-    month<T extends { timestamp: primitive.ISODateTimeString }>(
-        path: string,
-        stats: Stats<T> | undefined,
-        year: string | undefined,
-        month: string | undefined,
-        days: string[]
-    ) {
-        if (!year || !month || !days.length) return;
-
-        if (!stats || !stats.min || !stats.max || !stats.median) return;
-
-        return {
-            $id: `${path}/${year}/${month}`,
-            ...this.statsToSummary(path, stats),
-            data: days.map((day) => ({
-                $ref: `${path}/${year}/${month}/${day}`,
-            })),
-        };
-    }
-
-    day<T extends { timestamp: primitive.ISODateTimeString }>(
-        path: string,
-        stats: Stats<T> | undefined,
-        year: string | undefined,
-        month: string | undefined,
-        day: string | undefined,
-        hours: string[]
-    ) {
-        if (!year || !month || !day || !hours.length) return;
-
-        if (!stats || !stats.min || !stats.max || !stats.median) return;
-
-        return {
-            $id: `${path}/${year}/${month}/${day}`,
-            ...this.statsToSummary(path, stats),
-            data: hours.map((hour) => ({
-                $ref: `${path}/${year}/${month}/${day}/${hour}`,
-            })),
-        };
-    }
-
-    hourBase(path: string, timestamp: primitive.ISODateTimeString) {
-        return {
-            $id: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, timestamp),
-            timestamp,
-        };
-    }
-
     @JsonResources.register({
         path: "/assets/{id}/price",
         summary: "Get price of an asset",
@@ -240,7 +233,7 @@ export class Asset extends JsonResources {
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        return this.history(`/assets/${id}/price`, latestTimestamp, stats, years);
+        return historyResource(`/assets/${id}/price`, latestTimestamp, stats, years);
     }
 
     @JsonResources.register({
@@ -257,7 +250,7 @@ export class Asset extends JsonResources {
         year: string | undefined,
         months: string[]
     ) {
-        return this.year(`/assets/${id}/price`, stats, year, months);
+        return yearResource(`/assets/${id}/price`, stats, year, months);
     }
 
     @JsonResources.register({
@@ -275,7 +268,7 @@ export class Asset extends JsonResources {
         month: string | undefined,
         days: string[]
     ) {
-        return this.month(`/assets/${id}/price`, stats, year, month, days);
+        return monthResource(`/assets/${id}/price`, stats, year, month, days);
     }
 
     @JsonResources.register({
@@ -294,7 +287,7 @@ export class Asset extends JsonResources {
         day: string | undefined,
         hours: string[]
     ) {
-        return this.day(`/assets/${id}/price`, stats, year, month, day, hours);
+        return dayResource(`/assets/${id}/price`, stats, year, month, day, hours);
     }
 
     @JsonResources.register({
@@ -312,7 +305,7 @@ export class Asset extends JsonResources {
         if (!stats || !stats.min || !stats.max || !stats.median) return;
 
         return {
-            ...this.hourBase(`/assets/${id}/price`, stats.median.timestamp),
+            ...hourBaseResource(`/assets/${id}/price`, stats.median.timestamp),
             value: {
                 "rwa:USD": stats.median.usd,
             },
@@ -333,7 +326,7 @@ export class Asset extends JsonResources {
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        return this.history(`/assets/${id}/supply`, latestTimestamp, stats, years);
+        return historyResource(`/assets/${id}/supply`, latestTimestamp, stats, years);
     }
 
     @JsonResources.register({
@@ -350,7 +343,7 @@ export class Asset extends JsonResources {
         year: string | undefined,
         months: string[]
     ) {
-        return this.year(`/assets/${id}/supply`, stats, year, months);
+        return yearResource(`/assets/${id}/supply`, stats, year, months);
     }
 
     @JsonResources.register({
@@ -368,7 +361,7 @@ export class Asset extends JsonResources {
         month: string | undefined,
         days: string[]
     ) {
-        return this.month(`/assets/${id}/supply`, stats, year, month, days);
+        return monthResource(`/assets/${id}/supply`, stats, year, month, days);
     }
 
     @JsonResources.register({
@@ -387,7 +380,7 @@ export class Asset extends JsonResources {
         day: string | undefined,
         hours: string[]
     ) {
-        return this.day(`/assets/${id}/supply`, stats, year, month, day, hours);
+        return dayResource(`/assets/${id}/supply`, stats, year, month, day, hours);
     }
 
     @JsonResources.register({
@@ -404,7 +397,7 @@ export class Asset extends JsonResources {
         if (!stats.median.amount) return;
 
         return {
-            ...this.hourBase(`/assets/${id}/supply`, stats.median.timestamp),
+            ...hourBaseResource(`/assets/${id}/supply`, stats.median.timestamp),
             circulating: stats.median.circulating, // Circulating = Issued - Locked - Burned; If unknown, this must be set to null.
             burned: stats.median.burned, // If unknown, this must be set to null.
             total: stats.median.total, // Total = Circulating + Locked = Issued - Burned; If unknown, this must be set to null.
@@ -428,7 +421,7 @@ export class Asset extends JsonResources {
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        return this.history(`/assets/${id}/market-cap`, latestTimestamp, stats, years);
+        return historyResource(`/assets/${id}/market-cap`, latestTimestamp, stats, years);
     }
 
     @JsonResources.register({
@@ -445,7 +438,7 @@ export class Asset extends JsonResources {
         year: string | undefined,
         months: string[]
     ) {
-        return this.year(`/assets/${id}/market-cap`, stats, year, months);
+        return yearResource(`/assets/${id}/market-cap`, stats, year, months);
     }
 
     @JsonResources.register({
@@ -463,7 +456,7 @@ export class Asset extends JsonResources {
         month: string | undefined,
         days: string[]
     ) {
-        return this.month(`/assets/${id}/market-cap`, stats, year, month, days);
+        return monthResource(`/assets/${id}/market-cap`, stats, year, month, days);
     }
 
     @JsonResources.register({
@@ -482,7 +475,7 @@ export class Asset extends JsonResources {
         day: string | undefined,
         hours: string[]
     ) {
-        return this.day(`/assets/${id}/market-cap`, stats, year, month, day, hours);
+        return dayResource(`/assets/${id}/market-cap`, stats, year, month, day, hours);
     }
 
     @JsonResources.register({
@@ -497,7 +490,7 @@ export class Asset extends JsonResources {
         if (!stats || !stats.min || !stats.max || !stats.median) return;
 
         return {
-            ...this.hourBase(`/assets/${id}/market-cap`, stats.median.timestamp),
+            ...hourBaseResource(`/assets/${id}/market-cap`, stats.median.timestamp),
             price: {
                 $ref: setDateParts(
                     `/assets/${id}/price/{year}/{month}/{day}/{hour}`,
@@ -530,7 +523,7 @@ export class Asset extends JsonResources {
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        return this.history(`/assets/${id}/underlying-assets`, latestTimestamp, stats, years);
+        return historyResource(`/assets/${id}/underlying-assets`, latestTimestamp, stats, years);
     }
 
     @JsonResources.register({
@@ -547,7 +540,7 @@ export class Asset extends JsonResources {
         year: string | undefined,
         months: string[]
     ) {
-        return this.year(`/assets/${id}/underlying-assets`, stats, year, months);
+        return yearResource(`/assets/${id}/underlying-assets`, stats, year, months);
     }
 
     @JsonResources.register({
@@ -565,7 +558,7 @@ export class Asset extends JsonResources {
         month: string | undefined,
         days: string[]
     ) {
-        return this.month(`/assets/${id}/underlying-assets`, stats, year, month, days);
+        return monthResource(`/assets/${id}/underlying-assets`, stats, year, month, days);
     }
 
     @JsonResources.register({
@@ -584,7 +577,7 @@ export class Asset extends JsonResources {
         day: string | undefined,
         hours: string[]
     ) {
-        return this.day(`/assets/${id}/underlying-assets`, stats, year, month, day, hours);
+        return dayResource(`/assets/${id}/underlying-assets`, stats, year, month, day, hours);
     }
 
     @JsonResources.register({
@@ -602,7 +595,7 @@ export class Asset extends JsonResources {
         if (!stats || !stats.min || !stats.max || !stats.median) return;
 
         return {
-            ...this.hourBase(`/assets/${id}/underlying-assets`, stats.median.timestamp),
+            ...hourBaseResource(`/assets/${id}/underlying-assets`, stats.median.timestamp),
             breakdown: Object.entries(stats.median.breakdown).map(([assetId, underlying]) => ({
                 asset: {
                     $ref: `/assets/${assetId}`,
