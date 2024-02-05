@@ -1,0 +1,19 @@
+{
+    "name": "U.S. Treasury Bills When Issued",
+    "symbol": "USTB-WI",
+    "identifier": {
+        "address": "USTB-WI",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "fixed-income-security",
+        "cash-equivalent"
+    ],
+    "linkedEntities": {
+        "issuer": "usdt"
+    },
+    "reference": null,
+    "tags": [],
+    "listed": "2024-02-05T19:12:14.061Z",
+    "updated": "2024-02-05T19:12:14.061Z"
+}

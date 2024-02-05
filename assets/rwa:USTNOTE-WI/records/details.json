@@ -1,0 +1,19 @@
+{
+    "name": "U.S. Treasury Notes When Issued",
+    "symbol": "USTNOTE-WI",
+    "identifier": {
+        "address": "USTNOTE-WI",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "fixed-income-security",
+        "cash-equivalent"
+    ],
+    "linkedEntities": {
+        "issuer": "usdt"
+    },
+    "reference": null,
+    "tags": [],
+    "listed": "2024-02-05T19:12:14.071Z",
+    "updated": "2024-02-05T19:12:14.071Z"
+}
