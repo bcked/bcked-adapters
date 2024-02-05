@@ -8,6 +8,7 @@ const lodash_1 = __importDefault(require("lodash"));
 const path_1 = __importDefault(require("path"));
 const paths_1 = require("../../paths");
 const files_1 = require("../../utils/files");
+const template_1 = require("../../utils/template");
 class JsonResources {
     constructor(tag, spec, ...resources) {
         this.tag = tag;
@@ -30,6 +31,14 @@ class JsonResources {
                         tags: this.tag ? [this.tag.name] : [],
                         summary: summary,
                         description: description,
+                        parameters: parameters
+                            ? [parameters]
+                            : new template_1.Template(path).keys().map((key) => ({
+                                in: "path",
+                                name: key,
+                                required: true,
+                                schema: { type: "string" },
+                            })),
                         responses: {
                             "200": {
                                 description: "Successful response",
