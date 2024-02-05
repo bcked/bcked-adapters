@@ -9,6 +9,7 @@ worker_threads_1.parentPort?.on("message", async (id) => {
     console.log(`Compile system ${id}`);
     try {
         const res = await Promise.all([
+            systems_1.SYSTEM_RESOURCES.system(id),
             (0, compile_1.compileDetails)(systems_1.SYSTEM_RESOURCES, id),
             (0, compile_1.compileIcons)(systems_1.SYSTEM_RESOURCES, paths_1.PATHS.systems, id),
         ]);
