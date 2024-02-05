@@ -3,6 +3,7 @@ import path from "path";
 import oas from "swagger-jsdoc";
 import { PATHS } from "../../paths";
 import { writeJson } from "../../utils/files";
+import { Template } from "../../utils/template";
 
 interface Spec {
     openapi?: string | undefined;
@@ -20,7 +21,7 @@ interface RegistrationParams {
     path: string;
     summary?: string | undefined;
     description?: string | undefined;
-    parameters?: oas.Parameter | undefined; // TODO needed?
+    parameters?: oas.Parameter | undefined;
     type: string;
     schema: oas.Schema;
 }
@@ -55,6 +56,14 @@ export abstract class JsonResources {
                         tags: this.tag ? [this.tag.name] : [],
                         summary: summary,
                         description: description,
+                        parameters: parameters
+                            ? [parameters]
+                            : new Template(path).keys().map((key) => ({
+                                  in: "path",
+                                  name: key,
+                                  required: true,
+                                  schema: { type: "string" },
+                              })),
                         responses: {
                             "200": {
                                 description: "Successful response",
