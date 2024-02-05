@@ -11,8 +11,11 @@ exports.BRManager = void 0;
 const path_1 = __importDefault(require("path"));
 const requests_1 = require("../../utils/requests");
 const descriptionAssetMapping = {
+    "WI TREASURY BILL": "rwa:USTB-WI",
     "TREASURY BILL": "rwa:USTB",
+    "WI TREASURY NOTE": "rwa:USTNOTE-WI",
     "TREASURY NOTE": "rwa:USTNOTE",
+    "WI TREASURY BOND": "rwa:USTBOND-WI",
     "TREASURY BOND": "rwa:USTBOND",
     "TRI-PARTY": "rwa:USTrepo",
 };

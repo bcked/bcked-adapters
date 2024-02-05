@@ -47,7 +47,7 @@ let Entity = (() => {
     return _a = class Entity extends resources_1.JsonResources {
             constructor() {
                 super({
-                    name: "Entity",
+                    name: "Entities",
                     description: "Everything about entities",
                     externalDocs: {
                         description: "View on bcked.com",
