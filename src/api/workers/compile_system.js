@@ -8,12 +8,12 @@ const compile_1 = require("../utils/compile");
 worker_threads_1.parentPort?.on("message", async (id) => {
     console.log(`Compile system ${id}`);
     try {
-        const res = await Promise.all([
+        await Promise.all([
             systems_1.SYSTEM_RESOURCES.system(id),
-            (0, compile_1.compileDetails)(systems_1.SYSTEM_RESOURCES, id),
+            (0, compile_1.compileDetails)(systems_1.SYSTEM_RESOURCES, paths_1.PATHS.systems, id),
             (0, compile_1.compileIcons)(systems_1.SYSTEM_RESOURCES, paths_1.PATHS.systems, id),
         ]);
-        worker_threads_1.parentPort?.postMessage(res);
+        worker_threads_1.parentPort?.postMessage(null);
     }
     catch (error) {
         console.error(`/${paths_1.PATHS.systems}/${id}`, error);

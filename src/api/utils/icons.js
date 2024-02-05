@@ -8,7 +8,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 async function icons(group, id) {
     const $id = `/${group}/${id}/icons`;
-    const svg = path_1.default.join($id, "icon.svg");
+    const svg = path_1.default.join(group, id, "icon.svg");
     if (!fs_1.default.existsSync(svg)) {
         console.info(`No SVG found for ${$id}`);
         return {
@@ -19,7 +19,7 @@ async function icons(group, id) {
     }
     return {
         $id,
-        svg,
+        svg: path_1.default.join($id, "icon.svg"),
         pngs: {
             "16": path_1.default.join($id, "icon16.png"),
             "32": path_1.default.join($id, "icon32.png"),
