@@ -8,6 +8,7 @@ parentPort?.on("message", async (id: bcked.entity.Id) => {
     console.log(`Compile entity ${id}`);
     try {
         const res = await Promise.all([
+            ENTITY_RESOURCES.entity(id),
             compileDetails(ENTITY_RESOURCES, id),
             compileIcons(ENTITY_RESOURCES, PATHS.entities, id),
         ]);

@@ -8,6 +8,7 @@ parentPort?.on("message", async (id: bcked.system.Id) => {
     console.log(`Compile system ${id}`);
     try {
         const res = await Promise.all([
+            SYSTEM_RESOURCES.system(id),
             compileDetails(SYSTEM_RESOURCES, id),
             compileIcons(SYSTEM_RESOURCES, PATHS.systems, id),
         ]);
