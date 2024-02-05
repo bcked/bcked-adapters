@@ -7,13 +7,13 @@ import { compileDetails, compileIcons } from "../utils/compile";
 parentPort?.on("message", async (id: bcked.entity.Id) => {
     console.log(`Compile entity ${id}`);
     try {
-        const res = await Promise.all([
+        await Promise.all([
             ENTITY_RESOURCES.entity(id),
-            compileDetails(ENTITY_RESOURCES, id),
+            compileDetails(ENTITY_RESOURCES, PATHS.entities, id),
             compileIcons(ENTITY_RESOURCES, PATHS.entities, id),
         ]);
 
-        parentPort?.postMessage(res);
+        parentPort?.postMessage(null);
     } catch (error) {
         console.error(`/${PATHS.entities}/${id}`, error);
         await sendErrorReport(`/${PATHS.entities}/${id}`, error);

@@ -7,13 +7,13 @@ import { compileDetails, compileIcons } from "../utils/compile";
 parentPort?.on("message", async (id: bcked.system.Id) => {
     console.log(`Compile system ${id}`);
     try {
-        const res = await Promise.all([
+        await Promise.all([
             SYSTEM_RESOURCES.system(id),
-            compileDetails(SYSTEM_RESOURCES, id),
+            compileDetails(SYSTEM_RESOURCES, PATHS.systems, id),
             compileIcons(SYSTEM_RESOURCES, PATHS.systems, id),
         ]);
 
-        parentPort?.postMessage(res);
+        parentPort?.postMessage(null);
     } catch (error) {
         console.error(`/${PATHS.systems}/${id}`, error);
         await sendErrorReport(`/${PATHS.systems}/${id}`, error);
