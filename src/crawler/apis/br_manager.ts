@@ -7,6 +7,7 @@ import { CsvApi, joinOptions } from "../../utils/requests";
 
 const descriptionAssetMapping: Record<string, bcked.asset.Id> = {
     "WI TREASURY BILL": "rwa:USTB-WI",
+    TREASURY: "rwa:USTB",
     "TREASURY BILL": "rwa:USTB",
     "WI TREASURY NOTE": "rwa:USTNOTE-WI",
     "TREASURY NOTE": "rwa:USTNOTE",
