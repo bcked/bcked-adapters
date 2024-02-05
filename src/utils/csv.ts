@@ -134,10 +134,10 @@ export async function ensureSameHeader(pathToFile: string, header: string[]) {
 
     if (!existingHeader) return header;
 
-    const newHeaders = _.xor(header, existingHeader);
+    const newHeaders = _.difference(header, existingHeader);
 
-    // If no new headers, return
-    if (!newHeaders.length) return header;
+    // If no new headers, return the existing headers
+    if (!newHeaders.length) return existingHeader;
 
     // Get combined header
     const combinedHeader = sortWithoutIndex(_.union(existingHeader, header), header[0]!);
