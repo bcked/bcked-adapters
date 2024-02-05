@@ -113,10 +113,10 @@ async function ensureSameHeader(pathToFile, header) {
     const [rows, existingHeader] = await readHeadersFromStream(csvStream);
     if (!existingHeader)
         return header;
-    const newHeaders = lodash_1.default.xor(header, existingHeader);
-    // If no new headers, return
+    const newHeaders = lodash_1.default.difference(header, existingHeader);
+    // If no new headers, return the existing headers
     if (!newHeaders.length)
-        return header;
+        return existingHeader;
     // Get combined header
     const combinedHeader = (0, array_1.sortWithoutIndex)(lodash_1.default.union(existingHeader, header), header[0]);
     // Rewrite CSV to fill old entries for new headers
