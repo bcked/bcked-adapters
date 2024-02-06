@@ -43,6 +43,8 @@ jobs:
               env:
                   BCKED_WATCHER_BOT_TOKEN: ${{ secrets.BCKED_WATCHER_BOT_TOKEN }}
               run: node ./src/api/job.js
+            - name: Copy API Documentation to API Directory
+              run: cp -r docs api
             - name: Upload Artifact
               uses: actions/upload-pages-artifact@v2
               with:
