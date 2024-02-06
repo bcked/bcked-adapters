@@ -37,7 +37,7 @@ jobs:
                   git diff-index --quiet HEAD || git commit -am "temp commit dist"
                   git fetch
                   git checkout records
-                  git restore --source main *.js *.js.map *.svg package.json package-lock.json docs
+                  git restore --source main *.js *.js.map *.svg package.json package-lock.json docs/*.html docs/*.js
                   git add -A
                   git diff-index --quiet HEAD || git commit -am "Deploy new build"
                   git push origin records
