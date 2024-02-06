@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "@0xsequence/multicall": "^0.43.34",
-        "@resvg/resvg-js": "^2.4.1",
+        "@resvg/resvg-js": "^2.6.0",
         "@solana/spl-token": "^0.3.8",
         "@solana/web3.js": "^1.77.3",
         "axios": "^1.4.0",
