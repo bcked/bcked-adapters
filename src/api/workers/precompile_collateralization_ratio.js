@@ -11,6 +11,7 @@ const fs_1 = require("fs");
 const promises_1 = require("fs/promises");
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
+const math_1 = require("../../utils/math");
 async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12) // TODO this might be to small for some assets? Maybe this could be configured per asset?
 ) {
     const underlyingAssetsCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "underlying_assets.csv");
@@ -28,7 +29,7 @@ async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12) // TO
             timestamp: underlyingEntry.timestamp,
             market_cap: market_cap,
             collateral: underlyingEntry,
-            ratio: underlyingEntry.usd / market_cap.usd,
+            ratio: (0, math_1.round)(underlyingEntry.usd / market_cap.usd, 4),
         };
     }
 }

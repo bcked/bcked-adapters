@@ -11,6 +11,7 @@ const fs_1 = require("fs");
 const promises_1 = require("fs/promises");
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
+const math_1 = require("../../utils/math");
 async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
     const supplyCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "supply_amount.csv");
     const priceCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "price.csv");
@@ -27,7 +28,7 @@ async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
             timestamp: supplyEntry.timestamp,
             price: price,
             supply: supplyEntry,
-            usd: price.usd * supplyEntry.amount,
+            usd: (0, math_1.round)(price.usd * supplyEntry.amount, 2),
         };
     }
 }

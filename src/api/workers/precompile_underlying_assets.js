@@ -12,6 +12,7 @@ const promises_1 = require("fs/promises");
 const lodash_1 = __importDefault(require("lodash"));
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
+const math_1 = require("../../utils/math");
 async function lookupUnderlyingPrice(timestamp, amount, lookup, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
     const price = await lookup.getClosest(timestamp, window);
     if (!price)
@@ -19,7 +20,7 @@ async function lookupUnderlyingPrice(timestamp, amount, lookup, window = (0, dat
     return {
         amount,
         price: price,
-        usd: price.usd * amount,
+        usd: (0, math_1.round)(price.usd * amount, 2),
     };
 }
 async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
@@ -50,7 +51,7 @@ async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
         yield {
             timestamp: backingEntry.timestamp,
             breakdown: underlying,
-            usd: lodash_1.default.sumBy(Object.values(underlying), "usd"),
+            usd: (0, math_1.round)(lodash_1.default.sumBy(Object.values(underlying), "usd"), 2),
         };
     }
 }

@@ -142,6 +142,11 @@ let Asset = exports.Asset = (() => {
     let _underlyingAssetsMonth_decorators;
     let _underlyingAssetsDay_decorators;
     let _underlyingAssetsHour_decorators;
+    let _collateralizationRatioHistory_decorators;
+    let _collateralizationRatioYear_decorators;
+    let _collateralizationRatioMonth_decorators;
+    let _collateralizationRatioDay_decorators;
+    let _collateralizationRatioHour_decorators;
     return _a = class Asset extends resources_1.JsonResources {
             constructor() {
                 super({
@@ -326,6 +331,32 @@ let Asset = exports.Asset = (() => {
                     total: {
                         "rwa:USD": stats.median.usd,
                     },
+                };
+            }
+            async collateralizationRatioHistory(id, latestTimestamp, stats, years) {
+                return historyResource(`/assets/${id}/collateralization-ratio`, latestTimestamp, stats, years);
+            }
+            async collateralizationRatioYear(id, stats, year, months) {
+                return yearResource(`/assets/${id}/collateralization-ratio`, stats, year, months);
+            }
+            async collateralizationRatioMonth(id, stats, year, month, days) {
+                return monthResource(`/assets/${id}/collateralization-ratio`, stats, year, month, days);
+            }
+            async collateralizationRatioDay(id, stats, year, month, day, hours) {
+                return dayResource(`/assets/${id}/collateralization-ratio`, stats, year, month, day, hours);
+            }
+            async collateralizationRatioHour(id, stats) {
+                if (!stats || !stats.min || !stats.max || !stats.median)
+                    return;
+                return {
+                    ...hourBaseResource(`/assets/${id}/collateralization-ratio`, stats.median.timestamp),
+                    collateral: {
+                        $ref: (0, time_1.setDateParts)(`/assets/${id}/underlying-assets/{year}/{month}/{day}/{hour}`, stats.median.collateral.timestamp),
+                    },
+                    marketCap: {
+                        $ref: (0, time_1.setDateParts)(`/assets/${id}/market-cap/{year}/{month}/{day}/{hour}`, stats.median.market_cap.timestamp),
+                    },
+                    ratio: stats.median.ratio,
                 };
             }
         },
@@ -522,6 +553,46 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
+            _collateralizationRatioHistory_decorators = [resources_1.JsonResources.register({
+                    path: "/assets/{id}/collateralization-ratio",
+                    summary: "Get collateralization ratio of an asset",
+                    description: "Get collateralization ratio of an asset by its ID",
+                    type: "AssetCollateralizationRatio",
+                    // TODO write schema
+                    schema: {},
+                })];
+            _collateralizationRatioYear_decorators = [resources_1.JsonResources.register({
+                    path: "/assets/{id}/collateralization-ratio/{year}",
+                    summary: "Get collateralization ratio of an asset",
+                    description: "Get collateralization ratio of an asset by its ID",
+                    type: "AssetCollateralizationRatio",
+                    // TODO write schema
+                    schema: {},
+                })];
+            _collateralizationRatioMonth_decorators = [resources_1.JsonResources.register({
+                    path: "/assets/{id}/collateralization-ratio/{year}/{month}",
+                    summary: "Get collateralization ratio of an asset",
+                    description: "Get collateralization ratio of an asset by its ID",
+                    type: "AssetCollateralizationRatio",
+                    // TODO write schema
+                    schema: {},
+                })];
+            _collateralizationRatioDay_decorators = [resources_1.JsonResources.register({
+                    path: "/assets/{id}/collateralization-ratio/{year}/{month}/{day}",
+                    summary: "Get collateralization ratio of an asset",
+                    description: "Get collateralization ratio of an asset by its ID",
+                    type: "AssetCollateralizationRatio",
+                    // TODO write schema
+                    schema: {},
+                })];
+            _collateralizationRatioHour_decorators = [resources_1.JsonResources.register({
+                    path: "/assets/{id}/collateralization-ratio/{year}/{month}/{day}/{hour}",
+                    summary: "Get collateralization ratio of an asset",
+                    description: "Get collateralization ratio of an asset by its ID",
+                    type: "AssetCollateralizationRatio",
+                    // TODO write schema
+                    schema: {},
+                })];
             __esDecorate(_a, null, _index_decorators, { kind: "method", name: "index", static: false, private: false, access: { has: obj => "index" in obj, get: obj => obj.index } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _asset_decorators, { kind: "method", name: "asset", static: false, private: false, access: { has: obj => "asset" in obj, get: obj => obj.asset } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _details_decorators, { kind: "method", name: "details", static: false, private: false, access: { has: obj => "details" in obj, get: obj => obj.details } }, null, _instanceExtraInitializers);
@@ -546,6 +617,11 @@ let Asset = exports.Asset = (() => {
             __esDecorate(_a, null, _underlyingAssetsMonth_decorators, { kind: "method", name: "underlyingAssetsMonth", static: false, private: false, access: { has: obj => "underlyingAssetsMonth" in obj, get: obj => obj.underlyingAssetsMonth } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _underlyingAssetsDay_decorators, { kind: "method", name: "underlyingAssetsDay", static: false, private: false, access: { has: obj => "underlyingAssetsDay" in obj, get: obj => obj.underlyingAssetsDay } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _underlyingAssetsHour_decorators, { kind: "method", name: "underlyingAssetsHour", static: false, private: false, access: { has: obj => "underlyingAssetsHour" in obj, get: obj => obj.underlyingAssetsHour } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _collateralizationRatioHistory_decorators, { kind: "method", name: "collateralizationRatioHistory", static: false, private: false, access: { has: obj => "collateralizationRatioHistory" in obj, get: obj => obj.collateralizationRatioHistory } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _collateralizationRatioYear_decorators, { kind: "method", name: "collateralizationRatioYear", static: false, private: false, access: { has: obj => "collateralizationRatioYear" in obj, get: obj => obj.collateralizationRatioYear } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _collateralizationRatioMonth_decorators, { kind: "method", name: "collateralizationRatioMonth", static: false, private: false, access: { has: obj => "collateralizationRatioMonth" in obj, get: obj => obj.collateralizationRatioMonth } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _collateralizationRatioDay_decorators, { kind: "method", name: "collateralizationRatioDay", static: false, private: false, access: { has: obj => "collateralizationRatioDay" in obj, get: obj => obj.collateralizationRatioDay } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _collateralizationRatioHour_decorators, { kind: "method", name: "collateralizationRatioHour", static: false, private: false, access: { has: obj => "collateralizationRatioHour" in obj, get: obj => obj.collateralizationRatioHour } }, null, _instanceExtraInitializers);
         })(),
         _a;
 })();
