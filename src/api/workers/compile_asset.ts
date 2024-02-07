@@ -10,10 +10,7 @@ import { sendErrorReport } from "../../watcher/bot";
 import { ASSET_RESOURCES } from "../resources/assets";
 import { compileDetails, compileIcons } from "../utils/compile";
 
-async function compileHistory<
-    TObject extends { timestamp: primitive.ISODateTimeString },
-    TKey extends keyof TObject
->(
+async function compileHistory<TObject extends primitive.Timestamped, TKey extends keyof TObject>(
     csvName: string,
     id: bcked.asset.Id,
     key: TKey | PropertyPath,

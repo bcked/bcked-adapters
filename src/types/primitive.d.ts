@@ -14,4 +14,6 @@ declare namespace primitive {
     }
 
     type URL = `https://${string}.${string}`;
+
+    type Timestamped = { timestamp: ISODateTimeString };
 }

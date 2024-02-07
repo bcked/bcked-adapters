@@ -6,22 +6,20 @@ import { hoursToMilliseconds } from "date-fns";
 import { existsSync } from "fs";
 import { unlink } from "fs/promises";
 import path from "path";
-import { readCSV, writeToCsv } from "../../utils/csv";
-import { ConsecutivePriceLookup } from "../utils/priceLookup";
-
-const ASSETS_PATH = "assets";
+import { ConsecutiveLookup, readCSV, writeToCsv } from "../../utils/csv";
 
 async function* matchSupplyAndPrice(
     id: bcked.asset.Id,
     window: number = hoursToMilliseconds(12)
 ): AsyncIterableIterator<bcked.asset.MarketCap> {
-    const supplyCsv = path.join(ASSETS_PATH, id, "records", "supply_amount.csv");
+    const supplyCsv = path.join(PATHS.assets, id, "records", "supply_amount.csv");
+    const priceCsv = path.join(PATHS.assets, id, "records", "price.csv");
 
     if (!existsSync(supplyCsv)) return;
 
     const supplyEntries = readCSV<bcked.asset.SupplyAmount>(supplyCsv);
 
-    let priceLookup = new ConsecutivePriceLookup(id);
+    let priceLookup = new ConsecutiveLookup<bcked.asset.Price>(priceCsv);
 
     for await (const supplyEntry of supplyEntries) {
         // Get closest prices to the current entry for all underlying assets

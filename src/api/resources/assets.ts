@@ -3,10 +3,7 @@ import { setDateParts } from "../../utils/time";
 import { icons } from "../utils/icons";
 import { JsonResources } from "../utils/resources";
 
-function statsToSummary<T extends { timestamp: primitive.ISODateTimeString }>(
-    path: string,
-    stats: Stats<T>
-) {
+function statsToSummary<T extends primitive.Timestamped>(path: string, stats: Stats<T>) {
     if (!stats || !stats.min || !stats.max || !stats.median) {
         throw new Error("Stats missing. This should have been checked prior.");
     }
@@ -24,7 +21,7 @@ function statsToSummary<T extends { timestamp: primitive.ISODateTimeString }>(
     };
 }
 
-function historyResource<T extends { timestamp: primitive.ISODateTimeString }>(
+function historyResource<T extends primitive.Timestamped>(
     path: string,
     latestTimestamp: primitive.ISODateTimeString | undefined,
     stats: Stats<T> | undefined,
@@ -47,7 +44,7 @@ function historyResource<T extends { timestamp: primitive.ISODateTimeString }>(
     };
 }
 
-function yearResource<T extends { timestamp: primitive.ISODateTimeString }>(
+function yearResource<T extends primitive.Timestamped>(
     path: string,
     stats: Stats<T> | undefined,
     year: string | undefined,
@@ -66,7 +63,7 @@ function yearResource<T extends { timestamp: primitive.ISODateTimeString }>(
     };
 }
 
-function monthResource<T extends { timestamp: primitive.ISODateTimeString }>(
+function monthResource<T extends primitive.Timestamped>(
     path: string,
     stats: Stats<T> | undefined,
     year: string | undefined,
@@ -86,7 +83,7 @@ function monthResource<T extends { timestamp: primitive.ISODateTimeString }>(
     };
 }
 
-function dayResource<T extends { timestamp: primitive.ISODateTimeString }>(
+function dayResource<T extends primitive.Timestamped>(
     path: string,
     stats: Stats<T> | undefined,
     year: string | undefined,
@@ -227,7 +224,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async priceHistory<T extends { timestamp: primitive.ISODateTimeString }>(
+    async priceHistory<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         latestTimestamp: primitive.ISODateTimeString | undefined,
         stats: Stats<T> | undefined,
@@ -244,7 +241,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async priceYear<T extends { timestamp: primitive.ISODateTimeString }>(
+    async priceYear<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -261,7 +258,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async priceMonth<T extends { timestamp: primitive.ISODateTimeString }>(
+    async priceMonth<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -279,7 +276,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async priceDay<T extends { timestamp: primitive.ISODateTimeString }>(
+    async priceDay<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -320,7 +317,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async supplyHistory<T extends { timestamp: primitive.ISODateTimeString }>(
+    async supplyHistory<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         latestTimestamp: primitive.ISODateTimeString | undefined,
         stats: Stats<T> | undefined,
@@ -337,7 +334,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async supplyYear<T extends { timestamp: primitive.ISODateTimeString }>(
+    async supplyYear<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -354,7 +351,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async supplyMonth<T extends { timestamp: primitive.ISODateTimeString }>(
+    async supplyMonth<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -372,7 +369,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async supplyDay<T extends { timestamp: primitive.ISODateTimeString }>(
+    async supplyDay<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -415,7 +412,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async marketCapHistory<T extends { timestamp: primitive.ISODateTimeString }>(
+    async marketCapHistory<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         latestTimestamp: primitive.ISODateTimeString | undefined,
         stats: Stats<T> | undefined,
@@ -432,7 +429,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async marketCapYear<T extends { timestamp: primitive.ISODateTimeString }>(
+    async marketCapYear<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -449,7 +446,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async marketCapMonth<T extends { timestamp: primitive.ISODateTimeString }>(
+    async marketCapMonth<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -467,7 +464,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async marketCapDay<T extends { timestamp: primitive.ISODateTimeString }>(
+    async marketCapDay<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -517,7 +514,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async underlyingAssetsHistory<T extends { timestamp: primitive.ISODateTimeString }>(
+    async underlyingAssetsHistory<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         latestTimestamp: primitive.ISODateTimeString | undefined,
         stats: Stats<T> | undefined,
@@ -534,7 +531,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async underlyingAssetsYear<T extends { timestamp: primitive.ISODateTimeString }>(
+    async underlyingAssetsYear<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -551,7 +548,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async underlyingAssetsMonth<T extends { timestamp: primitive.ISODateTimeString }>(
+    async underlyingAssetsMonth<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,
@@ -569,7 +566,7 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async underlyingAssetsDay<T extends { timestamp: primitive.ISODateTimeString }>(
+    async underlyingAssetsDay<T extends primitive.Timestamped>(
         id: bcked.entity.Id,
         stats: Stats<T> | undefined,
         year: string | undefined,

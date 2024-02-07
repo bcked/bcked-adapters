@@ -30,8 +30,8 @@ export class AdapterCache<Adapter> {
 }
 
 export function isNewEntry(
-    cached: (object & { timestamp: primitive.ISODateTimeString }) | null,
-    entry: (object & { timestamp: primitive.ISODateTimeString }) | null,
+    cached: (object & primitive.Timestamped) | null,
+    entry: (object & primitive.Timestamped) | null,
     threshold: number
 ) {
     const isNewEntryWithoutCache = cached == null && entry != null;

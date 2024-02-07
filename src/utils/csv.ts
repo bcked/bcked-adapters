@@ -11,8 +11,10 @@ import { concat, sortWithoutIndex } from "./array";
 import { ensurePath, readFirstLine, readLastLines } from "./files";
 import { isCloser } from "./time";
 
+import { hoursToMilliseconds } from "date-fns";
 import { pipeline } from "stream/promises";
 import { getFirstElement } from "./stream";
+import { distance, isNewer } from "./time";
 
 function castNumbers(value: string, context: CastingContext): string | number {
     if (context.header) return value;
@@ -186,4 +188,56 @@ export async function createCsv<T>(pathToFile: string, rows: AsyncIterable<T>, h
     });
 
     await pipeline(rowsReadable, stringifier, writableStream);
+}
+
+export class ConsecutiveLookup<T extends primitive.Timestamped> {
+    private readonly values: Map<string, T> = new Map();
+    private readonly csvStream: AsyncGenerator<T>;
+    private done: boolean = false;
+    private lastTimestamp: string | undefined = undefined;
+
+    constructor(public readonly csvPath: string) {
+        this.csvStream = readCSV<T>(csvPath);
+    }
+
+    public async getClosest(
+        timestamp: string,
+        window: number = hoursToMilliseconds(12)
+    ): Promise<T | undefined> {
+        // Read new values from csvStream and store them in the values map
+        while (
+            !this.done && // Stop if the csvStream is done
+            (!this.lastTimestamp || !isNewer(timestamp, this.lastTimestamp, window)) // Read ahead the specified time window
+        ) {
+            const { value, done } = await this.csvStream.next();
+            this.done = done!;
+
+            if (!value) break;
+
+            this.values.set(value.timestamp, value);
+
+            this.lastTimestamp = value.timestamp;
+        }
+
+        // Find the best match in the values cache
+        let bestMatch: T | undefined;
+        let bestDistance: number | undefined;
+        for (const value of this.values.values()) {
+            // Ignore and delete entries older than time window
+            if (isNewer(value.timestamp, timestamp, window)) {
+                this.values.delete(value.timestamp);
+                continue;
+            }
+
+            const timeDistance = distance(timestamp, value.timestamp);
+            if (!bestDistance || timeDistance < bestDistance) {
+                bestMatch = value;
+                bestDistance = timeDistance;
+            } else {
+                break; // Values are sorted, so we can stop here.
+            }
+        }
+
+        return bestMatch;
+    }
 }
