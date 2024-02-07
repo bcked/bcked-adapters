@@ -7,6 +7,7 @@ import { existsSync } from "fs";
 import { unlink } from "fs/promises";
 import path from "path";
 import { ConsecutiveLookup, readCSV, writeToCsv } from "../../utils/csv";
+import { round } from "../../utils/math";
 
 async function* match(
     id: bcked.asset.Id,
@@ -32,7 +33,7 @@ async function* match(
             timestamp: supplyEntry.timestamp,
             price: price,
             supply: supplyEntry,
-            usd: price.usd * supplyEntry.amount,
+            usd: round(price.usd * supplyEntry.amount, 2),
         };
     }
 }

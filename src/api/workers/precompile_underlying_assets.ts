@@ -8,6 +8,7 @@ import { unlink } from "fs/promises";
 import _ from "lodash";
 import path from "path";
 import { ConsecutiveLookup, readCSV, writeToCsv } from "../../utils/csv";
+import { round } from "../../utils/math";
 
 async function lookupUnderlyingPrice(
     timestamp: string,
@@ -21,7 +22,7 @@ async function lookupUnderlyingPrice(
     return {
         amount,
         price: price,
-        usd: price.usd * amount,
+        usd: round(price.usd * amount, 2),
     };
 }
 
@@ -73,7 +74,7 @@ async function* match(
         yield {
             timestamp: backingEntry.timestamp,
             breakdown: underlying,
-            usd: _.sumBy(Object.values(underlying), "usd"),
+            usd: round(_.sumBy(Object.values(underlying), "usd"), 2),
         };
     }
 }

@@ -7,6 +7,7 @@ import { existsSync } from "fs";
 import { unlink } from "fs/promises";
 import path from "path";
 import { ConsecutiveLookup, readCSV, writeToCsv } from "../../utils/csv";
+import { round } from "../../utils/math";
 
 async function* match(
     id: bcked.asset.Id,
@@ -32,7 +33,7 @@ async function* match(
             timestamp: underlyingEntry.timestamp,
             market_cap: market_cap,
             collateral: underlyingEntry,
-            ratio: underlyingEntry.usd / market_cap.usd,
+            ratio: round(underlyingEntry.usd / market_cap.usd, 4),
         };
     }
 }
