@@ -182,6 +182,16 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
                 ASSET_RESOURCES.underlyingAssetsDay,
                 ASSET_RESOURCES.underlyingAssetsHour
             ),
+            compileHistory<bcked.asset.Collateralization, "ratio">(
+                "collateralization_ratio.csv",
+                id,
+                "ratio",
+                ASSET_RESOURCES.collateralizationRatioHistory,
+                ASSET_RESOURCES.collateralizationRatioYear,
+                ASSET_RESOURCES.collateralizationRatioMonth,
+                ASSET_RESOURCES.collateralizationRatioDay,
+                ASSET_RESOURCES.collateralizationRatioHour
+            ),
         ]);
 
         parentPort?.postMessage(null);

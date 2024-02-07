@@ -619,6 +619,114 @@ export class Asset extends JsonResources {
             },
         };
     }
+
+    @JsonResources.register({
+        path: "/assets/{id}/collateralization-ratio",
+        summary: "Get collateralization ratio of an asset",
+        description: "Get collateralization ratio of an asset by its ID",
+        type: "AssetCollateralizationRatio",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationRatioHistory<T extends primitive.Timestamped>(
+        id: bcked.entity.Id,
+        latestTimestamp: primitive.ISODateTimeString | undefined,
+        stats: Stats<T> | undefined,
+        years: string[]
+    ) {
+        return historyResource(
+            `/assets/${id}/collateralization-ratio`,
+            latestTimestamp,
+            stats,
+            years
+        );
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/collateralization-ratio/{year}",
+        summary: "Get collateralization ratio of an asset",
+        description: "Get collateralization ratio of an asset by its ID",
+        type: "AssetCollateralizationRatio",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationRatioYear<T extends primitive.Timestamped>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        months: string[]
+    ) {
+        return yearResource(`/assets/${id}/collateralization-ratio`, stats, year, months);
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/collateralization-ratio/{year}/{month}",
+        summary: "Get collateralization ratio of an asset",
+        description: "Get collateralization ratio of an asset by its ID",
+        type: "AssetCollateralizationRatio",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationRatioMonth<T extends primitive.Timestamped>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        month: string | undefined,
+        days: string[]
+    ) {
+        return monthResource(`/assets/${id}/collateralization-ratio`, stats, year, month, days);
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/collateralization-ratio/{year}/{month}/{day}",
+        summary: "Get collateralization ratio of an asset",
+        description: "Get collateralization ratio of an asset by its ID",
+        type: "AssetCollateralizationRatio",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationRatioDay<T extends primitive.Timestamped>(
+        id: bcked.entity.Id,
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        month: string | undefined,
+        day: string | undefined,
+        hours: string[]
+    ) {
+        return dayResource(`/assets/${id}/collateralization-ratio`, stats, year, month, day, hours);
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/collateralization-ratio/{year}/{month}/{day}/{hour}",
+        summary: "Get collateralization ratio of an asset",
+        description: "Get collateralization ratio of an asset by its ID",
+        type: "AssetCollateralizationRatio",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationRatioHour(
+        id: bcked.entity.Id,
+        stats: Stats<bcked.asset.Collateralization> | undefined
+    ) {
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        return {
+            ...hourBaseResource(`/assets/${id}/collateralization-ratio`, stats.median.timestamp),
+            collateral: {
+                $ref: setDateParts(
+                    `/assets/${id}/underlying-assets/{year}/{month}/{day}/{hour}`,
+                    stats.median.collateral.timestamp
+                ),
+            },
+            marketCap: {
+                $ref: setDateParts(
+                    `/assets/${id}/market-cap/{year}/{month}/{day}/{hour}`,
+                    stats.median.market_cap.timestamp
+                ),
+            },
+            ratio: stats.median.ratio,
+        };
+    }
 }
 
 export const ASSET_RESOURCES = new Asset();
