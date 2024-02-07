@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCsv = exports.appendCsv = exports.ensureSameHeader = exports.writeToCsv = exports.rewriteCSV = exports.readCSV = exports.readClosestEntry = exports.readLastEntry = void 0;
+exports.ConsecutiveLookup = exports.createCsv = exports.appendCsv = exports.ensureSameHeader = exports.writeToCsv = exports.rewriteCSV = exports.readCSV = exports.readClosestEntry = exports.readLastEntry = void 0;
 const csv_1 = require("csv");
 const sync_1 = require("csv/sync");
 const flat_1 = require("flat"); // Serialize nested data structures
@@ -13,8 +13,10 @@ const stream_1 = require("stream");
 const array_1 = require("./array");
 const files_1 = require("./files");
 const time_1 = require("./time");
+const date_fns_1 = require("date-fns");
 const promises_1 = require("stream/promises");
 const stream_2 = require("./stream");
+const time_2 = require("./time");
 function castNumbers(value, context) {
     if (context.header)
         return value;
@@ -156,4 +158,46 @@ async function createCsv(pathToFile, rows, header) {
     await (0, promises_1.pipeline)(rowsReadable, stringifier, writableStream);
 }
 exports.createCsv = createCsv;
+class ConsecutiveLookup {
+    constructor(csvPath) {
+        this.csvPath = csvPath;
+        this.values = new Map();
+        this.done = false;
+        this.lastTimestamp = undefined;
+        this.csvStream = readCSV(csvPath);
+    }
+    async getClosest(timestamp, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
+        // Read new values from csvStream and store them in the values map
+        while (!this.done && // Stop if the csvStream is done
+            (!this.lastTimestamp || !(0, time_2.isNewer)(timestamp, this.lastTimestamp, window)) // Read ahead the specified time window
+        ) {
+            const { value, done } = await this.csvStream.next();
+            this.done = done;
+            if (!value)
+                break;
+            this.values.set(value.timestamp, value);
+            this.lastTimestamp = value.timestamp;
+        }
+        // Find the best match in the values cache
+        let bestMatch;
+        let bestDistance;
+        for (const value of this.values.values()) {
+            // Ignore and delete entries older than time window
+            if ((0, time_2.isNewer)(value.timestamp, timestamp, window)) {
+                this.values.delete(value.timestamp);
+                continue;
+            }
+            const timeDistance = (0, time_2.distance)(timestamp, value.timestamp);
+            if (!bestDistance || timeDistance < bestDistance) {
+                bestMatch = value;
+                bestDistance = timeDistance;
+            }
+            else {
+                break; // Values are sorted, so we can stop here.
+            }
+        }
+        return bestMatch;
+    }
+}
+exports.ConsecutiveLookup = ConsecutiveLookup;
 //# sourceMappingURL=csv.js.map

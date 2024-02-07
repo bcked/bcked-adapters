@@ -12,8 +12,6 @@ const promises_1 = require("fs/promises");
 const lodash_1 = __importDefault(require("lodash"));
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
-const priceLookup_1 = require("../utils/priceLookup");
-const ASSETS_PATH = "assets";
 async function lookupUnderlyingPrice(timestamp, amount, lookup, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
     const price = await lookup.getClosest(timestamp, window);
     if (!price)
@@ -25,7 +23,7 @@ async function lookupUnderlyingPrice(timestamp, amount, lookup, window = (0, dat
     };
 }
 async function* matchBackingPrices(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
-    const backingCsv = path_1.default.join(ASSETS_PATH, id, "records", "backing.csv");
+    const backingCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "backing.csv");
     if (!(0, fs_1.existsSync)(backingCsv))
         return;
     const backingEntries = (0, csv_1.readCSV)(backingCsv);
@@ -35,13 +33,17 @@ async function* matchBackingPrices(id, window = (0, date_fns_1.hoursToMillisecon
         if (priceLookup === undefined) {
             priceLookup = [];
             for (const underlyingAssetId of Object.keys(backingEntry.underlying)) {
-                priceLookup.push(new priceLookup_1.ConsecutivePriceLookup(underlyingAssetId));
+                const priceCsv = path_1.default.join(paths_1.PATHS.assets, underlyingAssetId, "records", "price.csv");
+                priceLookup.push({
+                    assetId: underlyingAssetId,
+                    lookup: new csv_1.ConsecutiveLookup(priceCsv),
+                });
             }
         }
         // Get closest prices to the current entry for all underlying assets
-        const underlying = Object.fromEntries(await Promise.all(priceLookup.map(async (lookup) => [
-            lookup.assetId,
-            await lookupUnderlyingPrice(backingEntry.timestamp, backingEntry.underlying[lookup.assetId], lookup, window),
+        const underlying = Object.fromEntries(await Promise.all(priceLookup.map(async ({ assetId, lookup }) => [
+            assetId,
+            await lookupUnderlyingPrice(backingEntry.timestamp, backingEntry.underlying[assetId], lookup, window),
         ])));
         yield {
             timestamp: backingEntry.timestamp,

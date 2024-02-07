@@ -11,14 +11,13 @@ const fs_1 = require("fs");
 const promises_1 = require("fs/promises");
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
-const priceLookup_1 = require("../utils/priceLookup");
-const ASSETS_PATH = "assets";
 async function* matchSupplyAndPrice(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
-    const supplyCsv = path_1.default.join(ASSETS_PATH, id, "records", "supply_amount.csv");
+    const supplyCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "supply_amount.csv");
+    const priceCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "price.csv");
     if (!(0, fs_1.existsSync)(supplyCsv))
         return;
     const supplyEntries = (0, csv_1.readCSV)(supplyCsv);
-    let priceLookup = new priceLookup_1.ConsecutivePriceLookup(id);
+    let priceLookup = new csv_1.ConsecutiveLookup(priceCsv);
     for await (const supplyEntry of supplyEntries) {
         // Get closest prices to the current entry for all underlying assets
         const price = await priceLookup.getClosest(supplyEntry.timestamp, window);
