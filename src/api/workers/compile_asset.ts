@@ -176,7 +176,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
                 ASSET_RESOURCES.marketCapHour
             ),
             compileHistory<bcked.asset.Relationships, "usd">(
-                "underlying_assets.csv.csv",
+                "underlying_assets.csv",
                 id,
                 "usd",
                 ASSET_RESOURCES.underlyingAssetsHistory,
