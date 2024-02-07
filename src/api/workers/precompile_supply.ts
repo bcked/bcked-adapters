@@ -42,8 +42,8 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
         // TODO Later change this to start at the current date and only append changes
         await unlink(filePath).catch(() => {});
 
-        const supply = computeSupplyFallback(id);
-        await writeToCsv(filePath, supply, "timestamp");
+        const entries = computeSupplyFallback(id);
+        await writeToCsv(filePath, entries, "timestamp");
 
         parentPort?.postMessage(null);
     } catch (error) {

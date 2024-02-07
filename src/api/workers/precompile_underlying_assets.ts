@@ -25,7 +25,7 @@ async function lookupUnderlyingPrice(
     };
 }
 
-async function* matchBackingPrices(
+async function* match(
     id: bcked.asset.Id,
     window: number = hoursToMilliseconds(12)
 ): AsyncIterableIterator<bcked.asset.Relationships> {
@@ -45,6 +45,9 @@ async function* matchBackingPrices(
             priceLookup = [];
             for (const underlyingAssetId of Object.keys(backingEntry.underlying)) {
                 const priceCsv = path.join(PATHS.assets, underlyingAssetId, "records", "price.csv");
+
+                if (!existsSync(priceCsv)) continue;
+
                 priceLookup.push({
                     assetId: underlyingAssetId as bcked.asset.Id,
                     lookup: new ConsecutiveLookup<bcked.asset.Price>(priceCsv),
@@ -83,8 +86,8 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
         // TODO Later change this to start at the current date and only append changes
         await unlink(filePath).catch(() => {});
 
-        const backingPrices = matchBackingPrices(id);
-        await writeToCsv(filePath, backingPrices, "timestamp");
+        const entries = match(id);
+        await writeToCsv(filePath, entries, "timestamp");
 
         parentPort?.postMessage(null);
     } catch (error) {

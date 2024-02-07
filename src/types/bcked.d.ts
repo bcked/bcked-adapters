@@ -150,6 +150,14 @@ declare namespace bcked {
             };
         };
 
+        // Generated from market cap and underlying assets data
+        type Collateralization = {
+            timestamp: primitive.ISODateTimeString;
+            market_cap: MarketCap;
+            collateral: Relationships;
+            ratio: number;
+        };
+
         interface Adapter {
             getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;
             getPrice(lastRecorded: Price | null): Promise<Price[]>;

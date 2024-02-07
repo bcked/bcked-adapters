@@ -10,36 +10,36 @@ import { ConsecutiveLookup, readCSV, writeToCsv } from "../../utils/csv";
 
 async function* match(
     id: bcked.asset.Id,
-    window: number = hoursToMilliseconds(12)
-): AsyncIterableIterator<bcked.asset.MarketCap> {
-    const supplyCsv = path.join(PATHS.assets, id, "records", "supply_amount.csv");
-    const priceCsv = path.join(PATHS.assets, id, "records", "price.csv");
+    window: number = hoursToMilliseconds(12) // TODO this might be to small for some assets? Maybe this could be configured per asset?
+): AsyncIterableIterator<bcked.asset.Collateralization> {
+    const underlyingAssetsCsv = path.join(PATHS.assets, id, "records", "underlying_assets.csv");
+    const marketCapCsv = path.join(PATHS.assets, id, "records", "market_cap.csv");
 
-    if (!existsSync(supplyCsv) || !existsSync(priceCsv)) return;
+    if (!existsSync(underlyingAssetsCsv) || !existsSync(marketCapCsv)) return;
 
-    const supplyEntries = readCSV<bcked.asset.SupplyAmount>(supplyCsv);
+    const underlyingAssets = readCSV<bcked.asset.Relationships>(underlyingAssetsCsv);
 
-    let priceLookup = new ConsecutiveLookup<bcked.asset.Price>(priceCsv);
+    let marketCapLookup = new ConsecutiveLookup<bcked.asset.MarketCap>(marketCapCsv);
 
-    for await (const supplyEntry of supplyEntries) {
+    for await (const underlyingEntry of underlyingAssets) {
         // Get closest prices to the current entry for all underlying assets
 
-        const price = await priceLookup.getClosest(supplyEntry.timestamp, window);
+        const market_cap = await marketCapLookup.getClosest(underlyingEntry.timestamp, window);
 
-        if (!price) continue;
+        if (!market_cap) continue;
 
         yield {
-            timestamp: supplyEntry.timestamp,
-            price: price,
-            supply: supplyEntry,
-            usd: price.usd * supplyEntry.amount,
+            timestamp: underlyingEntry.timestamp,
+            market_cap: market_cap,
+            collateral: underlyingEntry,
+            ratio: underlyingEntry.usd / market_cap.usd,
         };
     }
 }
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     console.log(`Precompiling market cap for asset ${id}`);
-    const filePath = path.join(PATHS.assets, id, "records", "market_cap.csv");
+    const filePath = path.join(PATHS.assets, id, "records", "collateralization_ratio.csv");
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes

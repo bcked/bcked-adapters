@@ -51,6 +51,8 @@ job("API Job", async () => {
         compile(PATHS.assets, "precompile_underlying_assets.ts"),
     ]);
 
+    await Promise.all([compile(PATHS.assets, "precompile_collateralization_ratio.ts")]);
+
     await Promise.all([
         INDEX_RESOURCES.index(),
         compile(PATHS.entities, "compile_entity.ts", ENTITY_RESOURCES),
