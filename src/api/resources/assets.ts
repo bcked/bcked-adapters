@@ -169,6 +169,9 @@ export class Asset extends JsonResources {
             "underlying-assets": {
                 $ref: `/assets/${id}/underlying-assets`,
             },
+            "collateralization-ratio": {
+                $ref: `/assets/${id}/collateralization-ratio`,
+            },
             // "derivative-assets": {
             //     $ref: `/assets/${id}/derivative-assets`,
             // },
