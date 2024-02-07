@@ -89,7 +89,7 @@ worker_threads_1.parentPort?.on("message", async (id) => {
             compileHistory("price.csv", id, "usd", assets_1.ASSET_RESOURCES.priceHistory, assets_1.ASSET_RESOURCES.priceYear, assets_1.ASSET_RESOURCES.priceMonth, assets_1.ASSET_RESOURCES.priceDay, assets_1.ASSET_RESOURCES.priceHour),
             compileHistory("supply_amount.csv", id, "amount", assets_1.ASSET_RESOURCES.supplyHistory, assets_1.ASSET_RESOURCES.supplyYear, assets_1.ASSET_RESOURCES.supplyMonth, assets_1.ASSET_RESOURCES.supplyDay, assets_1.ASSET_RESOURCES.supplyHour),
             compileHistory("market_cap.csv", id, "usd", assets_1.ASSET_RESOURCES.marketCapHistory, assets_1.ASSET_RESOURCES.marketCapYear, assets_1.ASSET_RESOURCES.marketCapMonth, assets_1.ASSET_RESOURCES.marketCapDay, assets_1.ASSET_RESOURCES.marketCapHour),
-            compileHistory("underlying_assets.csv.csv", id, "usd", assets_1.ASSET_RESOURCES.underlyingAssetsHistory, assets_1.ASSET_RESOURCES.underlyingAssetsYear, assets_1.ASSET_RESOURCES.underlyingAssetsMonth, assets_1.ASSET_RESOURCES.underlyingAssetsDay, assets_1.ASSET_RESOURCES.underlyingAssetsHour),
+            compileHistory("underlying_assets.csv", id, "usd", assets_1.ASSET_RESOURCES.underlyingAssetsHistory, assets_1.ASSET_RESOURCES.underlyingAssetsYear, assets_1.ASSET_RESOURCES.underlyingAssetsMonth, assets_1.ASSET_RESOURCES.underlyingAssetsDay, assets_1.ASSET_RESOURCES.underlyingAssetsHour),
         ]);
         worker_threads_1.parentPort?.postMessage(null);
     }

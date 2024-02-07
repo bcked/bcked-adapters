@@ -50,7 +50,5 @@ async function generateOasSchema() {
         compile(paths_1.PATHS.assets, "compile_asset.ts", assets_1.ASSET_RESOURCES),
         generateOasSchema(),
     ]);
-    // TODO continue by adding derivative-assets json as API resource and to compile_asset using the precomputed data
-    // TODO optimize code to only run for new entries and not for all entries
 });
 //# sourceMappingURL=job.js.map
