@@ -22,7 +22,7 @@ async function lookupUnderlyingPrice(timestamp, amount, lookup, window = (0, dat
         usd: price.usd * amount,
     };
 }
-async function* matchBackingPrices(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
+async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
     const backingCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "backing.csv");
     if (!(0, fs_1.existsSync)(backingCsv))
         return;
@@ -34,6 +34,8 @@ async function* matchBackingPrices(id, window = (0, date_fns_1.hoursToMillisecon
             priceLookup = [];
             for (const underlyingAssetId of Object.keys(backingEntry.underlying)) {
                 const priceCsv = path_1.default.join(paths_1.PATHS.assets, underlyingAssetId, "records", "price.csv");
+                if (!(0, fs_1.existsSync)(priceCsv))
+                    continue;
                 priceLookup.push({
                     assetId: underlyingAssetId,
                     lookup: new csv_1.ConsecutiveLookup(priceCsv),
@@ -59,8 +61,8 @@ worker_threads_1.parentPort?.on("message", async (id) => {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
         await (0, promises_1.unlink)(filePath).catch(() => { });
-        const backingPrices = matchBackingPrices(id);
-        await (0, csv_1.writeToCsv)(filePath, backingPrices, "timestamp");
+        const entries = match(id);
+        await (0, csv_1.writeToCsv)(filePath, entries, "timestamp");
         worker_threads_1.parentPort?.postMessage(null);
     }
     catch (error) {

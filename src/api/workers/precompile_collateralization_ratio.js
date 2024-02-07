@@ -11,29 +11,30 @@ const fs_1 = require("fs");
 const promises_1 = require("fs/promises");
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
-async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
-    const supplyCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "supply_amount.csv");
-    const priceCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "price.csv");
-    if (!(0, fs_1.existsSync)(supplyCsv) || !(0, fs_1.existsSync)(priceCsv))
+async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12) // TODO this might be to small for some assets? Maybe this could be configured per asset?
+) {
+    const underlyingAssetsCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "underlying_assets.csv");
+    const marketCapCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "market_cap.csv");
+    if (!(0, fs_1.existsSync)(underlyingAssetsCsv) || !(0, fs_1.existsSync)(marketCapCsv))
         return;
-    const supplyEntries = (0, csv_1.readCSV)(supplyCsv);
-    let priceLookup = new csv_1.ConsecutiveLookup(priceCsv);
-    for await (const supplyEntry of supplyEntries) {
+    const underlyingAssets = (0, csv_1.readCSV)(underlyingAssetsCsv);
+    let marketCapLookup = new csv_1.ConsecutiveLookup(marketCapCsv);
+    for await (const underlyingEntry of underlyingAssets) {
         // Get closest prices to the current entry for all underlying assets
-        const price = await priceLookup.getClosest(supplyEntry.timestamp, window);
-        if (!price)
+        const market_cap = await marketCapLookup.getClosest(underlyingEntry.timestamp, window);
+        if (!market_cap)
             continue;
         yield {
-            timestamp: supplyEntry.timestamp,
-            price: price,
-            supply: supplyEntry,
-            usd: price.usd * supplyEntry.amount,
+            timestamp: underlyingEntry.timestamp,
+            market_cap: market_cap,
+            collateral: underlyingEntry,
+            ratio: underlyingEntry.usd / market_cap.usd,
         };
     }
 }
 worker_threads_1.parentPort?.on("message", async (id) => {
     console.log(`Precompiling market cap for asset ${id}`);
-    const filePath = path_1.default.join(paths_1.PATHS.assets, id, "records", "market_cap.csv");
+    const filePath = path_1.default.join(paths_1.PATHS.assets, id, "records", "collateralization_ratio.csv");
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
@@ -48,4 +49,4 @@ worker_threads_1.parentPort?.on("message", async (id) => {
         worker_threads_1.parentPort?.postMessage(null);
     }
 });
-//# sourceMappingURL=precompile_market_cap.js.map
+//# sourceMappingURL=precompile_collateralization_ratio.js.map

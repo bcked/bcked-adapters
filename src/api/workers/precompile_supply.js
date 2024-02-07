@@ -35,8 +35,8 @@ worker_threads_1.parentPort?.on("message", async (id) => {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
         await (0, promises_1.unlink)(filePath).catch(() => { });
-        const supply = computeSupplyFallback(id);
-        await (0, csv_1.writeToCsv)(filePath, supply, "timestamp");
+        const entries = computeSupplyFallback(id);
+        await (0, csv_1.writeToCsv)(filePath, entries, "timestamp");
         worker_threads_1.parentPort?.postMessage(null);
     }
     catch (error) {
