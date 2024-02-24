@@ -44,6 +44,7 @@ async function generateOasSchema() {
         compile(paths_1.PATHS.assets, "precompile_underlying_assets.ts"),
     ]);
     await Promise.all([compile(paths_1.PATHS.assets, "precompile_collateralization_ratio.ts")]);
+    await Promise.all([(0, worker_pool_1.executeInWorker)(node_path_1.default.resolve(WORKERS_PATH, "precompile_global_graph.ts"))]);
     await Promise.all([
         resources_1.INDEX_RESOURCES.index(),
         compile(paths_1.PATHS.entities, "compile_entity.ts", entities_1.ENTITY_RESOURCES),
