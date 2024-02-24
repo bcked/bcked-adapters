@@ -38,8 +38,18 @@ async function generateOasSchema() {
         "components",
         "tags",
     ]);
-    writeJson(`${PATHS.api}/openapi.json`, oasSchema);
+    await writeJson(`${PATHS.api}/openapi.json`, oasSchema);
     return oasSchema;
+}
+
+async function generate404() {
+    await writeJson(`${PATHS.api}/404/index.json`, {
+        error: {
+            code: "404",
+            message: "Not Found",
+            description: "The requested resource could not be found.",
+        },
+    });
 }
 
 job("API Job", async () => {
@@ -61,5 +71,6 @@ job("API Job", async () => {
         compile(PATHS.systems, "compile_system.ts", SYSTEM_RESOURCES),
         compile(PATHS.assets, "compile_asset.ts", ASSET_RESOURCES),
         generateOasSchema(),
+        generate404(),
     ]);
 });
