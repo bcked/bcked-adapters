@@ -33,8 +33,17 @@ async function generateOasSchema() {
         "components",
         "tags",
     ]);
-    (0, files_1.writeJson)(`${paths_1.PATHS.api}/openapi.json`, oasSchema);
+    await (0, files_1.writeJson)(`${paths_1.PATHS.api}/openapi.json`, oasSchema);
     return oasSchema;
+}
+async function generate404() {
+    await (0, files_1.writeJson)(`${paths_1.PATHS.api}/404/index.json`, {
+        error: {
+            code: "404",
+            message: "Not Found",
+            description: "The requested resource could not be found.",
+        },
+    });
 }
 (0, job_1.job)("API Job", async () => {
     // TODO this could already be done during data collection, not requiring a post-processing step
@@ -51,6 +60,7 @@ async function generateOasSchema() {
         compile(paths_1.PATHS.systems, "compile_system.ts", systems_1.SYSTEM_RESOURCES),
         compile(paths_1.PATHS.assets, "compile_asset.ts", assets_1.ASSET_RESOURCES),
         generateOasSchema(),
+        generate404(),
     ]);
 });
 //# sourceMappingURL=job.js.map
