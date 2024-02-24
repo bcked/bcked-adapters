@@ -17,7 +17,7 @@ export class WorkerPool {
         });
     }
 
-    async execute<Data, Result>(data: Data): Promise<Result | null> {
+    async execute<Data, Result>(data?: Data): Promise<Result | null> {
         const worker = await this.pool.acquire().promise;
 
         return new Promise((resolve, reject) => {
@@ -66,6 +66,16 @@ export async function executeInWorkerPool<Data, Result>(
     const res = await Promise.all(
         workItems.map((workItem) => pool.execute<Data, Result>(workItem))
     );
+    await pool.close();
+    return res;
+}
+
+export async function executeInWorker<Data, Result>(
+    workerScriptPath: string,
+    data?: Data
+): Promise<Result | null> {
+    const pool = new WorkerPool(workerScriptPath, { min: 1, max: 1 });
+    const res = await pool.execute<Data, Result>(data);
     await pool.close();
     return res;
 }

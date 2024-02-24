@@ -4,7 +4,7 @@ import path from "node:path";
 import { PATHS } from "../paths";
 import { writeJson } from "../utils/files";
 import { job } from "../utils/job";
-import { executeInWorkerPool } from "../utils/worker_pool";
+import { executeInWorker, executeInWorkerPool } from "../utils/worker_pool";
 import { INDEX_RESOURCES } from "./resources";
 import { ASSET_RESOURCES } from "./resources/assets";
 import { ENTITY_RESOURCES } from "./resources/entities";
@@ -52,6 +52,8 @@ job("API Job", async () => {
     ]);
 
     await Promise.all([compile(PATHS.assets, "precompile_collateralization_ratio.ts")]);
+
+    await Promise.all([executeInWorker(path.resolve(WORKERS_PATH, "precompile_global_graph.ts"))]);
 
     await Promise.all([
         INDEX_RESOURCES.index(),

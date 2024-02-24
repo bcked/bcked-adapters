@@ -201,7 +201,7 @@ export class ConsecutiveLookup<T extends primitive.Timestamped> {
     }
 
     public async getClosest(
-        timestamp: string,
+        timestamp: primitive.DateLike,
         window: number = hoursToMilliseconds(12)
     ): Promise<T | undefined> {
         // Read new values from csvStream and store them in the values map
