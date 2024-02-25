@@ -37,13 +37,15 @@ async function generateOasSchema() {
     return oasSchema;
 }
 async function generate404() {
-    await (0, files_1.writeJson)(`${paths_1.PATHS.api}/404/index.json`, {
+    const json = {
         error: {
             code: "404",
             message: "Not Found",
             description: "The requested resource could not be found.",
         },
-    });
+    };
+    await (0, files_1.writeJson)(`${paths_1.PATHS.api}/404/index.json`, json);
+    await (0, files_1.writeJson)(`${paths_1.PATHS.api}/404.json`, json);
 }
 (0, job_1.job)("API Job", async () => {
     // TODO this could already be done during data collection, not requiring a post-processing step
