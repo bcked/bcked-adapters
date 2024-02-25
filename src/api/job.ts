@@ -51,7 +51,6 @@ async function generate404() {
         },
     };
     await writeJson(`${PATHS.api}/404/index.json`, json);
-    await writeJson(`${PATHS.api}/404.json`, json);
 }
 
 job("API Job", async () => {
