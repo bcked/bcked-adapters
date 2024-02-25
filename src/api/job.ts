@@ -64,13 +64,16 @@ job("API Job", async () => {
 
     await Promise.all([compile(PATHS.assets, "precompile_collateralization_ratio.ts")]);
 
-    await Promise.all([executeInWorker(path.resolve(WORKERS_PATH, "precompile_global_graph.ts"))]);
+    await Promise.all([
+        executeInWorker(path.resolve(WORKERS_PATH, "precompile_collateralization_graph.ts")),
+    ]);
 
     await Promise.all([
         INDEX_RESOURCES.index(),
         compile(PATHS.entities, "compile_entity.ts", ENTITY_RESOURCES),
         compile(PATHS.systems, "compile_system.ts", SYSTEM_RESOURCES),
         compile(PATHS.assets, "compile_asset.ts", ASSET_RESOURCES),
+        executeInWorker(path.resolve(WORKERS_PATH, "compile_graph.ts")),
         generateOasSchema(),
         generate404(),
     ]);

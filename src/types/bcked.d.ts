@@ -158,6 +158,12 @@ declare namespace bcked {
             ratio: number;
         };
 
+        type Graph = {
+            timestamp: primitive.ISODateTimeString;
+            graph: graph.Graph;
+            stats: graph.Stats;
+        };
+
         interface Adapter {
             getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;
             getPrice(lastRecorded: Price | null): Promise<Price[]>;

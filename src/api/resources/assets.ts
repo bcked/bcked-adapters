@@ -137,6 +137,127 @@ export class Asset extends JsonResources {
             assets: ids.map((id) => ({
                 $ref: `/assets/${id}`,
             })),
+            "collateralization-graph": {
+                $ref: `/assets/collateralization-graph`,
+            },
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/collateralization-graph",
+        summary: "Get collateralization graph",
+        description: "Get the global collateralization graph of all assets",
+        type: "CollateralizationGraph",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationGraphHistory<T extends primitive.Timestamped>(
+        latestTimestamp: primitive.ISODateTimeString | undefined,
+        stats: Stats<T> | undefined,
+        years: string[]
+    ) {
+        return historyResource("/assets/collateralization-graph", latestTimestamp, stats, years);
+    }
+
+    @JsonResources.register({
+        path: "/assets/collateralization-graph/{year}",
+        summary: "Get collateralization graph for a specific year",
+        description: "Get the collateralization graph of all assets for a specific year",
+        type: "CollateralizationGraph",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationGraphYear<T extends primitive.Timestamped>(
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        months: string[]
+    ) {
+        return yearResource("/assets/collateralization-graph", stats, year, months);
+    }
+
+    @JsonResources.register({
+        path: "/assets/collateralization-graph/{year}/{month}",
+        summary: "Get collateralization graph for a specific month",
+        description: "Get the collateralization graph of all assets for a specific month",
+        type: "CollateralizationGraph",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationGraphMonth<T extends primitive.Timestamped>(
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        month: string | undefined,
+        days: string[]
+    ) {
+        return monthResource("/assets/collateralization-graph", stats, year, month, days);
+    }
+
+    @JsonResources.register({
+        path: "/assets/collateralization-graph/{year}/{month}/{day}",
+        summary: "Get collateralization graph for a specific day",
+        description: "Get the collateralization graph of all assets for a specific day",
+        type: "CollateralizationGraph",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationGraphDay<T extends primitive.Timestamped>(
+        stats: Stats<T> | undefined,
+        year: string | undefined,
+        month: string | undefined,
+        day: string | undefined,
+        hours: string[]
+    ) {
+        return dayResource("/assets/collateralization-graph", stats, year, month, day, hours);
+    }
+
+    @JsonResources.register({
+        path: "/assets/collateralization-graph/{year}/{month}/{day}/{hour}",
+        summary: "Get collateralization graph for a specific hour",
+        description: "Get the collateralization graph of all assets for a specific hour",
+        type: "CollateralizationGraph",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationGraphHour<T extends primitive.Timestamped & bcked.asset.Graph>(
+        stats: Stats<T> | undefined
+    ) {
+        if (!stats || !stats.min || !stats.max || !stats.median) return;
+
+        return {
+            ...hourBaseResource(`/assets/collateralization-graph`, stats.median.timestamp),
+            graph: {
+                nodes: stats.median.graph.nodes.map((node) => ({
+                    id: node.id,
+                    data: {
+                        asset: {
+                            $ref: `/assets/${node.id}`,
+                        },
+                        "collateralization-ratio": node.data
+                            ? {
+                                  $ref: setDateParts(
+                                      `/assets/${node.id}/collateralization-ratio/{year}/{month}/{day}/{hour}`,
+                                      node.data.timestamp
+                                  ),
+                              }
+                            : undefined,
+                        value: node.data
+                            ? {
+                                  "rwa:USD": node.data.value,
+                              }
+                            : undefined,
+                    },
+                })),
+                links: stats.median.graph.links.map((link) => ({
+                    fromId: link.fromId,
+                    toId: link.toId,
+                    data: {
+                        value: {
+                            "rwa:USD": link.data.value,
+                        },
+                    },
+                })),
+            },
+            stats: stats.median.stats,
         };
     }
 
@@ -161,10 +282,10 @@ export class Asset extends JsonResources {
                 $ref: `/assets/${id}/price`,
             },
             supply: {
-                $ref: `/assets/{id}/supply`,
+                $ref: `/assets/${id}/supply`,
             },
             "market-cap": {
-                $ref: `/assets/{id}/market-cap`,
+                $ref: `/assets/${id}/market-cap`,
             },
             "underlying-assets": {
                 $ref: `/assets/${id}/underlying-assets`,

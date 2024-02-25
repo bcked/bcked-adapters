@@ -10,7 +10,7 @@ declare namespace graph {
 
     type Node = {
         id: derived.AssetId;
-        data: NodeData;
+        data?: NodeData;
     };
 
     type Link = {
@@ -22,5 +22,17 @@ declare namespace graph {
     type Graph = {
         nodes: Node[];
         links: Link[];
+    };
+
+    type Stats = {
+        numNodes: number;
+        numLinks: number;
+        averageDegree: number;
+        numLeaves: number;
+        numRoots: number;
+        numIsolated: number;
+        rootCollateralization: number;
+        leaveCollateralization: number;
+        totalCollateralization: number;
     };
 }

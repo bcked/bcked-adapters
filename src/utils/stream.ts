@@ -2,7 +2,7 @@ import _, { PropertyPath } from "lodash";
 import { ReservoirSampler } from "./array";
 import { medianBy } from "./math";
 
-export class StreamMedian<TObject extends object, TKey extends keyof TObject> {
+export class StreamMedian<TObject extends object, TKey extends keyof TObject | PropertyPath> {
     private sampler: ReservoirSampler<TObject>;
 
     constructor(private path: TKey | PropertyPath, sampleSize: number) {
@@ -18,7 +18,7 @@ export class StreamMedian<TObject extends object, TKey extends keyof TObject> {
     }
 }
 
-export class StreamMin<TObject extends object, TKey extends keyof TObject> {
+export class StreamMin<TObject extends object, TKey extends keyof TObject | PropertyPath> {
     private value: TObject | null;
 
     constructor(private path: TKey | PropertyPath) {
@@ -36,7 +36,7 @@ export class StreamMin<TObject extends object, TKey extends keyof TObject> {
     }
 }
 
-export class StreamMax<TObject extends object, TKey extends keyof TObject> {
+export class StreamMax<TObject extends object, TKey extends keyof TObject | PropertyPath> {
     private value: TObject | null;
 
     constructor(private path: TKey | PropertyPath) {
@@ -60,7 +60,7 @@ export interface Stats<TObject extends object> {
     max: TObject | null;
 }
 
-export class StreamStats<TObject extends object, TKey extends keyof TObject> {
+export class StreamStats<TObject extends object, TKey extends keyof TObject | PropertyPath> {
     private min: StreamMin<TObject, TKey>;
     private median: StreamMedian<TObject, TKey>;
     private max: StreamMax<TObject, TKey>;

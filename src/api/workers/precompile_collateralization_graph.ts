@@ -66,7 +66,7 @@ function initializeCollateralizationLookups(assetIds: bcked.asset.Id[]) {
     return collateralizationLookups;
 }
 
-function computeMetrics(graph: Graph<graph.NodeData, graph.LinkData>) {
+function computeStats(graph: Graph<graph.NodeData, graph.LinkData>): graph.Stats {
     const numNodes = graph.getNodeCount();
     const numLinks = graph.getLinkCount();
     const averageDegree = numLinks / numNodes;
@@ -136,15 +136,15 @@ async function* createGraphs(window: number = hoursToMilliseconds(12)): AsyncIte
 
         if (graph.getNodesCount() === 0 || graph.getLinksCount() === 0) continue;
 
-        const metrics = computeMetrics(graph);
+        const stats = computeStats(graph);
 
-        yield { timestamp: toISOString(timestamp), graph: toJson(graph), metrics };
+        yield { timestamp: toISOString(timestamp), graph: toJson(graph), stats };
     }
 }
 
 parentPort?.on("message", async () => {
     console.log(`Precompiling global graph`);
-    const filePath = path.join(PATHS.graph, PATHS.records, "global_graph.csv");
+    const filePath = path.join(PATHS.graph, PATHS.records, "collateralization_graph.csv");
 
     try {
         // Delete file if it already exists

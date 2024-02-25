@@ -1,49 +1,47 @@
+import { parentPort } from "worker_threads";
+import { PATHS } from "../../paths";
+import { sendErrorReport } from "../../watcher/bot";
+
 import { existsSync } from "fs";
 import { PropertyPath } from "lodash";
 import path from "path";
-import { parentPort } from "worker_threads";
-import { PATHS } from "../../paths";
 import { readCSV } from "../../utils/csv";
 import { Stats, StreamStats } from "../../utils/stream";
 import { getDateParts } from "../../utils/time";
-import { sendErrorReport } from "../../watcher/bot";
 import { ASSET_RESOURCES } from "../resources/assets";
-import { compileDetails, compileIcons } from "../utils/compile";
 
-async function compileHistory<TObject extends primitive.Timestamped, TKey extends keyof TObject>(
+async function compileHistory<
+    TObject extends primitive.Timestamped,
+    TKey extends keyof TObject | PropertyPath
+>(
     csvName: string,
-    id: bcked.asset.Id,
-    key: TKey | PropertyPath,
+    key: TKey,
     createHistoryResource: (
-        id: bcked.entity.Id,
         latestTimestamp: primitive.ISODateTimeString | undefined,
         stats: Stats<TObject> | undefined,
         years: string[]
     ) => Promise<any>,
     createYearResource: (
-        id: bcked.entity.Id,
         stats: Stats<TObject> | undefined,
         year: string | undefined,
         months: string[]
     ) => Promise<any>,
     createMonthResource: (
-        id: bcked.entity.Id,
         stats: Stats<TObject> | undefined,
         year: string | undefined,
         month: string | undefined,
         days: string[]
     ) => Promise<any>,
     createDayResource: (
-        id: bcked.entity.Id,
         stats: Stats<TObject> | undefined,
         year: string | undefined,
         month: string | undefined,
         day: string | undefined,
         hours: string[]
     ) => Promise<any>,
-    createHourResource: (id: bcked.asset.Id, stats: Stats<TObject> | undefined) => Promise<any>
+    createHourResource: (stats: Stats<TObject> | undefined) => Promise<any>
 ) {
-    const csvPath = path.join(PATHS.assets, id, PATHS.records, csvName);
+    const csvPath = path.join(PATHS.graph, PATHS.records, csvName);
 
     if (!existsSync(csvPath)) return;
 
@@ -60,14 +58,13 @@ async function compileHistory<TObject extends primitive.Timestamped, TKey extend
     let historyObject: TObject | undefined;
 
     async function addHourToDay(hour: string) {
-        await createHourResource(id, hoursStats?.get());
+        await createHourResource(hoursStats?.get());
         hoursOfDay.push(hour);
         hoursStats = new StreamStats(key, 100);
     }
 
     async function addDayToMonth(day: string, hour: string) {
         await createDayResource(
-            id,
             daysStats?.get(),
             yearsOfHistory.at(-1),
             monthsOfYear.at(-1),
@@ -82,7 +79,6 @@ async function compileHistory<TObject extends primitive.Timestamped, TKey extend
 
     async function addMonthToYear(month: string, day: string, hour: string) {
         await createMonthResource(
-            id,
             monthsStats?.get(),
             yearsOfHistory.at(-1),
             monthsOfYear.at(-1),
@@ -95,7 +91,7 @@ async function compileHistory<TObject extends primitive.Timestamped, TKey extend
     }
 
     async function addYearToHistory(year: string, month: string, day: string, hour: string) {
-        await createYearResource(id, yearsStats?.get(), yearsOfHistory.at(-1), monthsOfYear);
+        await createYearResource(yearsStats?.get(), yearsOfHistory.at(-1), monthsOfYear);
         await addMonthToYear(month, day, hour);
         monthsOfYear = [month];
         yearsOfHistory.push(year);
@@ -130,74 +126,32 @@ async function compileHistory<TObject extends primitive.Timestamped, TKey extend
 
     if (!yearsOfHistory.length) return;
 
-    await createHistoryResource(id, historyObject?.timestamp, historyStats.get(), yearsOfHistory);
+    await createHistoryResource(historyObject?.timestamp, historyStats.get(), yearsOfHistory);
     // Finalize by storing last year, month, day, hour
     await addYearToHistory("N/A", "N/A", "N/A", "N/A");
 }
 
-parentPort?.on("message", async (id: bcked.asset.Id) => {
-    console.log(`Compile asset ${id}`);
+parentPort?.on("message", async () => {
+    console.log(`Compile Global Graph`);
+
     try {
         await Promise.all([
-            ASSET_RESOURCES.asset(id),
-            compileDetails(ASSET_RESOURCES, PATHS.assets, id),
-            compileIcons(ASSET_RESOURCES, PATHS.assets, id),
-            compileHistory<bcked.asset.Price, "usd">(
-                "price.csv",
-                id,
-                "usd",
-                ASSET_RESOURCES.priceHistory,
-                ASSET_RESOURCES.priceYear,
-                ASSET_RESOURCES.priceMonth,
-                ASSET_RESOURCES.priceDay,
-                ASSET_RESOURCES.priceHour
-            ),
-            compileHistory<bcked.asset.SupplyAmount, "amount">(
-                "supply_amount.csv",
-                id,
-                "amount",
-                ASSET_RESOURCES.supplyHistory,
-                ASSET_RESOURCES.supplyYear,
-                ASSET_RESOURCES.supplyMonth,
-                ASSET_RESOURCES.supplyDay,
-                ASSET_RESOURCES.supplyHour
-            ),
-            compileHistory<bcked.asset.MarketCap, "usd">(
-                "market_cap.csv",
-                id,
-                "usd",
-                ASSET_RESOURCES.marketCapHistory,
-                ASSET_RESOURCES.marketCapYear,
-                ASSET_RESOURCES.marketCapMonth,
-                ASSET_RESOURCES.marketCapDay,
-                ASSET_RESOURCES.marketCapHour
-            ),
-            compileHistory<bcked.asset.Relationships, "usd">(
-                "underlying_assets.csv",
-                id,
-                "usd",
-                ASSET_RESOURCES.underlyingAssetsHistory,
-                ASSET_RESOURCES.underlyingAssetsYear,
-                ASSET_RESOURCES.underlyingAssetsMonth,
-                ASSET_RESOURCES.underlyingAssetsDay,
-                ASSET_RESOURCES.underlyingAssetsHour
-            ),
-            compileHistory<bcked.asset.Collateralization, "ratio">(
-                "collateralization_ratio.csv",
-                id,
-                "ratio",
-                ASSET_RESOURCES.collateralizationRatioHistory,
-                ASSET_RESOURCES.collateralizationRatioYear,
-                ASSET_RESOURCES.collateralizationRatioMonth,
-                ASSET_RESOURCES.collateralizationRatioDay,
-                ASSET_RESOURCES.collateralizationRatioHour
+            compileHistory<bcked.asset.Graph, "stats.leaveCollateralization">(
+                "collateralization_graph.csv",
+                "stats.leaveCollateralization",
+                ASSET_RESOURCES.collateralizationGraphHistory,
+                ASSET_RESOURCES.collateralizationGraphYear,
+                ASSET_RESOURCES.collateralizationGraphMonth,
+                ASSET_RESOURCES.collateralizationGraphDay,
+                ASSET_RESOURCES.collateralizationGraphHour
             ),
         ]);
 
         parentPort?.postMessage(null);
     } catch (error) {
-        console.error(`/${PATHS.assets}/${id}`, error);
-        await sendErrorReport(`/${PATHS.assets}/${id}`, error);
+        const step = `/${PATHS.assets}/collateralization-graph`;
+        console.error(step, error);
+        await sendErrorReport(step, error);
         parentPort?.postMessage(null);
     }
 });
