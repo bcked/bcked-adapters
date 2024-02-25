@@ -23,11 +23,22 @@ async function createGraphForTimestamp(timestamp, collateralizationLookups, wind
         const collateralization = await lookup.getClosest(timestamp, window);
         if (!collateralization)
             return;
+        // @ts-ignore
+        if (assetId === "") {
+            throw new Error("Asset ID is empty");
+        }
+        if (!collateralization.collateral.usd) {
+            throw new Error(`Asset no collateral usd: ${assetId}`);
+        }
         graph.addNode(assetId, {
             timestamp: collateralization.timestamp,
             value: collateralization.collateral.usd,
         });
         for (const [collateralAssetId, value] of Object.entries(collateralization.collateral.breakdown)) {
+            // @ts-ignore
+            if (assetId === "" || collateralAssetId === "") {
+                throw new Error(`Asset ID empty: ${assetId} - ${collateralAssetId}`);
+            }
             graph.addLink(assetId, collateralAssetId, { value: value.usd });
         }
     }));
