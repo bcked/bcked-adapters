@@ -226,36 +226,40 @@ export class Asset extends JsonResources {
         return {
             ...hourBaseResource(`/assets/collateralization-graph`, stats.median.timestamp),
             graph: {
-                nodes: stats.median.graph.nodes.map((node) => ({
-                    id: node.id,
-                    data: {
-                        asset: {
-                            $ref: `/assets/${node.id}`,
+                nodes: stats.median.graph.nodes
+                    .filter((node) => node.id) // TODO Somehow there are nodes without ID
+                    .map((node) => ({
+                        id: node.id,
+                        data: {
+                            asset: {
+                                $ref: `/assets/${node.id}`,
+                            },
+                            "collateralization-ratio": node?.data?.value
+                                ? {
+                                      $ref: setDateParts(
+                                          `/assets/${node.id}/collateralization-ratio/{year}/{month}/{day}/{hour}`,
+                                          node.data.timestamp
+                                      ),
+                                  }
+                                : undefined,
+                            value: node?.data?.value
+                                ? {
+                                      "rwa:USD": node.data.value,
+                                  }
+                                : undefined,
                         },
-                        "collateralization-ratio": node.data
-                            ? {
-                                  $ref: setDateParts(
-                                      `/assets/${node.id}/collateralization-ratio/{year}/{month}/{day}/{hour}`,
-                                      node.data.timestamp
-                                  ),
-                              }
-                            : undefined,
-                        value: node.data
-                            ? {
-                                  "rwa:USD": node.data.value,
-                              }
-                            : undefined,
-                    },
-                })),
-                links: stats.median.graph.links.map((link) => ({
-                    fromId: link.fromId,
-                    toId: link.toId,
-                    data: {
-                        value: {
-                            "rwa:USD": link.data.value,
+                    })),
+                links: stats.median.graph.links
+                    .filter((link) => link.fromId && link.toId) // TODO Somehow there are links without ID
+                    .map((link) => ({
+                        fromId: link.fromId,
+                        toId: link.toId,
+                        data: {
+                            value: {
+                                "rwa:USD": link.data.value,
+                            },
                         },
-                    },
-                })),
+                    })),
             },
             stats: stats.median.stats,
         };
