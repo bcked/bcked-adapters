@@ -36,10 +36,10 @@ nvm list-remote --lts
 
 You can find some information about the major versions and their long term support on the [release page of Node.js](https://nodejs.org/en/about/releases/).
 
-You can install the latest v16 version with long term support with this command:
+You can install the latest v20 version with long term support with this command:
 
 ```shell
-nvm install v16 --lts
+nvm install v20 --lts
 ```
 
 Switch to the project folder and install the dependencies.
