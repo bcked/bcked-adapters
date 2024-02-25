@@ -17,11 +17,11 @@ jobs:
         name: Crawler Execution
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   ref: records
             - name: Use Node.js
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: "20.x"
                   cache: "npm"
@@ -37,7 +37,7 @@ jobs:
                   BCKED_WATCHER_BOT_TOKEN: ${{ secrets.BCKED_WATCHER_BOT_TOKEN }}
               run: node ./src/crawler/job.js
             - name: Commit Results on records Branch
-              uses: stefanzweifel/git-auto-commit-action@v4
+              uses: stefanzweifel/git-auto-commit-action@v5
               with:
                   commit_message: Update data
                   commit_user_name: GitHub Action

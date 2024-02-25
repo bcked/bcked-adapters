@@ -27,16 +27,16 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   ref: records
             - name: Use Node.js
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: "20.x"
                   cache: "npm"
             - name: Setup Pages
-              uses: actions/configure-pages@v3
+              uses: actions/configure-pages@v4
             - name: Install Dependencies
               run: npm ci
             - name: Execute API Job
@@ -46,7 +46,7 @@ jobs:
             - name: Copy API Documentation to API Directory
               run: cp -r docs api
             - name: Upload Artifact
-              uses: actions/upload-pages-artifact@v2
+              uses: actions/upload-pages-artifact@v3
               with:
                   # Upload artifacts of the api directory
                   path: "api"
@@ -64,4 +64,4 @@ jobs:
         steps:
             - name: Deploy to GitHub Pages
               id: deployment
-              uses: actions/deploy-pages@v2
+              uses: actions/deploy-pages@v4
