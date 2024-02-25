@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { unlink } from "node:fs/promises";
 import path from "node:path";
 import readline from "readline";
 import { getFirstElement } from "./stream";
@@ -18,7 +19,7 @@ async function readPreviousChar(
             0,
             1,
             stat.size - 1 - currentCharacterCount,
-            (err, bytesRead, buffer) => {
+            (err, _, buffer) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -128,5 +129,13 @@ export async function readJson<T>(pathToFile: string): Promise<T | null> {
     } catch {
         // Return null, in case the file doesn't exist.
         return null;
+    }
+}
+
+export async function remove(filePath: string) {
+    try {
+        await unlink(filePath);
+    } catch (error) {
+        console.debug(`File ${filePath} does not exist. Skipping deletion.`);
     }
 }

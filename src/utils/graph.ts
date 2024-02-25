@@ -1,5 +1,5 @@
 import { sortBy } from "lodash";
-import { Graph, Link, Node } from "ngraph.graph";
+import { type Graph, type Link, type Node } from "ngraph.graph";
 import _toJson from "ngraph.tojson";
 
 export function getLinks<nodeData, linkData>(

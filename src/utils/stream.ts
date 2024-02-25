@@ -1,11 +1,14 @@
-import _, { PropertyPath } from "lodash";
+import _, { type PropertyPath } from "lodash";
 import { ReservoirSampler } from "./array";
 import { medianBy } from "./math";
 
 export class StreamMedian<TObject extends object, TKey extends keyof TObject | PropertyPath> {
     private sampler: ReservoirSampler<TObject>;
 
-    constructor(private path: TKey | PropertyPath, sampleSize: number) {
+    constructor(
+        private path: TKey | PropertyPath,
+        sampleSize: number
+    ) {
         this.sampler = new ReservoirSampler(sampleSize);
     }
 

@@ -1,10 +1,10 @@
 import { existsSync } from "fs";
-import { PropertyPath } from "lodash";
+import type { PropertyPath } from "lodash";
 import path from "path";
 import { parentPort } from "worker_threads";
 import { PATHS } from "../../paths";
 import { readCSV } from "../../utils/csv";
-import { Stats, StreamStats } from "../../utils/stream";
+import { StreamStats, type Stats } from "../../utils/stream";
 import { getDateParts } from "../../utils/time";
 import { sendErrorReport } from "../../watcher/bot";
 import { ASSET_RESOURCES } from "../resources/assets";
@@ -49,7 +49,7 @@ async function compileHistory<TObject extends primitive.Timestamped, TKey extend
 
     const historyStats: StreamStats<TObject, TKey> = new StreamStats(key, 100);
 
-    let yearsOfHistory: string[] = [];
+    const yearsOfHistory: string[] = [];
     let yearsStats: StreamStats<TObject, TKey> | undefined;
     let monthsOfYear: string[] = [];
     let monthsStats: StreamStats<TObject, TKey> | undefined;

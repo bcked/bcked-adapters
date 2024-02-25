@@ -3,9 +3,9 @@ import { PATHS } from "../../paths";
 import { sendErrorReport } from "../../watcher/bot";
 
 import { existsSync } from "fs";
-import { unlink } from "fs/promises";
 import path from "path";
 import { readCSV, writeToCsv } from "../../utils/csv";
+import { remove } from "../../utils/files";
 
 const ASSETS_PATH = "assets";
 
@@ -40,7 +40,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
-        await unlink(filePath).catch(() => {});
+        await remove(filePath);
 
         const entries = computeSupplyFallback(id);
         await writeToCsv(filePath, entries, "timestamp");

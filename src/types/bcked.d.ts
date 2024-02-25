@@ -92,7 +92,7 @@ declare namespace bcked {
 
         interface Details {
             name: Name;
-            symbol: Symbol;
+            symbol: bcked.asset.Symbol;
             identifier: Identifier;
             assetClasses: Class[];
             linkedEntities: Partial<Record<entity.Role, entity.Id>>;

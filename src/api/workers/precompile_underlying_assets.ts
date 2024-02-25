@@ -4,10 +4,10 @@ import { sendErrorReport } from "../../watcher/bot";
 
 import { hoursToMilliseconds } from "date-fns";
 import { existsSync } from "fs";
-import { unlink } from "fs/promises";
 import _ from "lodash";
 import path from "path";
 import { ConsecutiveLookup, readCSV, writeToCsv } from "../../utils/csv";
+import { remove } from "../../utils/files";
 import { round } from "../../utils/math";
 
 async function lookupUnderlyingPrice(
@@ -85,7 +85,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
-        await unlink(filePath).catch(() => {});
+        await remove(filePath);
 
         const entries = match(id);
         await writeToCsv(filePath, entries, "timestamp");

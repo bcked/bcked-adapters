@@ -1,4 +1,4 @@
-import _, { List, ListIteratee, Many, PropertyPath } from "lodash";
+import _, { type List, type ListIteratee, type Many, type PropertyPath } from "lodash";
 
 export function statsBy<T>(
     collection: List<T> | null | undefined,
@@ -137,7 +137,7 @@ export function inverse(inputList: number[]): number[] {
     indexedList.sort((a, b) => a.value - b.value);
 
     // Write back to index in inverted index order.
-    let result = Array(inputList.length);
+    const result = Array(inputList.length);
     for (const [index, item] of indexedList.entries()) {
         result[indexedList[indexedList.length - 1 - index]!.index] = item.value;
     }

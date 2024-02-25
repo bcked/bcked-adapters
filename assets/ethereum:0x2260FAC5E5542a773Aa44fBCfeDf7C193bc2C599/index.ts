@@ -75,9 +75,8 @@ export default class Adapter implements bcked.asset.Adapter {
         // Load and update custodian list from: https://wbtc.network/api/chain/eth/token/wbtc/addresses?type=custodial
         // Query custodian addresses for holdings via Blockstream API: https://github.com/Blockstream/esplora/blob/master/API.md
 
-        const response = await this.wbtcApi.fetchJson<wbtcApiTokenResponse>(
-            "/chain/eth/token/wbtc"
-        );
+        const response =
+            await this.wbtcApi.fetchJson<wbtcApiTokenResponse>("/chain/eth/token/wbtc");
         // Convert holdings from satoshis to bitcoins
         const holdings = parseFloat(utils.formatUnits(response.holdings, 8));
         return [

@@ -1,5 +1,5 @@
 import { parse, stringify } from "csv";
-import { CastingContext } from "csv-parse";
+import { type CastingContext } from "csv-parse";
 import { parse as parseSync } from "csv/sync";
 import { flatten, unflatten } from "flat"; // Serialize nested data structures
 
@@ -87,7 +87,7 @@ async function readHeadersFromStream<T>(
 
     const rowFlattened = flatten<object, object>(value);
     // Ensure header consistency
-    let header = Object.keys(rowFlattened);
+    const header = Object.keys(rowFlattened);
     return [concat(value, _rows), header];
 }
 
@@ -119,13 +119,13 @@ export async function rewriteCSV<T>(
 }
 
 export async function writeToCsv<T>(pathToFile: string, rows: AsyncIterable<T>, index?: string) {
-    let [_rows, header] = await readHeadersFromStream(rows);
-    if (!_rows || !header) return;
+    const [_rows, _header] = await readHeadersFromStream(rows);
+    if (!_rows || !_header) return;
 
     // By default, take first key as index
-    const headerIndex = index ?? header[0]!;
+    const headerIndex = index ?? _header[0]!;
 
-    header = sortWithoutIndex(header, headerIndex);
+    const header = sortWithoutIndex(_header, headerIndex);
 
     await appendCsv(pathToFile, _rows, header);
 }

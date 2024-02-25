@@ -4,11 +4,12 @@ import { sendErrorReport } from "../../watcher/bot";
 
 import { hoursToMilliseconds } from "date-fns";
 import { existsSync } from "fs";
-import { readdir, unlink } from "fs/promises";
-import createGraph, { Graph } from "ngraph.graph";
+import { readdir } from "fs/promises";
+import createGraph, { type Graph } from "ngraph.graph";
 
 import path from "path";
 import { ConsecutiveLookup, writeToCsv } from "../../utils/csv";
+import { remove } from "../../utils/files";
 import { getIncomingLinks, getOutgoingLinks, toJson } from "../../utils/graph";
 import { round } from "../../utils/math";
 import { toISOString } from "../../utils/string_formatting";
@@ -33,15 +34,6 @@ async function createGraphForTimestamp(
 
             if (!collateralization) return;
 
-            // @ts-ignore
-            if (assetId === "") {
-                throw new Error("Asset ID is empty");
-            }
-
-            if (!collateralization.collateral.usd) {
-                throw new Error(`Asset no collateral usd: ${assetId}`);
-            }
-
             graph.addNode(assetId, {
                 timestamp: collateralization.timestamp,
                 value: collateralization.collateral.usd,
@@ -50,11 +42,6 @@ async function createGraphForTimestamp(
             for (const [collateralAssetId, value] of Object.entries(
                 collateralization.collateral.breakdown
             )) {
-                // @ts-ignore
-                if (assetId === "" || collateralAssetId === "") {
-                    throw new Error(`Asset ID empty: ${assetId} - ${collateralAssetId}`);
-                }
-
                 graph.addLink(assetId, collateralAssetId, { value: value.usd });
             }
         })
@@ -163,7 +150,7 @@ parentPort?.on("message", async () => {
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
-        await unlink(filePath).catch(() => {});
+        await remove(filePath);
 
         const entries = createGraphs();
         await writeToCsv(filePath, entries, "timestamp");

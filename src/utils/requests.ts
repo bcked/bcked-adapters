@@ -1,7 +1,7 @@
 import type { AxiosInstance } from "axios";
 import Axios from "axios";
 import axiosRetry from "axios-retry";
-import { Options } from "csv-parse";
+import { type Options } from "csv-parse";
 import { parse as parseSync } from "csv/sync";
 import { groupWhile } from "./array";
 

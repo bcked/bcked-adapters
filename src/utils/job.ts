@@ -8,7 +8,11 @@ export async function job(name: string, job: () => Promise<void>) {
         process.env.DEV_MODE = "true";
     }
 
+    try {
     await job();
+    } catch (error) {
+        console.error(`Job "${name}" failed:`, error);
+    }
 
     console.timeEnd(name);
 }

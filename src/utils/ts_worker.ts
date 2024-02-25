@@ -1,4 +1,4 @@
-import { Worker as JsWorker, WorkerOptions } from "worker_threads";
+import { Worker as JsWorker, type WorkerOptions } from "worker_threads";
 
 export function adaptFileExt(filename: string): string {
     return process.env.DEV_MODE ? filename : filename.replace(".ts", ".js");

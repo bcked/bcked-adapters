@@ -103,15 +103,15 @@ export abstract class JsonResources {
     /**
      * Decorator for registering a resource.
      */
-    static register(params: RegistrationParams) {
-        return function (target: Function, context: ClassMethodDecoratorContext<JsonResources>) {
+    static register<Fn extends (this: any, ...args: any[]) => any>(params: RegistrationParams) {
+        return function (target: Fn, context: ClassMethodDecoratorContext<JsonResources>) {
             // Register the resource schema when the context is initialized.
             context.addInitializer(function () {
                 this.register(params);
             });
 
             // Extend the resource methods with a function that writes the resource to a file.
-            return async function (this: any, ...args: any[]) {
+            return async function (this: any, ...args: any[]): Promise<any> {
                 const resource = await target.call(this, ...args);
                 if (!resource) return;
                 const filePath = path.join(PATHS.api, resource.$id, "index.json");

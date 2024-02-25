@@ -1,4 +1,4 @@
-import { Stats } from "../../utils/stream";
+import type { Stats } from "../../utils/stream";
 import { setDateParts } from "../../utils/time";
 import { icons } from "../utils/icons";
 import { JsonResources } from "../utils/resources";
