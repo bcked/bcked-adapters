@@ -193,25 +193,29 @@ let Asset = exports.Asset = (() => {
                 return {
                     ...hourBaseResource(`/assets/collateralization-graph`, stats.median.timestamp),
                     graph: {
-                        nodes: stats.median.graph.nodes.map((node) => ({
+                        nodes: stats.median.graph.nodes
+                            .filter((node) => node.id) // TODO Somehow there are nodes without ID
+                            .map((node) => ({
                             id: node.id,
                             data: {
                                 asset: {
                                     $ref: `/assets/${node.id}`,
                                 },
-                                "collateralization-ratio": node.data
+                                "collateralization-ratio": node?.data?.value
                                     ? {
                                         $ref: (0, time_1.setDateParts)(`/assets/${node.id}/collateralization-ratio/{year}/{month}/{day}/{hour}`, node.data.timestamp),
                                     }
                                     : undefined,
-                                value: node.data
+                                value: node?.data?.value
                                     ? {
                                         "rwa:USD": node.data.value,
                                     }
                                     : undefined,
                             },
                         })),
-                        links: stats.median.graph.links.map((link) => ({
+                        links: stats.median.graph.links
+                            .filter((link) => link.fromId && link.toId) // TODO Somehow there are links without ID
+                            .map((link) => ({
                             fromId: link.fromId,
                             toId: link.toId,
                             data: {
