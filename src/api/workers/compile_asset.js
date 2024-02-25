@@ -14,7 +14,7 @@ const bot_1 = require("../../watcher/bot");
 const assets_1 = require("../resources/assets");
 const compile_1 = require("../utils/compile");
 async function compileHistory(csvName, id, key, createHistoryResource, createYearResource, createMonthResource, createDayResource, createHourResource) {
-    const csvPath = path_1.default.join(paths_1.PATHS.assets, id, "records", csvName);
+    const csvPath = path_1.default.join(paths_1.PATHS.assets, id, paths_1.PATHS.records, csvName);
     if (!(0, fs_1.existsSync)(csvPath))
         return;
     const historyStats = new stream_1.StreamStats(key, 100);

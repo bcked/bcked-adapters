@@ -119,6 +119,11 @@ let Asset = exports.Asset = (() => {
     var _a;
     let _instanceExtraInitializers = [];
     let _index_decorators;
+    let _collateralizationGraphHistory_decorators;
+    let _collateralizationGraphYear_decorators;
+    let _collateralizationGraphMonth_decorators;
+    let _collateralizationGraphDay_decorators;
+    let _collateralizationGraphHour_decorators;
     let _asset_decorators;
     let _details_decorators;
     let _icons_decorators;
@@ -165,6 +170,58 @@ let Asset = exports.Asset = (() => {
                     assets: ids.map((id) => ({
                         $ref: `/assets/${id}`,
                     })),
+                    "collateralization-graph": {
+                        $ref: `/assets/collateralization-graph`,
+                    },
+                };
+            }
+            async collateralizationGraphHistory(latestTimestamp, stats, years) {
+                return historyResource("/assets/collateralization-graph", latestTimestamp, stats, years);
+            }
+            async collateralizationGraphYear(stats, year, months) {
+                return yearResource("/assets/collateralization-graph", stats, year, months);
+            }
+            async collateralizationGraphMonth(stats, year, month, days) {
+                return monthResource("/assets/collateralization-graph", stats, year, month, days);
+            }
+            async collateralizationGraphDay(stats, year, month, day, hours) {
+                return dayResource("/assets/collateralization-graph", stats, year, month, day, hours);
+            }
+            async collateralizationGraphHour(stats) {
+                if (!stats || !stats.min || !stats.max || !stats.median)
+                    return;
+                return {
+                    ...hourBaseResource(`/assets/collateralization-graph`, stats.median.timestamp),
+                    graph: {
+                        nodes: stats.median.graph.nodes.map((node) => ({
+                            id: node.id,
+                            data: {
+                                asset: {
+                                    $ref: `/assets/${node.id}`,
+                                },
+                                "collateralization-ratio": node.data
+                                    ? {
+                                        $ref: (0, time_1.setDateParts)(`/assets/${node.id}/collateralization-ratio/{year}/{month}/{day}/{hour}`, node.data.timestamp),
+                                    }
+                                    : undefined,
+                                value: node.data
+                                    ? {
+                                        "rwa:USD": node.data.value,
+                                    }
+                                    : undefined,
+                            },
+                        })),
+                        links: stats.median.graph.links.map((link) => ({
+                            fromId: link.fromId,
+                            toId: link.toId,
+                            data: {
+                                value: {
+                                    "rwa:USD": link.data.value,
+                                },
+                            },
+                        })),
+                    },
+                    stats: stats.median.stats,
                 };
             }
             async asset(id) {
@@ -180,10 +237,10 @@ let Asset = exports.Asset = (() => {
                         $ref: `/assets/${id}/price`,
                     },
                     supply: {
-                        $ref: `/assets/{id}/supply`,
+                        $ref: `/assets/${id}/supply`,
                     },
                     "market-cap": {
-                        $ref: `/assets/{id}/market-cap`,
+                        $ref: `/assets/${id}/market-cap`,
                     },
                     "underlying-assets": {
                         $ref: `/assets/${id}/underlying-assets`,
@@ -369,6 +426,46 @@ let Asset = exports.Asset = (() => {
                     summary: "Retrieve a list of assets",
                     description: "Get a list of asset IDs and references",
                     type: "Assets",
+                    // TODO write schema
+                    schema: {},
+                })];
+            _collateralizationGraphHistory_decorators = [resources_1.JsonResources.register({
+                    path: "/assets/collateralization-graph",
+                    summary: "Get collateralization graph",
+                    description: "Get the global collateralization graph of all assets",
+                    type: "CollateralizationGraph",
+                    // TODO write schema
+                    schema: {},
+                })];
+            _collateralizationGraphYear_decorators = [resources_1.JsonResources.register({
+                    path: "/assets/collateralization-graph/{year}",
+                    summary: "Get collateralization graph for a specific year",
+                    description: "Get the collateralization graph of all assets for a specific year",
+                    type: "CollateralizationGraph",
+                    // TODO write schema
+                    schema: {},
+                })];
+            _collateralizationGraphMonth_decorators = [resources_1.JsonResources.register({
+                    path: "/assets/collateralization-graph/{year}/{month}",
+                    summary: "Get collateralization graph for a specific month",
+                    description: "Get the collateralization graph of all assets for a specific month",
+                    type: "CollateralizationGraph",
+                    // TODO write schema
+                    schema: {},
+                })];
+            _collateralizationGraphDay_decorators = [resources_1.JsonResources.register({
+                    path: "/assets/collateralization-graph/{year}/{month}/{day}",
+                    summary: "Get collateralization graph for a specific day",
+                    description: "Get the collateralization graph of all assets for a specific day",
+                    type: "CollateralizationGraph",
+                    // TODO write schema
+                    schema: {},
+                })];
+            _collateralizationGraphHour_decorators = [resources_1.JsonResources.register({
+                    path: "/assets/collateralization-graph/{year}/{month}/{day}/{hour}",
+                    summary: "Get collateralization graph for a specific hour",
+                    description: "Get the collateralization graph of all assets for a specific hour",
+                    type: "CollateralizationGraph",
                     // TODO write schema
                     schema: {},
                 })];
@@ -597,6 +694,11 @@ let Asset = exports.Asset = (() => {
                     schema: {},
                 })];
             __esDecorate(_a, null, _index_decorators, { kind: "method", name: "index", static: false, private: false, access: { has: obj => "index" in obj, get: obj => obj.index } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _collateralizationGraphHistory_decorators, { kind: "method", name: "collateralizationGraphHistory", static: false, private: false, access: { has: obj => "collateralizationGraphHistory" in obj, get: obj => obj.collateralizationGraphHistory } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _collateralizationGraphYear_decorators, { kind: "method", name: "collateralizationGraphYear", static: false, private: false, access: { has: obj => "collateralizationGraphYear" in obj, get: obj => obj.collateralizationGraphYear } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _collateralizationGraphMonth_decorators, { kind: "method", name: "collateralizationGraphMonth", static: false, private: false, access: { has: obj => "collateralizationGraphMonth" in obj, get: obj => obj.collateralizationGraphMonth } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _collateralizationGraphDay_decorators, { kind: "method", name: "collateralizationGraphDay", static: false, private: false, access: { has: obj => "collateralizationGraphDay" in obj, get: obj => obj.collateralizationGraphDay } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _collateralizationGraphHour_decorators, { kind: "method", name: "collateralizationGraphHour", static: false, private: false, access: { has: obj => "collateralizationGraphHour" in obj, get: obj => obj.collateralizationGraphHour } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _asset_decorators, { kind: "method", name: "asset", static: false, private: false, access: { has: obj => "asset" in obj, get: obj => obj.asset } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _details_decorators, { kind: "method", name: "details", static: false, private: false, access: { has: obj => "details" in obj, get: obj => obj.details } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _icons_decorators, { kind: "method", name: "icons", static: false, private: false, access: { has: obj => "icons" in obj, get: obj => obj.icons } }, null, _instanceExtraInitializers);

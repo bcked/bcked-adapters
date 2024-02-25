@@ -46,7 +46,7 @@ function initializeCollateralizationLookups(assetIds) {
     }
     return collateralizationLookups;
 }
-function computeMetrics(graph) {
+function computeStats(graph) {
     const numNodes = graph.getNodeCount();
     const numLinks = graph.getLinkCount();
     const averageDegree = numLinks / numNodes;
@@ -105,13 +105,13 @@ async function* createGraphs(window = (0, date_fns_1.hoursToMilliseconds)(12)) {
         const graph = await createGraphForTimestamp(timestamp, collateralizationLookups, window);
         if (graph.getNodesCount() === 0 || graph.getLinksCount() === 0)
             continue;
-        const metrics = computeMetrics(graph);
-        yield { timestamp: (0, string_formatting_1.toISOString)(timestamp), graph: (0, graph_1.toJson)(graph), metrics };
+        const stats = computeStats(graph);
+        yield { timestamp: (0, string_formatting_1.toISOString)(timestamp), graph: (0, graph_1.toJson)(graph), stats };
     }
 }
 worker_threads_1.parentPort?.on("message", async () => {
     console.log(`Precompiling global graph`);
-    const filePath = path_1.default.join(paths_1.PATHS.graph, paths_1.PATHS.records, "global_graph.csv");
+    const filePath = path_1.default.join(paths_1.PATHS.graph, paths_1.PATHS.records, "collateralization_graph.csv");
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
@@ -127,4 +127,4 @@ worker_threads_1.parentPort?.on("message", async () => {
         worker_threads_1.parentPort?.postMessage(null);
     }
 });
-//# sourceMappingURL=precompile_global_graph.js.map
+//# sourceMappingURL=precompile_collateralization_graph.js.map

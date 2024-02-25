@@ -45,7 +45,6 @@ async function generate404() {
         },
     };
     await (0, files_1.writeJson)(`${paths_1.PATHS.api}/404/index.json`, json);
-    await (0, files_1.writeJson)(`${paths_1.PATHS.api}/404.json`, json);
 }
 (0, job_1.job)("API Job", async () => {
     // TODO this could already be done during data collection, not requiring a post-processing step
@@ -55,12 +54,15 @@ async function generate404() {
         compile(paths_1.PATHS.assets, "precompile_underlying_assets.ts"),
     ]);
     await Promise.all([compile(paths_1.PATHS.assets, "precompile_collateralization_ratio.ts")]);
-    await Promise.all([(0, worker_pool_1.executeInWorker)(node_path_1.default.resolve(WORKERS_PATH, "precompile_global_graph.ts"))]);
+    await Promise.all([
+        (0, worker_pool_1.executeInWorker)(node_path_1.default.resolve(WORKERS_PATH, "precompile_collateralization_graph.ts")),
+    ]);
     await Promise.all([
         resources_1.INDEX_RESOURCES.index(),
         compile(paths_1.PATHS.entities, "compile_entity.ts", entities_1.ENTITY_RESOURCES),
         compile(paths_1.PATHS.systems, "compile_system.ts", systems_1.SYSTEM_RESOURCES),
         compile(paths_1.PATHS.assets, "compile_asset.ts", assets_1.ASSET_RESOURCES),
+        (0, worker_pool_1.executeInWorker)(node_path_1.default.resolve(WORKERS_PATH, "compile_graph.ts")),
         generateOasSchema(),
         generate404(),
     ]);
