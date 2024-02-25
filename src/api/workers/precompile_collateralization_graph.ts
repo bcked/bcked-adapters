@@ -33,6 +33,10 @@ async function createGraphForTimestamp(
 
             if (!collateralization) return;
 
+            if (assetId === "") {
+                throw new Error("Asset ID is empty");
+            }
+
             graph.addNode(assetId, {
                 timestamp: collateralization.timestamp,
                 value: collateralization.collateral.usd,
@@ -41,6 +45,10 @@ async function createGraphForTimestamp(
             for (const [collateralAssetId, value] of Object.entries(
                 collateralization.collateral.breakdown
             )) {
+                if (assetId === "" || collateralAssetId === "") {
+                    throw new Error(`Asset ID empty: ${assetId} - ${collateralAssetId}`);
+                }
+
                 graph.addLink(assetId, collateralAssetId, { value: value.usd });
             }
         })
