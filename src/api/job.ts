@@ -43,13 +43,15 @@ async function generateOasSchema() {
 }
 
 async function generate404() {
-    await writeJson(`${PATHS.api}/404/index.json`, {
+    const json = {
         error: {
             code: "404",
             message: "Not Found",
             description: "The requested resource could not be found.",
         },
-    });
+    };
+    await writeJson(`${PATHS.api}/404/index.json`, json);
+    await writeJson(`${PATHS.api}/404.json`, json);
 }
 
 job("API Job", async () => {
