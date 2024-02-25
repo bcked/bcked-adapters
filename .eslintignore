@@ -1,5 +1,7 @@
 .DS_Store
 node_modules
+/coverage
+/docs
 /api
 /dist
 /package
