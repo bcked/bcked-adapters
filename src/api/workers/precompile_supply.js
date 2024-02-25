@@ -7,9 +7,9 @@ const worker_threads_1 = require("worker_threads");
 const paths_1 = require("../../paths");
 const bot_1 = require("../../watcher/bot");
 const fs_1 = require("fs");
-const promises_1 = require("fs/promises");
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
+const files_1 = require("../../utils/files");
 const ASSETS_PATH = "assets";
 async function* computeSupplyFallback(id) {
     const supplyCsv = path_1.default.join(ASSETS_PATH, id, "records", "supply.csv");
@@ -34,7 +34,7 @@ worker_threads_1.parentPort?.on("message", async (id) => {
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
-        await (0, promises_1.unlink)(filePath).catch(() => { });
+        await (0, files_1.remove)(filePath);
         const entries = computeSupplyFallback(id);
         await (0, csv_1.writeToCsv)(filePath, entries, "timestamp");
         worker_threads_1.parentPort?.postMessage(null);

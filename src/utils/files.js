@@ -3,15 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readJson = exports.writeJson = exports.writeBuffer = exports.ensurePath = exports.readFirstLine = exports.readLastLines = void 0;
+exports.remove = exports.readJson = exports.writeJson = exports.writeBuffer = exports.ensurePath = exports.readFirstLine = exports.readLastLines = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
+const promises_1 = require("node:fs/promises");
 const node_path_1 = __importDefault(require("node:path"));
 const readline_1 = __importDefault(require("readline"));
 const stream_1 = require("./stream");
 const NEW_LINE_CHARACTERS = ["\n"];
 async function readPreviousChar(stat, file, currentCharacterCount, encoding = "utf-8") {
     return new Promise((resolve, reject) => {
-        node_fs_1.default.read(file, Buffer.alloc(1), 0, 1, stat.size - 1 - currentCharacterCount, (err, bytesRead, buffer) => {
+        node_fs_1.default.read(file, Buffer.alloc(1), 0, 1, stat.size - 1 - currentCharacterCount, (err, _, buffer) => {
             if (err) {
                 reject(err);
             }
@@ -112,4 +113,13 @@ async function readJson(pathToFile) {
     }
 }
 exports.readJson = readJson;
+async function remove(filePath) {
+    try {
+        await (0, promises_1.unlink)(filePath);
+    }
+    catch (error) {
+        console.debug(`File ${filePath} does not exist. Skipping deletion.`);
+    }
+}
+exports.remove = remove;
 //# sourceMappingURL=files.js.map

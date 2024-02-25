@@ -12,6 +12,7 @@ const promises_1 = require("fs/promises");
 const ngraph_graph_1 = __importDefault(require("ngraph.graph"));
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
+const files_1 = require("../../utils/files");
 const graph_1 = require("../../utils/graph");
 const math_1 = require("../../utils/math");
 const string_formatting_1 = require("../../utils/string_formatting");
@@ -23,22 +24,11 @@ async function createGraphForTimestamp(timestamp, collateralizationLookups, wind
         const collateralization = await lookup.getClosest(timestamp, window);
         if (!collateralization)
             return;
-        // @ts-ignore
-        if (assetId === "") {
-            throw new Error("Asset ID is empty");
-        }
-        if (!collateralization.collateral.usd) {
-            throw new Error(`Asset no collateral usd: ${assetId}`);
-        }
         graph.addNode(assetId, {
             timestamp: collateralization.timestamp,
             value: collateralization.collateral.usd,
         });
         for (const [collateralAssetId, value] of Object.entries(collateralization.collateral.breakdown)) {
-            // @ts-ignore
-            if (assetId === "" || collateralAssetId === "") {
-                throw new Error(`Asset ID empty: ${assetId} - ${collateralAssetId}`);
-            }
             graph.addLink(assetId, collateralAssetId, { value: value.usd });
         }
     }));
@@ -126,7 +116,7 @@ worker_threads_1.parentPort?.on("message", async () => {
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
-        await (0, promises_1.unlink)(filePath).catch(() => { });
+        await (0, files_1.remove)(filePath);
         const entries = createGraphs();
         await (0, csv_1.writeToCsv)(filePath, entries, "timestamp");
         worker_threads_1.parentPort?.postMessage(null);

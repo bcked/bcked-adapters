@@ -8,7 +8,12 @@ async function job(name, job) {
     if (process[ts_node_1.REGISTER_INSTANCE]) {
         process.env.DEV_MODE = "true";
     }
-    await job();
+    try {
+        await job();
+    }
+    catch (error) {
+        console.error(`Job "${name}" failed:`, error);
+    }
     console.timeEnd(name);
 }
 exports.job = job;

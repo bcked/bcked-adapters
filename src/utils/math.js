@@ -128,7 +128,7 @@ function inverse(inputList) {
     // Example: [{ value: 1, index: 3}, { value: 4, index: 5}, { value: 5, index: 1}, { value: 8, index: 0}, { value: 30, index: 2}, { value: 70, index: 4}]
     indexedList.sort((a, b) => a.value - b.value);
     // Write back to index in inverted index order.
-    let result = Array(inputList.length);
+    const result = Array(inputList.length);
     for (const [index, item] of indexedList.entries()) {
         result[indexedList[indexedList.length - 1 - index].index] = item.value;
     }

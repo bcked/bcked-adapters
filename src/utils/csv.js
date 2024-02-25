@@ -79,7 +79,7 @@ async function readHeadersFromStream(rows) {
         return [undefined, undefined];
     const rowFlattened = (0, flat_1.flatten)(value);
     // Ensure header consistency
-    let header = Object.keys(rowFlattened);
+    const header = Object.keys(rowFlattened);
     return [(0, array_1.concat)(value, _rows), header];
 }
 /**
@@ -101,12 +101,12 @@ async function rewriteCSV(pathToFile, header, readStream = undefined) {
 }
 exports.rewriteCSV = rewriteCSV;
 async function writeToCsv(pathToFile, rows, index) {
-    let [_rows, header] = await readHeadersFromStream(rows);
-    if (!_rows || !header)
+    const [_rows, _header] = await readHeadersFromStream(rows);
+    if (!_rows || !_header)
         return;
     // By default, take first key as index
-    const headerIndex = index ?? header[0];
-    header = (0, array_1.sortWithoutIndex)(header, headerIndex);
+    const headerIndex = index ?? _header[0];
+    const header = (0, array_1.sortWithoutIndex)(_header, headerIndex);
     await appendCsv(pathToFile, _rows, header);
 }
 exports.writeToCsv = writeToCsv;

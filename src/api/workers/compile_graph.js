@@ -17,7 +17,7 @@ async function compileHistory(csvName, key, createHistoryResource, createYearRes
     if (!(0, fs_1.existsSync)(csvPath))
         return;
     const historyStats = new stream_1.StreamStats(key, 100);
-    let yearsOfHistory = [];
+    const yearsOfHistory = [];
     let yearsStats;
     let monthsOfYear = [];
     let monthsStats;

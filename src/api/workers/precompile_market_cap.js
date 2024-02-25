@@ -8,9 +8,9 @@ const paths_1 = require("../../paths");
 const bot_1 = require("../../watcher/bot");
 const date_fns_1 = require("date-fns");
 const fs_1 = require("fs");
-const promises_1 = require("fs/promises");
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
+const files_1 = require("../../utils/files");
 const math_1 = require("../../utils/math");
 async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
     const supplyCsv = path_1.default.join(paths_1.PATHS.assets, id, "records", "supply_amount.csv");
@@ -18,7 +18,7 @@ async function* match(id, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
     if (!(0, fs_1.existsSync)(supplyCsv) || !(0, fs_1.existsSync)(priceCsv))
         return;
     const supplyEntries = (0, csv_1.readCSV)(supplyCsv);
-    let priceLookup = new csv_1.ConsecutiveLookup(priceCsv);
+    const priceLookup = new csv_1.ConsecutiveLookup(priceCsv);
     for await (const supplyEntry of supplyEntries) {
         // Get closest prices to the current entry for all underlying assets
         const price = await priceLookup.getClosest(supplyEntry.timestamp, window);
@@ -38,7 +38,7 @@ worker_threads_1.parentPort?.on("message", async (id) => {
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
-        await (0, promises_1.unlink)(filePath).catch(() => { });
+        await (0, files_1.remove)(filePath);
         const entries = match(id);
         await (0, csv_1.writeToCsv)(filePath, entries, "timestamp");
         worker_threads_1.parentPort?.postMessage(null);
