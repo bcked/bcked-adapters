@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../entities/fed/index.ts"],"names":[],"mappings":";;AAAA,MAAM,OAAO,GAAyB;IAClC,IAAI,EAAE,iBAAiB;IACvB,UAAU,EAAE,KAAK;IACjB,SAAS,EAAE,iCAAiC;IAC5C,IAAI,EAAE,CAAC,cAAc,CAAC;CACzB,CAAC;AAEF,MAAqB,OAAO;IACxB,KAAK,CAAC,UAAU;QACZ,OAAO,OAAO,CAAC;IACnB,CAAC;IAED,KAAK,CAAC,MAAM,KAAmB,CAAC;CACnC;AAND,0BAMC"}

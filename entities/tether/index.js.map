@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../entities/tether/index.ts"],"names":[],"mappings":";;AAAA,MAAM,OAAO,GAAyB;IAClC,IAAI,EAAE,QAAQ;IACd,UAAU,EAAE,QAAQ;IACpB,SAAS,EAAE,oBAAoB;IAC/B,IAAI,EAAE,EAAE;CACX,CAAC;AAEF,MAAqB,OAAO;IACxB,KAAK,CAAC,UAAU;QACZ,OAAO,OAAO,CAAC;IACnB,CAAC;IAED,KAAK,CAAC,MAAM,KAAmB,CAAC;CACnC;AAND,0BAMC"}
