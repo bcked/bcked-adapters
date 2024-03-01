@@ -19,7 +19,6 @@ export default tseslint.config(
             "**/!.env.example",
             "**/package-lock.json",
             "**/eslint.config.mjs",
-            "**/jest.config.js",
         ],
     },
     // extends ...

@@ -21,9 +21,9 @@
         "noImplicitThis": true,
         "noUncheckedIndexedAccess": true,
 
-        // "moduleResolution": "node", // "bundler"
+        // "moduleResolution": "node", // "bundler" for bun
         "allowImportingTsExtensions": true,
-        "verbatimModuleSyntax": true,
+        // "verbatimModuleSyntax": true, // If enabled, Jest fails with ESM issues
         "noEmit": true,
 
         // Best practices
@@ -43,6 +43,12 @@
     "ts-node": {
         "files": true
     },
-    "include": ["src/**/*.ts", "entities/**/*.ts", "systems/**/*.ts", "assets/**/*.ts"],
+    "include": [
+        "jest.config.ts",
+        "src/**/*.ts",
+        "entities/**/*.ts",
+        "systems/**/*.ts",
+        "assets/**/*.ts"
+    ],
     "exclude": ["node_modules", ".vscode"]
 }
