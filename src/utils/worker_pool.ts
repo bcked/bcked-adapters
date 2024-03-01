@@ -61,7 +61,7 @@ export async function executeInWorkerPool<Data, Result>(
     workerScriptPath: string,
     workItems: Data[],
     options: Options = { min: 0, max: 4 }
-): Promise<Array<Result | null>> {
+): Promise<(Result | null)[]> {
     const pool = new WorkerPool(workerScriptPath, options);
     const res = await Promise.all(
         workItems.map((workItem) => pool.execute<Data, Result>(workItem))

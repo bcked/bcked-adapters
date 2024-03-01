@@ -2,7 +2,7 @@ import _, { type List, type ListIteratee, type Many, type PropertyPath } from "l
 
 export function statsBy<T>(
     collection: List<T> | null | undefined,
-    ...iteratees: Array<Many<ListIteratee<T>>>
+    ...iteratees: Many<ListIteratee<T>>[]
 ): { low: T; median: T; high: T } | null {
     if (!collection?.length) return null;
 

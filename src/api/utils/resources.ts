@@ -8,11 +8,11 @@ import { Template } from "../../utils/template";
 interface Spec {
     openapi?: string | undefined;
     info?: oas.Information | undefined;
-    servers?: ReadonlyArray<oas.Server> | undefined;
+    servers?: readonly oas.Server[] | undefined;
     paths?: oas.Paths | undefined;
     components?: oas.Components | undefined;
-    security?: ReadonlyArray<oas.SecurityRequirement> | undefined;
-    tags?: ReadonlyArray<oas.Tag> | undefined;
+    security?: readonly oas.SecurityRequirement[] | undefined;
+    tags?: readonly oas.Tag[] | undefined;
     externalDocs?: oas.ExternalDocumentation | undefined;
     [key: string]: any;
 }

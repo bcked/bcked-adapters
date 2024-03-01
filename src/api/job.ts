@@ -17,7 +17,7 @@ async function compile<Result>(
     dir: string,
     workerScript: string,
     resources: JsonResources | undefined = undefined
-): Promise<Array<Result | null>> {
+): Promise<(Result | null)[]> {
     const ids = await fs.readdir(dir);
 
     if (resources) {

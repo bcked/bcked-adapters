@@ -61,12 +61,12 @@ class Entity extends JsonResources {
     async details(id: bcked.entity.Id, details: bcked.entity.DetailsRecord) {
         return {
             $id: `/entities/${id}/details`,
-            name: details?.name,
-            identifier: details?.identifier,
-            reference: details?.reference,
-            tags: details?.tags,
-            listed: details?.listed,
-            updated: details?.updated,
+            name: details.name,
+            identifier: details.identifier,
+            reference: details.reference,
+            tags: details.tags,
+            listed: details.listed,
+            updated: details.updated,
         };
     }
 

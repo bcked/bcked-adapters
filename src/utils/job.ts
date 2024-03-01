@@ -9,7 +9,7 @@ export async function job(name: string, job: () => Promise<void>) {
     }
 
     try {
-    await job();
+        await job();
     } catch (error) {
         console.error(`Job "${name}" failed:`, error);
     }

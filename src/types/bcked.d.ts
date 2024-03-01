@@ -121,48 +121,46 @@ declare namespace bcked {
 
         type SupplyAmount = Supply & { amount: number };
 
-        type Backing = {
+        interface Backing {
             timestamp: primitive.ISODateTimeString;
             underlying: Partial<Record<Id, number>>;
-        };
+        }
 
         // Generated from supply and price data
-        type MarketCap = {
+        interface MarketCap {
             timestamp: primitive.ISODateTimeString;
             price: Price;
             supply: SupplyAmount;
             usd: number;
-        };
+        }
 
         // Generated from backing and price data to cover underlying and derivative assets
-        type Relationship = {
+        interface Relationship {
             amount: number;
             price?: Price;
             usd?: number;
-        };
+        }
 
         // Generated from backing and price data to cover underlying and derivative assets
-        type Relationships = {
+        interface Relationships {
             timestamp: primitive.ISODateTimeString;
             usd: number;
-            breakdown: {
-                [assetId: bcked.asset.Id]: Relationship;
-            };
-        };
+            breakdown: Record<bcked.asset.Id, Relationship>;
+        }
 
         // Generated from market cap and underlying assets data
-        type Collateralization = {
+        interface Collateralization {
             timestamp: primitive.ISODateTimeString;
             market_cap: MarketCap;
             collateral: Relationships;
             ratio: number;
-        };
+        }
 
-        type Graph = {
+        interface Graph {
             timestamp: primitive.ISODateTimeString;
             graph: graph.Graph;
             stats: graph.Stats;
-        };
+        }
 
         interface Adapter {
             getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;

@@ -15,10 +15,10 @@ import { round } from "../../utils/math";
 import { toISOString } from "../../utils/string_formatting";
 import { daysInMs, getDatesBetween } from "../../utils/time";
 
-type CollateralizationLookup = {
+interface CollateralizationLookup {
     assetId: bcked.asset.Id;
     lookup: ConsecutiveLookup<bcked.asset.Collateralization>;
-};
+}
 
 async function createGraphForTimestamp(
     timestamp: primitive.DateLike,

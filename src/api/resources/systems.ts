@@ -61,12 +61,12 @@ class System extends JsonResources {
     async details(id: bcked.system.Id, details: bcked.system.DetailsRecord) {
         return {
             $id: `/systems/${id}/details`,
-            name: details?.name,
+            name: details.name,
             // TODO reference to asset
-            native: details?.native,
-            explorer: details?.explorer,
-            listed: details?.listed,
-            updated: details?.updated,
+            native: details.native,
+            explorer: details.explorer,
+            listed: details.listed,
+            updated: details.updated,
         };
     }
 

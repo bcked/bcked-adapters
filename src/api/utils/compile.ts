@@ -6,7 +6,7 @@ import { renderSvgToPng } from "../utils/renderSvg";
 import { JsonResources } from "./resources";
 
 export async function compileDetails<
-    Resources extends JsonResources & { details: (...args: any[]) => any },
+    Resources extends JsonResources & { details: (...args: any[]) => any }
 >(resources: Resources, path: string, id: string) {
     const filePath = join(path, id, PATHS.records, "details.json");
     const details = await readJson(filePath);
@@ -17,7 +17,7 @@ export async function compileDetails<
 }
 
 export async function compileIcons<
-    Resources extends JsonResources & { icons: (...args: any[]) => any },
+    Resources extends JsonResources & { icons: (...args: any[]) => any }
 >(resources: Resources, path: string, id: string) {
     const resource = await resources.icons(id);
 

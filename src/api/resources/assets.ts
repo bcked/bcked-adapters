@@ -234,7 +234,7 @@ export class Asset extends JsonResources {
                             asset: {
                                 $ref: `/assets/${node.id}`,
                             },
-                            "collateralization-ratio": node?.data?.value
+                            "collateralization-ratio": node.data?.value
                                 ? {
                                       $ref: setDateParts(
                                           `/assets/${node.id}/collateralization-ratio/{year}/{month}/{day}/{hour}`,
@@ -242,7 +242,7 @@ export class Asset extends JsonResources {
                                       ),
                                   }
                                 : undefined,
-                            value: node?.data?.value
+                            value: node.data?.value
                                 ? {
                                       "rwa:USD": node.data.value,
                                   }
@@ -314,21 +314,21 @@ export class Asset extends JsonResources {
     async details(id: bcked.asset.Id, details: bcked.asset.DetailsRecord) {
         return {
             $id: `/assets/${id}/details`,
-            name: details?.name,
-            symbol: details?.symbol,
+            name: details.name,
+            symbol: details.symbol,
             identifier: {
-                address: details?.identifier.address,
+                address: details.identifier.address,
                 // TODO Map to system ref
-                system: details?.identifier.system,
+                system: details.identifier.system,
             },
-            assetClasses: details?.assetClasses,
+            assetClasses: details.assetClasses,
             // TODO Map to entity refs
             // TODO make list instead?
-            linkedEntities: details?.linkedEntities,
-            reference: details?.reference,
-            tags: details?.tags,
-            listed: details?.listed,
-            updated: details?.updated,
+            linkedEntities: details.linkedEntities,
+            reference: details.reference,
+            tags: details.tags,
+            listed: details.listed,
+            updated: details.updated,
         };
     }
 

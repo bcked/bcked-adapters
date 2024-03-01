@@ -32,7 +32,7 @@ export class Template {
         return new RegExp(`^${matcher}$`).test(str);
     }
 
-    format(mapping: { [key: string]: string }): string {
+    format(mapping: Record<string, string>): string {
         let template = this.template;
         for (const [key, value] of Object.entries(mapping)) {
             template = template.replace(new RegExp(`\\{${key}\\}`, "gi"), value);

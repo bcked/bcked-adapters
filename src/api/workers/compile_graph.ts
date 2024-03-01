@@ -12,7 +12,7 @@ import { ASSET_RESOURCES } from "../resources/assets";
 
 async function compileHistory<
     TObject extends primitive.Timestamped,
-    TKey extends keyof TObject | PropertyPath,
+    TKey extends keyof TObject | PropertyPath
 >(
     csvName: string,
     key: TKey,
@@ -45,7 +45,7 @@ async function compileHistory<
 
     if (!existsSync(csvPath)) return;
 
-    const historyStats: StreamStats<TObject, TKey> = new StreamStats(key, 100);
+    const historyStats = new StreamStats<TObject, TKey>(key, 100);
 
     const yearsOfHistory: string[] = [];
     let yearsStats: StreamStats<TObject, TKey> | undefined;

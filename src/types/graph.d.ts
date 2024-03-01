@@ -1,30 +1,30 @@
 declare namespace graph {
-    type NodeData = {
+    interface NodeData {
         timestamp: primitive.ISODateTimeString;
         value: number;
-    };
+    }
 
-    type LinkData = {
+    interface LinkData {
         value: number | undefined;
-    };
+    }
 
-    type Node = {
+    interface Node {
         id: derived.AssetId;
         data?: NodeData;
-    };
+    }
 
-    type Link = {
+    interface Link {
         fromId: derived.AssetId;
         toId: derived.AssetId;
         data: LinkData;
-    };
+    }
 
-    type Graph = {
+    interface Graph {
         nodes: Node[];
         links: Link[];
-    };
+    }
 
-    type Stats = {
+    interface Stats {
         numNodes: number;
         numLinks: number;
         averageDegree: number;
@@ -34,5 +34,5 @@ declare namespace graph {
         rootCollateralization: number;
         leaveCollateralization: number;
         totalCollateralization: number;
-    };
+    }
 }

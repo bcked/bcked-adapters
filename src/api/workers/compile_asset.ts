@@ -47,7 +47,7 @@ async function compileHistory<TObject extends primitive.Timestamped, TKey extend
 
     if (!existsSync(csvPath)) return;
 
-    const historyStats: StreamStats<TObject, TKey> = new StreamStats(key, 100);
+    const historyStats = new StreamStats<TObject, TKey>(key, 100);
 
     const yearsOfHistory: string[] = [];
     let yearsStats: StreamStats<TObject, TKey> | undefined;
