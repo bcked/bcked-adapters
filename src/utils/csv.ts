@@ -193,7 +193,7 @@ export async function createCsv<T>(pathToFile: string, rows: AsyncIterable<T>, h
 export class ConsecutiveLookup<T extends primitive.Timestamped> {
     private readonly values = new Map<string, T>();
     private readonly csvStream: AsyncGenerator<T>;
-    private done: boolean = false;
+    private done = false;
     private lastTimestamp: string | undefined = undefined;
 
     constructor(public readonly csvPath: string) {

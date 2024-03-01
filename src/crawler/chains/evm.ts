@@ -54,22 +54,22 @@ export class EVMChain implements bcked.query.ChainModule {
         return contract;
     }
 
-    private getRpcUrl(chain: bcked.system.Id, replace: boolean = false): string {
+    private getRpcUrl(chain: bcked.system.Id, replace = false): string {
         const url = RPC_URLS[chain];
         if (!url) {
             throw Error(`EVM chain has no configuration for chain: ${chain}`);
         }
         return replace
             ? format(url, {
-                  ALCHEMY_ETHEREUM: process.env.ALCHEMY_ETHEREUM!,
-                  ALCHEMY_POLYGON: process.env.ALCHEMY_POLYGON!,
-                  ALCHEMY_ARBITRUM: process.env.ALCHEMY_ARBITRUM!,
+                  ALCHEMY_ETHEREUM: process.env["ALCHEMY_ETHEREUM"]!,
+                  ALCHEMY_POLYGON: process.env["ALCHEMY_POLYGON"]!,
+                  ALCHEMY_ARBITRUM: process.env["ALCHEMY_ARBITRUM"]!,
               })
             : url;
     }
 
     private async _getDecimals(contract: Contract): Promise<BigNumber> {
-        const decimals: Promise<BigNumber> = contract.decimals();
+        const decimals: Promise<BigNumber> = contract["decimals"]();
         return await decimals;
     }
 
@@ -100,7 +100,7 @@ export class EVMChain implements bcked.query.ChainModule {
                 };
             } else {
                 const contract = this.getTokenContract(token, system);
-                const balance: Promise<BigNumber> = contract.balanceOf(address);
+                const balance: Promise<BigNumber> = contract["balanceOf"](address);
                 const decimals: Promise<BigNumber> = this._getDecimals(contract);
                 return {
                     timestamp: toISOString(Date.now()),
@@ -124,7 +124,7 @@ export class EVMChain implements bcked.query.ChainModule {
 
     async getTokenSupply(token: bcked.asset.Address, system: bcked.system.Id): Promise<number> {
         const contract = this.getTokenContract(token, system);
-        const supply: Promise<BigNumber> = contract.totalSupply();
+        const supply: Promise<BigNumber> = contract["totalSupply"]();
         const decimals: Promise<BigNumber> = this._getDecimals(contract);
         return parseFloat(utils.formatUnits(await supply, await decimals));
     }

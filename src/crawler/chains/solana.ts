@@ -21,8 +21,10 @@ export class SolanaChain implements bcked.query.ChainModule {
         this._connection = new Connection(this.getRpcUrl(true));
     }
 
-    private getRpcUrl(replace: boolean = false): string {
-        return replace ? format(RPC_URL, { ALCHEMY_SOLANA: process.env.ALCHEMY_SOLANA! }) : RPC_URL;
+    private getRpcUrl(replace = false): string {
+        return replace
+            ? format(RPC_URL, { ALCHEMY_SOLANA: process.env["ALCHEMY_SOLANA"]! })
+            : RPC_URL;
     }
 
     private async _getDecimals(token: PublicKey): Promise<number> {

@@ -44,7 +44,7 @@ export class Etherscan {
 
     private getUrl(module: string, action: string, options?: Record<string, string>): string {
         const opt = options ? "&" + joinOptions(options) : "";
-        return `/api?module=${module}&action=${action}${opt}&apikey=${process.env.ETHERSCAN_API_KEY}`;
+        return `/api?module=${module}&action=${action}${opt}&apikey=${process.env["ETHERSCAN_API_KEY"]}`;
     }
 
     private async fetch<T>(

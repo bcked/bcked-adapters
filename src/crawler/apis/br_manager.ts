@@ -65,7 +65,7 @@ export class BRManager {
 
     private mapAsset(description: string): bcked.asset.Id {
         for (const [keyword, asset] of Object.entries(descriptionAssetMapping)) {
-            if (description.toLowerCase().startsWith(keyword!.toLowerCase())) {
+            if (description.toLowerCase().startsWith(keyword.toLowerCase())) {
                 return asset;
             }
         }

@@ -1,7 +1,7 @@
 import { Worker as JsWorker, type WorkerOptions } from "worker_threads";
 
 export function adaptFileExt(filename: string): string {
-    return process.env.DEV_MODE ? filename : filename.replace(".ts", ".js");
+    return process.env["DEV_MODE"] ? filename : filename.replace(".ts", ".js");
 }
 
 export class Worker extends JsWorker {

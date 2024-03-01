@@ -24,7 +24,7 @@ export class DefiLlama implements bcked.query.ApiModule {
         this.api = new JsonApi("https://coins.llama.fi");
     }
 
-    private getPriceRoute(tokens: string, searchWidth: string = "4h") {
+    private getPriceRoute(tokens: string, searchWidth = "4h") {
         return `/prices/current/${tokens}?searchWidth=${searchWidth}`;
     }
 

@@ -1,31 +1,46 @@
 {
     "extends": "@tsconfig/node16/tsconfig.json",
-    "ts-node": {
-        "files": true
-    },
     "compilerOptions": {
-        "outDir": "dist",
         "lib": ["es2021", "dom"],
+        "outDir": "dist",
         "allowJs": false,
         "checkJs": false,
         "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
-        "skipLibCheck": true, // See how this can be turned off
+        "composite": true,
+        "downlevelIteration": true,
+        "allowSyntheticDefaultImports": true,
         "sourceMap": true,
-        "strict": true,
-        "strictFunctionTypes": true,
-        "strictPropertyInitialization": true,
-        "alwaysStrict": true,
+
         "allowUnreachableCode": false,
         "exactOptionalPropertyTypes": true,
         "noImplicitAny": true,
         "noImplicitOverride": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,
+        "noUncheckedIndexedAccess": true,
+
+        // "moduleResolution": "node",
+        // "allowImportingTsExtensions": true,
+        // "verbatimModuleSyntax": true,
+        // "noEmit": true,
+
+        "strict": true,
+        "strictFunctionTypes": true,
+        "strictPropertyInitialization": true,
+        "alwaysStrict": true,
+        "skipLibCheck": true,
+
+        // Some stricter flags
         "noFallthroughCasesInSwitch": true,
-        "noUncheckedIndexedAccess": true
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "useUnknownInCatchVariables": true,
+        "noPropertyAccessFromIndexSignature": true
+    },
+    "ts-node": {
+        "files": true
     },
     "include": ["src/**/*.ts", "entities/**/*.ts", "systems/**/*.ts", "assets/**/*.ts"],
     "exclude": ["node_modules", ".vscode"]

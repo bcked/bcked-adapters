@@ -164,8 +164,8 @@ export async function* toAsync<T>(arr: Iterable<T>): AsyncIterableIterator<T> {
  */
 export function* cycleIndex(
     bounds: [number, number],
-    start: number = 0,
-    step: number = 1
+    start = 0,
+    step = 1
 ): IterableIterator<number> {
     const [lower, upper] = bounds;
     if (start < lower || start > upper) throw Error(`Start ${start} outside bounds ${bounds}.`);
@@ -217,7 +217,7 @@ export async function* combinations<T>(
  */
 export async function* enumerate<T>(
     items: AsyncIterableIterator<T>,
-    start: number = 0
+    start = 0
 ): AsyncIterableIterator<[number, T]> {
     let index = start;
     for await (const item of items) {

@@ -4,7 +4,7 @@ declare namespace primitive {
 
     type ISODateString = `${number}-${number}-${number}`; // yyyy-mm-dd
 
-    type DateLike = string | number | Date | ISODateTimeString | ISODateString;
+    type DateLike = ISODateTimeString | ISODateString | string | number | Date;
 
     interface DateParts {
         year?: string;

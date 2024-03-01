@@ -5,7 +5,7 @@ export async function job(name: string, job: () => Promise<void>) {
     console.time(name);
 
     if (process[REGISTER_INSTANCE]) {
-        process.env.DEV_MODE = "true";
+        process.env["DEV_MODE"] = "true";
     }
 
     try {

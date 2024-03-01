@@ -3,10 +3,10 @@ import TelegramBot from "node-telegram-bot-api";
 
 const LOGS_CHANNEL = "@bcked_logs";
 
-const bot = new TelegramBot(process.env.BCKED_WATCHER_BOT_TOKEN!, { polling: false });
+const bot = new TelegramBot(process.env["BCKED_WATCHER_BOT_TOKEN"]!, { polling: false });
 
 export async function sendErrorReport(subject: string, error: any) {
-    if (process.env.DEV_MODE) {
+    if (process.env["DEV_MODE"]) {
         console.info("Error report not sent in DEV_MODE");
         return;
     }

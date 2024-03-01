@@ -77,7 +77,8 @@ describe("relativeInMs", () => {
     });
 
     it("returns undefined if the array is empty", () => {
-        expect(relativeInMs([], 0, 0)).toEqual(undefined);
+        const test: { timestamp: string }[] = [];
+        expect(relativeInMs(test, 0, 0)).toEqual(undefined);
     });
 
     it("returns undefined if there is no timestamp within deviation from the relative time", () => {
