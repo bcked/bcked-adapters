@@ -4,10 +4,13 @@
     "description": "",
     "keywords": [],
     "author": "bcked",
+    "type": "module",
     "scripts": {
         "dev": "nodemon",
-        "crawler": "npx ts-node src/crawler/job.ts",
+        "crawler": "npx ts-node --esm src/crawler/job.ts",
         "api": "npx ts-node src/api/job.ts",
+        "apinn": "npx ts-node --esm --preferTsExts --experimentalSpecifierResolution=node src/api/job.ts",
+        "apin": "node -r ts-node/register --no-warnings --experimental-specifier-resolution=node --loader ts-node/esm src/api/job.ts",
         "build": "npx tsc",
         "lint": "npx eslint . --fix",
         "test": "jest --passWithNoTests"

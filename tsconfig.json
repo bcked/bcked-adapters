@@ -1,7 +1,10 @@
 {
-    "extends": "@tsconfig/node16/tsconfig.json",
+    // "extends": "@tsconfig/node16/tsconfig.json",
     "compilerOptions": {
-        "lib": ["es2021", "dom"],
+        "lib": ["ESNext"],
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleDetection": "force",
         "outDir": "dist",
         "allowJs": false,
         "checkJs": false,
@@ -21,7 +24,7 @@
         "noImplicitThis": true,
         "noUncheckedIndexedAccess": true,
 
-        // "moduleResolution": "node", // "bundler"
+        "moduleResolution": "node", // "bundler"
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,
         "noEmit": true,
@@ -42,6 +45,10 @@
     },
     "ts-node": {
         "files": true
+        "esm": true,
+        "preferTsExts": true,
+        "experimentalSpecifierResolution": "node",
+        "experimentalTsImportSpecifiers": true
     },
     "include": ["src/**/*.ts", "entities/**/*.ts", "systems/**/*.ts", "assets/**/*.ts"],
     "exclude": ["node_modules", ".vscode"]
