@@ -78,12 +78,12 @@ let System = (() => {
             async details(id, details) {
                 return {
                     $id: `/systems/${id}/details`,
-                    name: details?.name,
+                    name: details.name,
                     // TODO reference to asset
-                    native: details?.native,
-                    explorer: details?.explorer,
-                    listed: details?.listed,
-                    updated: details?.updated,
+                    native: details.native,
+                    explorer: details.explorer,
+                    listed: details.listed,
+                    updated: details.updated,
                 };
             }
             async icons(id) {

@@ -201,12 +201,12 @@ let Asset = exports.Asset = (() => {
                                 asset: {
                                     $ref: `/assets/${node.id}`,
                                 },
-                                "collateralization-ratio": node?.data?.value
+                                "collateralization-ratio": node.data?.value
                                     ? {
                                         $ref: (0, time_1.setDateParts)(`/assets/${node.id}/collateralization-ratio/{year}/{month}/{day}/{hour}`, node.data.timestamp),
                                     }
                                     : undefined,
-                                value: node?.data?.value
+                                value: node.data?.value
                                     ? {
                                         "rwa:USD": node.data.value,
                                     }
@@ -260,21 +260,21 @@ let Asset = exports.Asset = (() => {
             async details(id, details) {
                 return {
                     $id: `/assets/${id}/details`,
-                    name: details?.name,
-                    symbol: details?.symbol,
+                    name: details.name,
+                    symbol: details.symbol,
                     identifier: {
-                        address: details?.identifier.address,
+                        address: details.identifier.address,
                         // TODO Map to system ref
-                        system: details?.identifier.system,
+                        system: details.identifier.system,
                     },
-                    assetClasses: details?.assetClasses,
+                    assetClasses: details.assetClasses,
                     // TODO Map to entity refs
                     // TODO make list instead?
-                    linkedEntities: details?.linkedEntities,
-                    reference: details?.reference,
-                    tags: details?.tags,
-                    listed: details?.listed,
-                    updated: details?.updated,
+                    linkedEntities: details.linkedEntities,
+                    reference: details.reference,
+                    tags: details.tags,
+                    listed: details.listed,
+                    updated: details.updated,
                 };
             }
             async icons(id) {

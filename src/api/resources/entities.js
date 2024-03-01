@@ -78,12 +78,12 @@ let Entity = (() => {
             async details(id, details) {
                 return {
                     $id: `/entities/${id}/details`,
-                    name: details?.name,
-                    identifier: details?.identifier,
-                    reference: details?.reference,
-                    tags: details?.tags,
-                    listed: details?.listed,
-                    updated: details?.updated,
+                    name: details.name,
+                    identifier: details.identifier,
+                    reference: details.reference,
+                    tags: details.tags,
+                    listed: details.listed,
+                    updated: details.updated,
                 };
             }
             async icons(id) {
