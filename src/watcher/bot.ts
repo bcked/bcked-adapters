@@ -17,8 +17,8 @@ export async function sendErrorReport(subject: string, error: any) {
             logMessage = [
                 "Error Type: AxiosError",
                 `Request: ${axiosError.config?.method} ${axiosError.config?.baseURL}${axiosError.config?.url}`,
-                `Status Code: ${axiosError.response?.status || "Unknown"}`,
-                `Status Text: ${axiosError.response?.statusText || "Unknown"}`,
+                `Status Code: ${axiosError.response?.status ?? "Unknown"}`,
+                `Status Text: ${axiosError.response?.statusText ?? "Unknown"}`,
                 `Response Data: ${JSON.stringify(
                     axiosError.response?.data || "No response data",
                     null,

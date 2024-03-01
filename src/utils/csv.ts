@@ -83,7 +83,7 @@ async function readHeadersFromStream<T>(
 ): Promise<[AsyncGenerator<T, void, undefined>, string[]] | [undefined, undefined]> {
     // Read the first row to get the header
     const [value, _rows] = await getFirstElement(rows);
-    if (!value || !_rows) return [undefined, undefined];
+    if (!value) return [undefined, undefined];
 
     const rowFlattened = flatten<object, object>(value);
     // Ensure header consistency
@@ -120,7 +120,7 @@ export async function rewriteCSV<T>(
 
 export async function writeToCsv<T>(pathToFile: string, rows: AsyncIterable<T>, index?: string) {
     const [_rows, _header] = await readHeadersFromStream(rows);
-    if (!_rows || !_header) return;
+    if (!_rows || !_header.length) return;
 
     // By default, take first key as index
     const headerIndex = index ?? _header[0]!;

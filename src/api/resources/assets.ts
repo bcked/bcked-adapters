@@ -4,7 +4,7 @@ import { icons } from "../utils/icons";
 import { JsonResources } from "../utils/resources";
 
 function statsToSummary<T extends primitive.Timestamped>(path: string, stats: Stats<T>) {
-    if (!stats || !stats.min || !stats.max || !stats.median) {
+    if (!stats.min || !stats.max || !stats.median) {
         throw new Error("Stats missing. This should have been checked prior.");
     }
 
@@ -52,7 +52,7 @@ function yearResource<T extends primitive.Timestamped>(
 ) {
     if (!year || !months.length) return;
 
-    if (!stats || !stats.min || !stats.max || !stats.median) return;
+    if (!stats?.min || !stats.max || !stats.median) return;
 
     return {
         $id: `${path}/${year}`,
@@ -72,7 +72,7 @@ function monthResource<T extends primitive.Timestamped>(
 ) {
     if (!year || !month || !days.length) return;
 
-    if (!stats || !stats.min || !stats.max || !stats.median) return;
+    if (!stats?.min || !stats.max || !stats.median) return;
 
     return {
         $id: `${path}/${year}/${month}`,
@@ -93,7 +93,7 @@ function dayResource<T extends primitive.Timestamped>(
 ) {
     if (!year || !month || !day || !hours.length) return;
 
-    if (!stats || !stats.min || !stats.max || !stats.median) return;
+    if (!stats?.min || !stats.max || !stats.median) return;
 
     return {
         $id: `${path}/${year}/${month}/${day}`,
@@ -221,7 +221,7 @@ export class Asset extends JsonResources {
     async collateralizationGraphHour<T extends primitive.Timestamped & bcked.asset.Graph>(
         stats: Stats<T> | undefined
     ) {
-        if (!stats || !stats.min || !stats.max || !stats.median) return;
+        if (!stats?.min || !stats.max || !stats.median) return;
 
         return {
             ...hourBaseResource(`/assets/collateralization-graph`, stats.median.timestamp),
@@ -427,7 +427,7 @@ export class Asset extends JsonResources {
         id: bcked.entity.Id,
         stats: Stats<T> | undefined
     ) {
-        if (!stats || !stats.min || !stats.max || !stats.median) return;
+        if (!stats?.min || !stats.max || !stats.median) return;
 
         return {
             ...hourBaseResource(`/assets/${id}/price`, stats.median.timestamp),
@@ -517,7 +517,7 @@ export class Asset extends JsonResources {
         schema: {},
     })
     async supplyHour(id: bcked.entity.Id, stats: Stats<bcked.asset.SupplyAmount> | undefined) {
-        if (!stats || !stats.min || !stats.max || !stats.median) return;
+        if (!stats?.min || !stats.max || !stats.median) return;
 
         if (!stats.median.amount) return;
 
@@ -612,7 +612,7 @@ export class Asset extends JsonResources {
         schema: {},
     })
     async marketCapHour(id: bcked.entity.Id, stats: Stats<bcked.asset.MarketCap> | undefined) {
-        if (!stats || !stats.min || !stats.max || !stats.median) return;
+        if (!stats?.min || !stats.max || !stats.median) return;
 
         return {
             ...hourBaseResource(`/assets/${id}/market-cap`, stats.median.timestamp),
@@ -717,7 +717,7 @@ export class Asset extends JsonResources {
         id: bcked.entity.Id,
         stats: Stats<bcked.asset.Relationships> | undefined
     ) {
-        if (!stats || !stats.min || !stats.max || !stats.median) return;
+        if (!stats?.min || !stats.max || !stats.median) return;
 
         return {
             ...hourBaseResource(`/assets/${id}/underlying-assets`, stats.median.timestamp),
@@ -836,7 +836,7 @@ export class Asset extends JsonResources {
         id: bcked.entity.Id,
         stats: Stats<bcked.asset.Collateralization> | undefined
     ) {
-        if (!stats || !stats.min || !stats.max || !stats.median) return;
+        if (!stats?.min || !stats.max || !stats.median) return;
 
         return {
             ...hourBaseResource(`/assets/${id}/collateralization-ratio`, stats.median.timestamp),

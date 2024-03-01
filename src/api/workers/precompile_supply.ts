@@ -23,7 +23,7 @@ async function* computeSupplyFallback(
 
         // Define fallback for supply data
         const amount =
-            supplyEntry.total || supplyEntry.circulating || supplyEntry.issued || supplyEntry.max;
+            supplyEntry.total ?? supplyEntry.circulating ?? supplyEntry.issued ?? supplyEntry.max;
 
         if (!amount) continue;
 

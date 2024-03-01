@@ -40,14 +40,12 @@ export abstract class JsonResources {
         if (tag) {
             this.extendSpec({ tags: this.tag ? [this.tag] : [] });
         }
-        if (resources) {
-            this.extend(...resources);
-        }
+        this.extend(...resources);
     }
 
     register({ path, summary, description, parameters, type, schema }: RegistrationParams) {
         // Only register if not already registered
-        if (this.spec.paths && this.spec.paths[path]) return;
+        if (this.spec.paths?.[path]) return;
 
         this.extendSpec({
             paths: {
