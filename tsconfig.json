@@ -21,11 +21,12 @@
         "noImplicitThis": true,
         "noUncheckedIndexedAccess": true,
 
-        // "moduleResolution": "node",
-        // "allowImportingTsExtensions": true,
-        // "verbatimModuleSyntax": true,
-        // "noEmit": true,
+        // "moduleResolution": "node", // "bundler"
+        "allowImportingTsExtensions": true,
+        "verbatimModuleSyntax": true,
+        "noEmit": true,
 
+        // Best practices
         "strict": true,
         "strictFunctionTypes": true,
         "strictPropertyInitialization": true,
