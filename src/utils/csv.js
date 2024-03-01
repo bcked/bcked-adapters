@@ -75,7 +75,7 @@ exports.readCSV = readCSV;
 async function readHeadersFromStream(rows) {
     // Read the first row to get the header
     const [value, _rows] = await (0, stream_2.getFirstElement)(rows);
-    if (!value || !_rows)
+    if (!value)
         return [undefined, undefined];
     const rowFlattened = (0, flat_1.flatten)(value);
     // Ensure header consistency
@@ -102,7 +102,7 @@ async function rewriteCSV(pathToFile, header, readStream = undefined) {
 exports.rewriteCSV = rewriteCSV;
 async function writeToCsv(pathToFile, rows, index) {
     const [_rows, _header] = await readHeadersFromStream(rows);
-    if (!_rows || !_header)
+    if (!_rows || !_header.length)
         return;
     // By default, take first key as index
     const headerIndex = index ?? _header[0];

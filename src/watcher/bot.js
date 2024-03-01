@@ -20,8 +20,8 @@ async function sendErrorReport(subject, error) {
             logMessage = [
                 "Error Type: AxiosError",
                 `Request: ${axiosError.config?.method} ${axiosError.config?.baseURL}${axiosError.config?.url}`,
-                `Status Code: ${axiosError.response?.status || "Unknown"}`,
-                `Status Text: ${axiosError.response?.statusText || "Unknown"}`,
+                `Status Code: ${axiosError.response?.status ?? "Unknown"}`,
+                `Status Text: ${axiosError.response?.statusText ?? "Unknown"}`,
                 `Response Data: ${JSON.stringify(axiosError.response?.data || "No response data", null, 4)}`,
                 `Error Message: ${axiosError.message || "Unknown error message"}`,
             ].join("\n");

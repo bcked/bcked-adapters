@@ -16,13 +16,11 @@ class JsonResources {
         if (tag) {
             this.extendSpec({ tags: this.tag ? [this.tag] : [] });
         }
-        if (resources) {
-            this.extend(...resources);
-        }
+        this.extend(...resources);
     }
     register({ path, summary, description, parameters, type, schema }) {
         // Only register if not already registered
-        if (this.spec.paths && this.spec.paths[path])
+        if (this.spec.paths?.[path])
             return;
         this.extendSpec({
             paths: {

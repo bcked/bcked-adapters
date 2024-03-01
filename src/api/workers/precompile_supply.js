@@ -19,7 +19,7 @@ async function* computeSupplyFallback(id) {
     for await (const supplyEntry of supplyEntries) {
         // Get closest prices to the current entry for all underlying assets
         // Define fallback for supply data
-        const amount = supplyEntry.total || supplyEntry.circulating || supplyEntry.issued || supplyEntry.max;
+        const amount = supplyEntry.total ?? supplyEntry.circulating ?? supplyEntry.issued ?? supplyEntry.max;
         if (!amount)
             continue;
         yield {

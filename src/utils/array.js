@@ -145,6 +145,7 @@ function* cycleIndex(bounds, start = 0, step = 1) {
     if (step > upper - lower)
         throw Error(`Step larger than range of bounds ${bounds}.`);
     let index = start;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
         yield index;
         index += step;

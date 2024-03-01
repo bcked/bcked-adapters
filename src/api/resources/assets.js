@@ -39,7 +39,7 @@ const time_1 = require("../../utils/time");
 const icons_1 = require("../utils/icons");
 const resources_1 = require("../utils/resources");
 function statsToSummary(path, stats) {
-    if (!stats || !stats.min || !stats.max || !stats.median) {
+    if (!stats.min || !stats.max || !stats.median) {
         throw new Error("Stats missing. This should have been checked prior.");
     }
     return {
@@ -73,7 +73,7 @@ function historyResource(path, latestTimestamp, stats, years) {
 function yearResource(path, stats, year, months) {
     if (!year || !months.length)
         return;
-    if (!stats || !stats.min || !stats.max || !stats.median)
+    if (!stats?.min || !stats.max || !stats.median)
         return;
     return {
         $id: `${path}/${year}`,
@@ -86,7 +86,7 @@ function yearResource(path, stats, year, months) {
 function monthResource(path, stats, year, month, days) {
     if (!year || !month || !days.length)
         return;
-    if (!stats || !stats.min || !stats.max || !stats.median)
+    if (!stats?.min || !stats.max || !stats.median)
         return;
     return {
         $id: `${path}/${year}/${month}`,
@@ -99,7 +99,7 @@ function monthResource(path, stats, year, month, days) {
 function dayResource(path, stats, year, month, day, hours) {
     if (!year || !month || !day || !hours.length)
         return;
-    if (!stats || !stats.min || !stats.max || !stats.median)
+    if (!stats?.min || !stats.max || !stats.median)
         return;
     return {
         $id: `${path}/${year}/${month}/${day}`,
@@ -188,7 +188,7 @@ let Asset = exports.Asset = (() => {
                 return dayResource("/assets/collateralization-graph", stats, year, month, day, hours);
             }
             async collateralizationGraphHour(stats) {
-                if (!stats || !stats.min || !stats.max || !stats.median)
+                if (!stats?.min || !stats.max || !stats.median)
                     return;
                 return {
                     ...hourBaseResource(`/assets/collateralization-graph`, stats.median.timestamp),
@@ -293,7 +293,7 @@ let Asset = exports.Asset = (() => {
                 return dayResource(`/assets/${id}/price`, stats, year, month, day, hours);
             }
             async priceHour(id, stats) {
-                if (!stats || !stats.min || !stats.max || !stats.median)
+                if (!stats?.min || !stats.max || !stats.median)
                     return;
                 return {
                     ...hourBaseResource(`/assets/${id}/price`, stats.median.timestamp),
@@ -315,7 +315,7 @@ let Asset = exports.Asset = (() => {
                 return dayResource(`/assets/${id}/supply`, stats, year, month, day, hours);
             }
             async supplyHour(id, stats) {
-                if (!stats || !stats.min || !stats.max || !stats.median)
+                if (!stats?.min || !stats.max || !stats.median)
                     return;
                 if (!stats.median.amount)
                     return;
@@ -342,7 +342,7 @@ let Asset = exports.Asset = (() => {
                 return dayResource(`/assets/${id}/market-cap`, stats, year, month, day, hours);
             }
             async marketCapHour(id, stats) {
-                if (!stats || !stats.min || !stats.max || !stats.median)
+                if (!stats?.min || !stats.max || !stats.median)
                     return;
                 return {
                     ...hourBaseResource(`/assets/${id}/market-cap`, stats.median.timestamp),
@@ -370,7 +370,7 @@ let Asset = exports.Asset = (() => {
                 return dayResource(`/assets/${id}/underlying-assets`, stats, year, month, day, hours);
             }
             async underlyingAssetsHour(id, stats) {
-                if (!stats || !stats.min || !stats.max || !stats.median)
+                if (!stats?.min || !stats.max || !stats.median)
                     return;
                 return {
                     ...hourBaseResource(`/assets/${id}/underlying-assets`, stats.median.timestamp),
@@ -410,7 +410,7 @@ let Asset = exports.Asset = (() => {
                 return dayResource(`/assets/${id}/collateralization-ratio`, stats, year, month, day, hours);
             }
             async collateralizationRatioHour(id, stats) {
-                if (!stats || !stats.min || !stats.max || !stats.median)
+                if (!stats?.min || !stats.max || !stats.median)
                     return;
                 return {
                     ...hourBaseResource(`/assets/${id}/collateralization-ratio`, stats.median.timestamp),
