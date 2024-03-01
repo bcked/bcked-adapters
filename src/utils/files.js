@@ -34,26 +34,26 @@ async function readLastLines(inputFilePath, maxLineCount, encoding = "utf-8") {
     if (!node_fs_1.default.existsSync(inputFilePath))
         throw new Error(`File ${inputFilePath} does not exist.`);
     const [stat, file] = await Promise.all([
-        new Promise((resolve, reject) => 
-        // Load file Stats.
-        node_fs_1.default.stat(inputFilePath, (err, stat) => {
-            if (err) {
-                reject(err);
-            }
-            else {
-                resolve(stat);
-            }
-        })),
-        new Promise((resolve, reject) => 
-        // Open file for reading.
-        node_fs_1.default.open(inputFilePath, "r", (err, file) => {
-            if (err) {
-                reject(err);
-            }
-            else {
-                resolve(file);
-            }
-        })),
+        new Promise((resolve, reject) => {
+            node_fs_1.default.stat(inputFilePath, (err, stat) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(stat);
+                }
+            });
+        }),
+        new Promise((resolve, reject) => {
+            node_fs_1.default.open(inputFilePath, "r", (err, file) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(file);
+                }
+            });
+        }),
     ]);
     let chars = 0;
     let lineCount = 0;

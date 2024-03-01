@@ -66,7 +66,8 @@ describe("relativeInMs", () => {
         expect(result3).toEqual({ timestamp: "2022-04-08T00:00:00.000Z" });
     });
     it("returns undefined if the array is empty", () => {
-        expect((0, array_1.relativeInMs)([], 0, 0)).toEqual(undefined);
+        const test = [];
+        expect((0, array_1.relativeInMs)(test, 0, 0)).toEqual(undefined);
     });
     it("returns undefined if there is no timestamp within deviation from the relative time", () => {
         const interval = 24 * 60 * 60 * 1000; // 1 day in milliseconds

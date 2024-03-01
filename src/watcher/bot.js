@@ -7,9 +7,9 @@ exports.sendErrorReport = void 0;
 const axios_1 = __importDefault(require("axios"));
 const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
 const LOGS_CHANNEL = "@bcked_logs";
-const bot = new node_telegram_bot_api_1.default(process.env.BCKED_WATCHER_BOT_TOKEN, { polling: false });
+const bot = new node_telegram_bot_api_1.default(process.env["BCKED_WATCHER_BOT_TOKEN"], { polling: false });
 async function sendErrorReport(subject, error) {
-    if (process.env.DEV_MODE) {
+    if (process.env["DEV_MODE"]) {
         console.info("Error report not sent in DEV_MODE");
         return;
     }

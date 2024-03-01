@@ -18,7 +18,9 @@ class SolanaChain {
         this._connection = new web3_js_1.Connection(this.getRpcUrl(true));
     }
     getRpcUrl(replace = false) {
-        return replace ? (0, string_formatting_1.format)(RPC_URL, { ALCHEMY_SOLANA: process.env.ALCHEMY_SOLANA }) : RPC_URL;
+        return replace
+            ? (0, string_formatting_1.format)(RPC_URL, { ALCHEMY_SOLANA: process.env["ALCHEMY_SOLANA"] })
+            : RPC_URL;
     }
     async _getDecimals(token) {
         const response = await this._connection.getTokenSupply(token);

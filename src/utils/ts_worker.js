@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Worker = exports.adaptFileExt = void 0;
 const worker_threads_1 = require("worker_threads");
 function adaptFileExt(filename) {
-    return process.env.DEV_MODE ? filename : filename.replace(".ts", ".js");
+    return process.env["DEV_MODE"] ? filename : filename.replace(".ts", ".js");
 }
 exports.adaptFileExt = adaptFileExt;
 class Worker extends worker_threads_1.Worker {

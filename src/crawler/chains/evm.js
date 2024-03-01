@@ -60,14 +60,14 @@ class EVMChain {
         }
         return replace
             ? (0, string_formatting_1.format)(url, {
-                ALCHEMY_ETHEREUM: process.env.ALCHEMY_ETHEREUM,
-                ALCHEMY_POLYGON: process.env.ALCHEMY_POLYGON,
-                ALCHEMY_ARBITRUM: process.env.ALCHEMY_ARBITRUM,
+                ALCHEMY_ETHEREUM: process.env["ALCHEMY_ETHEREUM"],
+                ALCHEMY_POLYGON: process.env["ALCHEMY_POLYGON"],
+                ALCHEMY_ARBITRUM: process.env["ALCHEMY_ARBITRUM"],
             })
             : url;
     }
     async _getDecimals(contract) {
-        const decimals = contract.decimals();
+        const decimals = contract["decimals"]();
         return await decimals;
     }
     async getDecimals(token, system) {
@@ -90,7 +90,7 @@ class EVMChain {
             }
             else {
                 const contract = this.getTokenContract(token, system);
-                const balance = contract.balanceOf(address);
+                const balance = contract["balanceOf"](address);
                 const decimals = this._getDecimals(contract);
                 return {
                     timestamp: (0, string_formatting_1.toISOString)(Date.now()),
@@ -108,7 +108,7 @@ class EVMChain {
     }
     async getTokenSupply(token, system) {
         const contract = this.getTokenContract(token, system);
-        const supply = contract.totalSupply();
+        const supply = contract["totalSupply"]();
         const decimals = this._getDecimals(contract);
         return parseFloat(ethers_1.utils.formatUnits(await supply, await decimals));
     }

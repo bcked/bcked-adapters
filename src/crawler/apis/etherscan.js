@@ -15,7 +15,7 @@ class Etherscan {
     }
     getUrl(module, action, options) {
         const opt = options ? "&" + (0, requests_1.joinOptions)(options) : "";
-        return `/api?module=${module}&action=${action}${opt}&apikey=${process.env.ETHERSCAN_API_KEY}`;
+        return `/api?module=${module}&action=${action}${opt}&apikey=${process.env["ETHERSCAN_API_KEY"]}`;
     }
     async fetch(module, action, options) {
         const url = this.getUrl(module, action, options);

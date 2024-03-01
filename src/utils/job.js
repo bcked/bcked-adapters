@@ -6,7 +6,7 @@ const ts_node_1 = require("ts-node");
 async function job(name, job) {
     console.time(name);
     if (process[ts_node_1.REGISTER_INSTANCE]) {
-        process.env.DEV_MODE = "true";
+        process.env["DEV_MODE"] = "true";
     }
     try {
         await job();
