@@ -32,14 +32,7 @@ async function compileHistory<
         month: string | undefined,
         days: string[]
     ) => Promise<any>,
-    createDayResource: (
-        stats: Stats<TObject> | undefined,
-        year: string | undefined,
-        month: string | undefined,
-        day: string | undefined,
-        hours: string[]
-    ) => Promise<any>,
-    createHourResource: (stats: Stats<TObject> | undefined) => Promise<any>
+    createDayResource: (stats: Stats<TObject> | undefined) => Promise<any>
 ) {
     const csvPath = path.join(PATHS.graph, PATHS.records, csvName);
 
@@ -53,82 +46,61 @@ async function compileHistory<
     let monthsStats: StreamStats<TObject, TKey> | undefined;
     let daysOfMonth: string[] = [];
     let daysStats: StreamStats<TObject, TKey> | undefined;
-    let hoursOfDay: string[] = [];
-    let hoursStats: StreamStats<TObject, TKey> | undefined;
     let historyObject: TObject | undefined;
 
-    async function addHourToDay(hour: string) {
-        await createHourResource(hoursStats?.get());
-        hoursOfDay.push(hour);
-        hoursStats = new StreamStats(key, 100);
-    }
-
-    async function addDayToMonth(day: string, hour: string) {
-        await createDayResource(
-            daysStats?.get(),
-            yearsOfHistory.at(-1),
-            monthsOfYear.at(-1),
-            daysOfMonth.at(-1),
-            hoursOfDay
-        );
-        await addHourToDay(hour);
-        hoursOfDay = [hour];
+    async function addDayToMonth(day: string) {
+        await createDayResource(daysStats?.get());
         daysOfMonth.push(day);
         daysStats = new StreamStats(key, 100);
     }
 
-    async function addMonthToYear(month: string, day: string, hour: string) {
+    async function addMonthToYear(month: string, day: string) {
         await createMonthResource(
             monthsStats?.get(),
             yearsOfHistory.at(-1),
             monthsOfYear.at(-1),
             daysOfMonth
         );
-        await addDayToMonth(day, hour);
+        await addDayToMonth(day);
         daysOfMonth = [day];
         monthsOfYear.push(month);
         monthsStats = new StreamStats(key, 100);
     }
 
-    async function addYearToHistory(year: string, month: string, day: string, hour: string) {
+    async function addYearToHistory(year: string, month: string, day: string) {
         await createYearResource(yearsStats?.get(), yearsOfHistory.at(-1), monthsOfYear);
-        await addMonthToYear(month, day, hour);
+        await addMonthToYear(month, day);
         monthsOfYear = [month];
         yearsOfHistory.push(year);
         yearsStats = new StreamStats(key, 100);
     }
 
     for await (historyObject of readCSV<TObject>(csvPath)) {
-        const { year, month, day, hour } = getDateParts(historyObject.timestamp);
+        const { year, month, day } = getDateParts(historyObject.timestamp);
 
         if (yearsOfHistory.at(-1) !== year) {
-            await addYearToHistory(year!, month!, day!, hour!);
+            await addYearToHistory(year!, month!, day!);
         }
 
         if (monthsOfYear.at(-1) !== month) {
-            await addMonthToYear(month!, day!, hour!);
+            await addMonthToYear(month!, day!);
         }
 
         if (daysOfMonth.at(-1) !== day) {
-            await addDayToMonth(day!, hour!);
-        }
-
-        if (hoursOfDay.at(-1) !== hour) {
-            await addHourToDay(hour!);
+            await addDayToMonth(day!);
         }
 
         historyStats.add(historyObject);
         yearsStats!.add(historyObject);
         monthsStats!.add(historyObject);
         daysStats!.add(historyObject);
-        hoursStats!.add(historyObject);
     }
 
     if (!yearsOfHistory.length) return;
 
     await createHistoryResource(historyObject?.timestamp, historyStats.get(), yearsOfHistory);
     // Finalize by storing last year, month, day, hour
-    await addYearToHistory("N/A", "N/A", "N/A", "N/A");
+    await addYearToHistory("N/A", "N/A", "N/A");
 }
 
 parentPort?.on("message", async () => {
@@ -142,8 +114,7 @@ parentPort?.on("message", async () => {
                 ASSET_RESOURCES.collateralizationGraphHistory,
                 ASSET_RESOURCES.collateralizationGraphYear,
                 ASSET_RESOURCES.collateralizationGraphMonth,
-                ASSET_RESOURCES.collateralizationGraphDay,
-                ASSET_RESOURCES.collateralizationGraphHour
+                ASSET_RESOURCES.collateralizationGraphDay
             ),
         ]);
 

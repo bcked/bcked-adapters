@@ -3,6 +3,13 @@ import { setDateParts } from "../../utils/time";
 import { icons } from "../utils/icons";
 import { JsonResources } from "../utils/resources";
 
+/**
+ * Converts the statistics object to a summary object.
+ * @param path - The path to set in the summary object, this includes which parts of the date to include e.g. `${path}/{year}/{month}/{day}/{hour}`.
+ * @param stats - The statistics object containing min, max, and median values.
+ * @returns The summary object with low, median, and high values.
+ * @throws Error if the stats object is missing min, max, or median values.
+ */
 function statsToSummary<T extends primitive.Timestamped>(path: string, stats: Stats<T>) {
     if (!stats.min || !stats.max || !stats.median) {
         throw new Error("Stats missing. This should have been checked prior.");
@@ -10,13 +17,13 @@ function statsToSummary<T extends primitive.Timestamped>(path: string, stats: St
 
     return {
         low: {
-            $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, stats.min.timestamp),
+            $ref: setDateParts(path, stats.min.timestamp),
         },
         median: {
-            $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, stats.median.timestamp),
+            $ref: setDateParts(path, stats.median.timestamp),
         },
         high: {
-            $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, stats.max.timestamp),
+            $ref: setDateParts(path, stats.max.timestamp),
         },
     };
 }
@@ -25,7 +32,8 @@ function historyResource<T extends primitive.Timestamped>(
     path: string,
     latestTimestamp: primitive.ISODateTimeString | undefined,
     stats: Stats<T> | undefined,
-    years: string[]
+    years: string[],
+    dateParts: string = "{year}/{month}/{day}/{hour}"
 ) {
     if (!latestTimestamp || !stats || !stats.min || !stats.max || !stats.median || !years.length)
         return;
@@ -33,10 +41,10 @@ function historyResource<T extends primitive.Timestamped>(
     return {
         $id: path,
         latest: {
-            $ref: setDateParts(`${path}/{year}/{month}/{day}/{hour}`, latestTimestamp),
+            $ref: setDateParts(`${path}/${dateParts}`, latestTimestamp),
         },
         history: {
-            ...statsToSummary(path, stats),
+            ...statsToSummary(`${path}/${dateParts}`, stats),
             data: years.map((year) => ({
                 $ref: `${path}/${year}`,
             })),
@@ -48,7 +56,8 @@ function yearResource<T extends primitive.Timestamped>(
     path: string,
     stats: Stats<T> | undefined,
     year: string | undefined,
-    months: string[]
+    months: string[],
+    dateParts: string = "{year}/{month}/{day}/{hour}"
 ) {
     if (!year || !months.length) return;
 
@@ -56,7 +65,7 @@ function yearResource<T extends primitive.Timestamped>(
 
     return {
         $id: `${path}/${year}`,
-        ...statsToSummary(path, stats),
+        ...statsToSummary(`${path}/${dateParts}`, stats),
         data: months.map((month) => ({
             $ref: `${path}/${year}/${month}`,
         })),
@@ -68,7 +77,8 @@ function monthResource<T extends primitive.Timestamped>(
     stats: Stats<T> | undefined,
     year: string | undefined,
     month: string | undefined,
-    days: string[]
+    days: string[],
+    dateParts: string = "{year}/{month}/{day}/{hour}"
 ) {
     if (!year || !month || !days.length) return;
 
@@ -76,7 +86,7 @@ function monthResource<T extends primitive.Timestamped>(
 
     return {
         $id: `${path}/${year}/${month}`,
-        ...statsToSummary(path, stats),
+        ...statsToSummary(`${path}/${dateParts}`, stats),
         data: days.map((day) => ({
             $ref: `${path}/${year}/${month}/${day}`,
         })),
@@ -89,7 +99,8 @@ function dayResource<T extends primitive.Timestamped>(
     year: string | undefined,
     month: string | undefined,
     day: string | undefined,
-    hours: string[]
+    hours: string[],
+    dateParts: string = "{year}/{month}/{day}/{hour}"
 ) {
     if (!year || !month || !day || !hours.length) return;
 
@@ -97,7 +108,7 @@ function dayResource<T extends primitive.Timestamped>(
 
     return {
         $id: `${path}/${year}/${month}/${day}`,
-        ...statsToSummary(path, stats),
+        ...statsToSummary(`${path}/${dateParts}`, stats),
         data: hours.map((hour) => ({
             $ref: `${path}/${year}/${month}/${day}/${hour}`,
         })),
@@ -156,7 +167,13 @@ export class Asset extends JsonResources {
         stats: Stats<T> | undefined,
         years: string[]
     ) {
-        return historyResource("/assets/collateralization-graph", latestTimestamp, stats, years);
+        return historyResource(
+            "/assets/collateralization-graph",
+            latestTimestamp,
+            stats,
+            years,
+            "{year}/{month}/{day}"
+        );
     }
 
     @JsonResources.register({
@@ -172,7 +189,13 @@ export class Asset extends JsonResources {
         year: string | undefined,
         months: string[]
     ) {
-        return yearResource("/assets/collateralization-graph", stats, year, months);
+        return yearResource(
+            "/assets/collateralization-graph",
+            stats,
+            year,
+            months,
+            "{year}/{month}/{day}"
+        );
     }
 
     @JsonResources.register({
@@ -189,7 +212,14 @@ export class Asset extends JsonResources {
         month: string | undefined,
         days: string[]
     ) {
-        return monthResource("/assets/collateralization-graph", stats, year, month, days);
+        return monthResource(
+            "/assets/collateralization-graph",
+            stats,
+            year,
+            month,
+            days,
+            "{year}/{month}/{day}"
+        );
     }
 
     @JsonResources.register({
@@ -200,31 +230,16 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async collateralizationGraphDay<T extends primitive.Timestamped>(
-        stats: Stats<T> | undefined,
-        year: string | undefined,
-        month: string | undefined,
-        day: string | undefined,
-        hours: string[]
-    ) {
-        return dayResource("/assets/collateralization-graph", stats, year, month, day, hours);
-    }
-
-    @JsonResources.register({
-        path: "/assets/collateralization-graph/{year}/{month}/{day}/{hour}",
-        summary: "Get collateralization graph for a specific hour",
-        description: "Get the collateralization graph of all assets for a specific hour",
-        type: "CollateralizationGraph",
-        // TODO write schema
-        schema: {},
-    })
-    async collateralizationGraphHour<T extends primitive.Timestamped & bcked.asset.Graph>(
+    async collateralizationGraphDay<T extends primitive.Timestamped & bcked.asset.Graph>(
         stats: Stats<T> | undefined
     ) {
         if (!stats?.min || !stats.max || !stats.median) return;
 
         return {
-            ...hourBaseResource(`/assets/collateralization-graph`, stats.median.timestamp),
+            $id: setDateParts(
+                `/assets/collateralization-graph/{year}/{month}/{day}`,
+                stats.median.timestamp
+            ),
             graph: {
                 nodes: stats.median.graph.nodes
                     .filter((node) => node.id) // TODO Somehow there are nodes without ID
