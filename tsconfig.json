@@ -22,9 +22,9 @@
         "noUncheckedIndexedAccess": true,
 
         // "moduleResolution": "node", // "bundler" for bun
-        "allowImportingTsExtensions": true,
+        // "allowImportingTsExtensions": true,
         // "verbatimModuleSyntax": true, // If enabled, Jest fails with ESM issues
-        "noEmit": true,
+        // "noEmit": true, // Does not output JS files
 
         // Best practices
         "strict": true,
