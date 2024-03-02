@@ -77,16 +77,16 @@ npm test
 ### Rules for SVGs
 
 -   Square view box (if not already, can be done using Inkscape)
--   Optional: Normalized view box of 256x256 (can be done using Inkscape)
+-   Optional: Normalized view box of 256x256 (can be done using Inkscape by adjusting the document properties)
 -   All text should be presented as outlines
 -   File name `icon.svg`
--   File size <=20kb
+-   File size <=30kb
 -   Transparent background
 -   Prettified markup (not minified)
 -   Remove any unnecessary content like doctype, XML instructions, comments, editor data
 -   Include xmlns for HTML embedding
 
-To simplify the SVG, use the VS Code jock.svg extension command
+To simplify the SVG, use the VS Code jock.svg extension command "Minify SVG"
 to minify the SVG as configured in the projects settings.
 Afterwards format with prettier.
 

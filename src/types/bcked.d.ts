@@ -232,7 +232,8 @@ declare namespace bcked {
             | "oracle-provider"
             | "dao"
             | "bank"
-            | "central-bank";
+            | "central-bank"
+            | "treasury";
 
         interface Details {
             name: string;
