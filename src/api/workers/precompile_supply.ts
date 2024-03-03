@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../constants";
+import { FILES, PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 
 import { existsSync } from "fs";
@@ -10,7 +10,7 @@ import { remove } from "../../utils/files";
 async function* computeSupplyFallback(
     id: bcked.asset.Id
 ): AsyncIterableIterator<bcked.asset.SupplyAmount> {
-    const supplyCsv = path.join(PATHS.assets, id, PATHS.records, "supply.csv");
+    const supplyCsv = path.join(PATHS.assets, id, PATHS.records, FILES.csv.supply);
 
     if (!existsSync(supplyCsv)) return;
 
@@ -34,7 +34,7 @@ async function* computeSupplyFallback(
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     console.log(`Precompiling supply amount for asset ${id}`);
-    const filePath = path.join(PATHS.assets, id, PATHS.records, "supply_amount.csv");
+    const filePath = path.join(PATHS.assets, id, PATHS.records, FILES.csv.supplyAmount);
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes

@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises";
 import { join } from "path";
-import { PATHS } from "../../constants";
+import { FILES, PATHS } from "../../constants";
 import { readJson, writeBuffer } from "../../utils/files";
 import { renderSvgToPng } from "../utils/renderSvg";
 import { JsonResources } from "./resources";
@@ -8,7 +8,7 @@ import { JsonResources } from "./resources";
 export async function compileDetails<
     Resources extends JsonResources & { details: (...args: any[]) => any }
 >(resources: Resources, path: string, id: string) {
-    const filePath = join(path, id, PATHS.records, "details.json");
+    const filePath = join(path, id, PATHS.records, FILES.json.details);
     const details = await readJson(filePath);
 
     const resource = await resources.details(id, details!);
@@ -22,7 +22,7 @@ export async function compileIcons<
     const resource = await resources.icons(id);
 
     if (resource.svg) {
-        const svgPath = join(path, id, "icon.svg");
+        const svgPath = join(path, id, FILES.svg.icon);
         const svg = await readFile(svgPath);
         await writeBuffer(join(PATHS.api, resource.svg), svg);
         await Promise.all(
@@ -38,7 +38,7 @@ export async function compileIcons<
 export async function compileAssets<
     Resources extends JsonResources & { assets: (...args: any[]) => any }
 >(resources: Resources, path: string, id: string) {
-    const filePath = join(path, id, PATHS.records, "assets.json");
+    const filePath = join(path, id, PATHS.records, FILES.json.assets);
     const assets = await readJson<{ ids: bcked.asset.Id[] }>(filePath);
 
     if (!assets?.ids?.length) {

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import path from "path";
 import oas from "swagger-jsdoc";
-import { PATHS } from "../../constants";
+import { FILES, PATHS } from "../../constants";
 import { writeJson } from "../../utils/files";
 import { Template } from "../../utils/template";
 
@@ -112,7 +112,7 @@ export abstract class JsonResources {
             return async function (this: any, ...args: any[]): Promise<any> {
                 const resource = await target.call(this, ...args);
                 if (!resource) return;
-                const filePath = path.join(PATHS.api, resource.$id, "index.json");
+                const filePath = path.join(PATHS.api, resource.$id, FILES.json.index);
                 await writeJson(filePath, resource);
                 return resource;
             };

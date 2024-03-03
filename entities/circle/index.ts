@@ -10,6 +10,8 @@ import Crawler from "crawler";
 import dateFormat from "dateformat";
 import fs from "fs";
 import _ from "lodash";
+import path from "path";
+import { FILES } from "../../src/constants";
 import { BRManager } from "../../src/crawler/apis/br_manager";
 import { toAsync } from "../../src/utils/array";
 import { getClosest, getLatest } from "../../src/utils/cache";
@@ -45,7 +47,7 @@ export default class Adapter implements bcked.entity.Adapter {
     }
 
     async fetchLatestTreasuryReserves(): Promise<void> {
-        const csvPath = `${this.recordsPath}/reserves.csv`;
+        const csvPath = path.join(this.recordsPath, FILES.csv.reserves);
 
         const lastEntry = await getLatest<bcked.asset.Backing>(csvPath);
         // Check if the latest records are of the same day. If yes, don't fetch, as there can be no newer data.
@@ -82,7 +84,7 @@ export default class Adapter implements bcked.entity.Adapter {
     }
 
     async fetchLatestCashReserves(): Promise<void> {
-        const csvPath = `${this.recordsPath}/cash.csv`;
+        const csvPath = path.join(this.recordsPath, FILES.csv.cash);
 
         const lastEntry = await getLatest<bcked.asset.Backing>(csvPath);
         // Check if the latest records are of the same day. If yes, don't fetch, as there can be no newer data.
@@ -126,7 +128,7 @@ export default class Adapter implements bcked.entity.Adapter {
     }
 
     async fetchLatestBacking(): Promise<void> {
-        const csvPath = `${this.recordsPath}/backing.csv`;
+        const csvPath = path.join(this.recordsPath, FILES.csv.backing);
 
         const lastEntry = await getLatest<bcked.asset.Backing>(csvPath);
         // Check if the latest records are of the same day. If yes, don't fetch, as there can be no newer data.
@@ -138,13 +140,13 @@ export default class Adapter implements bcked.entity.Adapter {
         // Loop through the dates using timestamps and create Date objects
         for (const timestamp of getDatesBetween(startDate, Date.now(), daysInMs(1))) {
             const treasuryReserves = await getClosest<bcked.asset.Backing>(
-                `${this.recordsPath}/reserves.csv`,
+                path.join(this.recordsPath, FILES.csv.reserves),
                 timestamp,
                 hoursInMs(12.0)
             );
             if (!treasuryReserves) continue;
             const cashReserves = await getClosest<bcked.asset.Backing>(
-                `${this.recordsPath}/cash.csv`,
+                path.join(this.recordsPath, FILES.csv.cash),
                 timestamp,
                 hoursInMs(12.0)
             );

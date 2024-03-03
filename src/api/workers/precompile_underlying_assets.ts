@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../constants";
+import { FILES, PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 
 import { hoursToMilliseconds } from "date-fns";
@@ -30,7 +30,7 @@ async function* match(
     id: bcked.asset.Id,
     window: number = hoursToMilliseconds(12)
 ): AsyncIterableIterator<bcked.asset.Relationships> {
-    const backingCsv = path.join(PATHS.assets, id, "records", "backing.csv");
+    const backingCsv = path.join(PATHS.assets, id, PATHS.records, FILES.csv.backing);
 
     if (!existsSync(backingCsv)) return;
 
@@ -45,7 +45,12 @@ async function* match(
         if (priceLookup === undefined) {
             priceLookup = [];
             for (const underlyingAssetId of Object.keys(backingEntry.underlying)) {
-                const priceCsv = path.join(PATHS.assets, underlyingAssetId, "records", "price.csv");
+                const priceCsv = path.join(
+                    PATHS.assets,
+                    underlyingAssetId,
+                    PATHS.records,
+                    FILES.csv.price
+                );
 
                 if (!existsSync(priceCsv)) continue;
 
@@ -81,7 +86,7 @@ async function* match(
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     console.log(`Precompiling prices of underlying assets for asset ${id}`);
-    const filePath = path.join(PATHS.assets, id, "records", "underlying_assets.csv");
+    const filePath = path.join(PATHS.assets, id, PATHS.records, FILES.csv.underlyingAssets);
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes

@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../constants";
+import { FILES, PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 
 import { hoursToMilliseconds } from "date-fns";
@@ -54,7 +54,12 @@ function initializeCollateralizationLookups(assetIds: bcked.asset.Id[]) {
     const collateralizationLookups: CollateralizationLookup[] = [];
 
     for (const assetId of assetIds) {
-        const csvPath = path.join(PATHS.assets, assetId, "records", "collateralization_ratio.csv");
+        const csvPath = path.join(
+            PATHS.assets,
+            assetId,
+            PATHS.records,
+            FILES.csv.collateralizationRatio
+        );
 
         if (!existsSync(csvPath)) continue;
 
@@ -146,7 +151,7 @@ async function* createGraphs(window: number = hoursToMilliseconds(12)): AsyncIte
 parentPort?.on("message", async () => {
     const step = `Precompiling Collateralization Graph`;
     console.log(step);
-    const filePath = path.join(PATHS.graph, PATHS.records, "collateralization_graph.csv");
+    const filePath = path.join(PATHS.graph, PATHS.records, FILES.csv.collateralizationGraph);
 
     try {
         // Delete file if it already exists

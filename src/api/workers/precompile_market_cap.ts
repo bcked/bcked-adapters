@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../constants";
+import { FILES, PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 
 import { hoursToMilliseconds } from "date-fns";
@@ -13,8 +13,8 @@ async function* match(
     id: bcked.asset.Id,
     window: number = hoursToMilliseconds(12)
 ): AsyncIterableIterator<bcked.asset.MarketCap> {
-    const supplyCsv = path.join(PATHS.assets, id, "records", "supply_amount.csv");
-    const priceCsv = path.join(PATHS.assets, id, "records", "price.csv");
+    const supplyCsv = path.join(PATHS.assets, id, PATHS.records, FILES.csv.supplyAmount);
+    const priceCsv = path.join(PATHS.assets, id, PATHS.records, FILES.csv.price);
 
     if (!existsSync(supplyCsv) || !existsSync(priceCsv)) return;
 
@@ -40,7 +40,7 @@ async function* match(
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     console.log(`Precompiling market cap for asset ${id}`);
-    const filePath = path.join(PATHS.assets, id, "records", "market_cap.csv");
+    const filePath = path.join(PATHS.assets, id, PATHS.records, FILES.csv.marketCap);
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes

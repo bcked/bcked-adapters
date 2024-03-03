@@ -1,7 +1,7 @@
 import _ from "lodash";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { PATHS } from "../constants";
+import { FILES, PATHS } from "../constants";
 import { writeJson } from "../utils/files";
 import { job } from "../utils/job";
 import { executeInWorker, executeInWorkerPool } from "../utils/worker_pool";
@@ -38,7 +38,7 @@ async function generateOasSchema() {
         "components",
         "tags",
     ]);
-    await writeJson(`${PATHS.api}/openapi.json`, oasSchema);
+    await writeJson(path.join(PATHS.api, FILES.json.openapi), oasSchema);
     return oasSchema;
 }
 
@@ -50,7 +50,7 @@ async function generate404() {
             description: "The requested resource could not be found.",
         },
     };
-    await writeJson(`${PATHS.api}/404/index.json`, json);
+    await writeJson(path.join(PATHS.api, PATHS.notFound, FILES.json.index), json);
 }
 
 job("API Job", async () => {

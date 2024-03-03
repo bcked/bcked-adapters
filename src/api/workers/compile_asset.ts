@@ -2,7 +2,7 @@ import { existsSync } from "fs";
 import type { PropertyPath } from "lodash";
 import path from "path";
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../constants";
+import { FILES, PATHS } from "../../constants";
 import { readCSV } from "../../utils/csv";
 import { StreamStats, type Stats } from "../../utils/stream";
 import { getDateParts } from "../../utils/time";
@@ -143,7 +143,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
             compileDetails(ASSET_RESOURCES, PATHS.assets, id),
             compileIcons(ASSET_RESOURCES, PATHS.assets, id),
             compileHistory<bcked.asset.Price, "usd">(
-                "price.csv",
+                FILES.csv.price,
                 id,
                 "usd",
                 ASSET_RESOURCES.priceHistory,
@@ -153,7 +153,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
                 ASSET_RESOURCES.priceHour
             ),
             compileHistory<bcked.asset.SupplyAmount, "amount">(
-                "supply_amount.csv",
+                FILES.csv.supplyAmount,
                 id,
                 "amount",
                 ASSET_RESOURCES.supplyHistory,
@@ -163,7 +163,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
                 ASSET_RESOURCES.supplyHour
             ),
             compileHistory<bcked.asset.MarketCap, "usd">(
-                "market_cap.csv",
+                FILES.csv.marketCap,
                 id,
                 "usd",
                 ASSET_RESOURCES.marketCapHistory,
@@ -173,7 +173,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
                 ASSET_RESOURCES.marketCapHour
             ),
             compileHistory<bcked.asset.Relationships, "usd">(
-                "underlying_assets.csv",
+                FILES.csv.underlyingAssets,
                 id,
                 "usd",
                 ASSET_RESOURCES.underlyingAssetsHistory,
@@ -183,7 +183,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
                 ASSET_RESOURCES.underlyingAssetsHour
             ),
             compileHistory<bcked.asset.Collateralization, "ratio">(
-                "collateralization_ratio.csv",
+                FILES.csv.collateralizationRatio,
                 id,
                 "ratio",
                 ASSET_RESOURCES.collateralizationRatioHistory,

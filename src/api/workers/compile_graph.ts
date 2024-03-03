@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../constants";
+import { FILES, PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 
 import { existsSync } from "fs";
@@ -109,7 +109,7 @@ parentPort?.on("message", async () => {
     try {
         await Promise.all([
             compileHistory<bcked.asset.Graph, "stats.leaveCollateralization">(
-                "collateralization_graph.csv",
+                FILES.csv.collateralizationGraph,
                 "stats.leaveCollateralization",
                 ASSET_RESOURCES.collateralizationGraphHistory,
                 ASSET_RESOURCES.collateralizationGraphYear,

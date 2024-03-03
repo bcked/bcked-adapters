@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../constants";
+import { FILES, PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 
 import { hoursToMilliseconds } from "date-fns";
@@ -13,8 +13,13 @@ async function* match(
     id: bcked.asset.Id,
     window: number = hoursToMilliseconds(12) // TODO this might be to small for some assets? Maybe this could be configured per asset?
 ): AsyncIterableIterator<bcked.asset.Collateralization> {
-    const underlyingAssetsCsv = path.join(PATHS.assets, id, "records", "underlying_assets.csv");
-    const marketCapCsv = path.join(PATHS.assets, id, "records", "market_cap.csv");
+    const underlyingAssetsCsv = path.join(
+        PATHS.assets,
+        id,
+        PATHS.records,
+        FILES.csv.underlyingAssets
+    );
+    const marketCapCsv = path.join(PATHS.assets, id, PATHS.records, FILES.csv.marketCap);
 
     if (!existsSync(underlyingAssetsCsv) || !existsSync(marketCapCsv)) return;
 
@@ -40,7 +45,7 @@ async function* match(
 
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     console.log(`Precompiling market cap for asset ${id}`);
-    const filePath = path.join(PATHS.assets, id, "records", "collateralization_ratio.csv");
+    const filePath = path.join(PATHS.assets, id, PATHS.records, FILES.csv.collateralizationRatio);
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes

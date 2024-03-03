@@ -1,5 +1,6 @@
 import _ from "lodash";
 import path from "path";
+import { FILES, PATHS } from "../../constants";
 import { toAsync } from "../../utils/array";
 import { getLatest } from "../../utils/cache";
 import { writeToCsv } from "../../utils/csv";
@@ -46,7 +47,7 @@ export function isNewEntry(
 
 export class SystemAdapterProxy extends AdapterCache<bcked.system.Adapter> {
     async getDetails(id: bcked.system.Id): Promise<bcked.system.DetailsRecord> {
-        const pathToFile = `systems/${id}/records/details.json`;
+        const pathToFile = path.join(PATHS.systems, id, PATHS.records, FILES.json.details);
 
         const lastRecorded = await readJson<bcked.system.DetailsRecord>(pathToFile);
 
@@ -77,7 +78,7 @@ export class SystemAdapterProxy extends AdapterCache<bcked.system.Adapter> {
 
 export class EntityAdapterProxy extends AdapterCache<bcked.entity.Adapter> {
     async getDetails(id: bcked.entity.Id): Promise<bcked.entity.DetailsRecord> {
-        const pathToFile = `entities/${id}/records/details.json`;
+        const pathToFile = path.join(PATHS.entities, id, PATHS.records, FILES.json.details);
 
         const lastRecorded = await readJson<bcked.entity.DetailsRecord>(pathToFile);
 
@@ -109,7 +110,7 @@ export class EntityAdapterProxy extends AdapterCache<bcked.entity.Adapter> {
 export class AssetAdapterProxy extends AdapterCache<bcked.asset.Adapter> {
     async getDetails(identifier: bcked.asset.Identifier): Promise<bcked.asset.DetailsRecord> {
         const assetId = toId(identifier);
-        const pathToFile = `assets/${assetId}/records/details.json`;
+        const pathToFile = path.join(PATHS.assets, assetId, PATHS.records, FILES.json.details);
 
         const lastRecorded = await readJson<bcked.asset.DetailsRecord>(pathToFile);
 
@@ -134,7 +135,7 @@ export class AssetAdapterProxy extends AdapterCache<bcked.asset.Adapter> {
 
     async getPrice(identifier: bcked.asset.Identifier): Promise<bcked.asset.Price[]> {
         const assetId = toId(identifier);
-        const csvPath = `assets/${assetId}/records/price.csv`;
+        const csvPath = path.join(PATHS.assets, assetId, PATHS.records, FILES.csv.price);
         const lastRecorded = await getLatest<bcked.asset.Price>(csvPath);
 
         if (lastRecorded && !isNewer(lastRecorded.timestamp, Date.now(), minInMs(10)))
@@ -154,7 +155,7 @@ export class AssetAdapterProxy extends AdapterCache<bcked.asset.Adapter> {
 
     async getSupply(identifier: bcked.asset.Identifier): Promise<bcked.asset.Supply[]> {
         const assetId = toId(identifier);
-        const csvPath = `assets/${assetId}/records/supply.csv`;
+        const csvPath = path.join(PATHS.assets, assetId, PATHS.records, FILES.csv.supply);
         const lastRecorded = await getLatest<bcked.asset.Supply>(csvPath);
 
         if (lastRecorded && !isNewer(lastRecorded.timestamp, Date.now(), minInMs(10)))
@@ -174,7 +175,7 @@ export class AssetAdapterProxy extends AdapterCache<bcked.asset.Adapter> {
 
     async getBacking(identifier: bcked.asset.Identifier): Promise<bcked.asset.Backing[]> {
         const assetId = toId(identifier);
-        const csvPath = `assets/${assetId}/records/backing.csv`;
+        const csvPath = path.join(PATHS.assets, assetId, PATHS.records, FILES.csv.backing);
         const lastRecorded = await getLatest<bcked.asset.Backing>(csvPath);
 
         if (lastRecorded && !isNewer(lastRecorded.timestamp, Date.now(), minInMs(10)))

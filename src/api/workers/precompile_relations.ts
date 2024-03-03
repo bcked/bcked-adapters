@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../constants";
+import { FILES, PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 
 import { readdir } from "fs/promises";
@@ -13,7 +13,7 @@ async function* loadAssetDetails(): AsyncIterableIterator<bcked.asset.Details | 
     const assetIds = (await readdir(PATHS.assets)) as bcked.asset.Id[];
 
     for (const assetId of assetIds) {
-        const detailsJson = join(PATHS.assets, assetId, PATHS.records, "details.json");
+        const detailsJson = join(PATHS.assets, assetId, PATHS.records, FILES.json.details);
         yield await readJson(detailsJson);
     }
 }
@@ -32,7 +32,7 @@ async function storeGrouping(
         const assetIds = groupedAssets[key]!.map((asset) =>
             toId((asset as bcked.asset.Details).identifier)
         );
-        const jsonFilePath = join(path, key, PATHS.records, "assets.json");
+        const jsonFilePath = join(path, key, PATHS.records, FILES.json.assets);
         await writeJson(jsonFilePath, { ids: assetIds });
     }
 }
