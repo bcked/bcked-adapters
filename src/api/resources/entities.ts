@@ -47,6 +47,9 @@ class Entity extends JsonResources {
             icons: {
                 $ref: `/entities/${id}/icons`,
             },
+            assets: {
+                $ref: `/entities/${id}/assets`,
+            },
         };
     }
 
@@ -80,6 +83,23 @@ class Entity extends JsonResources {
     })
     async icons(id: bcked.entity.Id) {
         return icons("entities", id);
+    }
+
+    @JsonResources.register({
+        path: "/entities/{id}/assets",
+        summary: "Get assets of a entity",
+        description: "Get assets of a entity by its ID",
+        type: "EntityAssets",
+        // TODO write schema
+        schema: {},
+    })
+    async assets(id: bcked.entity.Id, assetIds: bcked.asset.Id[]) {
+        return {
+            $id: `/entities/${id}/assets`,
+            assets: assetIds.map((assetId) => ({
+                $ref: `/assets/${assetId}`,
+            })),
+        };
     }
 }
 

@@ -47,6 +47,9 @@ class System extends JsonResources {
             icons: {
                 $ref: `/systems/${id}/icons`,
             },
+            assets: {
+                $ref: `/systems/${id}/assets`,
+            },
         };
     }
 
@@ -80,6 +83,23 @@ class System extends JsonResources {
     })
     async icons(id: bcked.system.Id) {
         return icons("systems", id);
+    }
+
+    @JsonResources.register({
+        path: "/systems/{id}/assets",
+        summary: "Get assets of a system",
+        description: "Get assets of a system by its ID",
+        type: "SystemAssets",
+        // TODO write schema
+        schema: {},
+    })
+    async assets(id: bcked.system.Id, assetIds: bcked.asset.Id[]) {
+        return {
+            $id: `/systems/${id}/assets`,
+            assets: assetIds.map((assetId) => ({
+                $ref: `/assets/${assetId}`,
+            })),
+        };
     }
 }
 

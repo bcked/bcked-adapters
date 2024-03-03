@@ -34,3 +34,18 @@ export async function compileIcons<
 
     return resource;
 }
+
+export async function compileAssets<
+    Resources extends JsonResources & { assets: (...args: any[]) => any }
+>(resources: Resources, path: string, id: string) {
+    const filePath = join(path, id, PATHS.records, "assets.json");
+    const assets = await readJson<{ ids: bcked.asset.Id[] }>(filePath);
+
+    if (!assets?.ids?.length) {
+        throw new Error(`No assets found for ${id}`);
+    }
+
+    const resource = await resources.assets(id, assets.ids);
+
+    return resource;
+}

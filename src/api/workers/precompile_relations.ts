@@ -33,7 +33,7 @@ async function storeGrouping(
             toId((asset as bcked.asset.Details).identifier)
         );
         const jsonFilePath = join(path, key, PATHS.records, "assets.json");
-        await writeJson(jsonFilePath, { assets: assetIds });
+        await writeJson(jsonFilePath, { ids: assetIds });
     }
 }
 

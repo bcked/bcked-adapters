@@ -2,7 +2,7 @@ import { parentPort } from "worker_threads";
 import { PATHS } from "../../paths";
 import { sendErrorReport } from "../../watcher/bot";
 import { ENTITY_RESOURCES } from "../resources/entities";
-import { compileDetails, compileIcons } from "../utils/compile";
+import { compileAssets, compileDetails, compileIcons } from "../utils/compile";
 
 parentPort?.on("message", async (id: bcked.entity.Id) => {
     console.log(`Compile entity ${id}`);
@@ -11,6 +11,7 @@ parentPort?.on("message", async (id: bcked.entity.Id) => {
             ENTITY_RESOURCES.entity(id),
             compileDetails(ENTITY_RESOURCES, PATHS.entities, id),
             compileIcons(ENTITY_RESOURCES, PATHS.entities, id),
+            compileAssets(ENTITY_RESOURCES, PATHS.entities, id),
         ]);
 
         parentPort?.postMessage(null);
