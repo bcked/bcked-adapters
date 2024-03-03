@@ -67,7 +67,7 @@ npm test
 
 ## Icons
 
-### General Considerations
+### General considerations
 
 -   Original image is stored in SVG format
 -   Original image must have a minimum resolution of 256
@@ -76,8 +76,8 @@ npm test
 
 ### Rules for SVGs
 
--   Square view box (if not already, can be done using Inkscape)
--   Optional: Normalized view box of 256x256 (can be done using Inkscape by adjusting the document properties)
+-   Square view box
+-   Optional: Normalized view box of 256x256
 -   All text should be presented as outlines
 -   File name `icon.svg`
 -   File size <=30kb
@@ -86,11 +86,26 @@ npm test
 -   Remove any unnecessary content like doctype, XML instructions, comments, editor data
 -   Include xmlns for HTML embedding
 
+#### How to resize view box?
+
+1.  Open SVG in Inkscape.
+2.  Select all objects in the SVG (STRG + A).
+3.  Navigate to "Object" -> "Transform" -> "Scale"
+4.  Select "px"
+5.  Select "Scale propertionally"
+6.  Enter 256 for width and height
+7.  Press apply
+8.  Open "File" -> "Document Properties"
+9.  Adjust "Custom size" width and height to 256 and close window
+10. "File" -> Save a Copy
+
+#### How to prettify SVG?
+
 To simplify the SVG, use the VS Code jock.svg extension command "Minify SVG"
 to minify the SVG as configured in the projects settings.
 Afterwards format with prettier.
 
-### Helpful Resources
+### Helpful resources
 
 #### Crypo related
 
