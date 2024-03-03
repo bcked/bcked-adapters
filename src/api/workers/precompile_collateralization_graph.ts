@@ -144,7 +144,8 @@ async function* createGraphs(window: number = hoursToMilliseconds(12)): AsyncIte
 }
 
 parentPort?.on("message", async () => {
-    console.log(`Precompiling global graph`);
+    const step = `Precompiling Collateralization Graph`;
+    console.log(step);
     const filePath = path.join(PATHS.graph, PATHS.records, "collateralization_graph.csv");
 
     try {
@@ -157,7 +158,6 @@ parentPort?.on("message", async () => {
 
         parentPort?.postMessage(null);
     } catch (error) {
-        const step = `Compile Global Graph`;
         console.error(step, error);
         await sendErrorReport(step, error);
         parentPort?.postMessage(null);
