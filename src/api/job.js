@@ -48,7 +48,10 @@ async function generate404() {
 }
 (0, job_1.job)("API Job", async () => {
     // TODO this could already be done during data collection, not requiring a post-processing step
-    await Promise.all([compile(paths_1.PATHS.assets, "precompile_supply.ts")]);
+    await Promise.all([
+        (0, worker_pool_1.executeInWorker)(node_path_1.default.resolve(WORKERS_PATH, "precompile_relations.ts")),
+        compile(paths_1.PATHS.assets, "precompile_supply.ts"),
+    ]);
     await Promise.all([
         compile(paths_1.PATHS.assets, "precompile_market_cap.ts"),
         compile(paths_1.PATHS.assets, "precompile_underlying_assets.ts"),

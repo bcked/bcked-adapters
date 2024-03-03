@@ -111,7 +111,8 @@ async function* createGraphs(window = (0, date_fns_1.hoursToMilliseconds)(12)) {
     }
 }
 worker_threads_1.parentPort?.on("message", async () => {
-    console.log(`Precompiling global graph`);
+    const step = `Precompiling Collateralization Graph`;
+    console.log(step);
     const filePath = path_1.default.join(paths_1.PATHS.graph, paths_1.PATHS.records, "collateralization_graph.csv");
     try {
         // Delete file if it already exists
@@ -122,7 +123,6 @@ worker_threads_1.parentPort?.on("message", async () => {
         worker_threads_1.parentPort?.postMessage(null);
     }
     catch (error) {
-        const step = `Compile Global Graph`;
         console.error(step, error);
         await (0, bot_1.sendErrorReport)(step, error);
         worker_threads_1.parentPort?.postMessage(null);

@@ -38,72 +38,79 @@ exports.ASSET_RESOURCES = exports.Asset = void 0;
 const time_1 = require("../../utils/time");
 const icons_1 = require("../utils/icons");
 const resources_1 = require("../utils/resources");
+/**
+ * Converts the statistics object to a summary object.
+ * @param path - The path to set in the summary object, this includes which parts of the date to include e.g. `${path}/{year}/{month}/{day}/{hour}`.
+ * @param stats - The statistics object containing min, max, and median values.
+ * @returns The summary object with low, median, and high values.
+ * @throws Error if the stats object is missing min, max, or median values.
+ */
 function statsToSummary(path, stats) {
     if (!stats.min || !stats.max || !stats.median) {
         throw new Error("Stats missing. This should have been checked prior.");
     }
     return {
         low: {
-            $ref: (0, time_1.setDateParts)(`${path}/{year}/{month}/{day}/{hour}`, stats.min.timestamp),
+            $ref: (0, time_1.setDateParts)(path, stats.min.timestamp),
         },
         median: {
-            $ref: (0, time_1.setDateParts)(`${path}/{year}/{month}/{day}/{hour}`, stats.median.timestamp),
+            $ref: (0, time_1.setDateParts)(path, stats.median.timestamp),
         },
         high: {
-            $ref: (0, time_1.setDateParts)(`${path}/{year}/{month}/{day}/{hour}`, stats.max.timestamp),
+            $ref: (0, time_1.setDateParts)(path, stats.max.timestamp),
         },
     };
 }
-function historyResource(path, latestTimestamp, stats, years) {
+function historyResource(path, latestTimestamp, stats, years, dateParts = "{year}/{month}/{day}/{hour}") {
     if (!latestTimestamp || !stats || !stats.min || !stats.max || !stats.median || !years.length)
         return;
     return {
         $id: path,
         latest: {
-            $ref: (0, time_1.setDateParts)(`${path}/{year}/{month}/{day}/{hour}`, latestTimestamp),
+            $ref: (0, time_1.setDateParts)(`${path}/${dateParts}`, latestTimestamp),
         },
         history: {
-            ...statsToSummary(path, stats),
+            ...statsToSummary(`${path}/${dateParts}`, stats),
             data: years.map((year) => ({
                 $ref: `${path}/${year}`,
             })),
         },
     };
 }
-function yearResource(path, stats, year, months) {
+function yearResource(path, stats, year, months, dateParts = "{year}/{month}/{day}/{hour}") {
     if (!year || !months.length)
         return;
     if (!stats?.min || !stats.max || !stats.median)
         return;
     return {
         $id: `${path}/${year}`,
-        ...statsToSummary(path, stats),
+        ...statsToSummary(`${path}/${dateParts}`, stats),
         data: months.map((month) => ({
             $ref: `${path}/${year}/${month}`,
         })),
     };
 }
-function monthResource(path, stats, year, month, days) {
+function monthResource(path, stats, year, month, days, dateParts = "{year}/{month}/{day}/{hour}") {
     if (!year || !month || !days.length)
         return;
     if (!stats?.min || !stats.max || !stats.median)
         return;
     return {
         $id: `${path}/${year}/${month}`,
-        ...statsToSummary(path, stats),
+        ...statsToSummary(`${path}/${dateParts}`, stats),
         data: days.map((day) => ({
             $ref: `${path}/${year}/${month}/${day}`,
         })),
     };
 }
-function dayResource(path, stats, year, month, day, hours) {
+function dayResource(path, stats, year, month, day, hours, dateParts = "{year}/{month}/{day}/{hour}") {
     if (!year || !month || !day || !hours.length)
         return;
     if (!stats?.min || !stats.max || !stats.median)
         return;
     return {
         $id: `${path}/${year}/${month}/${day}`,
-        ...statsToSummary(path, stats),
+        ...statsToSummary(`${path}/${dateParts}`, stats),
         data: hours.map((hour) => ({
             $ref: `${path}/${year}/${month}/${day}/${hour}`,
         })),
@@ -123,7 +130,6 @@ let Asset = exports.Asset = (() => {
     let _collateralizationGraphYear_decorators;
     let _collateralizationGraphMonth_decorators;
     let _collateralizationGraphDay_decorators;
-    let _collateralizationGraphHour_decorators;
     let _asset_decorators;
     let _details_decorators;
     let _icons_decorators;
@@ -176,22 +182,19 @@ let Asset = exports.Asset = (() => {
                 };
             }
             async collateralizationGraphHistory(latestTimestamp, stats, years) {
-                return historyResource("/assets/collateralization-graph", latestTimestamp, stats, years);
+                return historyResource("/assets/collateralization-graph", latestTimestamp, stats, years, "{year}/{month}/{day}");
             }
             async collateralizationGraphYear(stats, year, months) {
-                return yearResource("/assets/collateralization-graph", stats, year, months);
+                return yearResource("/assets/collateralization-graph", stats, year, months, "{year}/{month}/{day}");
             }
             async collateralizationGraphMonth(stats, year, month, days) {
-                return monthResource("/assets/collateralization-graph", stats, year, month, days);
+                return monthResource("/assets/collateralization-graph", stats, year, month, days, "{year}/{month}/{day}");
             }
-            async collateralizationGraphDay(stats, year, month, day, hours) {
-                return dayResource("/assets/collateralization-graph", stats, year, month, day, hours);
-            }
-            async collateralizationGraphHour(stats) {
+            async collateralizationGraphDay(stats) {
                 if (!stats?.min || !stats.max || !stats.median)
                     return;
                 return {
-                    ...hourBaseResource(`/assets/collateralization-graph`, stats.median.timestamp),
+                    $id: (0, time_1.setDateParts)(`/assets/collateralization-graph/{year}/{month}/{day}`, stats.median.timestamp),
                     graph: {
                         nodes: stats.median.graph.nodes
                             .filter((node) => node.id) // TODO Somehow there are nodes without ID
@@ -465,14 +468,6 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _collateralizationGraphHour_decorators = [resources_1.JsonResources.register({
-                    path: "/assets/collateralization-graph/{year}/{month}/{day}/{hour}",
-                    summary: "Get collateralization graph for a specific hour",
-                    description: "Get the collateralization graph of all assets for a specific hour",
-                    type: "CollateralizationGraph",
-                    // TODO write schema
-                    schema: {},
-                })];
             _asset_decorators = [resources_1.JsonResources.register({
                     path: "/assets/{id}",
                     summary: "Get an asset",
@@ -702,7 +697,6 @@ let Asset = exports.Asset = (() => {
             __esDecorate(_a, null, _collateralizationGraphYear_decorators, { kind: "method", name: "collateralizationGraphYear", static: false, private: false, access: { has: obj => "collateralizationGraphYear" in obj, get: obj => obj.collateralizationGraphYear } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _collateralizationGraphMonth_decorators, { kind: "method", name: "collateralizationGraphMonth", static: false, private: false, access: { has: obj => "collateralizationGraphMonth" in obj, get: obj => obj.collateralizationGraphMonth } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _collateralizationGraphDay_decorators, { kind: "method", name: "collateralizationGraphDay", static: false, private: false, access: { has: obj => "collateralizationGraphDay" in obj, get: obj => obj.collateralizationGraphDay } }, null, _instanceExtraInitializers);
-            __esDecorate(_a, null, _collateralizationGraphHour_decorators, { kind: "method", name: "collateralizationGraphHour", static: false, private: false, access: { has: obj => "collateralizationGraphHour" in obj, get: obj => obj.collateralizationGraphHour } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _asset_decorators, { kind: "method", name: "asset", static: false, private: false, access: { has: obj => "asset" in obj, get: obj => obj.asset } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _details_decorators, { kind: "method", name: "details", static: false, private: false, access: { has: obj => "details" in obj, get: obj => obj.details } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _icons_decorators, { kind: "method", name: "icons", static: false, private: false, access: { has: obj => "icons" in obj, get: obj => obj.icons } }, null, _instanceExtraInitializers);

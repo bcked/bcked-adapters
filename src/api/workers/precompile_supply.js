@@ -10,9 +10,8 @@ const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
 const files_1 = require("../../utils/files");
-const ASSETS_PATH = "assets";
 async function* computeSupplyFallback(id) {
-    const supplyCsv = path_1.default.join(ASSETS_PATH, id, "records", "supply.csv");
+    const supplyCsv = path_1.default.join(paths_1.PATHS.assets, id, paths_1.PATHS.records, "supply.csv");
     if (!(0, fs_1.existsSync)(supplyCsv))
         return;
     const supplyEntries = (0, csv_1.readCSV)(supplyCsv);
@@ -30,7 +29,7 @@ async function* computeSupplyFallback(id) {
 }
 worker_threads_1.parentPort?.on("message", async (id) => {
     console.log(`Precompiling supply amount for asset ${id}`);
-    const filePath = path_1.default.join(paths_1.PATHS.assets, id, "records", "supply_amount.csv");
+    const filePath = path_1.default.join(paths_1.PATHS.assets, id, paths_1.PATHS.records, "supply_amount.csv");
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
