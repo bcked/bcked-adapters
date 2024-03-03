@@ -1,7 +1,7 @@
 import _ from "lodash";
 import path from "path";
 import oas from "swagger-jsdoc";
-import { PATHS } from "../../paths";
+import { PATHS } from "../../constants";
 import { writeJson } from "../../utils/files";
 import { Template } from "../../utils/template";
 

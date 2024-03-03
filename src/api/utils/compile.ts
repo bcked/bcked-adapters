@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises";
 import { join } from "path";
-import { PATHS } from "../../paths";
+import { PATHS } from "../../constants";
 import { readJson, writeBuffer } from "../../utils/files";
 import { renderSvgToPng } from "../utils/renderSvg";
 import { JsonResources } from "./resources";

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { PATHS } from "../paths";
+import { PATHS } from "../constants";
 import { writeJson } from "../utils/files";
 import { job } from "../utils/job";
 import { executeInWorker, executeInWorkerPool } from "../utils/worker_pool";

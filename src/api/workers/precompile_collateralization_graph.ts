@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../paths";
+import { PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 
 import { hoursToMilliseconds } from "date-fns";

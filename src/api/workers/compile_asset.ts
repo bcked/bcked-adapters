@@ -2,7 +2,7 @@ import { existsSync } from "fs";
 import type { PropertyPath } from "lodash";
 import path from "path";
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../paths";
+import { PATHS } from "../../constants";
 import { readCSV } from "../../utils/csv";
 import { StreamStats, type Stats } from "../../utils/stream";
 import { getDateParts } from "../../utils/time";

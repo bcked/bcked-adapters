@@ -1,5 +1,5 @@
 import path from "node:path";
-import { PATHS } from "../../paths";
+import { PATHS } from "../../constants";
 import { writeJson } from "../../utils/files";
 
 export async function writeResource(resource: any | Promise<any>) {

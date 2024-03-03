@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../paths";
+import { PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 import { ENTITY_RESOURCES } from "../resources/entities";
 import { compileAssets, compileDetails, compileIcons } from "../utils/compile";

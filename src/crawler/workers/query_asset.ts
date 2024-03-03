@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { PATHS } from "../../paths";
+import { PATHS } from "../../constants";
 import { fromId } from "../../utils/helper";
 import { sendErrorReport } from "../../watcher/bot";
 import { AssetAdapterProxy } from "../adapters/proxy";
