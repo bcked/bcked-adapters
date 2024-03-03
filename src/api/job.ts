@@ -55,20 +55,24 @@ async function generate404() {
 
 job("API Job", async () => {
     // TODO this could already be done during data collection, not requiring a post-processing step
+    // TODO define with depends on definitions as a DAG and then automatically group into consecutive execution steps
     await Promise.all([
         executeInWorker(path.resolve(WORKERS_PATH, "precompile_relations.ts")),
         compile(PATHS.assets, "precompile_supply.ts"),
     ]);
 
     await Promise.all([
-        compile(PATHS.assets, "precompile_market_cap.ts"),
+        compile(PATHS.assets, "precompile_market_cap.ts"), // Depends on "precompile_supply.ts"
         compile(PATHS.assets, "precompile_underlying_assets.ts"),
     ]);
 
-    await Promise.all([compile(PATHS.assets, "precompile_collateralization_ratio.ts")]);
+    await Promise.all([
+        compile(PATHS.systems, "precompile_system_total_value_locked.ts", SYSTEM_RESOURCES), // Depends on "precompile_relations.ts" and "precompile_market_cap.ts"
+        compile(PATHS.assets, "precompile_collateralization_ratio.ts"), // Depends on "precompile_underlying_assets.ts"
+    ]);
 
     await Promise.all([
-        executeInWorker(path.resolve(WORKERS_PATH, "precompile_collateralization_graph.ts")),
+        executeInWorker(path.resolve(WORKERS_PATH, "precompile_collateralization_graph.ts")), // Depends on "precompile_collateralization_ratio.ts"
     ]);
 
     await Promise.all([

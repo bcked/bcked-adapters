@@ -23,6 +23,7 @@ export const FILES = {
         cash: "cash.csv",
         reserves: "reserves.csv",
         marketCap: "market_cap.csv",
+        totalValueLocked: "total_value_locked.csv",
         underlyingAssets: "underlying_assets.csv",
         collateralizationRatio: "collateralization_ratio.csv",
         collateralizationGraph: "collateralization_graph.csv",
