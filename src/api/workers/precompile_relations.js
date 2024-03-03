@@ -27,7 +27,7 @@ async function storeGrouping(assetDetails, groupBy, path) {
         }
         const assetIds = groupedAssets[key].map((asset) => (0, helper_1.toId)(asset.identifier));
         const jsonFilePath = (0, path_1.join)(path, key, paths_1.PATHS.records, "assets.json");
-        await (0, files_1.writeJson)(jsonFilePath, { assets: assetIds });
+        await (0, files_1.writeJson)(jsonFilePath, { ids: assetIds });
     }
 }
 worker_threads_1.parentPort?.on("message", async () => {

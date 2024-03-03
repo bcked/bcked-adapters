@@ -12,6 +12,7 @@ worker_threads_1.parentPort?.on("message", async (id) => {
             entities_1.ENTITY_RESOURCES.entity(id),
             (0, compile_1.compileDetails)(entities_1.ENTITY_RESOURCES, paths_1.PATHS.entities, id),
             (0, compile_1.compileIcons)(entities_1.ENTITY_RESOURCES, paths_1.PATHS.entities, id),
+            (0, compile_1.compileAssets)(entities_1.ENTITY_RESOURCES, paths_1.PATHS.entities, id),
         ]);
         worker_threads_1.parentPort?.postMessage(null);
     }

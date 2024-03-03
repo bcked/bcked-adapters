@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compileIcons = exports.compileDetails = void 0;
+exports.compileAssets = exports.compileIcons = exports.compileDetails = void 0;
 const promises_1 = require("fs/promises");
 const path_1 = require("path");
 const paths_1 = require("../../paths");
@@ -24,4 +24,14 @@ async function compileIcons(resources, path, id) {
     return resource;
 }
 exports.compileIcons = compileIcons;
+async function compileAssets(resources, path, id) {
+    const filePath = (0, path_1.join)(path, id, paths_1.PATHS.records, "assets.json");
+    const assets = await (0, files_1.readJson)(filePath);
+    if (!assets?.ids?.length) {
+        throw new Error(`No assets found for ${id}`);
+    }
+    const resource = await resources.assets(id, assets.ids);
+    return resource;
+}
+exports.compileAssets = compileAssets;
 //# sourceMappingURL=compile.js.map

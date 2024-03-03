@@ -44,6 +44,7 @@ let Entity = (() => {
     let _entity_decorators;
     let _details_decorators;
     let _icons_decorators;
+    let _assets_decorators;
     return _a = class Entity extends resources_1.JsonResources {
             constructor() {
                 super({
@@ -73,6 +74,9 @@ let Entity = (() => {
                     icons: {
                         $ref: `/entities/${id}/icons`,
                     },
+                    assets: {
+                        $ref: `/entities/${id}/assets`,
+                    },
                 };
             }
             async details(id, details) {
@@ -88,6 +92,14 @@ let Entity = (() => {
             }
             async icons(id) {
                 return (0, icons_1.icons)("entities", id);
+            }
+            async assets(id, assetIds) {
+                return {
+                    $id: `/entities/${id}/assets`,
+                    assets: assetIds.map((assetId) => ({
+                        $ref: `/assets/${assetId}`,
+                    })),
+                };
             }
         },
         (() => {
@@ -123,10 +135,19 @@ let Entity = (() => {
                     // TODO write schema
                     schema: {},
                 })];
+            _assets_decorators = [resources_1.JsonResources.register({
+                    path: "/entities/{id}/assets",
+                    summary: "Get assets of a entity",
+                    description: "Get assets of a entity by its ID",
+                    type: "EntityAssets",
+                    // TODO write schema
+                    schema: {},
+                })];
             __esDecorate(_a, null, _index_decorators, { kind: "method", name: "index", static: false, private: false, access: { has: obj => "index" in obj, get: obj => obj.index } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _entity_decorators, { kind: "method", name: "entity", static: false, private: false, access: { has: obj => "entity" in obj, get: obj => obj.entity } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _details_decorators, { kind: "method", name: "details", static: false, private: false, access: { has: obj => "details" in obj, get: obj => obj.details } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _icons_decorators, { kind: "method", name: "icons", static: false, private: false, access: { has: obj => "icons" in obj, get: obj => obj.icons } }, null, _instanceExtraInitializers);
+            __esDecorate(_a, null, _assets_decorators, { kind: "method", name: "assets", static: false, private: false, access: { has: obj => "assets" in obj, get: obj => obj.assets } }, null, _instanceExtraInitializers);
         })(),
         _a;
 })();

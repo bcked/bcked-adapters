@@ -12,6 +12,7 @@ worker_threads_1.parentPort?.on("message", async (id) => {
             systems_1.SYSTEM_RESOURCES.system(id),
             (0, compile_1.compileDetails)(systems_1.SYSTEM_RESOURCES, paths_1.PATHS.systems, id),
             (0, compile_1.compileIcons)(systems_1.SYSTEM_RESOURCES, paths_1.PATHS.systems, id),
+            (0, compile_1.compileAssets)(systems_1.SYSTEM_RESOURCES, paths_1.PATHS.systems, id),
         ]);
         worker_threads_1.parentPort?.postMessage(null);
     }
