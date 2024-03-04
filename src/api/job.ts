@@ -68,6 +68,7 @@ job("API Job", async () => {
 
     await Promise.all([
         compile(PATHS.systems, "precompile_system_total_value_locked.ts", SYSTEM_RESOURCES), // Depends on "precompile_relations.ts" and "precompile_market_cap.ts"
+        compile(PATHS.entities, "precompile_entities_total_value_locked.ts", ENTITY_RESOURCES), // Depends on "precompile_relations.ts" and "precompile_market_cap.ts"
         compile(PATHS.assets, "precompile_collateralization_ratio.ts"), // Depends on "precompile_underlying_assets.ts"
     ]);
 

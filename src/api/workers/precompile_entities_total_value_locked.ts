@@ -54,10 +54,10 @@ async function getMarketCapForTimestamp(
 }
 
 async function* computeTotalValueLocked(
-    id: bcked.system.Id,
+    id: bcked.entity.Id,
     window: number = hoursToMilliseconds(1)
 ): AsyncIterableIterator<any> {
-    const assetsJson = path.join(PATHS.systems, id, PATHS.records, FILES.json.assets);
+    const assetsJson = path.join(PATHS.entities, id, PATHS.records, FILES.json.assets);
     const assets = await readJson<{ ids: bcked.asset.Id[] }>(assetsJson);
 
     if (!assets) {
@@ -106,10 +106,10 @@ async function* computeTotalValueLocked(
     }
 }
 
-parentPort?.on("message", async (id: bcked.system.Id) => {
+parentPort?.on("message", async (id: bcked.entity.Id) => {
     const step = `Precompile system ${id} total value locked`;
     console.log(step);
-    const filePath = path.join(PATHS.systems, id, PATHS.records, FILES.csv.totalValueLocked);
+    const filePath = path.join(PATHS.entities, id, PATHS.records, FILES.csv.totalValueLocked);
 
     try {
         // Delete file if it already exists
