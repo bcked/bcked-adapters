@@ -108,7 +108,7 @@ async function* computeTotalValueLocked(
 }
 
 parentPort?.on("message", async (id: bcked.entity.Id) => {
-    const step = `Precompile system ${id} total value locked`;
+    const step = `Precompile entity ${id} total value locked`;
     console.log(step);
     const filePath = path.join(PATHS.entities, id, PATHS.records, FILES.csv.totalValueLocked);
 

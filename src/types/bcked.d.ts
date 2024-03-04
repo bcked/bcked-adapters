@@ -185,6 +185,11 @@ declare namespace bcked {
             updated: primitive.ISODateTimeString;
         };
 
+        interface TotalValueLocked {
+            timestamp: primitive.ISODateTimeString;
+            totalValueLocked: number;
+        }
+
         interface Adapter {
             getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;
             // Generic method to update any type of entity related data.
@@ -246,6 +251,11 @@ declare namespace bcked {
             listed: primitive.ISODateTimeString;
             updated: primitive.ISODateTimeString;
         };
+
+        interface TotalValueLocked {
+            timestamp: primitive.ISODateTimeString;
+            totalValueLocked: number;
+        }
 
         interface Adapter {
             getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;
