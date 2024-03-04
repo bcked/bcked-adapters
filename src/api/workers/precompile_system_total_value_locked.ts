@@ -61,13 +61,15 @@ async function* computeTotalValueLocked(
     const assets = await readJson<{ ids: bcked.asset.Id[] }>(assetsJson);
 
     if (!assets) {
-        throw new Error("Assets not found");
+        console.error("Assets not found");
+        return;
     }
 
     const marketCapLookups = initializeMarketCapLookups(assets.ids);
 
     if (!marketCapLookups.length) {
-        throw new Error("No market cap lookups found");
+        console.error("No market cap lookups found");
+        return;
     }
 
     // TODO get latest entry from total value locked and continue from that time
