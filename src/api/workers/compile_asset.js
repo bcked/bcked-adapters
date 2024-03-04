@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
 const worker_threads_1 = require("worker_threads");
-const paths_1 = require("../../paths");
+const constants_1 = require("../../constants");
 const csv_1 = require("../../utils/csv");
 const stream_1 = require("../../utils/stream");
 const time_1 = require("../../utils/time");
@@ -14,7 +14,7 @@ const bot_1 = require("../../watcher/bot");
 const assets_1 = require("../resources/assets");
 const compile_1 = require("../utils/compile");
 async function compileHistory(csvName, id, key, createHistoryResource, createYearResource, createMonthResource, createDayResource, createHourResource) {
-    const csvPath = path_1.default.join(paths_1.PATHS.assets, id, paths_1.PATHS.records, csvName);
+    const csvPath = path_1.default.join(constants_1.PATHS.assets, id, constants_1.PATHS.records, csvName);
     if (!(0, fs_1.existsSync)(csvPath))
         return;
     const historyStats = new stream_1.StreamStats(key, 100);
@@ -84,19 +84,19 @@ worker_threads_1.parentPort?.on("message", async (id) => {
     try {
         await Promise.all([
             assets_1.ASSET_RESOURCES.asset(id),
-            (0, compile_1.compileDetails)(assets_1.ASSET_RESOURCES, paths_1.PATHS.assets, id),
-            (0, compile_1.compileIcons)(assets_1.ASSET_RESOURCES, paths_1.PATHS.assets, id),
-            compileHistory("price.csv", id, "usd", assets_1.ASSET_RESOURCES.priceHistory, assets_1.ASSET_RESOURCES.priceYear, assets_1.ASSET_RESOURCES.priceMonth, assets_1.ASSET_RESOURCES.priceDay, assets_1.ASSET_RESOURCES.priceHour),
-            compileHistory("supply_amount.csv", id, "amount", assets_1.ASSET_RESOURCES.supplyHistory, assets_1.ASSET_RESOURCES.supplyYear, assets_1.ASSET_RESOURCES.supplyMonth, assets_1.ASSET_RESOURCES.supplyDay, assets_1.ASSET_RESOURCES.supplyHour),
-            compileHistory("market_cap.csv", id, "usd", assets_1.ASSET_RESOURCES.marketCapHistory, assets_1.ASSET_RESOURCES.marketCapYear, assets_1.ASSET_RESOURCES.marketCapMonth, assets_1.ASSET_RESOURCES.marketCapDay, assets_1.ASSET_RESOURCES.marketCapHour),
-            compileHistory("underlying_assets.csv", id, "usd", assets_1.ASSET_RESOURCES.underlyingAssetsHistory, assets_1.ASSET_RESOURCES.underlyingAssetsYear, assets_1.ASSET_RESOURCES.underlyingAssetsMonth, assets_1.ASSET_RESOURCES.underlyingAssetsDay, assets_1.ASSET_RESOURCES.underlyingAssetsHour),
-            compileHistory("collateralization_ratio.csv", id, "ratio", assets_1.ASSET_RESOURCES.collateralizationRatioHistory, assets_1.ASSET_RESOURCES.collateralizationRatioYear, assets_1.ASSET_RESOURCES.collateralizationRatioMonth, assets_1.ASSET_RESOURCES.collateralizationRatioDay, assets_1.ASSET_RESOURCES.collateralizationRatioHour),
+            (0, compile_1.compileDetails)(assets_1.ASSET_RESOURCES, constants_1.PATHS.assets, id),
+            (0, compile_1.compileIcons)(assets_1.ASSET_RESOURCES, constants_1.PATHS.assets, id),
+            compileHistory(constants_1.FILES.csv.price, id, "usd", assets_1.ASSET_RESOURCES.priceHistory, assets_1.ASSET_RESOURCES.priceYear, assets_1.ASSET_RESOURCES.priceMonth, assets_1.ASSET_RESOURCES.priceDay, assets_1.ASSET_RESOURCES.priceHour),
+            compileHistory(constants_1.FILES.csv.supplyAmount, id, "amount", assets_1.ASSET_RESOURCES.supplyHistory, assets_1.ASSET_RESOURCES.supplyYear, assets_1.ASSET_RESOURCES.supplyMonth, assets_1.ASSET_RESOURCES.supplyDay, assets_1.ASSET_RESOURCES.supplyHour),
+            compileHistory(constants_1.FILES.csv.marketCap, id, "usd", assets_1.ASSET_RESOURCES.marketCapHistory, assets_1.ASSET_RESOURCES.marketCapYear, assets_1.ASSET_RESOURCES.marketCapMonth, assets_1.ASSET_RESOURCES.marketCapDay, assets_1.ASSET_RESOURCES.marketCapHour),
+            compileHistory(constants_1.FILES.csv.underlyingAssets, id, "usd", assets_1.ASSET_RESOURCES.underlyingAssetsHistory, assets_1.ASSET_RESOURCES.underlyingAssetsYear, assets_1.ASSET_RESOURCES.underlyingAssetsMonth, assets_1.ASSET_RESOURCES.underlyingAssetsDay, assets_1.ASSET_RESOURCES.underlyingAssetsHour),
+            compileHistory(constants_1.FILES.csv.collateralizationRatio, id, "ratio", assets_1.ASSET_RESOURCES.collateralizationRatioHistory, assets_1.ASSET_RESOURCES.collateralizationRatioYear, assets_1.ASSET_RESOURCES.collateralizationRatioMonth, assets_1.ASSET_RESOURCES.collateralizationRatioDay, assets_1.ASSET_RESOURCES.collateralizationRatioHour),
         ]);
         worker_threads_1.parentPort?.postMessage(null);
     }
     catch (error) {
-        console.error(`/${paths_1.PATHS.assets}/${id}`, error);
-        await (0, bot_1.sendErrorReport)(`/${paths_1.PATHS.assets}/${id}`, error);
+        console.error(`/${constants_1.PATHS.assets}/${id}`, error);
+        await (0, bot_1.sendErrorReport)(`/${constants_1.PATHS.assets}/${id}`, error);
         worker_threads_1.parentPort?.postMessage(null);
     }
 });

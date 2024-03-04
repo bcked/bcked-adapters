@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetAdapterProxy = exports.EntityAdapterProxy = exports.SystemAdapterProxy = exports.isNewEntry = exports.AdapterCache = exports.getAdapter = void 0;
 const lodash_1 = __importDefault(require("lodash"));
 const path_1 = __importDefault(require("path"));
+const constants_1 = require("../../constants");
 const array_1 = require("../../utils/array");
 const cache_1 = require("../../utils/cache");
 const csv_1 = require("../../utils/csv");
@@ -66,7 +67,7 @@ function isNewEntry(cached, entry, threshold) {
 exports.isNewEntry = isNewEntry;
 class SystemAdapterProxy extends AdapterCache {
     async getDetails(id) {
-        const pathToFile = `systems/${id}/records/details.json`;
+        const pathToFile = path_1.default.join(constants_1.PATHS.systems, id, constants_1.PATHS.records, constants_1.FILES.json.details);
         const lastRecorded = await (0, files_1.readJson)(pathToFile);
         if (lastRecorded && !(0, time_1.isNewer)(lastRecorded.updated, Date.now(), (0, time_1.minInMs)(10)))
             return lastRecorded;
@@ -90,7 +91,7 @@ class SystemAdapterProxy extends AdapterCache {
 exports.SystemAdapterProxy = SystemAdapterProxy;
 class EntityAdapterProxy extends AdapterCache {
     async getDetails(id) {
-        const pathToFile = `entities/${id}/records/details.json`;
+        const pathToFile = path_1.default.join(constants_1.PATHS.entities, id, constants_1.PATHS.records, constants_1.FILES.json.details);
         const lastRecorded = await (0, files_1.readJson)(pathToFile);
         if (lastRecorded && !(0, time_1.isNewer)(lastRecorded.updated, Date.now(), (0, time_1.minInMs)(10)))
             return lastRecorded;
@@ -115,7 +116,7 @@ exports.EntityAdapterProxy = EntityAdapterProxy;
 class AssetAdapterProxy extends AdapterCache {
     async getDetails(identifier) {
         const assetId = (0, helper_1.toId)(identifier);
-        const pathToFile = `assets/${assetId}/records/details.json`;
+        const pathToFile = path_1.default.join(constants_1.PATHS.assets, assetId, constants_1.PATHS.records, constants_1.FILES.json.details);
         const lastRecorded = await (0, files_1.readJson)(pathToFile);
         if (lastRecorded && !(0, time_1.isNewer)(lastRecorded.updated, Date.now(), (0, time_1.minInMs)(10)))
             return lastRecorded;
@@ -133,7 +134,7 @@ class AssetAdapterProxy extends AdapterCache {
     }
     async getPrice(identifier) {
         const assetId = (0, helper_1.toId)(identifier);
-        const csvPath = `assets/${assetId}/records/price.csv`;
+        const csvPath = path_1.default.join(constants_1.PATHS.assets, assetId, constants_1.PATHS.records, constants_1.FILES.csv.price);
         const lastRecorded = await (0, cache_1.getLatest)(csvPath);
         if (lastRecorded && !(0, time_1.isNewer)(lastRecorded.timestamp, Date.now(), (0, time_1.minInMs)(10)))
             return [lastRecorded];
@@ -145,7 +146,7 @@ class AssetAdapterProxy extends AdapterCache {
     }
     async getSupply(identifier) {
         const assetId = (0, helper_1.toId)(identifier);
-        const csvPath = `assets/${assetId}/records/supply.csv`;
+        const csvPath = path_1.default.join(constants_1.PATHS.assets, assetId, constants_1.PATHS.records, constants_1.FILES.csv.supply);
         const lastRecorded = await (0, cache_1.getLatest)(csvPath);
         if (lastRecorded && !(0, time_1.isNewer)(lastRecorded.timestamp, Date.now(), (0, time_1.minInMs)(10)))
             return [lastRecorded];
@@ -157,7 +158,7 @@ class AssetAdapterProxy extends AdapterCache {
     }
     async getBacking(identifier) {
         const assetId = (0, helper_1.toId)(identifier);
-        const csvPath = `assets/${assetId}/records/backing.csv`;
+        const csvPath = path_1.default.join(constants_1.PATHS.assets, assetId, constants_1.PATHS.records, constants_1.FILES.csv.backing);
         const lastRecorded = await (0, cache_1.getLatest)(csvPath);
         if (lastRecorded && !(0, time_1.isNewer)(lastRecorded.timestamp, Date.now(), (0, time_1.minInMs)(10)))
             return [lastRecorded];

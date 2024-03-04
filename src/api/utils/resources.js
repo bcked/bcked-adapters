@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JsonResources = void 0;
 const lodash_1 = __importDefault(require("lodash"));
 const path_1 = __importDefault(require("path"));
-const paths_1 = require("../../paths");
+const constants_1 = require("../../constants");
 const files_1 = require("../../utils/files");
 const template_1 = require("../../utils/template");
 class JsonResources {
@@ -84,7 +84,7 @@ class JsonResources {
                 const resource = await target.call(this, ...args);
                 if (!resource)
                     return;
-                const filePath = path_1.default.join(paths_1.PATHS.api, resource.$id, "index.json");
+                const filePath = path_1.default.join(constants_1.PATHS.api, resource.$id, constants_1.FILES.json.index);
                 await (0, files_1.writeJson)(filePath, resource);
                 return resource;
             };

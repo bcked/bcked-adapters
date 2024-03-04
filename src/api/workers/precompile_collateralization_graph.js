@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const worker_threads_1 = require("worker_threads");
-const paths_1 = require("../../paths");
+const constants_1 = require("../../constants");
 const bot_1 = require("../../watcher/bot");
 const date_fns_1 = require("date-fns");
 const fs_1 = require("fs");
@@ -37,7 +37,7 @@ async function createGraphForTimestamp(timestamp, collateralizationLookups, wind
 function initializeCollateralizationLookups(assetIds) {
     const collateralizationLookups = [];
     for (const assetId of assetIds) {
-        const csvPath = path_1.default.join(paths_1.PATHS.assets, assetId, "records", "collateralization_ratio.csv");
+        const csvPath = path_1.default.join(constants_1.PATHS.assets, assetId, constants_1.PATHS.records, constants_1.FILES.csv.collateralizationRatio);
         if (!(0, fs_1.existsSync)(csvPath))
             continue;
         collateralizationLookups.push({
@@ -92,7 +92,7 @@ function computeStats(graph) {
     };
 }
 async function* createGraphs(window = (0, date_fns_1.hoursToMilliseconds)(12)) {
-    const assetIds = (await (0, promises_1.readdir)(paths_1.PATHS.assets));
+    const assetIds = (await (0, promises_1.readdir)(constants_1.PATHS.assets));
     const collateralizationLookups = initializeCollateralizationLookups(assetIds);
     // TODO get latest entry from global graph and continue from that time
     // const lastEntry = await getLatest<bcked.asset.Backing>(csvPath);
@@ -113,7 +113,7 @@ async function* createGraphs(window = (0, date_fns_1.hoursToMilliseconds)(12)) {
 worker_threads_1.parentPort?.on("message", async () => {
     const step = `Precompiling Collateralization Graph`;
     console.log(step);
-    const filePath = path_1.default.join(paths_1.PATHS.graph, paths_1.PATHS.records, "collateralization_graph.csv");
+    const filePath = path_1.default.join(constants_1.PATHS.graph, constants_1.PATHS.records, constants_1.FILES.csv.collateralizationGraph);
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes

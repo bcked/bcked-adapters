@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
 const promises_1 = __importDefault(require("node:fs/promises"));
 const node_path_1 = __importDefault(require("node:path"));
-const paths_1 = require("../paths");
+const constants_1 = require("../constants");
 const files_1 = require("../utils/files");
 const job_1 = require("../utils/job");
 const worker_pool_1 = require("../utils/worker_pool");
@@ -33,7 +33,7 @@ async function generateOasSchema() {
         "components",
         "tags",
     ]);
-    await (0, files_1.writeJson)(`${paths_1.PATHS.api}/openapi.json`, oasSchema);
+    await (0, files_1.writeJson)(node_path_1.default.join(constants_1.PATHS.api, constants_1.FILES.json.openapi), oasSchema);
     return oasSchema;
 }
 async function generate404() {
@@ -44,27 +44,31 @@ async function generate404() {
             description: "The requested resource could not be found.",
         },
     };
-    await (0, files_1.writeJson)(`${paths_1.PATHS.api}/404/index.json`, json);
+    await (0, files_1.writeJson)(node_path_1.default.join(constants_1.PATHS.api, constants_1.PATHS.notFound, constants_1.FILES.json.index), json);
 }
 (0, job_1.job)("API Job", async () => {
     // TODO this could already be done during data collection, not requiring a post-processing step
+    // TODO define with depends on definitions as a DAG and then automatically group into consecutive execution steps
     await Promise.all([
         (0, worker_pool_1.executeInWorker)(node_path_1.default.resolve(WORKERS_PATH, "precompile_relations.ts")),
-        compile(paths_1.PATHS.assets, "precompile_supply.ts"),
+        compile(constants_1.PATHS.assets, "precompile_supply.ts"),
     ]);
     await Promise.all([
-        compile(paths_1.PATHS.assets, "precompile_market_cap.ts"),
-        compile(paths_1.PATHS.assets, "precompile_underlying_assets.ts"),
+        compile(constants_1.PATHS.assets, "precompile_market_cap.ts"),
+        compile(constants_1.PATHS.assets, "precompile_underlying_assets.ts"),
     ]);
-    await Promise.all([compile(paths_1.PATHS.assets, "precompile_collateralization_ratio.ts")]);
     await Promise.all([
-        (0, worker_pool_1.executeInWorker)(node_path_1.default.resolve(WORKERS_PATH, "precompile_collateralization_graph.ts")),
+        compile(constants_1.PATHS.systems, "precompile_system_total_value_locked.ts", systems_1.SYSTEM_RESOURCES),
+        compile(constants_1.PATHS.assets, "precompile_collateralization_ratio.ts"), // Depends on "precompile_underlying_assets.ts"
+    ]);
+    await Promise.all([
+        (0, worker_pool_1.executeInWorker)(node_path_1.default.resolve(WORKERS_PATH, "precompile_collateralization_graph.ts")), // Depends on "precompile_collateralization_ratio.ts"
     ]);
     await Promise.all([
         resources_1.INDEX_RESOURCES.index(),
-        compile(paths_1.PATHS.entities, "compile_entity.ts", entities_1.ENTITY_RESOURCES),
-        compile(paths_1.PATHS.systems, "compile_system.ts", systems_1.SYSTEM_RESOURCES),
-        compile(paths_1.PATHS.assets, "compile_asset.ts", assets_1.ASSET_RESOURCES),
+        compile(constants_1.PATHS.entities, "compile_entity.ts", entities_1.ENTITY_RESOURCES),
+        compile(constants_1.PATHS.systems, "compile_system.ts", systems_1.SYSTEM_RESOURCES),
+        compile(constants_1.PATHS.assets, "compile_asset.ts", assets_1.ASSET_RESOURCES),
         (0, worker_pool_1.executeInWorker)(node_path_1.default.resolve(WORKERS_PATH, "compile_graph.ts")),
         generateOasSchema(),
         generate404(),

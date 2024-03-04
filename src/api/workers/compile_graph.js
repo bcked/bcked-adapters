@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const worker_threads_1 = require("worker_threads");
-const paths_1 = require("../../paths");
+const constants_1 = require("../../constants");
 const bot_1 = require("../../watcher/bot");
 const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
@@ -13,7 +13,7 @@ const stream_1 = require("../../utils/stream");
 const time_1 = require("../../utils/time");
 const assets_1 = require("../resources/assets");
 async function compileHistory(csvName, key, createHistoryResource, createYearResource, createMonthResource, createDayResource) {
-    const csvPath = path_1.default.join(paths_1.PATHS.graph, paths_1.PATHS.records, csvName);
+    const csvPath = path_1.default.join(constants_1.PATHS.graph, constants_1.PATHS.records, csvName);
     if (!(0, fs_1.existsSync)(csvPath))
         return;
     const historyStats = new stream_1.StreamStats(key, 100);
@@ -69,12 +69,12 @@ worker_threads_1.parentPort?.on("message", async () => {
     console.log(`Compile Global Graph`);
     try {
         await Promise.all([
-            compileHistory("collateralization_graph.csv", "stats.leaveCollateralization", assets_1.ASSET_RESOURCES.collateralizationGraphHistory, assets_1.ASSET_RESOURCES.collateralizationGraphYear, assets_1.ASSET_RESOURCES.collateralizationGraphMonth, assets_1.ASSET_RESOURCES.collateralizationGraphDay),
+            compileHistory(constants_1.FILES.csv.collateralizationGraph, "stats.leaveCollateralization", assets_1.ASSET_RESOURCES.collateralizationGraphHistory, assets_1.ASSET_RESOURCES.collateralizationGraphYear, assets_1.ASSET_RESOURCES.collateralizationGraphMonth, assets_1.ASSET_RESOURCES.collateralizationGraphDay),
         ]);
         worker_threads_1.parentPort?.postMessage(null);
     }
     catch (error) {
-        const step = `/${paths_1.PATHS.assets}/collateralization-graph`;
+        const step = `/${constants_1.PATHS.assets}/collateralization-graph`;
         console.error(step, error);
         await (0, bot_1.sendErrorReport)(step, error);
         worker_threads_1.parentPort?.postMessage(null);

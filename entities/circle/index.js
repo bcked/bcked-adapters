@@ -15,6 +15,8 @@ const crawler_1 = __importDefault(require("crawler"));
 const dateformat_1 = __importDefault(require("dateformat"));
 const fs_1 = __importDefault(require("fs"));
 const lodash_1 = __importDefault(require("lodash"));
+const path_1 = __importDefault(require("path"));
+const constants_1 = require("../../src/constants");
 const br_manager_1 = require("../../src/crawler/apis/br_manager");
 const array_1 = require("../../src/utils/array");
 const cache_1 = require("../../src/utils/cache");
@@ -37,7 +39,7 @@ class Adapter {
         return details;
     }
     async fetchLatestTreasuryReserves() {
-        const csvPath = `${this.recordsPath}/reserves.csv`;
+        const csvPath = path_1.default.join(this.recordsPath, constants_1.FILES.csv.reserves);
         const lastEntry = await (0, cache_1.getLatest)(csvPath);
         // Check if the latest records are of the same day. If yes, don't fetch, as there can be no newer data.
         if (lastEntry !== null && (0, time_1.isClose)(lastEntry.timestamp, Date.now(), (0, time_1.hoursInMs)(23.99)))
@@ -65,7 +67,7 @@ class Adapter {
         }
     }
     async fetchLatestCashReserves() {
-        const csvPath = `${this.recordsPath}/cash.csv`;
+        const csvPath = path_1.default.join(this.recordsPath, constants_1.FILES.csv.cash);
         const lastEntry = await (0, cache_1.getLatest)(csvPath);
         // Check if the latest records are of the same day. If yes, don't fetch, as there can be no newer data.
         if (lastEntry !== null && (0, time_1.isClose)(lastEntry.timestamp, Date.now(), (0, time_1.hoursInMs)(23.99)))
@@ -100,7 +102,7 @@ class Adapter {
         await (0, csv_1.writeToCsv)(csvPath, (0, array_1.toAsync)([entry]), "timestamp");
     }
     async fetchLatestBacking() {
-        const csvPath = `${this.recordsPath}/backing.csv`;
+        const csvPath = path_1.default.join(this.recordsPath, constants_1.FILES.csv.backing);
         const lastEntry = await (0, cache_1.getLatest)(csvPath);
         // Check if the latest records are of the same day. If yes, don't fetch, as there can be no newer data.
         if (lastEntry !== null && (0, time_1.isClose)(lastEntry.timestamp, Date.now(), (0, time_1.hoursInMs)(23.99)))
@@ -108,10 +110,10 @@ class Adapter {
         const startDate = new Date(lastEntry?.timestamp ?? 0);
         // Loop through the dates using timestamps and create Date objects
         for (const timestamp of (0, time_1.getDatesBetween)(startDate, Date.now(), (0, time_1.daysInMs)(1))) {
-            const treasuryReserves = await (0, cache_1.getClosest)(`${this.recordsPath}/reserves.csv`, timestamp, (0, time_1.hoursInMs)(12.0));
+            const treasuryReserves = await (0, cache_1.getClosest)(path_1.default.join(this.recordsPath, constants_1.FILES.csv.reserves), timestamp, (0, time_1.hoursInMs)(12.0));
             if (!treasuryReserves)
                 continue;
-            const cashReserves = await (0, cache_1.getClosest)(`${this.recordsPath}/cash.csv`, timestamp, (0, time_1.hoursInMs)(12.0));
+            const cashReserves = await (0, cache_1.getClosest)(path_1.default.join(this.recordsPath, constants_1.FILES.csv.cash), timestamp, (0, time_1.hoursInMs)(12.0));
             if (!cashReserves)
                 continue;
             const res = {
