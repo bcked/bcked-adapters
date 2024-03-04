@@ -76,7 +76,7 @@ async function* computeTotalValueLocked(id, window = (0, date_fns_1.hoursToMilli
     }
 }
 worker_threads_1.parentPort?.on("message", async (id) => {
-    const step = `Precompile system ${id} total value locked`;
+    const step = `Precompile entity ${id} total value locked`;
     console.log(step);
     const filePath = path_1.default.join(constants_1.PATHS.entities, id, constants_1.PATHS.records, constants_1.FILES.csv.totalValueLocked);
     try {
