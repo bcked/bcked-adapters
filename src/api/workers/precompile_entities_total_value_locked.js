@@ -36,7 +36,7 @@ async function getMarketCapForTimestamp(timestamp, marketCapLookups, window = (0
     })));
 }
 async function* computeTotalValueLocked(id, window = (0, date_fns_1.hoursToMilliseconds)(1)) {
-    const assetsJson = path_1.default.join(constants_1.PATHS.systems, id, constants_1.PATHS.records, constants_1.FILES.json.assets);
+    const assetsJson = path_1.default.join(constants_1.PATHS.entities, id, constants_1.PATHS.records, constants_1.FILES.json.assets);
     const assets = await (0, files_1.readJson)(assetsJson);
     if (!assets) {
         console.error("Assets not found");
@@ -77,7 +77,7 @@ async function* computeTotalValueLocked(id, window = (0, date_fns_1.hoursToMilli
 worker_threads_1.parentPort?.on("message", async (id) => {
     const step = `Precompile system ${id} total value locked`;
     console.log(step);
-    const filePath = path_1.default.join(constants_1.PATHS.systems, id, constants_1.PATHS.records, constants_1.FILES.csv.totalValueLocked);
+    const filePath = path_1.default.join(constants_1.PATHS.entities, id, constants_1.PATHS.records, constants_1.FILES.csv.totalValueLocked);
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
@@ -92,4 +92,4 @@ worker_threads_1.parentPort?.on("message", async (id) => {
         worker_threads_1.parentPort?.postMessage(null);
     }
 });
-//# sourceMappingURL=precompile_system_total_value_locked.js.map
+//# sourceMappingURL=precompile_entities_total_value_locked.js.map

@@ -59,6 +59,7 @@ async function generate404() {
     ]);
     await Promise.all([
         compile(constants_1.PATHS.systems, "precompile_system_total_value_locked.ts", systems_1.SYSTEM_RESOURCES),
+        compile(constants_1.PATHS.entities, "precompile_entities_total_value_locked.ts", entities_1.ENTITY_RESOURCES),
         compile(constants_1.PATHS.assets, "precompile_collateralization_ratio.ts"), // Depends on "precompile_underlying_assets.ts"
     ]);
     await Promise.all([
