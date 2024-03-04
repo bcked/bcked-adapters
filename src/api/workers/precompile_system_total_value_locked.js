@@ -39,11 +39,13 @@ async function* computeTotalValueLocked(id, window = (0, date_fns_1.hoursToMilli
     const assetsJson = path_1.default.join(constants_1.PATHS.systems, id, constants_1.PATHS.records, constants_1.FILES.json.assets);
     const assets = await (0, files_1.readJson)(assetsJson);
     if (!assets) {
-        throw new Error("Assets not found");
+        console.error("Assets not found");
+        return;
     }
     const marketCapLookups = initializeMarketCapLookups(assets.ids);
     if (!marketCapLookups.length) {
-        throw new Error("No market cap lookups found");
+        console.error("No market cap lookups found");
+        return;
     }
     // TODO get latest entry from total value locked and continue from that time
     // const lastEntry = await getLatest<bcked.asset.Backing>(csvPath);
