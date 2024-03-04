@@ -97,10 +97,11 @@ async function* computeTotalValueLocked(
 
         yield {
             timestamp: toISOString(timestamp),
-            assets: marketCaps.map((marketCap) => ({
-                id: marketCap.assetId,
-                timestamp: marketCap.marketCap?.timestamp,
-            })),
+            // assets: marketCaps.map((marketCap) => ({
+            //     id: marketCap.assetId,
+            //     timestamp: marketCap.marketCap?.timestamp,
+            //     usd: marketCap.marketCap?.usd,
+            // })),
             totalValueLocked,
         };
     }
