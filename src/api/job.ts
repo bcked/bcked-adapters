@@ -8,6 +8,7 @@ import { executeInWorker, executeInWorkerPool } from "../utils/worker_pool";
 import { INDEX_RESOURCES } from "./resources";
 import { ASSET_RESOURCES } from "./resources/assets";
 import { ENTITY_RESOURCES } from "./resources/entities";
+import { GRAPH_RESOURCES } from "./resources/graphs";
 import { SYSTEM_RESOURCES } from "./resources/systems";
 import { JsonResources } from "./utils/openapi";
 
@@ -29,7 +30,7 @@ async function compile<Result>(
 }
 
 async function generateOasSchema() {
-    INDEX_RESOURCES.extend(ENTITY_RESOURCES, SYSTEM_RESOURCES, ASSET_RESOURCES);
+    INDEX_RESOURCES.extend(ENTITY_RESOURCES, SYSTEM_RESOURCES, ASSET_RESOURCES, GRAPH_RESOURCES);
     const oasSchema = _.pick(INDEX_RESOURCES.spec, [
         "openapi",
         "info",
