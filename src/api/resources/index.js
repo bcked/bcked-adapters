@@ -35,12 +35,12 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.INDEX_RESOURCES = void 0;
-const resources_1 = require("../utils/resources");
+const openapi_1 = require("../utils/openapi");
 let Index = (() => {
     var _a;
     let _instanceExtraInitializers = [];
     let _index_decorators;
-    return _a = class Index extends resources_1.JsonResources {
+    return _a = class Index extends openapi_1.JsonResources {
             constructor() {
                 super(undefined, {
                     openapi: "3.1.0",
@@ -84,11 +84,14 @@ let Index = (() => {
                     systems: {
                         $ref: `/systems`,
                     },
+                    graphs: {
+                        $ref: `/graphs`,
+                    },
                 };
             }
         },
         (() => {
-            _index_decorators = [resources_1.JsonResources.register({
+            _index_decorators = [openapi_1.JsonResources.register({
                     path: "/",
                     summary: "Retrieve a list of all resources",
                     description: "Get a list of all resource references",

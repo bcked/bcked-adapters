@@ -37,99 +37,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ASSET_RESOURCES = exports.Asset = void 0;
 const time_1 = require("../../utils/time");
 const icons_1 = require("../utils/icons");
+const openapi_1 = require("../utils/openapi");
 const resources_1 = require("../utils/resources");
-/**
- * Converts the statistics object to a summary object.
- * @param path - The path to set in the summary object, this includes which parts of the date to include e.g. `${path}/{year}/{month}/{day}/{hour}`.
- * @param stats - The statistics object containing min, max, and median values.
- * @returns The summary object with low, median, and high values.
- * @throws Error if the stats object is missing min, max, or median values.
- */
-function statsToSummary(path, stats) {
-    if (!stats.min || !stats.max || !stats.median) {
-        throw new Error("Stats missing. This should have been checked prior.");
-    }
-    return {
-        low: {
-            $ref: (0, time_1.setDateParts)(path, stats.min.timestamp),
-        },
-        median: {
-            $ref: (0, time_1.setDateParts)(path, stats.median.timestamp),
-        },
-        high: {
-            $ref: (0, time_1.setDateParts)(path, stats.max.timestamp),
-        },
-    };
-}
-function historyResource(path, latestTimestamp, stats, years, dateParts = "{year}/{month}/{day}/{hour}") {
-    if (!latestTimestamp || !stats || !stats.min || !stats.max || !stats.median || !years.length)
-        return;
-    return {
-        $id: path,
-        latest: {
-            $ref: (0, time_1.setDateParts)(`${path}/${dateParts}`, latestTimestamp),
-        },
-        history: {
-            ...statsToSummary(`${path}/${dateParts}`, stats),
-            data: years.map((year) => ({
-                $ref: `${path}/${year}`,
-            })),
-        },
-    };
-}
-function yearResource(path, stats, year, months, dateParts = "{year}/{month}/{day}/{hour}") {
-    if (!year || !months.length)
-        return;
-    if (!stats?.min || !stats.max || !stats.median)
-        return;
-    return {
-        $id: `${path}/${year}`,
-        ...statsToSummary(`${path}/${dateParts}`, stats),
-        data: months.map((month) => ({
-            $ref: `${path}/${year}/${month}`,
-        })),
-    };
-}
-function monthResource(path, stats, year, month, days, dateParts = "{year}/{month}/{day}/{hour}") {
-    if (!year || !month || !days.length)
-        return;
-    if (!stats?.min || !stats.max || !stats.median)
-        return;
-    return {
-        $id: `${path}/${year}/${month}`,
-        ...statsToSummary(`${path}/${dateParts}`, stats),
-        data: days.map((day) => ({
-            $ref: `${path}/${year}/${month}/${day}`,
-        })),
-    };
-}
-function dayResource(path, stats, year, month, day, hours, dateParts = "{year}/{month}/{day}/{hour}") {
-    if (!year || !month || !day || !hours.length)
-        return;
-    if (!stats?.min || !stats.max || !stats.median)
-        return;
-    return {
-        $id: `${path}/${year}/${month}/${day}`,
-        ...statsToSummary(`${path}/${dateParts}`, stats),
-        data: hours.map((hour) => ({
-            $ref: `${path}/${year}/${month}/${day}/${hour}`,
-        })),
-    };
-}
-function hourBaseResource(path, timestamp) {
-    return {
-        $id: (0, time_1.setDateParts)(`${path}/{year}/{month}/{day}/{hour}`, timestamp),
-        timestamp,
-    };
-}
 let Asset = exports.Asset = (() => {
     var _a;
     let _instanceExtraInitializers = [];
     let _index_decorators;
-    let _collateralizationGraphHistory_decorators;
-    let _collateralizationGraphYear_decorators;
-    let _collateralizationGraphMonth_decorators;
-    let _collateralizationGraphDay_decorators;
     let _asset_decorators;
     let _details_decorators;
     let _icons_decorators;
@@ -158,7 +71,7 @@ let Asset = exports.Asset = (() => {
     let _collateralizationRatioMonth_decorators;
     let _collateralizationRatioDay_decorators;
     let _collateralizationRatioHour_decorators;
-    return _a = class Asset extends resources_1.JsonResources {
+    return _a = class Asset extends openapi_1.JsonResources {
             constructor() {
                 super({
                     name: "Assets",
@@ -176,59 +89,6 @@ let Asset = exports.Asset = (() => {
                     assets: ids.map((id) => ({
                         $ref: `/assets/${id}`,
                     })),
-                    "collateralization-graph": {
-                        $ref: `/assets/collateralization-graph`,
-                    },
-                };
-            }
-            async collateralizationGraphHistory(latestTimestamp, stats, years) {
-                return historyResource("/assets/collateralization-graph", latestTimestamp, stats, years, "{year}/{month}/{day}");
-            }
-            async collateralizationGraphYear(stats, year, months) {
-                return yearResource("/assets/collateralization-graph", stats, year, months, "{year}/{month}/{day}");
-            }
-            async collateralizationGraphMonth(stats, year, month, days) {
-                return monthResource("/assets/collateralization-graph", stats, year, month, days, "{year}/{month}/{day}");
-            }
-            async collateralizationGraphDay(stats) {
-                if (!stats?.min || !stats.max || !stats.median)
-                    return;
-                return {
-                    $id: (0, time_1.setDateParts)(`/assets/collateralization-graph/{year}/{month}/{day}`, stats.median.timestamp),
-                    graph: {
-                        nodes: stats.median.graph.nodes
-                            .filter((node) => node.id) // TODO Somehow there are nodes without ID
-                            .map((node) => ({
-                            id: node.id,
-                            data: {
-                                asset: {
-                                    $ref: `/assets/${node.id}`,
-                                },
-                                "collateralization-ratio": node.data?.value
-                                    ? {
-                                        $ref: (0, time_1.setDateParts)(`/assets/${node.id}/collateralization-ratio/{year}/{month}/{day}/{hour}`, node.data.timestamp),
-                                    }
-                                    : undefined,
-                                value: node.data?.value
-                                    ? {
-                                        "rwa:USD": node.data.value,
-                                    }
-                                    : undefined,
-                            },
-                        })),
-                        links: stats.median.graph.links
-                            .filter((link) => link.fromId && link.toId) // TODO Somehow there are links without ID
-                            .map((link) => ({
-                            fromId: link.fromId,
-                            toId: link.toId,
-                            data: {
-                                value: {
-                                    "rwa:USD": link.data.value,
-                                },
-                            },
-                        })),
-                    },
-                    stats: stats.median.stats,
                 };
             }
             async asset(id) {
@@ -284,38 +144,38 @@ let Asset = exports.Asset = (() => {
                 return (0, icons_1.icons)("assets", id);
             }
             async priceHistory(id, latestTimestamp, stats, years) {
-                return historyResource(`/assets/${id}/price`, latestTimestamp, stats, years);
+                return (0, resources_1.historyResource)(`/assets/${id}/price`, latestTimestamp, stats, years);
             }
             async priceYear(id, stats, year, months) {
-                return yearResource(`/assets/${id}/price`, stats, year, months);
+                return (0, resources_1.yearResource)(`/assets/${id}/price`, stats, year, months);
             }
             async priceMonth(id, stats, year, month, days) {
-                return monthResource(`/assets/${id}/price`, stats, year, month, days);
+                return (0, resources_1.monthResource)(`/assets/${id}/price`, stats, year, month, days);
             }
             async priceDay(id, stats, year, month, day, hours) {
-                return dayResource(`/assets/${id}/price`, stats, year, month, day, hours);
+                return (0, resources_1.dayResource)(`/assets/${id}/price`, stats, year, month, day, hours);
             }
             async priceHour(id, stats) {
                 if (!stats?.min || !stats.max || !stats.median)
                     return;
                 return {
-                    ...hourBaseResource(`/assets/${id}/price`, stats.median.timestamp),
+                    ...(0, resources_1.hourBaseResource)(`/assets/${id}/price`, stats.median.timestamp),
                     value: {
                         "rwa:USD": stats.median.usd,
                     },
                 };
             }
             async supplyHistory(id, latestTimestamp, stats, years) {
-                return historyResource(`/assets/${id}/supply`, latestTimestamp, stats, years);
+                return (0, resources_1.historyResource)(`/assets/${id}/supply`, latestTimestamp, stats, years);
             }
             async supplyYear(id, stats, year, months) {
-                return yearResource(`/assets/${id}/supply`, stats, year, months);
+                return (0, resources_1.yearResource)(`/assets/${id}/supply`, stats, year, months);
             }
             async supplyMonth(id, stats, year, month, days) {
-                return monthResource(`/assets/${id}/supply`, stats, year, month, days);
+                return (0, resources_1.monthResource)(`/assets/${id}/supply`, stats, year, month, days);
             }
             async supplyDay(id, stats, year, month, day, hours) {
-                return dayResource(`/assets/${id}/supply`, stats, year, month, day, hours);
+                return (0, resources_1.dayResource)(`/assets/${id}/supply`, stats, year, month, day, hours);
             }
             async supplyHour(id, stats) {
                 if (!stats?.min || !stats.max || !stats.median)
@@ -323,7 +183,7 @@ let Asset = exports.Asset = (() => {
                 if (!stats.median.amount)
                     return;
                 return {
-                    ...hourBaseResource(`/assets/${id}/supply`, stats.median.timestamp),
+                    ...(0, resources_1.hourBaseResource)(`/assets/${id}/supply`, stats.median.timestamp),
                     circulating: stats.median.circulating,
                     burned: stats.median.burned,
                     total: stats.median.total,
@@ -333,22 +193,22 @@ let Asset = exports.Asset = (() => {
                 };
             }
             async marketCapHistory(id, latestTimestamp, stats, years) {
-                return historyResource(`/assets/${id}/market-cap`, latestTimestamp, stats, years);
+                return (0, resources_1.historyResource)(`/assets/${id}/market-cap`, latestTimestamp, stats, years);
             }
             async marketCapYear(id, stats, year, months) {
-                return yearResource(`/assets/${id}/market-cap`, stats, year, months);
+                return (0, resources_1.yearResource)(`/assets/${id}/market-cap`, stats, year, months);
             }
             async marketCapMonth(id, stats, year, month, days) {
-                return monthResource(`/assets/${id}/market-cap`, stats, year, month, days);
+                return (0, resources_1.monthResource)(`/assets/${id}/market-cap`, stats, year, month, days);
             }
             async marketCapDay(id, stats, year, month, day, hours) {
-                return dayResource(`/assets/${id}/market-cap`, stats, year, month, day, hours);
+                return (0, resources_1.dayResource)(`/assets/${id}/market-cap`, stats, year, month, day, hours);
             }
             async marketCapHour(id, stats) {
                 if (!stats?.min || !stats.max || !stats.median)
                     return;
                 return {
-                    ...hourBaseResource(`/assets/${id}/market-cap`, stats.median.timestamp),
+                    ...(0, resources_1.hourBaseResource)(`/assets/${id}/market-cap`, stats.median.timestamp),
                     price: {
                         $ref: (0, time_1.setDateParts)(`/assets/${id}/price/{year}/{month}/{day}/{hour}`, stats.median.price.timestamp),
                     },
@@ -361,22 +221,22 @@ let Asset = exports.Asset = (() => {
                 };
             }
             async underlyingAssetsHistory(id, latestTimestamp, stats, years) {
-                return historyResource(`/assets/${id}/underlying-assets`, latestTimestamp, stats, years);
+                return (0, resources_1.historyResource)(`/assets/${id}/underlying-assets`, latestTimestamp, stats, years);
             }
             async underlyingAssetsYear(id, stats, year, months) {
-                return yearResource(`/assets/${id}/underlying-assets`, stats, year, months);
+                return (0, resources_1.yearResource)(`/assets/${id}/underlying-assets`, stats, year, months);
             }
             async underlyingAssetsMonth(id, stats, year, month, days) {
-                return monthResource(`/assets/${id}/underlying-assets`, stats, year, month, days);
+                return (0, resources_1.monthResource)(`/assets/${id}/underlying-assets`, stats, year, month, days);
             }
             async underlyingAssetsDay(id, stats, year, month, day, hours) {
-                return dayResource(`/assets/${id}/underlying-assets`, stats, year, month, day, hours);
+                return (0, resources_1.dayResource)(`/assets/${id}/underlying-assets`, stats, year, month, day, hours);
             }
             async underlyingAssetsHour(id, stats) {
                 if (!stats?.min || !stats.max || !stats.median)
                     return;
                 return {
-                    ...hourBaseResource(`/assets/${id}/underlying-assets`, stats.median.timestamp),
+                    ...(0, resources_1.hourBaseResource)(`/assets/${id}/underlying-assets`, stats.median.timestamp),
                     breakdown: Object.entries(stats.median.breakdown).map(([assetId, underlying]) => ({
                         asset: {
                             $ref: `/assets/${assetId}`,
@@ -401,22 +261,22 @@ let Asset = exports.Asset = (() => {
                 };
             }
             async collateralizationRatioHistory(id, latestTimestamp, stats, years) {
-                return historyResource(`/assets/${id}/collateralization-ratio`, latestTimestamp, stats, years);
+                return (0, resources_1.historyResource)(`/assets/${id}/collateralization-ratio`, latestTimestamp, stats, years);
             }
             async collateralizationRatioYear(id, stats, year, months) {
-                return yearResource(`/assets/${id}/collateralization-ratio`, stats, year, months);
+                return (0, resources_1.yearResource)(`/assets/${id}/collateralization-ratio`, stats, year, months);
             }
             async collateralizationRatioMonth(id, stats, year, month, days) {
-                return monthResource(`/assets/${id}/collateralization-ratio`, stats, year, month, days);
+                return (0, resources_1.monthResource)(`/assets/${id}/collateralization-ratio`, stats, year, month, days);
             }
             async collateralizationRatioDay(id, stats, year, month, day, hours) {
-                return dayResource(`/assets/${id}/collateralization-ratio`, stats, year, month, day, hours);
+                return (0, resources_1.dayResource)(`/assets/${id}/collateralization-ratio`, stats, year, month, day, hours);
             }
             async collateralizationRatioHour(id, stats) {
                 if (!stats?.min || !stats.max || !stats.median)
                     return;
                 return {
-                    ...hourBaseResource(`/assets/${id}/collateralization-ratio`, stats.median.timestamp),
+                    ...(0, resources_1.hourBaseResource)(`/assets/${id}/collateralization-ratio`, stats.median.timestamp),
                     collateral: {
                         $ref: (0, time_1.setDateParts)(`/assets/${id}/underlying-assets/{year}/{month}/{day}/{hour}`, stats.median.collateral.timestamp),
                     },
@@ -428,7 +288,7 @@ let Asset = exports.Asset = (() => {
             }
         },
         (() => {
-            _index_decorators = [resources_1.JsonResources.register({
+            _index_decorators = [openapi_1.JsonResources.register({
                     path: "/assets",
                     summary: "Retrieve a list of assets",
                     description: "Get a list of asset IDs and references",
@@ -436,39 +296,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _collateralizationGraphHistory_decorators = [resources_1.JsonResources.register({
-                    path: "/assets/collateralization-graph",
-                    summary: "Get collateralization graph",
-                    description: "Get the global collateralization graph of all assets",
-                    type: "CollateralizationGraph",
-                    // TODO write schema
-                    schema: {},
-                })];
-            _collateralizationGraphYear_decorators = [resources_1.JsonResources.register({
-                    path: "/assets/collateralization-graph/{year}",
-                    summary: "Get collateralization graph for a specific year",
-                    description: "Get the collateralization graph of all assets for a specific year",
-                    type: "CollateralizationGraph",
-                    // TODO write schema
-                    schema: {},
-                })];
-            _collateralizationGraphMonth_decorators = [resources_1.JsonResources.register({
-                    path: "/assets/collateralization-graph/{year}/{month}",
-                    summary: "Get collateralization graph for a specific month",
-                    description: "Get the collateralization graph of all assets for a specific month",
-                    type: "CollateralizationGraph",
-                    // TODO write schema
-                    schema: {},
-                })];
-            _collateralizationGraphDay_decorators = [resources_1.JsonResources.register({
-                    path: "/assets/collateralization-graph/{year}/{month}/{day}",
-                    summary: "Get collateralization graph for a specific day",
-                    description: "Get the collateralization graph of all assets for a specific day",
-                    type: "CollateralizationGraph",
-                    // TODO write schema
-                    schema: {},
-                })];
-            _asset_decorators = [resources_1.JsonResources.register({
+            _asset_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}",
                     summary: "Get an asset",
                     description: "Get an asset by its ID",
@@ -476,7 +304,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _details_decorators = [resources_1.JsonResources.register({
+            _details_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/details",
                     summary: "Get details of an asset",
                     description: "Get details of an asset by its ID",
@@ -484,7 +312,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _icons_decorators = [resources_1.JsonResources.register({
+            _icons_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/icons",
                     summary: "Get icons of an asset",
                     description: "Get icons of an asset by its ID",
@@ -492,7 +320,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _priceHistory_decorators = [resources_1.JsonResources.register({
+            _priceHistory_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/price",
                     summary: "Get price of an asset",
                     description: "Get price of an asset by its ID",
@@ -500,7 +328,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _priceYear_decorators = [resources_1.JsonResources.register({
+            _priceYear_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/price/{year}",
                     summary: "Get price of an asset",
                     description: "Get price of an asset by its ID",
@@ -508,7 +336,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _priceMonth_decorators = [resources_1.JsonResources.register({
+            _priceMonth_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/price/{year}/{month}",
                     summary: "Get price of an asset",
                     description: "Get price of an asset by its ID",
@@ -516,7 +344,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _priceDay_decorators = [resources_1.JsonResources.register({
+            _priceDay_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/price/{year}/{month}/{day}",
                     summary: "Get price of an asset",
                     description: "Get price of an asset by its ID",
@@ -524,7 +352,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _priceHour_decorators = [resources_1.JsonResources.register({
+            _priceHour_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/price/{year}/{month}/{day}/{hour}",
                     summary: "Get price of an asset",
                     description: "Get price of an asset by its ID",
@@ -532,7 +360,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _supplyHistory_decorators = [resources_1.JsonResources.register({
+            _supplyHistory_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/supply",
                     summary: "Get supply of an asset",
                     description: "Get supply of an asset by its ID",
@@ -540,7 +368,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _supplyYear_decorators = [resources_1.JsonResources.register({
+            _supplyYear_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/supply/{year}",
                     summary: "Get supply of an asset",
                     description: "Get supply of an asset by its ID",
@@ -548,7 +376,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _supplyMonth_decorators = [resources_1.JsonResources.register({
+            _supplyMonth_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/supply/{year}/{month}",
                     summary: "Get supply of an asset",
                     description: "Get supply of an asset by its ID",
@@ -556,7 +384,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _supplyDay_decorators = [resources_1.JsonResources.register({
+            _supplyDay_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/supply/{year}/{month}/{day}",
                     summary: "Get supply of an asset",
                     description: "Get supply of an asset by its ID",
@@ -564,7 +392,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _supplyHour_decorators = [resources_1.JsonResources.register({
+            _supplyHour_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/supply/{year}/{month}/{day}/{hour}",
                     summary: "Get supply of an asset",
                     description: "Get supply of an asset by its ID",
@@ -572,7 +400,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _marketCapHistory_decorators = [resources_1.JsonResources.register({
+            _marketCapHistory_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/market-cap",
                     summary: "Get market cap of an asset",
                     description: "Get market cap of an asset by its ID",
@@ -580,7 +408,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _marketCapYear_decorators = [resources_1.JsonResources.register({
+            _marketCapYear_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/market-cap/{year}",
                     summary: "Get market cap of an asset",
                     description: "Get market cap of an asset by its ID",
@@ -588,7 +416,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _marketCapMonth_decorators = [resources_1.JsonResources.register({
+            _marketCapMonth_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/market-cap/{year}/{month}",
                     summary: "Get market cap of an asset",
                     description: "Get market cap of an asset by its ID",
@@ -596,7 +424,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _marketCapDay_decorators = [resources_1.JsonResources.register({
+            _marketCapDay_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/market-cap/{year}/{month}/{day}",
                     summary: "Get market cap of an asset",
                     description: "Get market cap of an asset by its ID",
@@ -604,7 +432,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _marketCapHour_decorators = [resources_1.JsonResources.register({
+            _marketCapHour_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/market-cap/{year}/{month}/{day}/{hour}",
                     summary: "Get market cap of an asset",
                     description: "Get market cap of an asset by its ID",
@@ -612,7 +440,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _underlyingAssetsHistory_decorators = [resources_1.JsonResources.register({
+            _underlyingAssetsHistory_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/underlying-assets",
                     summary: "Get underlying assets of an asset",
                     description: "Get underlying assets of an asset by its ID",
@@ -620,7 +448,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _underlyingAssetsYear_decorators = [resources_1.JsonResources.register({
+            _underlyingAssetsYear_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/underlying-assets/{year}",
                     summary: "Get underlying assets of an asset",
                     description: "Get underlying assets of an asset by its ID",
@@ -628,7 +456,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _underlyingAssetsMonth_decorators = [resources_1.JsonResources.register({
+            _underlyingAssetsMonth_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/underlying-assets/{year}/{month}",
                     summary: "Get underlying assets of an asset",
                     description: "Get underlying assets of an asset by its ID",
@@ -636,7 +464,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _underlyingAssetsDay_decorators = [resources_1.JsonResources.register({
+            _underlyingAssetsDay_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/underlying-assets/{year}/{month}/{day}",
                     summary: "Get underlying assets of an asset",
                     description: "Get underlying assets of an asset by its ID",
@@ -644,7 +472,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _underlyingAssetsHour_decorators = [resources_1.JsonResources.register({
+            _underlyingAssetsHour_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/underlying-assets/{year}/{month}/{day}/{hour}",
                     summary: "Get underlying assets of an asset",
                     description: "Get underlying assets of an asset by its ID",
@@ -652,7 +480,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _collateralizationRatioHistory_decorators = [resources_1.JsonResources.register({
+            _collateralizationRatioHistory_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/collateralization-ratio",
                     summary: "Get collateralization ratio of an asset",
                     description: "Get collateralization ratio of an asset by its ID",
@@ -660,7 +488,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _collateralizationRatioYear_decorators = [resources_1.JsonResources.register({
+            _collateralizationRatioYear_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/collateralization-ratio/{year}",
                     summary: "Get collateralization ratio of an asset",
                     description: "Get collateralization ratio of an asset by its ID",
@@ -668,7 +496,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _collateralizationRatioMonth_decorators = [resources_1.JsonResources.register({
+            _collateralizationRatioMonth_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/collateralization-ratio/{year}/{month}",
                     summary: "Get collateralization ratio of an asset",
                     description: "Get collateralization ratio of an asset by its ID",
@@ -676,7 +504,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _collateralizationRatioDay_decorators = [resources_1.JsonResources.register({
+            _collateralizationRatioDay_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/collateralization-ratio/{year}/{month}/{day}",
                     summary: "Get collateralization ratio of an asset",
                     description: "Get collateralization ratio of an asset by its ID",
@@ -684,7 +512,7 @@ let Asset = exports.Asset = (() => {
                     // TODO write schema
                     schema: {},
                 })];
-            _collateralizationRatioHour_decorators = [resources_1.JsonResources.register({
+            _collateralizationRatioHour_decorators = [openapi_1.JsonResources.register({
                     path: "/assets/{id}/collateralization-ratio/{year}/{month}/{day}/{hour}",
                     summary: "Get collateralization ratio of an asset",
                     description: "Get collateralization ratio of an asset by its ID",
@@ -693,10 +521,6 @@ let Asset = exports.Asset = (() => {
                     schema: {},
                 })];
             __esDecorate(_a, null, _index_decorators, { kind: "method", name: "index", static: false, private: false, access: { has: obj => "index" in obj, get: obj => obj.index } }, null, _instanceExtraInitializers);
-            __esDecorate(_a, null, _collateralizationGraphHistory_decorators, { kind: "method", name: "collateralizationGraphHistory", static: false, private: false, access: { has: obj => "collateralizationGraphHistory" in obj, get: obj => obj.collateralizationGraphHistory } }, null, _instanceExtraInitializers);
-            __esDecorate(_a, null, _collateralizationGraphYear_decorators, { kind: "method", name: "collateralizationGraphYear", static: false, private: false, access: { has: obj => "collateralizationGraphYear" in obj, get: obj => obj.collateralizationGraphYear } }, null, _instanceExtraInitializers);
-            __esDecorate(_a, null, _collateralizationGraphMonth_decorators, { kind: "method", name: "collateralizationGraphMonth", static: false, private: false, access: { has: obj => "collateralizationGraphMonth" in obj, get: obj => obj.collateralizationGraphMonth } }, null, _instanceExtraInitializers);
-            __esDecorate(_a, null, _collateralizationGraphDay_decorators, { kind: "method", name: "collateralizationGraphDay", static: false, private: false, access: { has: obj => "collateralizationGraphDay" in obj, get: obj => obj.collateralizationGraphDay } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _asset_decorators, { kind: "method", name: "asset", static: false, private: false, access: { has: obj => "asset" in obj, get: obj => obj.asset } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _details_decorators, { kind: "method", name: "details", static: false, private: false, access: { has: obj => "details" in obj, get: obj => obj.details } }, null, _instanceExtraInitializers);
             __esDecorate(_a, null, _icons_decorators, { kind: "method", name: "icons", static: false, private: false, access: { has: obj => "icons" in obj, get: obj => obj.icons } }, null, _instanceExtraInitializers);

@@ -5,7 +5,7 @@ exports.PATHS = {
     entities: "entities",
     systems: "systems",
     assets: "assets",
-    graph: "graph",
+    graphs: "graphs",
     records: "records",
     api: "api",
     notFound: "404",

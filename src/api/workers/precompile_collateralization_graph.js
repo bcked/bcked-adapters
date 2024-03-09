@@ -113,7 +113,7 @@ async function* createGraphs(window = (0, date_fns_1.hoursToMilliseconds)(12)) {
 worker_threads_1.parentPort?.on("message", async () => {
     const step = `Precompiling Collateralization Graph`;
     console.log(step);
-    const filePath = path_1.default.join(constants_1.PATHS.graph, constants_1.PATHS.records, constants_1.FILES.csv.collateralizationGraph);
+    const filePath = path_1.default.join(constants_1.PATHS.graphs, constants_1.PATHS.records, constants_1.FILES.csv.collateralizationGraph);
     try {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes

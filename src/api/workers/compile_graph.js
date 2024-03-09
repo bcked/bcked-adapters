@@ -11,9 +11,9 @@ const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
 const stream_1 = require("../../utils/stream");
 const time_1 = require("../../utils/time");
-const assets_1 = require("../resources/assets");
+const graphs_1 = require("../resources/graphs");
 async function compileHistory(csvName, key, createHistoryResource, createYearResource, createMonthResource, createDayResource) {
-    const csvPath = path_1.default.join(constants_1.PATHS.graph, constants_1.PATHS.records, csvName);
+    const csvPath = path_1.default.join(constants_1.PATHS.graphs, constants_1.PATHS.records, csvName);
     if (!(0, fs_1.existsSync)(csvPath))
         return;
     const historyStats = new stream_1.StreamStats(key, 100);
@@ -69,7 +69,8 @@ worker_threads_1.parentPort?.on("message", async () => {
     console.log(`Compile Global Graph`);
     try {
         await Promise.all([
-            compileHistory(constants_1.FILES.csv.collateralizationGraph, "stats.leaveCollateralization", assets_1.ASSET_RESOURCES.collateralizationGraphHistory, assets_1.ASSET_RESOURCES.collateralizationGraphYear, assets_1.ASSET_RESOURCES.collateralizationGraphMonth, assets_1.ASSET_RESOURCES.collateralizationGraphDay),
+            graphs_1.GRAPH_RESOURCES.index(),
+            compileHistory(constants_1.FILES.csv.collateralizationGraph, "stats.leaveCollateralization", graphs_1.GRAPH_RESOURCES.collateralizationGraphHistory, graphs_1.GRAPH_RESOURCES.collateralizationGraphYear, graphs_1.GRAPH_RESOURCES.collateralizationGraphMonth, graphs_1.GRAPH_RESOURCES.collateralizationGraphDay),
         ]);
         worker_threads_1.parentPort?.postMessage(null);
     }
