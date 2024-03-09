@@ -2,16 +2,15 @@ import { parentPort } from "worker_threads";
 import { FILES, PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 
-import { readdir } from "fs/promises";
 import _, { type PropertyPath } from "lodash";
 import { join } from "path";
 import { fromAsync } from "../../utils/array";
 import { readJson, writeJson } from "../../utils/files";
 import { toId } from "../../utils/helper";
 
-async function* loadAssetDetails(): AsyncIterableIterator<bcked.asset.Details | null> {
-    const assetIds = (await readdir(PATHS.assets)) as bcked.asset.Id[];
-
+async function* loadAssetDetails(
+    assetIds: bcked.asset.Id[]
+): AsyncIterableIterator<bcked.asset.Details | null> {
     for (const assetId of assetIds) {
         const detailsJson = join(PATHS.assets, assetId, PATHS.records, FILES.json.details);
         yield await readJson(detailsJson);
@@ -37,12 +36,12 @@ async function storeGrouping(
     }
 }
 
-parentPort?.on("message", async () => {
+parentPort?.on("message", async (assetIds: bcked.asset.Id[]) => {
     const step = `Precompiling Relations`;
     console.log(step);
 
     try {
-        const assetDetails = _.compact(await fromAsync(loadAssetDetails()));
+        const assetDetails = _.compact(await fromAsync(loadAssetDetails(assetIds)));
 
         await storeGrouping(assetDetails, "identifier.system", PATHS.systems);
         await storeGrouping(assetDetails, "linkedEntities.issuer", PATHS.entities);

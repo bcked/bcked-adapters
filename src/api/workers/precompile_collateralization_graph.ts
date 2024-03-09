@@ -4,7 +4,6 @@ import { sendErrorReport } from "../../watcher/bot";
 
 import { hoursToMilliseconds } from "date-fns";
 import { existsSync } from "fs";
-import { readdir } from "fs/promises";
 import createGraph, { type Graph } from "ngraph.graph";
 
 import path from "path";
@@ -122,9 +121,10 @@ function computeStats(graph: Graph<graph.NodeData, graph.LinkData>): graph.Stats
     };
 }
 
-async function* createGraphs(window: number = hoursToMilliseconds(12)): AsyncIterableIterator<any> {
-    const assetIds = (await readdir(PATHS.assets)) as bcked.asset.Id[];
-
+async function* createGraphs(
+    assetIds: bcked.asset.Id[],
+    window: number = hoursToMilliseconds(12)
+): AsyncIterableIterator<any> {
     const collateralizationLookups = initializeCollateralizationLookups(assetIds);
 
     // TODO get latest entry from global graph and continue from that time
@@ -148,7 +148,7 @@ async function* createGraphs(window: number = hoursToMilliseconds(12)): AsyncIte
     }
 }
 
-parentPort?.on("message", async () => {
+parentPort?.on("message", async (assetIds: bcked.asset.Id[]) => {
     const step = `Precompiling Collateralization Graph`;
     console.log(step);
     const filePath = path.join(PATHS.graphs, PATHS.records, FILES.csv.collateralizationGraph);
@@ -158,7 +158,7 @@ parentPort?.on("message", async () => {
         // TODO Later change this to start at the current date and only append changes
         await remove(filePath);
 
-        const entries = createGraphs();
+        const entries = createGraphs(assetIds);
         await writeToCsv(filePath, entries, "timestamp");
 
         parentPort?.postMessage(null);

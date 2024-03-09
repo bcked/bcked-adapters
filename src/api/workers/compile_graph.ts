@@ -108,7 +108,6 @@ parentPort?.on("message", async () => {
 
     try {
         await Promise.all([
-            GRAPH_RESOURCES.index(),
             compileHistory<bcked.asset.Graph, "stats.leaveCollateralization">(
                 FILES.csv.collateralizationGraph,
                 "stats.leaveCollateralization",
