@@ -3,7 +3,7 @@ import { join } from "path";
 import { FILES, PATHS } from "../../constants";
 import { readJson, writeBuffer } from "../../utils/files";
 import { renderSvgToPng } from "../utils/renderSvg";
-import { JsonResources } from "./resources";
+import { JsonResources } from "./openapi";
 
 export async function compileDetails<
     Resources extends JsonResources & { details: (...args: any[]) => any }

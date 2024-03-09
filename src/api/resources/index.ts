@@ -1,4 +1,4 @@
-import { JsonResources } from "../utils/resources";
+import { JsonResources } from "../utils/openapi";
 
 class Index extends JsonResources {
     constructor() {

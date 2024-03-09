@@ -1,7 +1,7 @@
 import type { Stats } from "../../utils/stream";
 import { setDateParts } from "../../utils/time";
 import { icons } from "../utils/icons";
-import { JsonResources } from "../utils/resources";
+import { JsonResources } from "../utils/openapi";
 
 /**
  * Converts the statistics object to a summary object.

@@ -9,7 +9,7 @@ import { INDEX_RESOURCES } from "./resources";
 import { ASSET_RESOURCES } from "./resources/assets";
 import { ENTITY_RESOURCES } from "./resources/entities";
 import { SYSTEM_RESOURCES } from "./resources/systems";
-import { JsonResources } from "./utils/resources";
+import { JsonResources } from "./utils/openapi";
 
 const WORKERS_PATH = "src/api/workers";
 
