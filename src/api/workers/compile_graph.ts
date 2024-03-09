@@ -8,7 +8,7 @@ import path from "path";
 import { readCSV } from "../../utils/csv";
 import { StreamStats, type Stats } from "../../utils/stream";
 import { getDateParts } from "../../utils/time";
-import { ASSET_RESOURCES } from "../resources/assets";
+import { GRAPH_RESOURCES } from "../resources/graphs";
 
 async function compileHistory<
     TObject extends primitive.Timestamped,
@@ -34,7 +34,7 @@ async function compileHistory<
     ) => Promise<any>,
     createDayResource: (stats: Stats<TObject> | undefined) => Promise<any>
 ) {
-    const csvPath = path.join(PATHS.graph, PATHS.records, csvName);
+    const csvPath = path.join(PATHS.graphs, PATHS.records, csvName);
 
     if (!existsSync(csvPath)) return;
 
@@ -108,13 +108,14 @@ parentPort?.on("message", async () => {
 
     try {
         await Promise.all([
+            GRAPH_RESOURCES.index(),
             compileHistory<bcked.asset.Graph, "stats.leaveCollateralization">(
                 FILES.csv.collateralizationGraph,
                 "stats.leaveCollateralization",
-                ASSET_RESOURCES.collateralizationGraphHistory,
-                ASSET_RESOURCES.collateralizationGraphYear,
-                ASSET_RESOURCES.collateralizationGraphMonth,
-                ASSET_RESOURCES.collateralizationGraphDay
+                GRAPH_RESOURCES.collateralizationGraphHistory,
+                GRAPH_RESOURCES.collateralizationGraphYear,
+                GRAPH_RESOURCES.collateralizationGraphMonth,
+                GRAPH_RESOURCES.collateralizationGraphDay
             ),
         ]);
 

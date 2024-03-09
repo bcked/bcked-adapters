@@ -52,6 +52,9 @@ class Index extends JsonResources {
             systems: {
                 $ref: `/systems`,
             },
+            graphs: {
+                $ref: `/graphs`,
+            },
         };
     }
 }

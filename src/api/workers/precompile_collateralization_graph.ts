@@ -151,7 +151,7 @@ async function* createGraphs(window: number = hoursToMilliseconds(12)): AsyncIte
 parentPort?.on("message", async () => {
     const step = `Precompiling Collateralization Graph`;
     console.log(step);
-    const filePath = path.join(PATHS.graph, PATHS.records, FILES.csv.collateralizationGraph);
+    const filePath = path.join(PATHS.graphs, PATHS.records, FILES.csv.collateralizationGraph);
 
     try {
         // Delete file if it already exists
