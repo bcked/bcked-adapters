@@ -13,6 +13,7 @@ const worker_pool_1 = require("../utils/worker_pool");
 const resources_1 = require("./resources");
 const assets_1 = require("./resources/assets");
 const entities_1 = require("./resources/entities");
+const graphs_1 = require("./resources/graphs");
 const systems_1 = require("./resources/systems");
 const WORKERS_PATH = "src/api/workers";
 async function compile(dir, workerScript, resources = undefined) {
@@ -24,7 +25,7 @@ async function compile(dir, workerScript, resources = undefined) {
     return (0, worker_pool_1.executeInWorkerPool)(workerScriptPath, ids);
 }
 async function generateOasSchema() {
-    resources_1.INDEX_RESOURCES.extend(entities_1.ENTITY_RESOURCES, systems_1.SYSTEM_RESOURCES, assets_1.ASSET_RESOURCES);
+    resources_1.INDEX_RESOURCES.extend(entities_1.ENTITY_RESOURCES, systems_1.SYSTEM_RESOURCES, assets_1.ASSET_RESOURCES, graphs_1.GRAPH_RESOURCES);
     const oasSchema = lodash_1.default.pick(resources_1.INDEX_RESOURCES.spec, [
         "openapi",
         "info",
