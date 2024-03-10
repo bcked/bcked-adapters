@@ -8,7 +8,6 @@ const constants_1 = require("../../constants");
 const bot_1 = require("../../watcher/bot");
 const date_fns_1 = require("date-fns");
 const fs_1 = require("fs");
-const promises_1 = require("fs/promises");
 const ngraph_graph_1 = __importDefault(require("ngraph.graph"));
 const path_1 = __importDefault(require("path"));
 const csv_1 = require("../../utils/csv");
@@ -91,8 +90,7 @@ function computeStats(graph) {
         totalCollateralization: (0, math_1.round)(totalCollateralization, 2),
     };
 }
-async function* createGraphs(window = (0, date_fns_1.hoursToMilliseconds)(12)) {
-    const assetIds = (await (0, promises_1.readdir)(constants_1.PATHS.assets));
+async function* createGraphs(assetIds, window = (0, date_fns_1.hoursToMilliseconds)(12)) {
     const collateralizationLookups = initializeCollateralizationLookups(assetIds);
     // TODO get latest entry from global graph and continue from that time
     // const lastEntry = await getLatest<bcked.asset.Backing>(csvPath);
@@ -110,7 +108,7 @@ async function* createGraphs(window = (0, date_fns_1.hoursToMilliseconds)(12)) {
         yield { timestamp: (0, string_formatting_1.toISOString)(timestamp), graph: (0, graph_1.toJson)(graph), stats };
     }
 }
-worker_threads_1.parentPort?.on("message", async () => {
+worker_threads_1.parentPort?.on("message", async (assetIds) => {
     const step = `Precompiling Collateralization Graph`;
     console.log(step);
     const filePath = path_1.default.join(constants_1.PATHS.graphs, constants_1.PATHS.records, constants_1.FILES.csv.collateralizationGraph);
@@ -118,7 +116,7 @@ worker_threads_1.parentPort?.on("message", async () => {
         // Delete file if it already exists
         // TODO Later change this to start at the current date and only append changes
         await (0, files_1.remove)(filePath);
-        const entries = createGraphs();
+        const entries = createGraphs(assetIds);
         await (0, csv_1.writeToCsv)(filePath, entries, "timestamp");
         worker_threads_1.parentPort?.postMessage(null);
     }

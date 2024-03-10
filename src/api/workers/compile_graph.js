@@ -69,7 +69,6 @@ worker_threads_1.parentPort?.on("message", async () => {
     console.log(`Compile Global Graph`);
     try {
         await Promise.all([
-            graphs_1.GRAPH_RESOURCES.index(),
             compileHistory(constants_1.FILES.csv.collateralizationGraph, "stats.leaveCollateralization", graphs_1.GRAPH_RESOURCES.collateralizationGraphHistory, graphs_1.GRAPH_RESOURCES.collateralizationGraphYear, graphs_1.GRAPH_RESOURCES.collateralizationGraphMonth, graphs_1.GRAPH_RESOURCES.collateralizationGraphDay),
         ]);
         worker_threads_1.parentPort?.postMessage(null);

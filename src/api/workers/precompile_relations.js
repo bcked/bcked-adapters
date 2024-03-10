@@ -6,14 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const worker_threads_1 = require("worker_threads");
 const constants_1 = require("../../constants");
 const bot_1 = require("../../watcher/bot");
-const promises_1 = require("fs/promises");
 const lodash_1 = __importDefault(require("lodash"));
 const path_1 = require("path");
 const array_1 = require("../../utils/array");
 const files_1 = require("../../utils/files");
 const helper_1 = require("../../utils/helper");
-async function* loadAssetDetails() {
-    const assetIds = (await (0, promises_1.readdir)(constants_1.PATHS.assets));
+async function* loadAssetDetails(assetIds) {
     for (const assetId of assetIds) {
         const detailsJson = (0, path_1.join)(constants_1.PATHS.assets, assetId, constants_1.PATHS.records, constants_1.FILES.json.details);
         yield await (0, files_1.readJson)(detailsJson);
@@ -30,11 +28,11 @@ async function storeGrouping(assetDetails, groupBy, path) {
         await (0, files_1.writeJson)(jsonFilePath, { ids: assetIds });
     }
 }
-worker_threads_1.parentPort?.on("message", async () => {
+worker_threads_1.parentPort?.on("message", async (assetIds) => {
     const step = `Precompiling Relations`;
     console.log(step);
     try {
-        const assetDetails = lodash_1.default.compact(await (0, array_1.fromAsync)(loadAssetDetails()));
+        const assetDetails = lodash_1.default.compact(await (0, array_1.fromAsync)(loadAssetDetails(assetIds)));
         await storeGrouping(assetDetails, "identifier.system", constants_1.PATHS.systems);
         await storeGrouping(assetDetails, "linkedEntities.issuer", constants_1.PATHS.entities);
         worker_threads_1.parentPort?.postMessage(null);
