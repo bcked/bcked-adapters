@@ -104,9 +104,7 @@ export default class Adapter implements bcked.entity.Adapter {
             });
         });
 
-        const dateText = (
-            $(".graph-title").next("h6")[0] as cheerio.TagElement
-        ).children[0]?.data?.trim();
+        const dateText = $("p:contains('As of')").next().text().trim();
         const cashText = ($("#usdc_chartjs_canvas")[0] as cheerio.TagElement).attribs[
             "data-usdc-cash"
         ];
