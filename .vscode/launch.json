@@ -16,6 +16,14 @@
             "cwd": "${workspaceRoot}",
             "runtimeArgs": ["-r", "ts-node/register", "--trace-warnings"],
             "args": ["${workspaceRoot}/src/api/job.ts"]
+        },
+        {
+            "name": "Debug current TS file",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeArgs": ["-r", "ts-node/register", "--trace-warnings"],
+            "args": ["${file}"]
         }
     ]
 }

@@ -105,8 +105,9 @@ export default class Adapter implements bcked.entity.Adapter {
         });
 
         const dateText = $("p:contains('As of')").next().text().trim();
-        const canvasElement = $("#usdc_chartjs_canvas")[0] as HTMLCanvasElement | undefined;
-        const cashText = canvasElement?.getAttribute("data-usdc-cash");
+        console.log("Test");
+        const canvasElement = $("#usdc_chartjs_canvas")[0] as cheerio.TagElement | undefined;
+        const cashText = canvasElement?.attribs["data-usdc-cash"];
 
         if (!dateText || !cashText) return;
 
