@@ -86,7 +86,8 @@ class Adapter {
             });
         });
         const dateText = $("p:contains('As of')").next().text().trim();
-        const cashText = $("#usdc_chartjs_canvas")[0].attribs["data-usdc-cash"];
+        const canvasElement = $("#usdc_chartjs_canvas")[0];
+        const cashText = canvasElement?.getAttribute("data-usdc-cash");
         if (!dateText || !cashText)
             return;
         const parsedDate = Date.parse(dateText);
