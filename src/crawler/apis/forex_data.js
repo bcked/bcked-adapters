@@ -23,10 +23,12 @@ class ForexData {
             throw new Error(`Forex data for a non RWA was requested: ${identifier.address}`);
         const url = this.getUrl(identifier.address);
         const quotes = await this.api.fetchJson(url);
-        const quote = lodash_1.default.find(quotes, { topo: { platform: "MT5" } });
+        // Prefer MT5, fallback to AT
+        const quote = lodash_1.default.find(quotes, { topo: { platform: "MT5" } }) ??
+            lodash_1.default.find(quotes, { topo: { platform: "AT" } });
         if (quote == undefined)
             throw new Error(`No Best Book Quote found for ${identifier.address}.`);
-        const spreadProfilePrice = lodash_1.default.find(quote.spreadProfilePrices, { spreadProfile: "Standard" });
+        const spreadProfilePrice = lodash_1.default.find(quote.spreadProfilePrices, (p) => p.spreadProfile.toLowerCase() === "standard");
         if (spreadProfilePrice == undefined)
             throw new Error(`No Spread Profile Price found for ${identifier.address}.`);
         return {
