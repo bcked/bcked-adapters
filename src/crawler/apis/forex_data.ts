@@ -44,10 +44,16 @@ export class ForexData {
 
         const url = this.getUrl(identifier.address);
         const quotes = await this.api.fetchJson<BestBookQuotes>(url);
-        const quote = _.find(quotes, { topo: { platform: "MT5" } });
+        // Prefer MT5, fallback to AT
+        const quote =
+            _.find(quotes, { topo: { platform: "MT5" } }) ??
+            _.find(quotes, { topo: { platform: "AT" } });
         if (quote == undefined)
             throw new Error(`No Best Book Quote found for ${identifier.address}.`);
-        const spreadProfilePrice = _.find(quote.spreadProfilePrices, { spreadProfile: "Standard" });
+        const spreadProfilePrice = _.find(
+            quote.spreadProfilePrices,
+            (p) => p.spreadProfile.toLowerCase() === "standard"
+        );
         if (spreadProfilePrice == undefined)
             throw new Error(`No Spread Profile Price found for ${identifier.address}.`);
 
