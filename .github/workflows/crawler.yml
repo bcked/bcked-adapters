@@ -1,9 +1,9 @@
 name: Crawler Execution
 
 on:
-    schedule:
+    # schedule:
         # Runs "At minute 0 (every hour)." (see https://crontab.guru)
-        - cron: "0 * * * *"
+    #     - cron: "0 * * * *"
     workflow_dispatch:
 
 # Allow one concurrent deployment
