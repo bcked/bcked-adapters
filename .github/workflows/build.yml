@@ -1,43 +1,32 @@
-name: Code Build and Deployment
+name: Code Build and Test
 
 on:
     push:
         branches: [main]
+    pull_request:
+        branches: [main]
     workflow_dispatch:
 
-# Allow one concurrent deployment
 concurrency:
-    group: "build"
+    group: "build-${{ github.ref }}"
     cancel-in-progress: true
 
 jobs:
     build:
         runs-on: ubuntu-latest
-        name: Build and Deploy Code
+        name: Check and Test Code
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
-            - name: Use Node.js
-              uses: actions/setup-node@v4
+              uses: actions/checkout@v7
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
               with:
-                  node-version: "20.x"
-                  cache: "npm"
+                  bun-version-file: package.json
             - name: Install Dependencies
-              run: npm ci
-            - name: Build Code
-              run: npm run build --if-present
-            - name: Test Code
-              run: npm test
-            - name: Deploy Code to records Branch
-              run: |
-                  git config --global user.name 'GitHub Action'
-                  git config --global user.email 'action@github.com'
-                  cp -R dist/* .
-                  git add -A
-                  git diff-index --quiet HEAD || git commit -am "temp commit dist"
-                  git fetch
-                  git checkout records
-                  git restore --source main *.js *.js.map *.svg package.json package-lock.json docs/*.html docs/*.js
-                  git add -A
-                  git diff-index --quiet HEAD || git commit -am "Deploy new build"
-                  git push origin records
+              run: bun install --frozen-lockfile
+            - name: Type Check
+              run: bun run check
+            - name: Lint
+              run: bunx eslint .
+            - name: Test
+              run: bun test

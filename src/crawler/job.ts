@@ -12,7 +12,27 @@ job("Crawler Job", async () => {
         getSystemIds(),
     ]);
 
-    await executeInWorkerPool(path.resolve(WORKERS_PATH, "query_system.ts"), systemIds);
-    await executeInWorkerPool(path.resolve(WORKERS_PATH, "query_entity.ts"), entityIds);
-    await executeInWorkerPool(path.resolve(WORKERS_PATH, "query_asset.ts"), assetIds);
+    // Query everything even if some items fail, so all available data is recorded.
+    const results = [];
+    results.push(
+        await executeInWorkerPool(path.resolve(WORKERS_PATH, "query_system.ts"), systemIds).then(
+            () => null,
+            (error: unknown) => error
+        )
+    );
+    results.push(
+        await executeInWorkerPool(path.resolve(WORKERS_PATH, "query_entity.ts"), entityIds).then(
+            () => null,
+            (error: unknown) => error
+        )
+    );
+    results.push(
+        await executeInWorkerPool(path.resolve(WORKERS_PATH, "query_asset.ts"), assetIds).then(
+            () => null,
+            (error: unknown) => error
+        )
+    );
+
+    const errors = results.filter((error) => error !== null);
+    if (errors.length) throw new AggregateError(errors, "Crawler finished with failures");
 });

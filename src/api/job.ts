@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { FILES, PATHS } from "../constants";
 import { writeJson } from "../utils/files";
@@ -36,6 +37,8 @@ async function generate404() {
         },
     };
     await writeJson(path.join(PATHS.api, PATHS.notFound, FILES.json.index), json);
+    // GitHub Pages serves 404.html for unknown paths.
+    await writeFile(path.join(PATHS.api, "404.html"), JSON.stringify(json, null, 4));
 }
 
 job("API Job", async () => {
