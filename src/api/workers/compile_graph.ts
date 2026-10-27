@@ -12,7 +12,7 @@ import { GRAPH_RESOURCES } from "../resources/graphs";
 
 async function compileHistory<
     TObject extends primitive.Timestamped,
-    TKey extends keyof TObject | PropertyPath
+    TKey extends keyof TObject | PropertyPath,
 >(
     csvName: string,
     key: TKey,

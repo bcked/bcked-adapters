@@ -37,8 +37,8 @@ async function* match(
     const backingEntries = readCSV<bcked.asset.Backing>(backingCsv);
 
     let priceLookup:
-        | { assetId: bcked.asset.Id; lookup: ConsecutiveLookup<bcked.asset.Price> }[]
-        | undefined = undefined;
+        { assetId: bcked.asset.Id; lookup: ConsecutiveLookup<bcked.asset.Price> }[] | undefined =
+        undefined;
 
     for await (const backingEntry of backingEntries) {
         // Initialize price lookup if not yet done
