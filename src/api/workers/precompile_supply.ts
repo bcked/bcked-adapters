@@ -19,9 +19,14 @@ async function* computeSupplyFallback(
     for await (const supplyEntry of supplyEntries) {
         // Get closest prices to the current entry for all underlying assets
 
-        // Define fallback for supply data
-        const amount =
-            supplyEntry.total ?? supplyEntry.circulating ?? supplyEntry.issued ?? supplyEntry.max;
+        // Define fallback for supply data.
+        // Empty CSV cells are read as empty strings, so take the first actual number.
+        const amount = [
+            supplyEntry.total,
+            supplyEntry.circulating,
+            supplyEntry.issued,
+            supplyEntry.max,
+        ].find((value): value is number => typeof value === "number" && value > 0);
 
         if (!amount) continue;
 
