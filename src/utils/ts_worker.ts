@@ -1,16 +1,8 @@
 import { Worker as JsWorker, type WorkerOptions } from "worker_threads";
 
-export function adaptFileExt(filename: string): string {
-    return process.env["DEV_MODE"] ? filename : filename.replace(".ts", ".js");
-}
-
+// Bun runs TypeScript natively, so workers are loaded from their .ts source.
 export class Worker extends JsWorker {
     constructor(filename: string, options?: WorkerOptions) {
-        const adaptedFilename = adaptFileExt(filename);
-        const resolvedPath = require.resolve(adaptedFilename);
-        super(resolvedPath, {
-            ...options,
-            execArgv: resolvedPath.endsWith(".ts") ? ["--require", "ts-node/register"] : undefined,
-        });
+        super(require.resolve(filename), options);
     }
 }
