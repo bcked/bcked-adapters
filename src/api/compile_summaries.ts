@@ -3,6 +3,7 @@
  * a daily series per asset, entity and system, and a summary list per kind.
  * Without these, a chart or ranking needs hundreds of requests through the history resources.
  */
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { FILES, PATHS } from "../constants";
 import { readJson } from "../utils/files";
@@ -10,6 +11,11 @@ import { ASSET_RESOURCES } from "./resources/assets";
 import { ENTITY_RESOURCES } from "./resources/entities";
 import { SYSTEM_RESOURCES } from "./resources/systems";
 import { dailySeries, latestWithChange } from "./utils/series";
+
+/** Path of the icon resource, or null if the item has no icon. */
+function iconPath(kind: string, id: string) {
+    return existsSync(path.join(kind, id, FILES.svg.icon)) ? `/${kind}/${id}/icons/icon.svg` : null;
+}
 
 function recordsPath(kind: string, id: string, file: string) {
     return path.join(kind, id, PATHS.records, file);
@@ -44,7 +50,7 @@ async function compileAsset(id: bcked.asset.Id) {
         linkedEntities: details?.linkedEntities ?? {},
         assetClasses: details?.assetClasses ?? [],
         tags: details?.tags ?? [],
-        icon: `/assets/${id}/icons/icon.svg`,
+        icon: iconPath(PATHS.assets, id),
         price: latestWithChange(price),
         supply: latestWithChange(supply),
         "market-cap": latestWithChange(marketCap),
@@ -67,7 +73,7 @@ async function compileGroup(kind: typeof PATHS.entities | typeof PATHS.systems, 
         id,
         $ref: `/${kind}/${id}`,
         ...details,
-        icon: `/${kind}/${id}/icons/icon.svg`,
+        icon: iconPath(kind, id),
         assets: assets?.ids ?? [],
         "total-value-locked": latestWithChange(totalValueLocked),
     };
