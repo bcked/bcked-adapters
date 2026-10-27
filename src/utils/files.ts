@@ -48,23 +48,27 @@ export async function readLastLines(
     const [stat, file] = await Promise.all([
         new Promise<fs.Stats>((resolve, reject) =>
             // Load file Stats.
-            { fs.stat(inputFilePath, (err, stat) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(stat);
-                }
-            }); }
+            {
+                fs.stat(inputFilePath, (err, stat) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(stat);
+                    }
+                });
+            }
         ),
         new Promise<number>((resolve, reject) =>
             // Open file for reading.
-            { fs.open(inputFilePath, "r", (err, file) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(file);
-                }
-            }); }
+            {
+                fs.open(inputFilePath, "r", (err, file) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(file);
+                    }
+                });
+            }
         ),
     ]);
 
@@ -135,7 +139,7 @@ export async function readJson<T>(pathToFile: string): Promise<T | null> {
 export async function remove(filePath: string) {
     try {
         await unlink(filePath);
-    } catch (error) {
+    } catch {
         console.debug(`File ${filePath} does not exist. Skipping deletion.`);
     }
 }

@@ -31,10 +31,12 @@ export class ChainProxy
         system: bcked.system.Id
     ): Promise<bcked.query.Balance> {
         try {
-            return this.getInstance(system).getBalance(address, token, system);
+            return await this.getInstance(system).getBalance(address, token, system);
         } catch (error) {
             console.log(error);
-            throw Error(`Error for query of balance of ${system}:${token} on address ${address}.`);
+            throw Error(`Error for query of balance of ${system}:${token} on address ${address}.`, {
+                cause: error,
+            });
         }
     }
 
@@ -43,10 +45,10 @@ export class ChainProxy
         system: bcked.system.Id
     ): Promise<bcked.query.Supply> {
         try {
-            return this.getInstance(system).getSupply(token, system);
+            return await this.getInstance(system).getSupply(token, system);
         } catch (error) {
             console.log(error);
-            throw Error(`Error for query of supply of ${system}:${token}.`);
+            throw Error(`Error for query of supply of ${system}:${token}.`, { cause: error });
         }
     }
 }

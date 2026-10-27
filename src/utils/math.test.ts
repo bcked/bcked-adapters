@@ -1,3 +1,4 @@
+import { describe, expect, it } from "bun:test";
 import { inverse, rate } from "./math";
 
 describe("rate calculation test", () => {

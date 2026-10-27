@@ -8,10 +8,9 @@ import { readJson, writeJson } from "../../utils/files";
 import { toId } from "../../utils/helper";
 import { toISOString } from "../../utils/string_formatting";
 import { isNewer, minInMs } from "../../utils/time";
-import { adaptFileExt } from "../../utils/ts_worker";
 
 export async function getAdapter<Adapter>(pathToFile: string): Promise<Adapter> {
-    const adapterPath = path.resolve(adaptFileExt(pathToFile));
+    const adapterPath = path.resolve(pathToFile);
     const { default: Adapter } = await import(adapterPath);
     return new Adapter();
 }
@@ -25,8 +24,9 @@ export class AdapterCache<Adapter> {
     async getAdapterInstance(kind: string, id: string): Promise<Adapter> {
         const key = `${kind}/${id}`;
         if (key in this.adapters) return this.adapters[key]!;
-        this.adapters[key] = await getAdapter(`${kind}/${id}/index.ts`);
-        return this.adapters[key]!;
+        const adapter = await getAdapter<Adapter>(`${kind}/${id}/index.ts`);
+        this.adapters[key] = adapter;
+        return adapter;
     }
 }
 

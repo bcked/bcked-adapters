@@ -46,7 +46,7 @@ export class CsvApi {
         });
         const csvString = response.data;
         if (csvString) {
-            return parseSync(csvString.trim(), options);
+            return parseSync(csvString.trim(), options ?? {}) as T;
         } else {
             return undefined;
         }

@@ -2,7 +2,7 @@
  * The WBTC backing is queried using the WBTC API.
  * All attribution goes to the WBTC API.
  */
-import { utils } from "ethers";
+import { formatUnits } from "ethers";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 import { JsonApi } from "../../src/utils/requests";
@@ -75,11 +75,10 @@ export default class Adapter implements bcked.asset.Adapter {
         // Load and update custodian list from: https://wbtc.network/api/chain/eth/token/wbtc/addresses?type=custodial
         // Query custodian addresses for holdings via Blockstream API: https://github.com/Blockstream/esplora/blob/master/API.md
 
-        const response = await this.wbtcApi.fetchJson<wbtcApiTokenResponse>(
-            "/chain/eth/token/wbtc"
-        );
+        const response =
+            await this.wbtcApi.fetchJson<wbtcApiTokenResponse>("/chain/eth/token/wbtc");
         // Convert holdings from satoshis to bitcoins
-        const holdings = parseFloat(utils.formatUnits(response.holdings, 8));
+        const holdings = parseFloat(formatUnits(response.holdings, 8));
         return [
             {
                 timestamp: toISOString(Date.now()),

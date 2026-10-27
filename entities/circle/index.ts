@@ -6,7 +6,8 @@
  *
  * Note: Cash holdings are reported infrequently or via the attestation reports.
  */
-import Crawler from "crawler";
+import axios from "axios";
+import { load } from "cheerio";
 import dateFormat from "dateformat";
 import fs from "fs";
 import _ from "lodash";
@@ -33,12 +34,10 @@ export interface Cash {
 
 export default class Adapter implements bcked.entity.Adapter {
     treasuryManager: BRManager;
-    crawler: Crawler;
     recordsPath: string;
 
     constructor() {
         this.treasuryManager = new BRManager();
-        this.crawler = new Crawler({ rateLimit: 1000 });
         this.recordsPath = `entities/${details.identifier}/records`;
     }
 
@@ -91,22 +90,11 @@ export default class Adapter implements bcked.entity.Adapter {
         if (lastEntry !== null && isClose(lastEntry.timestamp, Date.now(), hoursInMs(23.99)))
             return;
 
-        const $ = await new Promise<cheerio.CheerioAPI>((resolve, reject) => {
-            this.crawler.direct({
-                uri: "https://www.circle.com/en/transparency",
-                callback: (error, response) => {
-                    if (error as Error | null) {
-                        reject(error);
-                    } else {
-                        resolve(response.$);
-                    }
-                },
-            });
-        });
+        const response = await axios.get<string>("https://www.circle.com/en/transparency");
+        const $ = load(response.data);
 
         const dateText = $("p:contains('As of')").next().text().trim();
-        const canvasElement = $("#usdc_chartjs_canvas")[0] as cheerio.TagElement | undefined;
-        const cashText = canvasElement?.attribs["data-usdc-cash"];
+        const cashText = $("#usdc_chartjs_canvas").attr("data-usdc-cash");
 
         if (!dateText || !cashText) return;
 

@@ -4,10 +4,10 @@ export function formatCurrency(
     num: number,
     digits = 2,
     currency = "USD",
-    currencyDisplay = "symbol",
+    currencyDisplay: Intl.NumberFormatOptions["currencyDisplay"] = "symbol",
     useGrouping = true
 ): string {
-    const options = {
+    const options: Intl.NumberFormatOptions = {
         minimumFractionDigits: digits,
         maximumFractionDigits: digits,
         style: "currency",

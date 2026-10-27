@@ -1,13 +1,18 @@
 import axios, { AxiosError } from "axios";
-import TelegramBot from "node-telegram-bot-api";
 
 const LOGS_CHANNEL = "@bcked_logs";
 
-const bot = new TelegramBot(process.env["BCKED_WATCHER_BOT_TOKEN"]!, { polling: false });
+async function sendTelegramMessage(token: string, chatId: string, text: string) {
+    await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
+        chat_id: chatId,
+        text,
+    });
+}
 
 export async function sendErrorReport(subject: string, error: any) {
-    if (process.env["DEV_MODE"]) {
-        console.info("Error report not sent in DEV_MODE");
+    const token = process.env["BCKED_WATCHER_BOT_TOKEN"];
+    if (!token) {
+        console.info("Error report not sent, BCKED_WATCHER_BOT_TOKEN is not set");
         return;
     }
     try {
@@ -20,7 +25,7 @@ export async function sendErrorReport(subject: string, error: any) {
                 `Status Code: ${axiosError.response?.status ?? "Unknown"}`,
                 `Status Text: ${axiosError.response?.statusText ?? "Unknown"}`,
                 `Response Data: ${JSON.stringify(
-                    axiosError.response?.data || "No response data",
+                    axiosError.response?.data ?? "No response data",
                     null,
                     4
                 )}`,
@@ -42,7 +47,7 @@ export async function sendErrorReport(subject: string, error: any) {
             `Log: ${logMessage}`,
         ].join("\n");
 
-        await bot.sendMessage(LOGS_CHANNEL, logMessage);
+        await sendTelegramMessage(token, LOGS_CHANNEL, logMessage);
     } catch (error) {
         console.error("Error sending Telegram message:", error);
     }

@@ -3,7 +3,7 @@
  * All attribution goes to the [Etherscan API](https://etherscan.io/apis).
  * For more details on the API check out the [API Documentation](https://docs.etherscan.io/api-endpoints/).
  */
-import { BigNumber, utils } from "ethers";
+import { formatEther } from "ethers";
 import { JsonApi, joinOptions } from "../../utils/requests";
 import { toISOString } from "../../utils/string_formatting";
 
@@ -40,11 +40,12 @@ export class Etherscan {
 
     constructor() {
         this.api = new JsonApi(`https://api.etherscan.io`);
+        // API V1 was shut down in August 2025. V2 needs the chain id (1 = Ethereum mainnet).
     }
 
     private getUrl(module: string, action: string, options?: Record<string, string>): string {
         const opt = options ? "&" + joinOptions(options) : "";
-        return `/api?module=${module}&action=${action}${opt}&apikey=${process.env["ETHERSCAN_API_KEY"]}`;
+        return `/v2/api?chainid=1&module=${module}&action=${action}${opt}&apikey=${process.env["ETHERSCAN_API_KEY"]}`;
     }
 
     private async fetch<T>(
@@ -65,14 +66,14 @@ export class Etherscan {
 
     async getEthSupply(): Promise<bcked.query.Supply> {
         const response = await this.fetch<EthSupply>("stats", "ethsupply2");
-        const burnedFees = BigNumber.from(response.BurntFees);
-        const eth2Staking = BigNumber.from(response.Eth2Staking);
-        const ethSupply = BigNumber.from(response.EthSupply);
+        const burnedFees = BigInt(response.BurntFees);
+        const eth2Staking = BigInt(response.Eth2Staking);
+        const ethSupply = BigInt(response.EthSupply);
 
         return {
             timestamp: toISOString(Date.now()),
-            burned: parseFloat(utils.formatUnits(burnedFees, "ether")),
-            issued: parseFloat(utils.formatUnits(ethSupply.add(eth2Staking), "ether")),
+            burned: parseFloat(formatEther(burnedFees)),
+            issued: parseFloat(formatEther(ethSupply + eth2Staking)),
         };
     }
 

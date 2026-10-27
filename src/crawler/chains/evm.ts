@@ -1,8 +1,6 @@
-import { providers } from "@0xsequence/multicall";
-import { Contract, providers as ethersProviders, utils, type BigNumber } from "ethers";
+import { Contract, JsonRpcProvider, Network, formatEther, formatUnits } from "ethers";
 import _ from "lodash";
 
-import type { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 import { toId } from "../../utils/helper";
 import { format, toISOString } from "../../utils/string_formatting";
 
@@ -31,15 +29,28 @@ const RPC_URLS: Record<string, string> = {
     arbitrum: "https://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_ARBITRUM}",
 };
 
+const CHAIN_IDS: Record<string, number> = {
+    bsc: 56,
+    ethereum: 1,
+    moonbeam: 1284,
+    moonriver: 1285,
+    polygon: 137,
+    arbitrum: 42161,
+};
+
 export class EVMChain implements bcked.query.ChainModule {
-    private _providers: Record<string, MulticallProvider> = {};
+    private _providers: Record<string, JsonRpcProvider> = {};
     private _tokenContracts: Record<string, Contract> = {};
 
-    private getProvider(chain: string): MulticallProvider {
+    private getProvider(chain: string): JsonRpcProvider {
         if (chain in this._providers) return this._providers[chain]!;
 
-        const p = new ethersProviders.JsonRpcProvider(this.getRpcUrl(chain, true));
-        const provider = new providers.MulticallProvider(p);
+        // ethers v6 batches concurrent JSON-RPC calls into one request by default.
+        // A static network skips network detection, which otherwise retries in the background.
+        const network = Network.from(CHAIN_IDS[chain]);
+        const provider = new JsonRpcProvider(this.getRpcUrl(chain, true), network, {
+            staticNetwork: network,
+        });
         this._providers[chain] = provider;
         return provider;
     }
@@ -68,9 +79,8 @@ export class EVMChain implements bcked.query.ChainModule {
             : url;
     }
 
-    private async _getDecimals(contract: Contract): Promise<BigNumber> {
-        const decimals: Promise<BigNumber> = contract["decimals"]();
-        return await decimals;
+    private async _getDecimals(contract: Contract): Promise<bigint> {
+        return (await contract.getFunction("decimals")()) as bigint;
     }
 
     async getDecimals(
@@ -81,7 +91,7 @@ export class EVMChain implements bcked.query.ChainModule {
         const decimals = await this._getDecimals(contract);
         return {
             timestamp: toISOString(Date.now()),
-            decimals: decimals.toNumber(),
+            decimals: Number(decimals),
         };
     }
 
@@ -93,23 +103,27 @@ export class EVMChain implements bcked.query.ChainModule {
         try {
             if (token == null) {
                 const provider = this.getProvider(system);
-                const balance: Promise<BigNumber> = provider.getBalance(address);
+                const balance = await provider.getBalance(address);
                 return {
                     timestamp: toISOString(Date.now()),
-                    balance: parseFloat(utils.formatUnits(await balance, "ether")),
+                    balance: parseFloat(formatEther(balance)),
                 };
             } else {
                 const contract = this.getTokenContract(token, system);
-                const balance: Promise<BigNumber> = contract["balanceOf"](address);
-                const decimals: Promise<BigNumber> = this._getDecimals(contract);
+                const [balance, decimals] = await Promise.all([
+                    contract.getFunction("balanceOf")(address) as Promise<bigint>,
+                    this._getDecimals(contract),
+                ]);
                 return {
                     timestamp: toISOString(Date.now()),
-                    balance: parseFloat(utils.formatUnits(await balance, await decimals)),
+                    balance: parseFloat(formatUnits(balance, decimals)),
                 };
             }
         } catch (error) {
             console.log(error);
-            throw Error(`Error for query of balance of ${system}:${token} on address ${address}.`);
+            throw Error(`Error for query of balance of ${system}:${token} on address ${address}.`, {
+                cause: error,
+            });
         }
     }
 
@@ -124,9 +138,11 @@ export class EVMChain implements bcked.query.ChainModule {
 
     async getTokenSupply(token: bcked.asset.Address, system: bcked.system.Id): Promise<number> {
         const contract = this.getTokenContract(token, system);
-        const supply: Promise<BigNumber> = contract["totalSupply"]();
-        const decimals: Promise<BigNumber> = this._getDecimals(contract);
-        return parseFloat(utils.formatUnits(await supply, await decimals));
+        const [supply, decimals] = await Promise.all([
+            contract.getFunction("totalSupply")() as Promise<bigint>,
+            this._getDecimals(contract),
+        ]);
+        return parseFloat(formatUnits(supply, decimals));
     }
 
     async getSupply(
@@ -134,14 +150,14 @@ export class EVMChain implements bcked.query.ChainModule {
         system: bcked.system.Id
     ): Promise<bcked.query.Supply> {
         try {
-            return {
-                timestamp: toISOString(Date.now()),
-                burned: await this.getBurned(token, system),
-                issued: await this.getTokenSupply(token, system),
-            };
+            const [burned, issued] = await Promise.all([
+                this.getBurned(token, system),
+                this.getTokenSupply(token, system),
+            ]);
+            return { timestamp: toISOString(Date.now()), burned, issued };
         } catch (error) {
             console.log(error);
-            throw Error(`Error for query of supply of ${system}:${token}.`);
+            throw Error(`Error for query of supply of ${system}:${token}.`, { cause: error });
         }
     }
 }

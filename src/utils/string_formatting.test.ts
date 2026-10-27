@@ -1,3 +1,4 @@
+import { describe, expect, it } from "bun:test";
 import { format } from "./string_formatting";
 
 describe("String format test", () => {
