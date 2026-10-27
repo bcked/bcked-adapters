@@ -5,6 +5,7 @@ import { FILES, PATHS } from "../constants";
 import { writeJson } from "../utils/files";
 import { job } from "../utils/job";
 import { executeInWorker, executeInWorkerPool } from "../utils/worker_pool";
+import { compileSummaries } from "./compile_summaries";
 import { INDEX_RESOURCES } from "./resources";
 import { ASSET_RESOURCES } from "./resources/assets";
 import { ENTITY_RESOURCES } from "./resources/entities";
@@ -104,6 +105,7 @@ job("API Job", async () => {
         executeInWorkerPool(path.resolve(WORKERS_PATH, "compile_system.ts"), systemIds), // Depends on
         GRAPH_RESOURCES.index(),
         executeInWorker(path.resolve(WORKERS_PATH, "compile_graph.ts")), // Depends on "precompile_collateralization_graph.ts"
+        compileSummaries(assetIds, entityIds, systemIds), // Depends on all precompile steps
         generateOasSchema(),
         generate404(),
     ]);

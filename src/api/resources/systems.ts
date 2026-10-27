@@ -1,6 +1,7 @@
 import { Stats } from "../../utils/stream";
 import { icons } from "../utils/icons";
 import { JsonResources } from "../utils/openapi";
+import { type DailySeries } from "../utils/series";
 import {
     dayResource,
     historyResource,
@@ -32,6 +33,9 @@ class System extends JsonResources {
     async index(ids: bcked.system.Id[]) {
         return {
             $id: "/systems",
+            summary: {
+                $ref: "/systems/summary",
+            },
             systems: ids.map((id) => ({
                 $ref: `/systems/${id}`,
             })),
@@ -49,6 +53,9 @@ class System extends JsonResources {
     async system(id: bcked.system.Id) {
         return {
             $id: `/systems/${id}`,
+            series: {
+                $ref: `/systems/${id}/series`,
+            },
             details: {
                 $ref: `/systems/${id}/details`,
             },
@@ -61,6 +68,38 @@ class System extends JsonResources {
             "total-value-locked": {
                 $ref: `/systems/${id}/total-value-locked`,
             },
+        };
+    }
+
+    @JsonResources.register({
+        path: "/systems/summary",
+        summary: "Get a summary of all systems",
+        description:
+            "Get details and latest values of all systems in one resource, including the relative change over 1, 7 and 30 days",
+        type: "SystemSummary",
+        // TODO write schema
+        schema: {},
+    })
+    async summary(items: object[]) {
+        return {
+            $id: "/systems/summary",
+            systems: items,
+        };
+    }
+
+    @JsonResources.register({
+        path: "/systems/{id}/series",
+        summary: "Get daily series of a system",
+        description:
+            "Get the last value of each UTC day for all metrics of a system as [date, value] pairs",
+        type: "SystemSeries",
+        // TODO write schema
+        schema: {},
+    })
+    async series(id: string, series: Record<string, DailySeries>) {
+        return {
+            $id: `/systems/${id}/series`,
+            ...series,
         };
     }
 

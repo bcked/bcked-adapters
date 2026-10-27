@@ -2,6 +2,7 @@ import type { Stats } from "../../utils/stream";
 import { setDateParts } from "../../utils/time";
 import { icons } from "../utils/icons";
 import { JsonResources } from "../utils/openapi";
+import { type DailySeries } from "../utils/series";
 import {
     dayResource,
     historyResource,
@@ -33,6 +34,9 @@ export class Asset extends JsonResources {
     async index(ids: bcked.asset.Id[]) {
         return {
             $id: "/assets",
+            summary: {
+                $ref: "/assets/summary",
+            },
             assets: ids.map((id) => ({
                 $ref: `/assets/${id}`,
             })),
@@ -50,6 +54,9 @@ export class Asset extends JsonResources {
     async asset(id: bcked.asset.Id) {
         return {
             $id: `/assets/${id}`,
+            series: {
+                $ref: `/assets/${id}/series`,
+            },
             details: {
                 $ref: `/assets/${id}/details`,
             },
@@ -74,6 +81,38 @@ export class Asset extends JsonResources {
             // "derivative-assets": {
             //     $ref: `/assets/${id}/derivative-assets`,
             // },
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/summary",
+        summary: "Get a summary of all assets",
+        description:
+            "Get details and latest values of all assets in one resource, including the relative change over 1, 7 and 30 days",
+        type: "AssetSummary",
+        // TODO write schema
+        schema: {},
+    })
+    async summary(items: object[]) {
+        return {
+            $id: "/assets/summary",
+            assets: items,
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/series",
+        summary: "Get daily series of an asset",
+        description:
+            "Get the last value of each UTC day for all metrics of an asset as [date, value] pairs",
+        type: "AssetSeries",
+        // TODO write schema
+        schema: {},
+    })
+    async series(id: string, series: Record<string, DailySeries>) {
+        return {
+            $id: `/assets/${id}/series`,
+            ...series,
         };
     }
 

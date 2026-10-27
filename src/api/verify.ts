@@ -16,9 +16,21 @@ const [assetIds, entityIds, systemIds] = await Promise.all([
 const expected = [
     path.join(PATHS.api, FILES.json.index),
     path.join(PATHS.api, FILES.json.openapi),
-    ...assetIds.map((id) => path.join(PATHS.api, PATHS.assets, id, FILES.json.index)),
-    ...entityIds.map((id) => path.join(PATHS.api, PATHS.entities, id, FILES.json.index)),
-    ...systemIds.map((id) => path.join(PATHS.api, PATHS.systems, id, FILES.json.index)),
+    ...[PATHS.assets, PATHS.entities, PATHS.systems].map((kind) =>
+        path.join(PATHS.api, kind, "summary", FILES.json.index)
+    ),
+    ...assetIds.flatMap((id) => [
+        path.join(PATHS.api, PATHS.assets, id, FILES.json.index),
+        path.join(PATHS.api, PATHS.assets, id, "series", FILES.json.index),
+    ]),
+    ...entityIds.flatMap((id) => [
+        path.join(PATHS.api, PATHS.entities, id, FILES.json.index),
+        path.join(PATHS.api, PATHS.entities, id, "series", FILES.json.index),
+    ]),
+    ...systemIds.flatMap((id) => [
+        path.join(PATHS.api, PATHS.systems, id, FILES.json.index),
+        path.join(PATHS.api, PATHS.systems, id, "series", FILES.json.index),
+    ]),
 ];
 
 const missing = expected.filter((file) => !existsSync(file));
