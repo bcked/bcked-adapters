@@ -228,7 +228,9 @@ export class ConsecutiveLookup<T extends primitive.Timestamped> {
             }
 
             const timeDistance = distance(timestamp, value.timestamp);
-            if (!bestDistance || timeDistance < bestDistance) {
+            // Entries further ahead than the time window are no match.
+            if (timeDistance > window) break;
+            if (bestDistance === undefined || timeDistance < bestDistance) {
                 bestMatch = value;
                 bestDistance = timeDistance;
             } else {

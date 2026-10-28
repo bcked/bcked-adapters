@@ -1,11 +1,13 @@
 """Writes extracted attestation data to the records of an asset or entity.
 
-Usage: python3 write_backing.py <extracted.json> <records dir> <evidence prefix> [--keep <from> <to>]
+Usage: python3 write_backing.py <extracted.json> <records dir> <evidence prefix> [--keep <from> <to> | --append]
 Example: python3 write_backing.py busd.json "assets/ethereum:0x4Fabb.../records" BUSD
 
 - Rewrites <records dir>/backing.csv with one row per report date and one column per underlying asset.
 - With --keep, existing rows with a timestamp between <from> and <to> (inclusive) are kept and report
   dates in that range are left out. Used where an automated source covers that period (Circle).
+- With --append, all existing rows are kept and only report dates after the latest row are added.
+  Used by update.sh, which only downloads new reports.
 - Copies every report to <records dir>/evidence/<year>/<prefix>-<YYYY-MM>-Attestation-report.pdf,
   unless a report for that month is already stored.
 """
@@ -37,10 +39,18 @@ def existing_rows(path, start, end):
     return rows
 
 
-def main(extracted, records, prefix, keep=None):
+def main(extracted, records, prefix, keep=None, append=False):
     path = os.path.join(records, "backing.csv")
     reports = [r for r in json.load(open(extracted)) if r["sections"]]
+    if append:
+        existing = existing_rows(path, "", "9999")
+        latest = max((timestamp for timestamp, _ in existing), default="")
+        for report in reports:
+            report["sections"] = [s for s in report["sections"] if s["timestamp"] > latest]
+        reports = [r for r in reports if r["sections"]]
     rows = [(s["timestamp"], s["cat"]) for r in reports for s in r["sections"]]
+    if append:
+        rows += existing
     if keep:
         start, end = keep
         rows = [row for row in rows if not start <= row[0] <= end] + existing_rows(path, start, end)
@@ -67,8 +77,10 @@ def main(extracted, records, prefix, keep=None):
 if __name__ == "__main__":
     args = sys.argv[1:]
     keep = None
+    append = "--append" in args
+    args = [a for a in args if a != "--append"]
     if "--keep" in args:
         i = args.index("--keep")
         keep = (args[i + 1], args[i + 2])
         args = args[:i] + args[i + 3 :]
-    main(*args[:3], keep=keep)
+    main(*args[:3], keep=keep, append=append)

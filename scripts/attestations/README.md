@@ -7,6 +7,20 @@ together with the report as evidence. They require Python 3.9+ and `pdftotext` (
 The records live on the `records` branch. Check it out next to this repository (or into `.records`)
 and pass the records folder of the asset, e.g. `assets/<asset id>/records`.
 
+## Automatic updates
+
+The workflow `Attestation Update` runs `update.sh` every Monday. It downloads the Paxos and Tether
+reports, checks every report date after the latest recorded row against the report total
+(`check_new.py`) and appends those rows with the report as evidence (`write_backing.py --append`).
+If a new report does not add up, for example because its layout changed, the run fails and nothing
+is written. Extract that report by hand with the commands below.
+
+```shell
+scripts/attestations/update.sh <records checkout>
+```
+
+The commands below rebuild the full history of an asset from all reports.
+
 ## Paxos (PAXG, BUSD)
 
 ```shell

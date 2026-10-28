@@ -1,0 +1,42 @@
+name: Attestation Update
+
+on:
+    schedule:
+        # Weekly on Monday at 06:17 UTC. Paxos reports monthly, Tether quarterly.
+        - cron: "17 6 * * 1"
+    workflow_dispatch:
+
+# Shares the group with the crawler, so both never push to the records branch at the same time.
+concurrency:
+    group: "crawler"
+    cancel-in-progress: false
+
+permissions:
+    contents: write
+
+jobs:
+    attestations:
+        runs-on: ubuntu-latest
+        name: Attestation Update
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v7
+            - name: Checkout Records
+              uses: actions/checkout@v7
+              with:
+                  ref: records
+                  path: .records
+            - name: Install pdftotext
+              run: sudo apt-get update && sudo apt-get install -y poppler-utils
+            - name: Add New Reports
+              # Fails without writing if a new report does not add up (see scripts/attestations/check_new.py).
+              run: scripts/attestations/update.sh .records
+            - name: Commit Results on records Branch
+              uses: stefanzweifel/git-auto-commit-action@v7
+              with:
+                  repository: .records
+                  commit_message: Add attestation reports
+                  commit_user_name: GitHub Action
+                  commit_user_email: action@github.com
+                  commit_author: actions-user <action@github.com>
+                  file_pattern: "*.csv *.pdf"
