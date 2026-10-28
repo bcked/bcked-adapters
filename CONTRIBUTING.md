@@ -42,7 +42,7 @@ on another chain is a separate asset, because bridges and wrappers add their own
 ```text
 assets/ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78/
   index.ts    details and the adapter that reads price, supply and backing
-  icon.svg    the token icon (see Icons below)
+  icon.svg    the token icon, required (see Icons below)
   records/    collected data, only on the records branch
 ```
 
@@ -58,7 +58,8 @@ tags) and a class with `getPrice`, `getSupply` and `getBacking`. Most tokens reu
   Every report is stored as evidence next to the records.
 
 Issuers are folders under `entities/` and chains under `systems/`. Copy an existing asset as a starting
-point and change the details.
+point and change the details. Every asset, issuer and chain needs an `icon.svg`, and `bun test` fails
+without one.
 
 ## Rules for data
 
@@ -107,6 +108,15 @@ Pull requests run the same checks in CI.
 
 ## Icons
 
+Every asset, issuer and chain has an icon. `src/icons.test.ts` checks that the file exists, has a
+square view box, is at most 30 KB and has no text elements.
+
+- For a token or company, use the official logo from the issuer's website or press kit, or one of the
+  sources below. Logos stay the property of their owners and are used to identify the asset.
+- For generic assets without a logo (for example Treasury bills or repurchase agreements), draw a simple
+  icon in the style of the existing ones: a filled circle with a white glyph, as in `assets/rwa:USD` and
+  `assets/rwa:USTB`. Variants of one asset share the glyph (when-issued Treasuries add a dashed ring).
+
 ### General considerations
 
 - Original image is stored in SVG format
@@ -116,8 +126,8 @@ Pull requests run the same checks in CI.
 
 ### Rules for SVGs
 
-- Square view box
-- Optional: Normalized view box of 256x256
+- Square view box (`viewBox` attribute, not only `width` and `height`)
+- Preferably a normalized view box of 256x256
 - All text should be presented as outlines
 - File name `icon.svg`
 - File size <=30kb
@@ -141,9 +151,13 @@ Pull requests run the same checks in CI.
 
 #### How to prettify SVG?
 
-To simplify the SVG, use the VS Code jock.svg extension command "Minify SVG"
-to minify the SVG as configured in the projects settings.
-Afterwards format with prettier.
+To simplify the SVG, use [SVGO](https://github.com/svg/svgo), then format with prettier:
+
+```shell
+bunx svgo --multipass --pretty --indent 2 -p 1 icon.svg -o icon.svg
+```
+
+Lower precision (`-p 1`) keeps large logos below 30 KB. Check the result visually.
 
 ### Helpful resources
 
