@@ -12,7 +12,8 @@
         "lint": "eslint . --fix",
         "format": "prettier --write .",
         "test": "bun test",
-        "verify-api": "bun src/api/verify.ts"
+        "verify-api": "bun src/api/verify.ts",
+        "check-freshness": "bun src/api/freshness.ts"
     },
     "license": "GPL-3.0",
     "engines": {
