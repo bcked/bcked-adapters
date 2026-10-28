@@ -36,3 +36,6 @@ Thumbs.db
 
 # Local checkout of the records branch (see workflows)
 /.records
+
+# Python
+__pycache__/
