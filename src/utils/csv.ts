@@ -1,5 +1,5 @@
 import { parse, stringify } from "csv";
-import { type CastingContext } from "csv-parse";
+import { type InfoField } from "csv-parse";
 import { parse as parseSync } from "csv/sync";
 import { flatten, unflatten } from "flat"; // Serialize nested data structures
 
@@ -16,7 +16,7 @@ import { pipeline } from "stream/promises";
 import { getFirstElement } from "./stream";
 import { distance, isNewer } from "./time";
 
-function castNumbers(value: string, context: CastingContext): string | number {
+function castNumbers(value: string, context: InfoField): string | number {
     if (context.header) return value;
 
     if (value == "") return value;
@@ -99,11 +99,9 @@ async function readHeadersFromStream<T>(
 export async function rewriteCSV<T>(
     pathToFile: string,
     header: string[],
-    readStream: AsyncIterable<T> | undefined = undefined
+    readStream?: AsyncIterable<T>
 ) {
-    if (!readStream) {
-        readStream = readCSV(pathToFile);
-    }
+    readStream ??= readCSV(pathToFile);
 
     const stringifier = stringify({ header: true, columns: header });
 

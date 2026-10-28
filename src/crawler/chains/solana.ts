@@ -40,19 +40,20 @@ export class SolanaChain implements bcked.query.ChainModule {
     }
 
     private async _getBalance(address: PublicKey, token: PublicKey): Promise<bcked.query.Balance> {
-        const accountPromise = this._connection.getTokenAccountsByOwner(address, {
-            mint: token,
-        });
-        const decimalsPromise = this._getDecimals(token);
+        const [accounts, decimals] = await Promise.all([
+            this._connection.getTokenAccountsByOwner(address, { mint: token }),
+            this._getDecimals(token),
+        ]);
 
+        const account = accounts.value[0]?.account;
         const amount = unpackAccount(
             address,
-            (await accountPromise).value[0]?.account ?? null
+            account ? { ...account, data: Buffer.from(account.data) } : null
         ).amount;
 
         return {
             timestamp: toISOString(Date.now()),
-            balance: parseFloat(formatUnits(amount, await decimalsPromise)),
+            balance: parseFloat(formatUnits(amount, decimals)),
         };
     }
 

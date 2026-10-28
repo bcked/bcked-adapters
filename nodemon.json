@@ -1,6 +1,0 @@
-{
-    "watch": ["src", "entities", "systems", "assets"],
-    "ext": ".ts",
-    "ignore": [],
-    "exec": "ts-node ./src/crawler/job.ts"
-}

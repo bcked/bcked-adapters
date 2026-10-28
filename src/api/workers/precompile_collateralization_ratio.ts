@@ -30,6 +30,9 @@ async function* match(
     for await (const underlyingEntry of underlyingAssets) {
         // Get closest prices to the current entry for all underlying assets
 
+        // Skip entries where the backing value is unknown because an underlying price is missing.
+        if (typeof underlyingEntry.usd !== "number") continue;
+
         const market_cap = await marketCapLookup.getClosest(underlyingEntry.timestamp, window);
 
         if (!market_cap) continue;

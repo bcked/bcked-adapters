@@ -1,81 +1,95 @@
-import { Pool } from "tarn";
-import { Worker } from "./ts_worker";
+import { Worker } from "node:worker_threads";
 
 interface Options {
-    min: number;
     max: number;
 }
 
-export class WorkerPool {
-    pool: Pool<Worker>;
-
-    constructor(workerScriptPath: string, options: Options) {
-        this.pool = new Pool({
-            create: async () => new Worker(workerScriptPath),
-            destroy: (worker) => worker.terminate(),
-            ...options,
-        });
-    }
-
-    async execute<Data, Result>(data?: Data): Promise<Result | null> {
-        const worker = await this.pool.acquire().promise;
-
-        return new Promise((resolve, reject) => {
-            const onMessage = (response: Result) => {
-                cleanup();
-                resolve(response);
-            };
-
-            const onError = (err: Error) => {
-                cleanup();
-                reject(err);
-            };
-
-            const onExit = (code: number) => {
-                cleanup();
-                if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`));
-                resolve(null);
-            };
-
-            const cleanup = () => {
-                worker.off("message", onMessage);
-                worker.off("error", onError);
-                worker.off("exit", onExit);
-                // Release the worker back to the pool after the work is done.
-                this.pool.release(worker);
-            };
-
-            worker.on("message", onMessage);
-            worker.on("error", onError);
-            worker.on("exit", onExit);
-            worker.postMessage(data);
-        });
-    }
-
-    async close() {
-        await this.pool.destroy();
-    }
-}
-
-export async function executeInWorkerPool<Data, Result>(
+/**
+ * Runs work items in a fixed number of worker threads.
+ * Bun runs the TypeScript worker scripts directly.
+ *
+ * Items are queued and handed to the next free worker, so there is no acquire timeout.
+ * Every worker handles one item at a time and answers with exactly one message per item.
+ *
+ * If a worker crashes on an item, it is replaced and the remaining items still run.
+ * After all items are done, the execution rejects with all failures, so callers can
+ * keep partial results but the failure is not lost.
+ */
+export async function executeInWorkerPool<Result>(
     workerScriptPath: string,
-    workItems: Data[],
-    options: Options = { min: 0, max: 4 }
+    workItems: unknown[],
+    options: Options = { max: 4 }
 ): Promise<(Result | null)[]> {
-    const pool = new WorkerPool(workerScriptPath, options);
-    const res = await Promise.all(
-        workItems.map((workItem) => pool.execute<Data, Result>(workItem))
-    );
-    await pool.close();
-    return res;
+    const results: (Result | null)[] = new Array(workItems.length).fill(null);
+    const failures: Error[] = [];
+    let next = 0;
+
+    async function runWorker() {
+        let worker = new Worker(workerScriptPath);
+        try {
+            while (next < workItems.length) {
+                const index = next++;
+                try {
+                    results[index] = await executeOnWorker<Result>(worker, workItems[index]);
+                } catch (error) {
+                    const item = JSON.stringify(workItems[index]);
+                    console.error(`Worker ${workerScriptPath} failed on ${item}:`, error);
+                    failures.push(new Error(`Failed on ${item}`, { cause: error }));
+                    await worker.terminate();
+                    worker = new Worker(workerScriptPath);
+                }
+            }
+        } finally {
+            await worker.terminate();
+        }
+    }
+
+    const workerCount = Math.max(1, Math.min(options.max, workItems.length));
+    await Promise.all(Array.from({ length: workerCount }, runWorker));
+
+    if (failures.length) {
+        throw new AggregateError(
+            failures,
+            `${failures.length} of ${workItems.length} work items failed in ${workerScriptPath}`
+        );
+    }
+    return results;
 }
 
-export async function executeInWorker<Data, Result>(
+export async function executeInWorker<Result>(
     workerScriptPath: string,
-    data?: Data
+    data?: unknown
 ): Promise<Result | null> {
-    const pool = new WorkerPool(workerScriptPath, { min: 1, max: 1 });
-    const res = await pool.execute<Data, Result>(data);
-    await pool.close();
-    return res;
+    const [result] = await executeInWorkerPool<Result>(workerScriptPath, [data], { max: 1 });
+    return result ?? null;
+}
+
+function executeOnWorker<Result>(worker: Worker, data: unknown): Promise<Result | null> {
+    return new Promise((resolve, reject) => {
+        const onMessage = (response: Result) => {
+            cleanup();
+            resolve(response);
+        };
+
+        const onError = (err: Error) => {
+            cleanup();
+            reject(err);
+        };
+
+        const onExit = (code: number) => {
+            cleanup();
+            reject(new Error(`Worker stopped unexpectedly with exit code ${code}`));
+        };
+
+        const cleanup = () => {
+            worker.off("message", onMessage);
+            worker.off("error", onError);
+            worker.off("exit", onExit);
+        };
+
+        worker.on("message", onMessage);
+        worker.on("error", onError);
+        worker.on("exit", onExit);
+        worker.postMessage(data);
+    });
 }

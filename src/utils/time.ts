@@ -100,6 +100,6 @@ export function partsToDate(parts: primitive.DateParts): Date {
     return new Date(isoString);
 }
 
-export function minDate<T>(collection: (T | undefined)[] | null | undefined, iteratee: string) {
+export function minDate(collection: readonly unknown[] | null | undefined, iteratee: string) {
     return _.min(_.map(_.map(_.compact(collection), iteratee), (item) => new Date(item).getTime()));
 }

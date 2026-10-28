@@ -9,82 +9,71 @@ For the most part this only requires adding or updating data files.
 
 ## How do I get set up?
 
-### Install nvm
+The project runs on [Bun](https://bun.sh/), which executes the TypeScript sources directly.
 
-For the package management, we need to install Node. To install a specific version of Node,
-we will first install the [Node Version Management (nvm)](https://github.com/nvm-sh/nvm).
-
-Download and install nvm:
+Install Bun:
 
 ```shell
-wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-```
-
-Reload the .bashrc:
-
-```shell
-source ~/.bashrc
-```
-
-### Install Node
-
-You should now be able to list all available Node versions like this (`--lts` for versions with long term support):
-
-```shell
-nvm list-remote --lts
-```
-
-You can find some information about the major versions and their long term support on the [release page of Node.js](https://nodejs.org/en/about/releases/).
-
-You can install the latest v20 version with long term support with this command:
-
-```shell
-nvm install v20 --lts
+curl -fsSL https://bun.sh/install | bash
 ```
 
 Switch to the project folder and install the dependencies.
 
 ```shell
-cd portal
-npm install
+cd bcked-adapters
+bun install
 ```
+
+API keys for the data sources are read from a `.env` file in the project root
+(`ALCHEMY_ETHEREUM`, `ALCHEMY_POLYGON`, `ALCHEMY_SOLANA`, `ALCHEMY_ARBITRUM`, `ETHERSCAN_API_KEY`).
+Bun loads it automatically.
 
 ## How to locally run the adapters?
 
-To see if everything is working you can run the adapters like that.
+Collected records are stored on the `records` branch. To work with existing data, copy the
+`records` folders from that branch into the matching `assets/`, `entities/` and `systems/` folders.
+They are ignored by git on `main`.
+
+Run the crawler, which queries all adapters and appends new records:
 
 ```shell
-npm run dev
+bun run crawler
 ```
 
-## How do I run tests?
-
-Execute:
+Build the API resources from the records into `./api`:
 
 ```shell
-npm test
+bun run api
+```
+
+## How do I run tests and checks?
+
+```shell
+bun test
+bun run check
+bun run lint
 ```
 
 ## Icons
 
 ### General considerations
 
--   Original image is stored in SVG format
--   Original image must have a minimum resolution of 256
--   If the original is only available as PNG or JPEG, either embed the SVG
-    or trace the image.
+- Original image is stored in SVG format
+- Original image must have a minimum resolution of 256
+- If the original is only available as PNG or JPEG, either embed the SVG
+  or trace the image.
 
 ### Rules for SVGs
 
--   Square view box
--   Optional: Normalized view box of 256x256
--   All text should be presented as outlines
--   File name `icon.svg`
--   File size <=30kb
--   Transparent background
--   Prettified markup (not minified)
--   Remove any unnecessary content like doctype, XML instructions, comments, editor data
--   Include xmlns for HTML embedding
+- Square view box
+- Optional: Normalized view box of 256x256
+- All text should be presented as outlines
+- File name `icon.svg`
+- File size <=30kb
+- Transparent background
+- Prettified markup (not minified)
+- Remove any unnecessary content like doctype, XML instructions, comments, editor data
+- Include xmlns for HTML embedding
 
 #### How to resize view box?
 
@@ -109,12 +98,12 @@ Afterwards format with prettier.
 
 #### Crypo related
 
--   [coinwink/crypto-logos-cc](https://github.com/coinwink/crypto-logos-cc)
--   [yearn/yearn-assets](https://github.com/yearn/yearn-assets)
--   [curvefi/curve-assets](https://github.com/curvefi/curve-assets)
--   [logotyp.us](https://logotyp.us/)
+- [coinwink/crypto-logos-cc](https://github.com/coinwink/crypto-logos-cc)
+- [yearn/yearn-assets](https://github.com/yearn/yearn-assets)
+- [curvefi/curve-assets](https://github.com/curvefi/curve-assets)
+- [logotyp.us](https://logotyp.us/)
 
 #### General SVG icons
 
--   [publicdomainvectors.org](https://publicdomainvectors.org/)
--   [SVG Repo](https://www.svgrepo.com/)
+- [publicdomainvectors.org](https://publicdomainvectors.org/)
+- [SVG Repo](https://www.svgrepo.com/)

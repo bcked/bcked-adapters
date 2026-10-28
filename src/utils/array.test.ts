@@ -1,3 +1,4 @@
+import { describe, expect, it } from "bun:test";
 import { closest, fromAsync, generate, relativeInMs, toAsync } from "./array";
 
 describe("closest", () => {

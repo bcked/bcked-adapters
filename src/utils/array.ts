@@ -112,7 +112,7 @@ export function uniqueTimesWithInHours(
 /** Generate array of numbers between min and max value. */
 export function generate(min: number, max: number, n: number): number[] {
     const interval = (max - min) / (n - 1);
-    const initial = new Array(n).fill(min);
+    const initial = new Array<number>(n).fill(min);
     return initial.map((value, index) => index * interval + value);
 }
 

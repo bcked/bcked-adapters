@@ -144,7 +144,8 @@ declare namespace bcked {
         // Generated from backing and price data to cover underlying and derivative assets
         interface Relationships {
             timestamp: primitive.ISODateTimeString;
-            usd: number;
+            /** Total value in USD, or null if a price of an underlying asset is missing. */
+            usd: number | null;
             breakdown: Record<bcked.asset.Id, Relationship>;
         }
 

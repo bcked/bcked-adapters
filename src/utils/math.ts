@@ -15,9 +15,9 @@ export function statsBy<T>(
     };
 }
 
-export function medianBy<TObject extends object, TKey extends keyof TObject>(
+export function medianBy<TObject extends object>(
     collection: TObject[] | null | undefined,
-    path: TKey | PropertyPath
+    path: keyof TObject | PropertyPath
 ): TObject | null {
     if (!collection?.length) return null;
 

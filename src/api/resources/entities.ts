@@ -1,6 +1,7 @@
 import { Stats } from "../../utils/stream";
 import { icons } from "../utils/icons";
 import { JsonResources } from "../utils/openapi";
+import { type DailySeries } from "../utils/series";
 import {
     dayResource,
     historyResource,
@@ -32,6 +33,9 @@ class Entity extends JsonResources {
     async index(ids: bcked.entity.Id[]) {
         return {
             $id: "/entities",
+            summary: {
+                $ref: "/entities/summary",
+            },
             entities: ids.map((id) => ({
                 $ref: `/entities/${id}`,
             })),
@@ -49,6 +53,9 @@ class Entity extends JsonResources {
     async entity(id: bcked.entity.Id) {
         return {
             $id: `/entities/${id}`,
+            series: {
+                $ref: `/entities/${id}/series`,
+            },
             details: {
                 $ref: `/entities/${id}/details`,
             },
@@ -61,6 +68,38 @@ class Entity extends JsonResources {
             "total-value-locked": {
                 $ref: `/entities/${id}/total-value-locked`,
             },
+        };
+    }
+
+    @JsonResources.register({
+        path: "/entities/summary",
+        summary: "Get a summary of all entities",
+        description:
+            "Get details and latest values of all entities in one resource, including the relative change over 1, 7 and 30 days",
+        type: "EntitySummary",
+        // TODO write schema
+        schema: {},
+    })
+    async summary(items: object[]) {
+        return {
+            $id: "/entities/summary",
+            entities: items,
+        };
+    }
+
+    @JsonResources.register({
+        path: "/entities/{id}/series",
+        summary: "Get daily series of an entity",
+        description:
+            "Get the last value of each UTC day for all metrics of an entity as [date, value] pairs",
+        type: "EntitySeries",
+        // TODO write schema
+        schema: {},
+    })
+    async series(id: string, series: Record<string, DailySeries>) {
+        return {
+            $id: `/entities/${id}/series`,
+            ...series,
         };
     }
 

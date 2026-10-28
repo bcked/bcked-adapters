@@ -35,7 +35,8 @@ async function createGraphForTimestamp(
 
             graph.addNode(assetId, {
                 timestamp: collateralization.timestamp,
-                value: collateralization.collateral.usd,
+                // Collateralization entries only exist where the collateral value is known.
+                value: collateralization.collateral.usd!,
             });
 
             for (const [collateralAssetId, value] of Object.entries(
