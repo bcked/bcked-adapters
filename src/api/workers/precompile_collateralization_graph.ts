@@ -2,12 +2,14 @@ import { parentPort } from "worker_threads";
 import { FILES, PATHS } from "../../constants";
 import { sendErrorReport } from "../../watcher/bot";
 
-import { hoursToMilliseconds } from "date-fns";
 import { existsSync } from "fs";
 import createGraph, { type Graph } from "ngraph.graph";
 
 import path from "path";
-import { ConsecutiveLookup, writeToCsv } from "../../utils/csv";
+import { flatten } from "flat";
+import _ from "lodash";
+import { toAsync } from "../../utils/array";
+import { createCsv, LatestLookup } from "../../utils/csv";
 import { remove } from "../../utils/files";
 import { getIncomingLinks, getOutgoingLinks, toJson } from "../../utils/graph";
 import { round } from "../../utils/math";
@@ -16,20 +18,25 @@ import { daysInMs, getDatesBetween } from "../../utils/time";
 
 interface CollateralizationLookup {
     assetId: bcked.asset.Id;
-    lookup: ConsecutiveLookup<bcked.asset.Collateralization>;
+    lookup: LatestLookup<bcked.asset.Collateralization>;
 }
+
+/**
+ * Backing from reports is only recorded per report date, so each asset keeps its latest backing
+ * until it is older than this. Tether reports quarterly and publishes about six weeks later.
+ */
+const MAX_BACKING_AGE = daysInMs(140);
 
 async function createGraphForTimestamp(
     timestamp: primitive.DateLike,
-    collateralizationLookups: CollateralizationLookup[],
-    window: number = hoursToMilliseconds(12)
+    collateralizationLookups: CollateralizationLookup[]
 ) {
     const graph = createGraph<graph.NodeData, graph.LinkData>();
 
     // Get closest prices to the current entry for all underlying assets
     await Promise.all(
         collateralizationLookups.map(async ({ assetId, lookup }) => {
-            const collateralization = await lookup.getClosest(timestamp, window);
+            const collateralization = await lookup.getLatest(timestamp, MAX_BACKING_AGE);
 
             if (!collateralization) return;
 
@@ -65,7 +72,7 @@ function initializeCollateralizationLookups(assetIds: bcked.asset.Id[]) {
 
         collateralizationLookups.push({
             assetId,
-            lookup: new ConsecutiveLookup<bcked.asset.Collateralization>(csvPath),
+            lookup: new LatestLookup<bcked.asset.Collateralization>(csvPath),
         });
     }
 
@@ -122,10 +129,7 @@ function computeStats(graph: Graph<graph.NodeData, graph.LinkData>): graph.Stats
     };
 }
 
-async function* createGraphs(
-    assetIds: bcked.asset.Id[],
-    window: number = hoursToMilliseconds(12)
-): AsyncIterableIterator<any> {
+async function* createGraphs(assetIds: bcked.asset.Id[]): AsyncIterableIterator<any> {
     const collateralizationLookups = initializeCollateralizationLookups(assetIds);
 
     // TODO get latest entry from global graph and continue from that time
@@ -139,7 +143,7 @@ async function* createGraphs(
 
     // Loop through the dates using timestamps and create Date objects
     for (const timestamp of getDatesBetween(startDate, Date.now(), daysInMs(1))) {
-        const graph = await createGraphForTimestamp(timestamp, collateralizationLookups, window);
+        const graph = await createGraphForTimestamp(timestamp, collateralizationLookups);
 
         if (graph.getNodesCount() === 0 || graph.getLinksCount() === 0) continue;
 
@@ -159,8 +163,15 @@ parentPort?.on("message", async (assetIds: bcked.asset.Id[]) => {
         // TODO Later change this to start at the current date and only append changes
         await remove(filePath);
 
-        const entries = createGraphs(assetIds);
-        await writeToCsv(filePath, entries, "timestamp");
+        // The graphs are flattened into columns and grow over time. The CSV header must cover all
+        // of them, otherwise later graphs are cut to the columns of the first one.
+        const entries = [];
+        for await (const entry of createGraphs(assetIds)) entries.push(entry);
+        const columns = _.union(
+            ...entries.map((entry) => Object.keys(flatten<object, object>(entry)))
+        );
+        const header = ["timestamp", ...columns.filter((column) => column != "timestamp").sort()];
+        await createCsv(filePath, toAsync(entries), header);
 
         parentPort?.postMessage(null);
     } catch (error) {

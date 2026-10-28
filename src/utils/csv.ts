@@ -241,3 +241,38 @@ export class ConsecutiveLookup<T extends primitive.Timestamped> {
         return bestMatch;
     }
 }
+
+/**
+ * Returns the latest record at or before a timestamp, for timestamps queried in increasing order.
+ * Records older than the maximum age are no match.
+ */
+export class LatestLookup<T extends primitive.Timestamped> {
+    private readonly csvStream: AsyncGenerator<T>;
+    private latest: T | undefined = undefined;
+    private next: T | undefined = undefined;
+    private done = false;
+
+    constructor(public readonly csvPath: string) {
+        this.csvStream = readCSV<T>(csvPath);
+    }
+
+    public async getLatest(timestamp: primitive.DateLike, maxAge: number): Promise<T | undefined> {
+        const time = new Date(timestamp).getTime();
+        while (!this.done) {
+            if (!this.next) {
+                const { value, done } = await this.csvStream.next();
+                if (done) {
+                    this.done = true;
+                    break;
+                }
+                this.next = value;
+            }
+            if (new Date(this.next.timestamp).getTime() > time) break;
+            this.latest = this.next;
+            this.next = undefined;
+        }
+        if (!this.latest || time - new Date(this.latest.timestamp).getTime() > maxAge)
+            return undefined;
+        return this.latest;
+    }
+}
