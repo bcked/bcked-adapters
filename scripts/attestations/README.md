@@ -20,6 +20,30 @@ python3 validate_busd.py busd.json
 python3 write_backing.py busd.json "<records>/assets/ethereum:0x4Fabb145d64652a948d72533023f6E7A623C7C53/records" BUSD
 ```
 
+## Tether (USDT)
+
+Tether's reports cover all chains, so the reserves are recorded on the `tether` entity. The USDT adapter
+derives the backing of USDT on Ethereum from it (see `src/crawler/adapters/issuer_backing.ts`).
+
+```shell
+python3 fetch_tether.py /tmp/tether > tether-reports.json
+python3 extract_tether.py tether-reports.json tether_manual.json > tether.json
+python3 convert_prices.py tether.json > tether-units.json
+python3 write_backing.py tether-units.json "<records>/entities/tether/records" USDT
+```
+
+## Circle (USDC)
+
+Circle's reserves are recorded on the `circle` entity. The adapter records them daily from the BlackRock
+fund data and the transparency page. The reports fill the time before and after that data.
+
+```shell
+python3 extract_circle.py circle_manual.json /tmp/circle/*.pdf > circle.json
+python3 write_backing.py circle.json "<records>/entities/circle/records" USDC --keep <first automated timestamp> <last automated timestamp>
+```
+
+The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs with "USDC" in the name).
+
 ## How the reports are read
 
 - Report dates are at 5:00 PM New York time and stored in UTC.
@@ -33,3 +57,16 @@ python3 write_backing.py busd.json "<records>/assets/ethereum:0x4Fabb145d64652a9
 - `validate_busd.py` compares the extracted values with the subtotals in each report. Known report
   errors: the total differs from the subtotals on 2022-10-19, 2022-10-31 and 2023-02-13, and the
   debt subtotal on 2024-07-26 is 45,000 higher than its holdings. The holdings are used.
+- Tether: U.S. Treasury bills are `rwa:USTB`, reverse repurchase agreements `rwa:USTrepo`, cash and
+  bank deposits `rwa:USD`. Precious metals and Bitcoin are converted from USD to troy ounces (`rwa:XAU`)
+  and BTC (`bitcoin:BTC`) with the DefiLlama price at the report date (`convert_prices.py`). Commercial
+  paper, money market funds, non-U.S. bills, bonds, equities, loans and other investments are
+  `rwa:undefined`. Feb and Mar 2021 only report total assets. The bank confirmations of 2017 and 2018
+  were read manually (`tether_manual.json`), the 2018-10 Deltec letter is a scan.
+- Circle until 2021-04: US dollars in custody accounts (`rwa:USD`). 2021-05 to 2022: only the total of
+  a mix of cash, short-dated U.S. government obligations and (2021) commercial paper and bonds
+  (`rwa:undefined`). The 2022 reserve pages use a broken font, so the total is read from the auditor's
+  letter. The May 2022 report is a scan and was read manually (`circle_manual.json`). From 2023:
+  Treasuries by CUSIP, repurchase agreements and cash, checked against the total reserve assets.
+- Times: Paxos reports are at 5:00 PM New York time, Circle reports at 11:59 PM Pacific time, Tether
+  reports at the end of the day (UTC). All are stored in UTC.

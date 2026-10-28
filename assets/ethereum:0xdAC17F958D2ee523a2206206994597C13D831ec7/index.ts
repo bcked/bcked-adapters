@@ -1,3 +1,4 @@
+import { getIssuerBackingShare } from "../../src/crawler/adapters/issuer_backing";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 
@@ -51,10 +52,10 @@ export default class Adapter implements bcked.asset.Adapter {
         ];
     }
 
-    async getBacking(): Promise<bcked.asset.Backing[]> {
-        // Backing need to be manually parsed from attestation reports.
-        // See: https://tether.to/en/transparency/
-        // Treasury Auctions can be looked up here: https://www.treasurydirect.gov/auctions/auction-query/
-        return [];
+    async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
+        // Tether's reserves cover all chains. They are recorded for the tether entity from the
+        // assurance reports (https://tether.to/en/transparency/, see scripts/attestations).
+        // USDT on Ethereum is backed by the Ethereum share of the circulating supply.
+        return getIssuerBackingShare("tether", 1, "Ethereum", lastRecorded);
     }
 }

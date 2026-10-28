@@ -93,7 +93,10 @@ export default class Adapter implements bcked.entity.Adapter {
         const response = await axios.get<string>("https://www.circle.com/en/transparency");
         const $ = load(response.data);
 
-        const dateText = $("p:contains('As of')").next().text().trim();
+        // The date used to be in the element after "As of", now it is in the same paragraph.
+        const asOf = $("p:contains('As of')").first();
+        const dateText =
+            /As of (.+)/.exec(asOf.text().trim())?.[1]?.trim() ?? asOf.next().text().trim();
         const cashText = $("#usdc_chartjs_canvas").attr("data-usdc-cash");
 
         if (!dateText || !cashText) return;
