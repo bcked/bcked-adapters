@@ -76,7 +76,8 @@ export default class Adapter implements bcked.asset.Adapter {
             {
                 timestamp: toISOString(new Date(supply["Time Period"])),
                 burned: null,
-                circulating: supply["MCU_N.WM"] * billion,
+                // M2, not currency in circulation (MCU), is the USD supply used for the market cap.
+                circulating: supply["M2_N.WM"] * billion,
                 total: supply["M2_N.WM"] * billion,
                 issued: supply["M2_N.WM"] * billion,
                 max: null,

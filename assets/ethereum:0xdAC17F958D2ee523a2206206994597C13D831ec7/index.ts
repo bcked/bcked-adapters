@@ -1,4 +1,4 @@
-import { getIssuerBackingShare } from "../../src/crawler/adapters/issuer_backing";
+import { getIssuerBackingShare, getIssuerCirculating } from "../../src/crawler/adapters/issuer_backing";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 
@@ -43,7 +43,8 @@ export default class Adapter implements bcked.asset.Adapter {
         return [
             {
                 timestamp,
-                circulating: null,
+                // Without the tokens held in the issuer's treasury, which are not backed.
+                circulating: await getIssuerCirculating(1, "Ethereum"),
                 burned: burned ?? null,
                 total: burned ? issued - burned : issued,
                 issued: issued,
