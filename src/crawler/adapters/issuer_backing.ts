@@ -89,3 +89,17 @@ export async function getIssuerBackingShare(
     }
     return backing;
 }
+
+/**
+ * Circulating supply of an issuer's token on one chain, from DefiLlama. It leaves out tokens the
+ * issuer holds in its own treasury, which the token's total supply includes.
+ * @param stablecoinId DefiLlama stablecoin ID
+ * @param chain DefiLlama chain name
+ */
+export async function getIssuerCirculating(
+    stablecoinId: number,
+    chain: string
+): Promise<number | null> {
+    const supply = await new DefiLlamaStablecoins().getChainSupply(stablecoinId, chain);
+    return supplyAt(supply, Date.now())?.chain ?? null;
+}

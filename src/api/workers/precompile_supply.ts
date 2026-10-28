@@ -20,10 +20,12 @@ async function* computeSupplyFallback(
         // Get closest prices to the current entry for all underlying assets
 
         // Define fallback for supply data.
+        // Circulating supply comes first, because the total can include unbacked tokens, e.g. tokens
+        // held in the issuer's treasury.
         // Empty CSV cells are read as empty strings, so take the first actual number.
         const amount = [
-            supplyEntry.total,
             supplyEntry.circulating,
+            supplyEntry.total,
             supplyEntry.issued,
             supplyEntry.max,
         ].find((value): value is number => typeof value === "number" && value > 0);
