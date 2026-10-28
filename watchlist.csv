@@ -1,0 +1,413 @@
+symbol,name,category,market_cap_usd,checked,note,sources
+SNDKB,SanDisk (bStocks),tokenized stock,96697828,2026-10-28,,https://app.rwa.xyz/assets/SNDKB
+BGBTC,Bitget Wrapped BTC,proof of reserve feed,96566937,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/bgbtc-por https://www.coingecko.com/en/coins/bitget-wrapped-btc
+FRXUSD,Frax USD,"stablecoin (fiat-backed, USD)",96305307,2026-10-28,"Frax USD, successor of FRAX",https://defillama.com/stablecoin/frax-usd https://www.artemis.ai/sectors/stablecoins/overview
+ACRED,Apollo Diversified Credit Securitize Fund,proof of reserve feed,95154905,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/acred-nav-aave-llamaguard https://www.coingecko.com/en/coins/apollo-diversified-credit-securitize-fund
+USDA,AP USDA,"stablecoin (fiat-backed, USD)",94579753,2026-10-28,,https://defillama.com/stablecoin/angle-usd https://www.artemis.ai/sectors/stablecoins/overview
+CRCLon,Circle Internet Group (Ondo Tokenized),tokenized stock,93183694,2026-10-28,,https://app.rwa.xyz/assets/CRCLon
+DEUSD,Elixir deUSD,"stablecoin (crypto-backed, USD)",92153211,2026-10-28,,https://defillama.com/stablecoin/elixir-deusd https://www.artemis.ai/sectors/stablecoins/overview
+SOXLB,Semicon Bull 3X ETF (bStocks),tokenized stock,88015670,2026-10-28,,https://app.rwa.xyz/assets/SOXLB
+fxUSD,fxUSD,"stablecoin (crypto-backed, USD)",86799257,2026-10-28,,https://defillama.com/stablecoin/f-x-protocol-fxusd https://www.artemis.ai/sectors/stablecoins/overview
+OETH,OETH,token,82773542,2026-10-28,old backlog,https://www.coingecko.com/en/coins/origin-ether
+xSolvBTC,Solv Protocol Staked BTC,proof of reserve feed,80532355,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/xsolvbtc-por https://www.coingecko.com/en/coins/solv-protocol-solvbtc-bbn
+PGOLD,Pleasing Gold,commodity,79241013,2026-10-28,,https://app.rwa.xyz/assets/PGOLD https://www.artemis.ai/sectors/stablecoins/overview
+MSTRx,MicroStrategy xStock,tokenized stock,77083268,2026-10-28,,https://app.rwa.xyz/assets/MSTRx
+CUSD,Cap cUSD,"stablecoin (crypto-backed, USD)",76954325,2026-10-28,,https://defillama.com/stablecoin/chad-usd https://www.artemis.ai/sectors/stablecoins/overview https://data.chain.link/feeds/ethereum/mainnet/cusd-aum
+USDSUI,Sui Dollar,"stablecoin (fiat-backed, USD)",76414996,2026-10-28,,https://defillama.com/stablecoin/usdsui
+LISUSD,Lista USD,"stablecoin (crypto-backed, USD)",75529731,2026-10-28,,https://defillama.com/stablecoin/helio-protocol-hay https://www.artemis.ai/sectors/stablecoins/overview
+cgUSD,Cygnus Finance Global USD,"stablecoin (fiat-backed, USD)",75055649,2026-10-28,,https://defillama.com/stablecoin/cygnus-finance-global-usd https://www.artemis.ai/sectors/stablecoins/overview
+mTBILL,Midas TBILL,tokenized treasuries,73189870,2026-10-28,,https://app.rwa.xyz/assets/mTBILL
+trUSD,Tori trUSD,"stablecoin (crypto-backed, USD)",72131189,2026-10-28,,https://defillama.com/stablecoin/tori-trusd
+USDon,Ondo U.S. Dollar Token,"stablecoin (fiat-backed, USD)",71124667,2026-10-28,,https://defillama.com/stablecoin/ondo-u-s-dollar-token https://www.artemis.ai/sectors/stablecoins/overview
+IUSD,infiniFi USD,"stablecoin (crypto-backed, USD)",69391561,2026-10-28,,https://defillama.com/stablecoin/iusd
+XAUT0,XAUT0,stablecoin,68325753,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+MUB,Micron Technology (bStocks),tokenized stock,66932629,2026-10-28,,https://app.rwa.xyz/assets/MUB
+USP,USP Stablecoin,"stablecoin (crypto-backed, USD)",65373352,2026-10-28,,https://defillama.com/stablecoin/pareto-usp
+CRCLx,CRCLx xStock,tokenized stock,61771159,2026-10-28,,https://app.rwa.xyz/assets/CRCLx
+IVVon,iShares Core S&P 500 ETF (Ondo Tokenized),tokenized stock,60954512,2026-10-28,,https://app.rwa.xyz/assets/IVVon
+SUSD,Solayer USD,"stablecoin (fiat-backed, USD)",58837291,2026-10-28,old backlog (Synthetix),https://defillama.com/stablecoin/solayer-usd https://www.artemis.ai/sectors/stablecoins/overview
+SYRUPUSDT,SYRUPUSDT,stablecoin,58281890,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+INTCB,Intel (bStocks),tokenized stock,57825863,2026-10-28,,https://app.rwa.xyz/assets/INTCB
+SPYx,SP500 xStock,tokenized stock,55962124,2026-10-28,,https://app.rwa.xyz/assets/SPYx
+YZUSD,Yuzu USD,"stablecoin (crypto-backed, USD)",55580754,2026-10-28,,https://defillama.com/stablecoin/yuzu-usd
+XAUm,Matrixdock Gold,commodity,55263735,2026-10-28,,https://app.rwa.xyz/assets/XAUm https://www.artemis.ai/sectors/stablecoins/overview
+STRCon,Strategy Stretch Preferred (Ondo Tokenized),tokenized stock,54953451,2026-10-28,,https://app.rwa.xyz/assets/STRCon
+FGRS,FGRS,tokenized stock,54379847,2026-10-28,,https://app.rwa.xyz/assets/FGRS
+gBENJI,gBENJI,tokenized treasuries,52790311,2026-10-28,,https://app.rwa.xyz/assets/gBENJI
+USDU,Unitas,"stablecoin (crypto-backed, USD)",52363351,2026-10-28,,https://defillama.com/stablecoin/uncap-usd https://www.artemis.ai/sectors/stablecoins/overview
+ZCHF,Frankencoin,"stablecoin (crypto-backed, CHF)",51014100,2026-10-28,,https://defillama.com/stablecoin/frankencoin
+FWDI,Forward Industries Inc.,tokenized stock,50747309,2026-10-28,,https://app.rwa.xyz/assets/FWDI
+EXOD,Exodus Movement Inc.,tokenized stock,50495700,2026-10-28,,https://app.rwa.xyz/assets/EXOD
+BRSRV,BlackRock Daily Reinvestment Stablecoin Reserve Vehicle,tokenized treasuries,50422993,2026-10-28,,https://app.rwa.xyz/assets/BRSRV
+TSLAx,Tesla xStock,tokenized stock,50091348,2026-10-28,,https://app.rwa.xyz/assets/TSLAx
+AUS,Aviva Investors US Dollar Liquidity Fund T Inc,tokenized treasuries,50050000,2026-10-28,,https://app.rwa.xyz/assets/AUS
+VBILL,VanEck Treasury Fund,tokenized treasuries,49338870,2026-10-28,,https://app.rwa.xyz/assets/VBILL https://www.artemis.ai/sectors/stablecoins/overview https://data.chain.link/feeds/ethereum/mainnet/vbill-nav
+SPYon,SPDR S&P 500 ETF (Ondo Tokenized),tokenized stock,48147741,2026-10-28,,https://app.rwa.xyz/assets/SPYon
+GOOGLB,Alphabet (bStocks),tokenized stock,46709836,2026-10-28,,https://app.rwa.xyz/assets/GOOGLB
+FIDD,Fidelity Digital Dollar,"stablecoin (fiat-backed, USD)",46536035,2026-10-28,,https://defillama.com/stablecoin/fidelity-digital-dollar https://www.artemis.ai/sectors/stablecoins/overview
+pathUSD,PathUSD,"stablecoin (fiat-backed, USD)",46356344,2026-10-28,,https://defillama.com/stablecoin/pathusd https://www.artemis.ai/sectors/stablecoins/overview
+DIA-SD-COL1,Diamonds: SD Collection 1,commodity,46047658,2026-10-28,,https://app.rwa.xyz/assets/DIA-SD-COL1
+NVDAB,NVIDIA (bStocks),tokenized stock,45780744,2026-10-28,,https://app.rwa.xyz/assets/NVDAB
+JUPUSD,JupUSD,"stablecoin (crypto-backed, USD)",43444928,2026-10-28,,https://defillama.com/stablecoin/jupusd https://www.artemis.ai/sectors/stablecoins/overview
+SPCXx,SpaceX xStock,tokenized stock,42531783,2026-10-28,,https://app.rwa.xyz/assets/SPCXx
+UUSD,Unity USD,"stablecoin (crypto-backed, USD)",41361084,2026-10-28,,https://defillama.com/stablecoin/youves-uusd
+sUSDat,Saturn sUSDat,proof of reserve feed,40728789,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/susdat-nav https://www.coingecko.com/en/coins/saturn-susdat
+EURI,Eurite,"stablecoin (fiat-backed, EUR)",40471256,2026-10-28,,https://defillama.com/stablecoin/eurite
+DCP,Guggenheim Treasury Services DCP,tokenized treasuries,40356901,2026-10-28,,https://app.rwa.xyz/assets/DCP
+pmUSD,pmUSD,"stablecoin (crypto-backed, USD)",40014370,2026-10-28,,https://defillama.com/stablecoin/precious-metals-usd
+MSUSD,Metronome Synth USD,"stablecoin (crypto-backed, USD)",39951990,2026-10-28,,https://defillama.com/stablecoin/main-street-usd
+BOLD,Liquity BOLD,"stablecoin (crypto-backed, USD)",39090707,2026-10-28,old backlog (Liquity),https://defillama.com/stablecoin/legacy-bold https://www.artemis.ai/sectors/stablecoins/overview
+BNCB,BNB Standard Corporation (bStocks),tokenized stock,38958749,2026-10-28,,https://app.rwa.xyz/assets/BNCB
+DIA-L-COL1,Diamonds: L Collection 1,commodity,38499068,2026-10-28,,https://app.rwa.xyz/assets/DIA-L-COL1
+USN,Noon USN,"stablecoin (crypto-backed, USD)",37953668,2026-10-28,,https://defillama.com/stablecoin/usn https://www.artemis.ai/sectors/stablecoins/overview
+MUSD,Metamask USD,"stablecoin (crypto-backed, USD)",35354107,2026-10-28,,https://defillama.com/stablecoin/musd https://www.artemis.ai/sectors/stablecoins/overview
+DIA-FS-COL1,Diamonds: FS Collection 1,commodity,35320474,2026-10-28,,https://app.rwa.xyz/assets/DIA-FS-COL1
+tGBP,Tokenised GBP,"stablecoin (fiat-backed, GBP)",35213589,2026-10-28,,https://defillama.com/stablecoin/tokenised-gbp
+YUSD,Aegis YUSD,"stablecoin (fiat-backed, USD)",34345681,2026-10-28,,https://defillama.com/stablecoin/yusd-stablecoin
+XUSD,StraitsX XUSD,"stablecoin (fiat-backed, USD)",34147722,2026-10-28,,https://defillama.com/stablecoin/xusd-babelfish https://www.artemis.ai/sectors/stablecoins/overview
+mGLOBAL,Midas Fasanara Global,proof of reserve feed,33584420,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/mglobal-nav-aave-llamaguard https://www.coingecko.com/en/coins/midas-fasanara-global
+EURE,Monerium EUR emoney,"stablecoin (fiat-backed, EUR)",32557767,2026-10-28,,https://defillama.com/stablecoin/monerium-eur-money
+PRO,PRO,token,32385627,2026-10-28,old backlog (Propy),https://www.coingecko.com/en/coins/propy
+USTC,TerraClassicUSD,"stablecoin (algorithmic, USD)",28921378,2026-10-28,old backlog (marked next to add),https://defillama.com/stablecoin/terrausd https://www.coingecko.com/en/coins/terrausd
+ZeUSD,Zoth ZeUSD,"stablecoin (fiat-backed, USD)",27618672,2026-10-28,,https://defillama.com/stablecoin/zoth-zeusd
+CASHx,Blackrock ICS US Dollar Liquidity Fund (Kaio Tokenized),tokenized treasuries,26531839,2026-10-28,,https://app.rwa.xyz/assets/CASHx
+rswETH,Restaked Swell ETH,token,25959205,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/swell-restaked-eth-por https://www.coingecko.com/en/coins/restaked-swell-eth
+BUCK,Bucket Protocol BUCK Stablecoin,"stablecoin (crypto-backed, USD)",25906285,2026-10-28,,https://defillama.com/stablecoin/bucket-protocol-buck-stablecoin
+LUSD,Liquity USD,"stablecoin (crypto-backed, USD)",25743300,2026-10-28,old backlog,https://defillama.com/stablecoin/liquity-usd https://www.artemis.ai/sectors/stablecoins/overview
+FDIT,FDIT,stablecoin,25609136,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+swETH,Swell Ethereum,proof of reserve feed,25542246,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/swell-eth-por https://www.coingecko.com/en/coins/sweth
+BCSPX,BCSPX,token,25240385,2026-10-28,old backlog (Backed bTokens),https://www.coingecko.com/en/coins/backed-cspx-core-s-p-500
+EUSD,Electronic USD,"stablecoin (crypto-backed, USD)",24044863,2026-10-28,"old backlog (Lybra eUSD, symbol shared with other tokens)",https://defillama.com/stablecoin/aryze-eusd
+JCOT,JCOT,commodity,23350783,2026-10-28,,https://app.rwa.xyz/assets/JCOT
+SLVon,iShares Silver Trust (Ondo Tokenized),commodity,23240452,2026-10-28,,https://app.rwa.xyz/assets/SLVon
+USDP,Pax Dollar,"stablecoin (fiat-backed, USD)",22822276,2026-10-28,old backlog (Pax Dollar),https://defillama.com/stablecoin/parallel-usdp https://www.artemis.ai/sectors/stablecoins/overview https://bluechip.org/en/coins/usdp
+JCORN,JCORN,commodity,22096222,2026-10-28,,https://app.rwa.xyz/assets/JCORN
+UTY,XSY UTY,"stablecoin (crypto-backed, USD)",20950259,2026-10-28,,https://defillama.com/stablecoin/unity-2
+CFUSD,CFUSD,stablecoin,20924677,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+DIA-AG-COL1,Diamonds: AG Collection 1,commodity,20259281,2026-10-28,,https://app.rwa.xyz/assets/DIA-AG-COL1
+CKBTC,CKBTC,token,19268903,2026-10-28,old backlog (Chain-Key Bitcoin),https://www.coingecko.com/en/coins/chain-key-bitcoin
+FUSD,Fantom USD,"stablecoin (crypto-backed, USD)",18918319,2026-10-28,,https://defillama.com/stablecoin/falcon-finance-usd
+EUROP,Schuman EUROP,"stablecoin (fiat-backed, EUR)",18808404,2026-10-28,,https://defillama.com/stablecoin/schuman-europ
+SBC,Stable Coin,"stablecoin (fiat-backed, USD)",18394283,2026-10-28,,https://defillama.com/stablecoin/stable-coin-2 https://www.artemis.ai/sectors/stablecoins/overview
+USDPT,Western Union USDPT,"stablecoin (fiat-backed, USD)",17616356,2026-10-28,,https://defillama.com/stablecoin/usdpt-western-union
+AID,GAIB AID,"stablecoin (fiat-backed, USD)",16872858,2026-10-28,,https://defillama.com/stablecoin/gaib-aid
+USDm,Mento Dollar,"stablecoin (algorithmic, USD)",15980010,2026-10-28,"old backlog (Mountain USDM, wound down)",https://defillama.com/stablecoin/mountain-protocol-usdm https://bluechip.org/en/coins/usdm
+USDSM,Stable Mint USD,"stablecoin (fiat-backed, USD)",15568047,2026-10-28,,https://defillama.com/stablecoin/stable-mint-usd
+DIT,DIT,token,15487927,2026-10-28,,https://www.coingecko.com/en/coins/diamond-token-2
+DIA-S-COL1,Diamonds: S Collection 1,commodity,15233173,2026-10-28,,https://app.rwa.xyz/assets/DIA-S-COL1
+DUSD,StandX DUSD,"stablecoin (crypto-backed, USD)",15043292,2026-10-28,,https://defillama.com/stablecoin/davos-protocol https://www.artemis.ai/sectors/stablecoins/overview
+USDO,OpenDollar USDO,"stablecoin (fiat-backed, USD)",14427858,2026-10-28,,https://defillama.com/stablecoin/openeden-open-dollar https://www.artemis.ai/sectors/stablecoins/overview
+MONEY,Defi.money,"stablecoin (crypto-backed, USD)",13843771,2026-10-28,,https://defillama.com/stablecoin/moremoney-usd
+DIA-KPS-COL1,Diamonds: KPS Collection 1,commodity,13692149,2026-10-28,,https://app.rwa.xyz/assets/DIA-KPS-COL1
+GLDY,Streamex GLDY,commodity,13486609,2026-10-28,,https://app.rwa.xyz/assets/GLDY
+BBRL,BBRL,stablecoin,13447621,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+MG999,MG 999 On-Chain Gold Fund,commodity,12901520,2026-10-28,,https://app.rwa.xyz/assets/MG999
+A7A5,A7A5,"stablecoin (fiat-backed, RUB)",12665637,2026-10-28,,https://defillama.com/stablecoin/a7a5 https://www.artemis.ai/sectors/stablecoins/overview
+suiUSDe,eSui Dollar,"stablecoin (crypto-backed, USD)",12346014,2026-10-28,,https://defillama.com/stablecoin/esui-dollar
+XSGD,XSGD,"stablecoin (fiat-backed, SGD)",11642619,2026-10-28,old backlog,https://defillama.com/stablecoin/xsgd https://www.artemis.ai/sectors/stablecoins/overview https://bluechip.org/en/coins/xsgd
+USDCV,USD CoinVertible,"stablecoin (fiat-backed, USD)",10912712,2026-10-28,,https://defillama.com/stablecoin/usd-coinvertible https://www.artemis.ai/sectors/stablecoins/overview
+GLDx,Gold xStock,commodity,10729846,2026-10-28,,https://app.rwa.xyz/assets/GLDx
+R,R,"stablecoin (crypto-backed, USD)",10711609,2026-10-28,,https://defillama.com/stablecoin/r
+USDH,USDH Stablecoin,"stablecoin (fiat-backed, USD)",10382107,2026-10-28,,https://defillama.com/stablecoin/usdh https://www.artemis.ai/sectors/stablecoins/overview
+D,Saga Dollar,"stablecoin (crypto-backed, USD)",10378098,2026-10-28,,https://defillama.com/stablecoin/saga-dollar
+ALUSD,Alchemix USD,"stablecoin (algorithmic, USD)",9889556,2026-10-28,,https://defillama.com/stablecoin/alchemix-usd
+DGLD,Digital Gold,commodity,9798808,2026-10-28,,https://app.rwa.xyz/assets/DGLD
+ETH+,ETH+,token,9615050,2026-10-28,old backlog (marked next to add),https://www.coingecko.com/en/coins/reserve-protocol-eth-plus
+USDR,Real USD,"stablecoin (algorithmic, USD)",9600723,2026-10-28,,https://defillama.com/stablecoin/rocky-usdr
+FEUSD,Felix feUSD,"stablecoin (crypto-backed, USD)",9409758,2026-10-28,,https://defillama.com/stablecoin/felix-feusd https://www.artemis.ai/sectors/stablecoins/overview
+MIM,Magic Internet Money,"stablecoin (crypto-backed, USD)",9252805,2026-10-28,old backlog (marked next to add),https://defillama.com/stablecoin/magic-internet-money https://www.artemis.ai/sectors/stablecoins/overview
+USDV,Solomon USDv,"stablecoin (crypto-backed, USD)",8860103,2026-10-28,,https://defillama.com/stablecoin/verified-usd-foundation-usdv
+EURS,Stasis Euro,"stablecoin (fiat-backed, EUR)",8467320,2026-10-28,,https://defillama.com/stablecoin/stasis-eurs https://www.artemis.ai/sectors/stablecoins/overview
+FPI,Frax Price Index,"stablecoin (algorithmic, VAR)",7968476,2026-10-28,old backlog,https://defillama.com/stablecoin/frax-price-index
+SPDR Gold Trust • Robinhood Token,SPDR Gold Trust • Robinhood Token,commodity,7597717,2026-10-28,,https://app.rwa.xyz/assets/SPDR Gold Trust • Robinhood Token
+USDz,Anzen USDz,"stablecoin (fiat-backed, USD)",7596424,2026-10-28,,https://defillama.com/stablecoin/anzen-usdz https://www.artemis.ai/sectors/stablecoins/overview
+AZS,AZ Silver Reserve,commodity,7107010,2026-10-28,,https://app.rwa.xyz/assets/AZS
+USDQ,Quantoz USDQ,"stablecoin (fiat-backed, USD)",6984523,2026-10-28,,https://defillama.com/stablecoin/quill-usdq https://www.artemis.ai/sectors/stablecoins/overview
+BRLA,BRLA Digital,"stablecoin (fiat-backed, REAL)",6740658,2026-10-28,,https://defillama.com/stablecoin/brla-digital-brla https://www.artemis.ai/sectors/stablecoins/overview
+EURQ,Quantoz EURQ,"stablecoin (fiat-backed, EUR)",6480000,2026-10-28,,https://defillama.com/stablecoin/quantoz-eurq https://www.artemis.ai/sectors/stablecoins/overview
+IAUon,iShares Gold Trust (Ondo Tokenized),commodity,6313739,2026-10-28,,https://app.rwa.xyz/assets/IAUon
+HOME,HomeCoin,"stablecoin (crypto-backed, USD)",6060849,2026-10-28,,https://defillama.com/stablecoin/homecoin
+USDRF,RealFi USDrf,"stablecoin (fiat-backed, USD)",5398607,2026-10-28,,https://defillama.com/stablecoin/realfi-usdrf
+RAI,Rai Reflex Index,"stablecoin (crypto-backed, VAR)",4922722,2026-10-28,old backlog,https://defillama.com/stablecoin/rai
+IDRT,IDRT,stablecoin,4914451,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+USDST,USDST,"stablecoin (fiat-backed, USD)",4900905,2026-10-28,,https://defillama.com/stablecoin/usdst
+AUDD,AUDD,"stablecoin (fiat-backed, AUD)",4862901,2026-10-28,,https://defillama.com/stablecoin/novatti-australian-digital-dollar https://bluechip.org/en/coins/audd
+XAI,XAI,"stablecoin (crypto-backed, USD)",4853239,2026-10-28,,https://defillama.com/stablecoin/xai
+ftUSD,Flying Tulip USD,"stablecoin (crypto-backed, USD)",4656017,2026-10-28,,https://defillama.com/stablecoin/flying-tulip-usd
+IDRX,IDRX,stablecoin,4550356,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+USDSC,Startale USD,"stablecoin (fiat-backed, USD)",4480389,2026-10-28,,https://defillama.com/stablecoin/startale-usd
+FEI,Fei USD,"stablecoin (algorithmic, USD)",4000334,2026-10-28,,https://defillama.com/stablecoin/fei-usd
+VCHF,VNX Swiss Franc,"stablecoin (fiat-backed, CHF)",3680337,2026-10-28,,https://defillama.com/stablecoin/vnx-swiss-franc https://www.artemis.ai/sectors/stablecoins/overview
+TRYB,Bilira,"stablecoin (fiat-backed, TRY)",3324932,2026-10-28,,https://defillama.com/stablecoin/bilira https://www.artemis.ai/sectors/stablecoins/overview
+DLUSD,Deel USD,"stablecoin (fiat-backed, USD)",3293423,2026-10-28,,https://defillama.com/stablecoin/deelusd https://www.artemis.ai/sectors/stablecoins/overview
+GBPA,Agant GBP,"stablecoin (fiat-backed, GBP)",3258458,2026-10-28,,https://defillama.com/stablecoin/agant-gbp https://www.artemis.ai/sectors/stablecoins/overview
+USDso,USD Somnia,"stablecoin (fiat-backed, USD)",3116475,2026-10-28,,https://defillama.com/stablecoin/usd-somnia
+AZND,Mu Digital AZND,"stablecoin (crypto-backed, USD)",2912968,2026-10-28,,https://defillama.com/stablecoin/mu-digital-aznd https://www.artemis.ai/sectors/stablecoins/overview
+DOC,Dollar on Chain,"stablecoin (crypto-backed, USD)",2881261,2026-10-28,,https://defillama.com/stablecoin/dollar-on-chain
+USDGLO,Glo Dollar,"stablecoin (fiat-backed, USD)",2773197,2026-10-28,,https://defillama.com/stablecoin/glo-dollar https://www.artemis.ai/sectors/stablecoins/overview https://bluechip.org/en/coins/usdglo
+AUDF,Forte AUD,"stablecoin (fiat-backed, AUD)",2695013,2026-10-28,,https://defillama.com/stablecoin/forte-aud
+GYEN,GYEN,"stablecoin (fiat-backed, JPY)",2406493,2026-10-28,,https://defillama.com/stablecoin/gyen https://www.artemis.ai/sectors/stablecoins/overview https://bluechip.org/en/coins/gyen
+USDRIF,RIF US Dollar,"stablecoin (crypto-backed, USD)",2146364,2026-10-28,,https://defillama.com/stablecoin/rif-us-dollar
+NUSD,Nexus USD,"stablecoin (crypto-backed, USD)",1969874,2026-10-28,,https://defillama.com/stablecoin/nexus-usd
+EURm,Mento Euro,"stablecoin (algorithmic, EUR)",1798873,2026-10-28,,https://defillama.com/stablecoin/celo-euro
+USD3,USD3,stablecoin,1752348,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+HBTC,Huobi BTC,proof of reserve feed,1715534,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/hbtc-por https://www.coingecko.com/en/coins/huobi-btc
+EURA,EURA,"stablecoin (crypto-backed, EUR)",1682925,2026-10-28,"old backlog (Angle agEUR, now EURA)",https://defillama.com/stablecoin/ageur https://www.artemis.ai/sectors/stablecoins/overview
+AUDM,Macropod,"stablecoin (fiat-backed, AUD)",1632865,2026-10-28,,https://defillama.com/stablecoin/celo-australian-dollar
+CEUR,CEUR,stablecoin,1607770,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+USD+,Streamflow USD+,"stablecoin (fiat-backed, USD)",1601595,2026-10-28,,https://defillama.com/stablecoin/usd
+USDI,Interest Protocol,"stablecoin (crypto-backed, USD)",1525400,2026-10-28,,https://defillama.com/stablecoin/usdi
+DJED,Djed StableCoin,"stablecoin (algorithmic, USD)",1447404,2026-10-28,old backlog,https://defillama.com/stablecoin/djed
+USDW,USDW,"stablecoin (crypto-backed, USD)",1443427,2026-10-28,,https://defillama.com/stablecoin/usdw https://data.chain.link/feeds/ethereum/mainnet/usdw-reserves
+LVUSD,LVUSD,stablecoin,1397208,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+DLLR,Sovryn Dollar,"stablecoin (crypto-backed, USD)",1376750,2026-10-28,,https://defillama.com/stablecoin/sovryn-dollar
+PAR,Parallel,"stablecoin (crypto-backed, EUR)",1345790,2026-10-28,,https://defillama.com/stablecoin/par-stablecoin
+USDnr,Nerona USD,"stablecoin (fiat-backed, USD)",1314870,2026-10-28,,https://defillama.com/stablecoin/nerona-usd
+QCAD,Stablecorp QCAD,"stablecoin (fiat-backed, CAD)",1258474,2026-10-28,,https://defillama.com/stablecoin/stablecorp-qcad
+CADC,CAD Coin,"stablecoin (fiat-backed, CAD)",1206075,2026-10-28,,https://defillama.com/stablecoin/cad-coin
+NOTE,Note,"stablecoin (crypto-backed, USD)",1192084,2026-10-28,,https://defillama.com/stablecoin/note
+VAI,Vai,"stablecoin (crypto-backed, USD)",1186326,2026-10-28,,https://defillama.com/stablecoin/vai
+zkUSD,zkUSD Dollar,"stablecoin (crypto-backed, USD)",1179099,2026-10-28,,https://defillama.com/stablecoin/zkusd-dollar https://www.artemis.ai/sectors/stablecoins/overview
+GBPE,Monerium GBP emoney,"stablecoin (fiat-backed, GBP)",1060760,2026-10-28,,https://defillama.com/stablecoin/monerium-gbp-emoney
+rwaUSD,Multipli rwaUSD,"stablecoin (crypto-backed, USD)",1042609,2026-10-28,,https://defillama.com/stablecoin/rwausd https://data.chain.link/feeds/ethereum/mainnet/rwausd-nav
+CADD,CAD Digital,"stablecoin (fiat-backed, CAD)",1017972,2026-10-28,,https://defillama.com/stablecoin/cad-digital
+FRNT,Frontier Stable Token,"stablecoin (fiat-backed, USD)",970272,2026-10-28,,https://defillama.com/stablecoin/frontier-stable-token
+USDL,Liquid Loans USDL,"stablecoin (crypto-backed, USD)",943784,2026-10-28,,https://defillama.com/stablecoin/usdlemma
+CZUSD,Czodiac USD,"stablecoin (crypto-backed, USD)",920283,2026-10-28,,https://defillama.com/stablecoin/czodiac-usd
+PINA,Meme Dollar,"stablecoin (algorithmic, USD)",912570,2026-10-28,,https://defillama.com/stablecoin/meme-dollar
+CETES,Etherfuse CETES,stablecoin,836141,2026-10-28,,https://bluechip.org/en/coins/cetes https://www.coingecko.com/en/coins/cetes
+JPYSC,JPYSC,"stablecoin (fiat-backed, JPY)",830594,2026-10-28,,https://defillama.com/stablecoin/jpysc
+ANGLE_USD,ANGLE_USD,stablecoin,815689,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+URM,URM,"stablecoin (crypto-backed, USD)",811085,2026-10-28,,https://defillama.com/stablecoin/urm
+KUSD,Kolibri USD,"stablecoin (crypto-backed, USD)",806070,2026-10-28,,https://defillama.com/stablecoin/kerne-usd
+ZARP,ZARP,stablecoin,755047,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+FXD,Fathom Dollar,"stablecoin (crypto-backed, USD)",672777,2026-10-28,,https://defillama.com/stablecoin/fathom-dollar
+FLOAT,Float Protocol Float,"stablecoin (algorithmic, VAR)",653463,2026-10-28,,https://defillama.com/stablecoin/float-protocol-float
+PXDC,PXDC Stablecoin,"stablecoin (crypto-backed, USD)",541929,2026-10-28,,https://defillama.com/stablecoin/powercity-pxdc
+GGUSD,Good Game US Dollar,"stablecoin (crypto-backed, USD)",526927,2026-10-28,,https://defillama.com/stablecoin/good-game-us-dollar https://www.artemis.ai/sectors/stablecoins/overview
+eUSD(v2),eUSD (V2),"stablecoin (crypto-backed, USD)",526761,2026-10-28,,https://defillama.com/stablecoin/eusd-new
+WBRL,Brazilian Real,"stablecoin (fiat-backed, REAL)",493115,2026-10-28,,https://defillama.com/stablecoin/brazilian-real https://www.artemis.ai/sectors/stablecoins/overview
+USDK,USDK,"stablecoin (fiat-backed, USD)",488229,2026-10-28,,https://defillama.com/stablecoin/orki-usd
+fETH,Fractional ETH,"stablecoin (crypto-backed, VAR)",473336,2026-10-28,,https://defillama.com/stablecoin/fractional-eth
+MXNE,MXNE,stablecoin,467665,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+CNHT,Tether CNH,"stablecoin (fiat-backed, CNY)",461199,2026-10-28,,https://defillama.com/stablecoin/cnh-tether
+mantraUSD,mantraUSD,"stablecoin (crypto-backed, USD)",434329,2026-10-28,,https://defillama.com/stablecoin/mantra-usd
+HAI,Lets Get HAI,"stablecoin (crypto-backed, VAR)",421914,2026-10-28,old backlog,https://defillama.com/stablecoin/let-s-get-hai
+USR,Resolv USD,"stablecoin (crypto-backed, USD)",412681,2026-10-28,,https://defillama.com/stablecoin/resolv-usr https://www.artemis.ai/sectors/stablecoins/overview
+LVLUSD,Level USD,"stablecoin (crypto-backed, USD)",399747,2026-10-28,,https://defillama.com/stablecoin/level-usd https://www.artemis.ai/sectors/stablecoins/overview
+BREAD,Bread,"stablecoin (crypto-backed, USD)",392777,2026-10-28,,https://defillama.com/stablecoin/bread-3
+EURW,Newrails Euro,"stablecoin (fiat-backed, EUR)",384502,2026-10-28,,https://defillama.com/stablecoin/newrails-euro
+SCUSD,Rings scUSD,"stablecoin (crypto-backed, USD)",350754,2026-10-28,,https://defillama.com/stablecoin/rings-scusd
+USDHL,USDHL,stablecoin,347744,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+BNBUSD,Sigma Money bnbUSD,"stablecoin (crypto-backed, USD)",346844,2026-10-28,,https://defillama.com/stablecoin/sigma-bnb-usd
+EURAU,AllUnity EUR,"stablecoin (fiat-backed, EUR)",326821,2026-10-28,,https://defillama.com/stablecoin/allunity-eur https://www.artemis.ai/sectors/stablecoins/overview
+GBPm,Mento British Pound,"stablecoin (crypto-backed, GBP)",315397,2026-10-28,,https://defillama.com/stablecoin/mento-british-pound
+zunUSD,Zunami USD,"stablecoin (crypto-backed, USD)",303061,2026-10-28,,https://defillama.com/stablecoin/zunami-usd
+UXD,UXD Stablecoin,"stablecoin (algorithmic, USD)",297390,2026-10-28,"old backlog (UXD Protocol, delta neutral)",https://defillama.com/stablecoin/uxd-stablecoin
+USD_STAR,USD_STAR,stablecoin,283061,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+BAI,BAI Stablecoin,"stablecoin (crypto-backed, USD)",282162,2026-10-28,,https://defillama.com/stablecoin/bai-stablecoin
+EUR,EUR,stablecoin,268598,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+bitUSD,bitSmiley USD,"stablecoin (crypto-backed, USD)",253253,2026-10-28,,https://defillama.com/stablecoin/bitsmiley-usd
+NECT,Nectar,"stablecoin (crypto-backed, USD)",252881,2026-10-28,,https://defillama.com/stablecoin/nectar
+WARS,Argentine Peso,"stablecoin (fiat-backed, ARS)",250925,2026-10-28,,https://defillama.com/stablecoin/argentine-peso https://www.artemis.ai/sectors/stablecoins/overview
+mkUSD,mkUSD,"stablecoin (crypto-backed, USD)",242377,2026-10-28,,https://defillama.com/stablecoin/prisma-mkusd
+CGBP,CGBP,stablecoin,236427,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+RUSD,Reservoir Stablecoin,"stablecoin (fiat-backed, USD)",226762,2026-10-28,,https://defillama.com/stablecoin/redeemable-usd https://www.artemis.ai/sectors/stablecoins/overview
+USDCB,USDCB,"stablecoin (fiat-backed, USD)",224978,2026-10-28,,https://defillama.com/stablecoin/usdcb
+USDaf,Asymmetry USDaf V2,"stablecoin (crypto-backed, USD)",220887,2026-10-28,,https://defillama.com/stablecoin/asymmetry-usdaf
+USDTZ,USDtez,"stablecoin (fiat-backed, USD)",213033,2026-10-28,,https://defillama.com/stablecoin/usdtez
+CREAL,CREAL,stablecoin,209049,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+IST,Inter Stable Token,"stablecoin (crypto-backed, USD)",208484,2026-10-28,,https://defillama.com/stablecoin/inter-stable-token
+RSV,Reserve,"stablecoin (crypto-backed, USD)",202727,2026-10-28,,https://defillama.com/stablecoin/reserve
+EURT,Euro Tether,"stablecoin (fiat-backed, EUR)",198120,2026-10-28,,https://defillama.com/stablecoin/tether-eurt https://www.artemis.ai/sectors/stablecoins/overview https://bluechip.org/en/coins/eurt
+SVUSD,Savvy USD,"stablecoin (fiat-backed, USD)",173601,2026-10-28,,https://defillama.com/stablecoin/savvy-usd
+SIGUSD,SigmaUSD,"stablecoin (algorithmic, USD)",159556,2026-10-28,,https://defillama.com/stablecoin/sigmausd
+STBL,STBL,"stablecoin (crypto-backed, USD)",146485,2026-10-28,,https://defillama.com/stablecoin/algostable
+USE,USE,"stablecoin (algorithmic, USD)",142442,2026-10-28,,https://defillama.com/stablecoin/use
+USDJ,USDJ,"stablecoin (crypto-backed, USD)",142422,2026-10-28,,https://defillama.com/stablecoin/just-stablecoin
+ZUSD,ZUSD,"stablecoin (fiat-backed, USD)",126772,2026-10-28,,https://defillama.com/stablecoin/zusd https://bluechip.org/en/coins/zusd
+JPYC,JPY Coin,"stablecoin (fiat-backed, JPY)",123211,2026-10-28,,https://defillama.com/stablecoin/jpycoin
+EUROe,EUROe Stablecoin,"stablecoin (fiat-backed, EUR)",122538,2026-10-28,old backlog,https://defillama.com/stablecoin/euroe-stablecoin
+USDXL,Last USD,"stablecoin (crypto-backed, USD)",113523,2026-10-28,,https://defillama.com/stablecoin/last-usd https://www.artemis.ai/sectors/stablecoins/overview
+invUSD,invUSD Stablecoin,"stablecoin (crypto-backed, USD)",112815,2026-10-28,,https://defillama.com/stablecoin/inverse-usd
+GRAI,GRAI,"stablecoin (crypto-backed, USD)",111880,2026-10-28,,https://defillama.com/stablecoin/grai https://www.artemis.ai/sectors/stablecoins/overview
+HYUSD,High Yield USD,"stablecoin (algorithmic, USD)",107488,2026-10-28,,https://defillama.com/stablecoin/high-yield-usd
+peUSD,peg-eUSD,"stablecoin (crypto-backed, USD)",103916,2026-10-28,,https://defillama.com/stablecoin/peg-eusd
+IAUSD,iAUSD,"stablecoin (crypto-backed, USD)",96926,2026-10-28,,https://defillama.com/stablecoin/iausd
+VGBP,VNX British Pound,"stablecoin (fiat-backed, GBP)",96709,2026-10-28,,https://defillama.com/stablecoin/vnx-british-pound https://www.artemis.ai/sectors/stablecoins/overview
+WEN,Magma Wen,"stablecoin (crypto-backed, USD)",83176,2026-10-28,,https://defillama.com/stablecoin/magma-wen
+ARUSD,arUSD,"stablecoin (crypto-backed, USD)",78295,2026-10-28,,https://defillama.com/stablecoin/arusd
+HYDT,HYDT,"stablecoin (algorithmic, USD)",77841,2026-10-28,,https://defillama.com/stablecoin/hydt-protocol-hydt
+VST,Vesta Stable,"stablecoin (crypto-backed, USD)",77697,2026-10-28,,https://defillama.com/stablecoin/vesta-stable
+VOLT,VOLT Protocol,"stablecoin (algorithmic, VAR)",76776,2026-10-28,,https://defillama.com/stablecoin/volt-protocol
+CJPY,CJPY,"stablecoin (crypto-backed, JPY)",72074,2026-10-28,,https://defillama.com/stablecoin/convertible-jpy-token https://www.artemis.ai/sectors/stablecoins/overview
+AUDC,AUDC,stablecoin,71895,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+MyUSD,Mynth MyUSD,"stablecoin (algorithmic, USD)",68504,2026-10-28,,https://defillama.com/stablecoin/mynth-myusd
+CKES,CKES,stablecoin,66922,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+CCHF,CCHF,stablecoin,63510,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+WCOP,Colombian Peso,"stablecoin (fiat-backed, COP)",62853,2026-10-28,,https://defillama.com/stablecoin/colombian-peso https://www.artemis.ai/sectors/stablecoins/overview
+WMXN,Mexican Peso,"stablecoin (fiat-backed, MXN)",61897,2026-10-28,,https://defillama.com/stablecoin/mexican-peso https://www.artemis.ai/sectors/stablecoins/overview
+WCLP,Chilean Peso,"stablecoin (fiat-backed, CLP)",57720,2026-10-28,,https://defillama.com/stablecoin/chilean-peso https://www.artemis.ai/sectors/stablecoins/overview
+MXNT,Mexican Peso Tether,"stablecoin (fiat-backed, MXN)",56021,2026-10-28,,https://defillama.com/stablecoin/mexican-peso-tether
+VUSD,VDollar Finance,"stablecoin (crypto-backed, USD)",53686,2026-10-28,,https://defillama.com/stablecoin/vdollar-finance
+DCHF,DeFi Franc,"stablecoin (crypto-backed, VAR)",51159,2026-10-28,,https://defillama.com/stablecoin/defi-franc
+CAPUSD,CAPUSD,stablecoin,50323,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+USDA+,NonDollar,"stablecoin (crypto-backed, USD)",48463,2026-10-28,,https://defillama.com/stablecoin/nondollar
+ERN,Ethos Reserve Note,"stablecoin (crypto-backed, USD)",47287,2026-10-28,,https://defillama.com/stablecoin/ethos-reserve-note
+BYC,Bytecash,"stablecoin (crypto-backed, USD)",43276,2026-10-28,,https://defillama.com/stablecoin/bytecash
+AEUR,Anchored Coins AEUR,"stablecoin (fiat-backed, EUR)",42534,2026-10-28,,https://defillama.com/stablecoin/anchored-coins-eur https://www.artemis.ai/sectors/stablecoins/overview
+BRLm,Mento Real,"stablecoin (crypto-backed, REAL)",39031,2026-10-28,,https://defillama.com/stablecoin/celo-real-creal
+WAD,Whale Asset Dollar,"stablecoin (crypto-backed, USD)",36702,2026-10-28,,https://defillama.com/stablecoin/whale-asset-dollar
+WPEN,Peruvian Sol,"stablecoin (fiat-backed, PEN)",35344,2026-10-28,,https://defillama.com/stablecoin/peruvian-sol https://www.artemis.ai/sectors/stablecoins/overview
+HEXDC,HEX Dollar Coin,"stablecoin (crypto-backed, USD)",34145,2026-10-28,,https://defillama.com/stablecoin/hex-dollar-coin
+MOD,Move Dollar,"stablecoin (crypto-backed, USD)",31701,2026-10-28,,https://defillama.com/stablecoin/move-dollar
+DYAD,Dyad,"stablecoin (crypto-backed, USD)",31512,2026-10-28,,https://defillama.com/stablecoin/dyad
+USND,Nerite USND,"stablecoin (crypto-backed, USD)",27442,2026-10-28,,https://defillama.com/stablecoin/us-nerite-dollar
+PUSO,PUSO,stablecoin,25508,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+BAOUSD,BaoUSD,"stablecoin (crypto-backed, USD)",25161,2026-10-28,,https://defillama.com/stablecoin/baousd
+CGHS,CGHS,stablecoin,23622,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+3USD,3USD,"stablecoin (crypto-backed, USD)",23366,2026-10-28,,https://defillama.com/stablecoin/3usd
+EURO3,EURO3,"stablecoin (crypto-backed, EUR)",22844,2026-10-28,,https://defillama.com/stablecoin/euro3
+clevUSD,CLever USD,"stablecoin (crypto-backed, USD)",22358,2026-10-28,,https://defillama.com/stablecoin/clever-usd
+DSU,Digital Standard Unit,"stablecoin (crypto-backed, USD)",21736,2026-10-28,,https://defillama.com/stablecoin/digital-standard-unit
+PAUSD,Parallel USD,"stablecoin (crypto-backed, USD)",21582,2026-10-28,,https://defillama.com/stablecoin/parallel-usd
+CNGN,CNGN,stablecoin,21203,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+BOB,BOB,"stablecoin (crypto-backed, USD)",20666,2026-10-28,,https://defillama.com/stablecoin/bob
+UNO,UNO,"stablecoin (fiat-backed, USD)",16423,2026-10-28,,https://defillama.com/stablecoin/nostra-uno
+CAUD,CAUD,stablecoin,16240,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+USH,Hyperstable USD,"stablecoin (crypto-backed, USD)",15459,2026-10-28,,https://defillama.com/stablecoin/hyperstable
+BtcUSD,btcUSD,"stablecoin (crypto-backed, USD)",14910,2026-10-28,,https://defillama.com/stablecoin/btcusd
+GAI,GAI Stablecoin,"stablecoin (crypto-backed, USD)",14285,2026-10-28,,https://defillama.com/stablecoin/gai-stablecoin
+ULTRA,PrismaLRT Ultra,"stablecoin (crypto-backed, USD)",12902,2026-10-28,,https://defillama.com/stablecoin/prismalrt-ultra
+LAND,LAND,token,11421,2026-10-28,old backlog (Landshare),https://www.coingecko.com/en/coins/landshare
+DCKUSD,Dackie USD,"stablecoin (algorithmic, USD)",11148,2026-10-28,,https://defillama.com/stablecoin/dackie-usd
+rgUSD,Revenue Generating USD,"stablecoin (crypto-backed, USD)",10880,2026-10-28,,https://defillama.com/stablecoin/revenue-generating-usd
+MSD,Arche Protocol MSD,"stablecoin (crypto-backed, USD)",10810,2026-10-28,,https://defillama.com/stablecoin/arche-protocol-msd
+ANONUSD,Offshift anonUSD,"stablecoin (algorithmic, USD)",10792,2026-10-28,,https://defillama.com/stablecoin/offshift-anonusd
+NOTBTC,NOTBTC,token,7695,2026-10-28,,https://www.coingecko.com/en/coins/not-bitcoin
+USC,Chi USC,"stablecoin (crypto-backed, USD)",7027,2026-10-28,,https://defillama.com/stablecoin/chi-usc
+JUSD,Jigsaw USD,"stablecoin (crypto-backed, USD)",6372,2026-10-28,,https://defillama.com/stablecoin/jigsaw-usd
+haEUR,Harbor haEUR,"stablecoin (crypto-backed, EUR)",5727,2026-10-28,,https://defillama.com/stablecoin/harbor-haeur
+NEX,Nexus,"stablecoin (algorithmic, USD)",5179,2026-10-28,,https://defillama.com/stablecoin/nexus
+XY,TREN Debt Token,"stablecoin (crypto-backed, USD)",4575,2026-10-28,,https://defillama.com/stablecoin/tren-debt-token
+FIAT,Fixed Income Asset Token,"stablecoin (crypto-backed, USD)",4259,2026-10-28,,https://defillama.com/stablecoin/fixed-income-asset-token
+BPD,Money Protocol,"stablecoin (crypto-backed, USD)",2181,2026-10-28,,https://defillama.com/stablecoin/money-protocol
+GHSm,Mento Ghanaian Cedi,"stablecoin (crypto-backed, GHS)",2024,2026-10-28,,https://defillama.com/stablecoin/celo-ghanaian-cedi
+xpUSD,Gaming XP USD,"stablecoin (fiat-backed, USD)",1476,2026-10-28,,https://defillama.com/stablecoin/gaming-xp-usd
+SCB,USD Stable Colb,"stablecoin (fiat-backed, USD)",820,2026-10-28,,https://defillama.com/stablecoin/usd-stable-colb
+CCAD,CCAD,stablecoin,675,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+CZAR,CZAR,stablecoin,672,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+KESm,Mento Kenyan Shilling,"stablecoin (crypto-backed, KES)",516,2026-10-28,,https://defillama.com/stablecoin/celo-kenyan-shilling
+litUSD,litUSD,"stablecoin (fiat-backed, USD)",506,2026-10-28,,https://defillama.com/stablecoin/litusd
+sLSD,PSY,"stablecoin (crypto-backed, USD)",404,2026-10-28,,https://defillama.com/stablecoin/psy
+PHPm,Mento Philippine Peso,"stablecoin (crypto-backed, PHP)",398,2026-10-28,,https://defillama.com/stablecoin/puso
+KRWQ,KRWQ,"stablecoin (fiat-backed, KRW)",377,2026-10-28,,https://defillama.com/stablecoin/krwt
+STCUSD,STCUSD,stablecoin,311,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+d2O,Deuterium,"stablecoin (crypto-backed, USD)",107,2026-10-28,,https://defillama.com/stablecoin/deuterium
+zunETH,Zunami ETH,"stablecoin (crypto-backed, VAR)",71,2026-10-28,,https://defillama.com/stablecoin/zunami-eth
+KRW1,KRW1,"stablecoin (fiat-backed, KRW)",7,2026-10-28,,https://defillama.com/stablecoin/krw1
+WSRUSD,WSRUSD,stablecoin,4,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+SIUSD,SIUSD,stablecoin,4,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
+USDMO,Monet USDmo,"stablecoin (crypto-backed, USD)",1,2026-10-28,,https://defillama.com/stablecoin/monet-usdmo
+USDN,Neutrino USD,"stablecoin (algorithmic, USD)",,2026-10-28,,https://defillama.com/stablecoin/smardex-usdn
+HUSD,HUSD,"stablecoin (fiat-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/husd
+USPD,US Permissionless Dollar,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/us-permissionless-dollar
+satUSD,River Stablecoin,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/satoshi-stablecoin
+SPUSD,SoulPeg USD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/soulpeg-usd
+USDKG,USDKG,"stablecoin (fiat-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/usdkg
+MNEE,MNEE USD,"stablecoin (fiat-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/mnee-usd-stablecoin
+BEAN,Bean,"stablecoin (algorithmic, USD)",,2026-10-28,,https://defillama.com/stablecoin/bean
+GYD,Gyroscope GYD,"stablecoin (crypto-backed, USD)",,2026-10-28,old backlog (Gyroscope),https://defillama.com/stablecoin/gyroscope-gyd
+YU,YU,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/yu
+TOR,TOR,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/tor
+HOLLAR,Hydrated Dollar,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/hydrated-dollar
+PINTO,Pinto,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/pinto
+NXUSD,NXUSD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/nxusd
+USBD,USBD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/usbd
+cdxUSD,Cod3x USD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/cod3x-usd
+PAI,Parrot USD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/parrot-usd
+ctUSD,Citrea USD,"stablecoin (fiat-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/citrea-usd
+aSEED,aUSD Seed,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/ausd-seed-karura
+syUSD,Synnax Stablecoin,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/syusd
+beatUSD,Hyperbeat USD,"stablecoin (fiat-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/beatusd
+BNUSD,Balanced Dollars,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/balanced-dollars
+USSD,US Sonic Dollar,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/us-sonic-dollar
+WUSD,Worldwide USD,"stablecoin (fiat-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/worldwide-usd
+THUSD,Threshold USD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/threshold-usd
+WEUSD,WEUSD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/weusd
+USDT+,USDT+,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/usdtplus
+KEI,KEI Stablecoin,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/kei-stablecoin
+USDFC,USDFC,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/usdfc
+elUSD,Elara USD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/elara-usd
+phUSD,Phoenix USD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/phusd
+UST1,UST1,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/ust1
+STAR,STAR,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/preon-star
+BD,Base Dollar,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/base-dollar
+HRUSD,HRUSD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/hrusd
+DAI+,DAI+,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/overnight-dai
+MEAD,Mead,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/mead-2
+EBUSD,EBUSD,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/ebusd-stablecoin
+USK,USK,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/usk
+paraUSD,Parabol USD,"stablecoin (fiat-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/parabol-usd
+USDeAD,Deaderal Reserve Note,"stablecoin (crypto-backed, USD)",,2026-10-28,,https://defillama.com/stablecoin/usdead
+SEUR,sEUR,"stablecoin (crypto-backed, EUR)",,2026-10-28,,https://defillama.com/stablecoin/seur
+IBEUR,Iron Bank EURO,"stablecoin (crypto-backed, EUR)",,2026-10-28,,https://defillama.com/stablecoin/iron-bank-euro
+SILK,SILK,"stablecoin (crypto-backed, VAR)",,2026-10-28,,https://defillama.com/stablecoin/silk-bcec1136-561c-4706-a42c-8b67d0d7f7d2
+LCNY,Alternity CNY,"stablecoin (crypto-backed, CNY)",,2026-10-28,,https://defillama.com/stablecoin/alternity-cny
+UAHT,UAHT,"stablecoin (fiat-backed, UAH)",,2026-10-28,,https://defillama.com/stablecoin/uaht
+NARS,NARS,"stablecoin (fiat-backed, ARS)",,2026-10-28,,https://defillama.com/stablecoin/num-ars
+CDT,Collateralized Debt Token,"stablecoin (crypto-backed, VAR)",,2026-10-28,,https://defillama.com/stablecoin/collateralized-debt-token
+eEUR,ARYZE eEUR,"stablecoin (fiat-backed, EUR)",,2026-10-28,,https://defillama.com/stablecoin/aryze-eeur
+eGBP,ARYZE eGBP,"stablecoin (fiat-backed, GBP)",,2026-10-28,,https://defillama.com/stablecoin/aryze-egbp
+VEUR,VNX EURO,"stablecoin (fiat-backed, EUR)",,2026-10-28,,https://defillama.com/stablecoin/vnx-euro
+EURD,Quantoz EURD,"stablecoin (fiat-backed, EUR)",,2026-10-28,,https://defillama.com/stablecoin/quantoz-eurd
+HCHF,Hedera Swiss Franc,"stablecoin (crypto-backed, CHF)",,2026-10-28,,https://defillama.com/stablecoin/hedera-swiss-franc
+EURR,StablR Euro,"stablecoin (fiat-backed, EUR)",,2026-10-28,,https://defillama.com/stablecoin/revolut-euro
+PHT,PHT Stablecoin,"stablecoin (crypto-backed, PHP)",,2026-10-28,,https://defillama.com/stablecoin/pht-stablecoin
+RUBT,Tetris Money,"stablecoin (fiat-backed, RUB)",,2026-10-28,,https://defillama.com/stablecoin/rubt
+BRTH,BRTH,"stablecoin (fiat-backed, REAL)",,2026-10-28,,https://defillama.com/stablecoin/brth
+CADm,Mento Canadian Dollar,"stablecoin (crypto-backed, CAD)",,2026-10-28,,https://defillama.com/stablecoin/celo-canadian-dollar
+COPm,Mento Colombian Peso,"stablecoin (crypto-backed, COP)",,2026-10-28,,https://defillama.com/stablecoin/ccop
+JPYm,Mento Japanese Yen,"stablecoin (crypto-backed, JPY)",,2026-10-28,,https://defillama.com/stablecoin/celo-japanese-yen
+ZARm,Mento South African Rand,"stablecoin (crypto-backed, ZAR)",,2026-10-28,,https://defillama.com/stablecoin/celo-south-african-rand
+NGNm,Mento Nigerian Naira,"stablecoin (crypto-backed, NGN)",,2026-10-28,,https://defillama.com/stablecoin/celo-nigerian-naira
+CHFm,Mento Swiss Franc,"stablecoin (crypto-backed, CHF)",,2026-10-28,,https://defillama.com/stablecoin/celo-swiss-franc
+XOFm,Mento West African CFA Franc,"stablecoin (crypto-backed, XOF)",,2026-10-28,,https://defillama.com/stablecoin/celo-west-african-cfa-franc
+MYRT,MYR Stablecoin,"stablecoin (fiat-backed, MYR)",,2026-10-28,,https://defillama.com/stablecoin/myr-stablecoin
+REUR,Royal Euro,"stablecoin (fiat-backed, EUR)",,2026-10-28,,https://defillama.com/stablecoin/royal-euro
+dEURO,Decentralized Euro,"stablecoin (crypto-backed, EUR)",,2026-10-28,,https://defillama.com/stablecoin/decentralized-euro
+HKDAP,HKD At Par,"stablecoin (fiat-backed, HKD)",,2026-10-28,,https://defillama.com/stablecoin/anchorpoint-hkd-at-par
+QEURO,Quantillon Euro,"stablecoin (crypto-backed, EUR)",,2026-10-28,,https://defillama.com/stablecoin/quantillon-euro
+JPYdf,JPYdf,"stablecoin (crypto-backed, JPY)",,2026-10-28,,https://defillama.com/stablecoin/jpydf
+USPC,USPC NAV,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/uspc-nav
+USCC,USCC NAV - Aave LlamaGuard,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/uscc-nav-per-share
+ION Digital,ION Digital Total Reserve Proof of Reserves,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/ion-por
+USHP,USHP NAV,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/ushp-nav-shared-svr
+CRDYX,CRDYX NAV,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/crdyx-nav
+CASH+,CASH+ NAV,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/cashplus-nav
+HINC,HINC NAV - AAVE LlamaGuard,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/hinc-nav
+MWIN,MWIN NAV - Aave Llamaguard,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/mwin-nav
+EURSAFO,EURSAFO NAV,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/eursafo-nav
+nWETH,Nexus wETH Reserves,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/nexus-weth-por
+C1USD,C1USD Reserves,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/c1usd-por https://www.coingecko.com/en/coins/c1usd
+goUSD,goUSD Reserves,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/gousd-reserves
+Treasury+,Treasury+ NAV,proof of reserve feed,,2026-10-28,,https://data.chain.link/feeds/ethereum/mainnet/treasuryplus-nav
+USDN,Neutrino USD,,,2026-10-28,"old backlog, depegged, delisted",
+NUON,Nuon,,,2026-10-28,"old backlog, not found",
+UZD,Zunami UZD,,,2026-10-28,"old backlog, not found",
+MAPE,Abracadabra magicAPE,,,2026-10-28,"old backlog, not found",
+MIG,Magic Internet Gold,,,2026-10-28,"old backlog, not found",
+BASE,Base Protocol,,,2026-10-28,"old backlog, not found",
+PMGT,Perth Mint Gold Token,,,2026-10-28,"old backlog, not found",
+DGX,Digix Gold,,,2026-10-28,"old backlog, discontinued",
+SLVT,Silver Token,,,2026-10-28,"old backlog, not found",
+GSX,Gold Secured Currency,,,2026-10-28,"old backlog, not found",
+OGC,OneGram,,,2026-10-28,"old backlog, not found",
+PTR,Petro,,,2026-10-28,"old backlog, shut down by Venezuela in 2024",
+EKON,Ekon Gold,,,2026-10-28,"old backlog, not found",
+ZRC,ZrCoin,,,2026-10-28,"old backlog, not found",
+DIAM,diamDEXX DIAM,,,2026-10-28,"old backlog, not found",
+ADAI,Aave DAI (v1),,,2026-10-28,"old backlog, replaced by Aave v2/v3 aTokens",
+XUSD,LandX xUSD,,,2026-10-28,"old backlog, not found",
+XUSD,xBacked xUSD,,,2026-10-28,"old backlog, not found",
+A$DC,ANZ A$DC,,,2026-10-28,"old backlog, bank pilot, not public",

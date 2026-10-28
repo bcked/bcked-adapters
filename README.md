@@ -8,7 +8,13 @@
 
 ## Contributing
 
-If you would like to contribute, please read [our contribution guideline](CONTRIBUTING.md).
+bcked grows with every token someone adds. Pick the route that fits:
+
+1. **Request a token.** Open the [token request form](https://github.com/bcked/bcked-adapters/issues/new?template=add-token.yml) with a link to where the backing is published.
+2. **Pick up a request.** Open requests carry the label [`token-request`](https://github.com/bcked/bcked-adapters/issues?q=is%3Aissue+is%3Aopen+label%3Atoken-request).
+3. **Report wrong data** with the [correction form](https://github.com/bcked/bcked-adapters/issues/new?template=correction.yml).
+
+Tokens need a circulating market cap of at least $100M and backing that can be checked from public sources. Smaller tokens are kept in [`watchlist.csv`](watchlist.csv). The [contribution guide](CONTRIBUTING.md) explains the rules and how a token is defined.
 
 ## License
 
