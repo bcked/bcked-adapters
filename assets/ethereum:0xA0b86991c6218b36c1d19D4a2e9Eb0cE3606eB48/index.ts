@@ -1,4 +1,7 @@
-import { getIssuerBackingShare, getIssuerCirculating } from "../../src/crawler/adapters/issuer_backing";
+import {
+    getIssuerBackingShare,
+    getIssuerCirculating,
+} from "../../src/crawler/adapters/issuer_backing";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 
