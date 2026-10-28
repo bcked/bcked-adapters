@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+    - name: API documentation
+      url: https://api.bcked.com/docs/
+      about: Resources, fields and examples of the bcked API.

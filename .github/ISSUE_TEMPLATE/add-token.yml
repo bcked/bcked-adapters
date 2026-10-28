@@ -1,0 +1,53 @@
+name: Request a token
+description: A backed token that bcked does not track yet. Someone else writes the adapter.
+title: "Add token: "
+labels: [token-request]
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Check the [eligibility rules](https://github.com/bcked/bcked-adapters/blob/main/CONTRIBUTING.md#which-tokens-are-tracked) first. Tokens below $100M market cap go to the watchlist instead.
+    - type: input
+      id: name
+      attributes:
+          label: Token name and symbol
+          placeholder: e.g. Tether Gold (XAUT)
+      validations:
+          required: true
+    - type: input
+      id: contract
+      attributes:
+          label: Chain and contract address
+          description: If the token is on several chains, list the others under Anything else.
+          placeholder: ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38
+      validations:
+          required: true
+    - type: input
+      id: backing
+      attributes:
+          label: Where the backing is published
+          description: Reserve page, attestation reports, or the contract that holds the backing.
+          placeholder: https://
+      validations:
+          required: true
+    - type: dropdown
+      id: category
+      attributes:
+          label: Kind of backing
+          options:
+              - Fiat or cash equivalents
+              - Government debt or money market fund
+              - Commodity (gold, silver, ...)
+              - Other tokens (wrapped, staked, crypto-collateralized)
+              - Shares or funds
+              - Mixed or unknown
+    - type: input
+      id: mcap
+      attributes:
+          label: Market cap and source
+          placeholder: $250M on DefiLlama, 2026-10-28
+    - type: textarea
+      id: notes
+      attributes:
+          label: Anything else
+          description: Other chains, how redemption works, known problems.

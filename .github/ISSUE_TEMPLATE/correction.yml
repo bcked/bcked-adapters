@@ -1,0 +1,25 @@
+name: Report wrong data
+description: A price, supply or backing value is wrong or outdated.
+title: "Correction: "
+labels: [correction]
+body:
+    - type: input
+      id: page
+      attributes:
+          label: Asset page
+          placeholder: https://bcked.com/assets/...
+      validations:
+          required: true
+    - type: textarea
+      id: what
+      attributes:
+          label: What is wrong
+      validations:
+          required: true
+    - type: input
+      id: source
+      attributes:
+          label: Source for the correct value
+          description: A link to the report, reserve page or contract.
+      validations:
+          required: true
