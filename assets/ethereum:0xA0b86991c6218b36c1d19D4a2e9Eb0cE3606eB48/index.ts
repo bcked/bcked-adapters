@@ -1,6 +1,6 @@
+import { getIssuerBackingShare } from "../../src/crawler/adapters/issuer_backing";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
-import { hoursInMs, isClose } from "../../src/utils/time";
 
 const details: bcked.asset.Details = {
     name: "USD Coin",
@@ -53,19 +53,9 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
-        // Backing is determined by Circle's reserves, tracked for Circle as an entity.
-        if (lastRecorded !== null && isClose(lastRecorded.timestamp, Date.now(), hoursInMs(23.99)))
-            return [];
-
-        // const startDate = new Date(lastRecorded?.timestamp ?? 0);
-
-        // const circleAdapter = new CircleAdapter();
-
-        // TODO iterate all dates since last entry.
-        // TODO get circle backing of each day
-        // TODO get the supply of all chains USDC is deployed to
-        // TODO calculate the share of the backing for the current chain
-
-        return [];
+        // Circle's reserves cover all chains. They are recorded for the circle entity from the
+        // BlackRock fund data, the transparency page and the attestation reports.
+        // USDC on Ethereum is backed by the Ethereum share of the circulating supply.
+        return getIssuerBackingShare("circle", 2, "Ethereum", lastRecorded);
     }
 }
