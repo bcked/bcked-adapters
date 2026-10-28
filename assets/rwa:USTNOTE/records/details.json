@@ -1,0 +1,19 @@
+{
+    "name": "U.S. Treasury Notes",
+    "symbol": "USTNOTE",
+    "identifier": {
+        "address": "USTNOTE",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "fixed-income-security",
+        "cash-equivalent"
+    ],
+    "linkedEntities": {
+        "issuer": "usdt"
+    },
+    "reference": null,
+    "tags": [],
+    "listed": "2023-07-29T22:37:14.119Z",
+    "updated": "2023-07-29T22:37:14.119Z"
+}

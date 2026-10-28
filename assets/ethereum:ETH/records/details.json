@@ -1,0 +1,20 @@
+{
+    "name": "Ether",
+    "symbol": "ETH",
+    "identifier": {
+        "address": "ETH",
+        "system": "ethereum"
+    },
+    "assetClasses": [
+        "cryptocurrency"
+    ],
+    "linkedEntities": {
+        "issuer": "ethereum"
+    },
+    "reference": "https://ethereum.org/en/",
+    "tags": [
+        "chain-token"
+    ],
+    "listed": "2023-07-29T22:37:15.372Z",
+    "updated": "2023-07-29T22:37:15.372Z"
+}

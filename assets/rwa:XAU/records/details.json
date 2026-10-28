@@ -1,0 +1,17 @@
+{
+    "name": "Gold",
+    "symbol": "XAU",
+    "identifier": {
+        "address": "XAU",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "commodity",
+        "tangible-asset"
+    ],
+    "linkedEntities": {},
+    "reference": null,
+    "tags": [],
+    "listed": "2023-07-29T22:37:14.678Z",
+    "updated": "2023-07-29T22:37:14.678Z"
+}

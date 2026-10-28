@@ -1,0 +1,18 @@
+{
+    "name": "Bitcoin",
+    "symbol": "BTC",
+    "identifier": {
+        "address": "BTC",
+        "system": "bitcoin"
+    },
+    "assetClasses": [
+        "cryptocurrency"
+    ],
+    "linkedEntities": {},
+    "reference": "https://ethereum.org/en/",
+    "tags": [
+        "chain-token"
+    ],
+    "listed": "2023-07-29T22:37:14.466Z",
+    "updated": "2023-07-29T22:37:14.466Z"
+}

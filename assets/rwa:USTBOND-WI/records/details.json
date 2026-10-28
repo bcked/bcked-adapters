@@ -1,0 +1,19 @@
+{
+    "name": "U.S. Treasury Bonds When Issued",
+    "symbol": "USTBOND-WI",
+    "identifier": {
+        "address": "USTBOND-WI",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "fixed-income-security",
+        "cash-equivalent"
+    ],
+    "linkedEntities": {
+        "issuer": "usdt"
+    },
+    "reference": null,
+    "tags": [],
+    "listed": "2024-02-05T19:12:14.066Z",
+    "updated": "2024-02-05T19:12:14.066Z"
+}

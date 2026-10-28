@@ -1,0 +1,19 @@
+{
+    "name": "U.S. Treasury Bills",
+    "symbol": "USTB",
+    "identifier": {
+        "address": "USTB",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "fixed-income-security",
+        "cash-equivalent"
+    ],
+    "linkedEntities": {
+        "issuer": "usdt"
+    },
+    "reference": null,
+    "tags": [],
+    "listed": "2023-07-29T22:37:14.361Z",
+    "updated": "2023-07-29T22:37:14.361Z"
+}

@@ -1,0 +1,22 @@
+{
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "identifier": {
+        "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "system": "ethereum"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "circle"
+    },
+    "reference": "https://www.circle.com/en/usdc",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "listed": "2023-07-29T22:37:16.633Z",
+    "updated": "2023-07-29T22:37:16.633Z"
+}
