@@ -49,8 +49,9 @@ export class DefiLlama implements bcked.query.ApiModule {
                     id,
                     coin
                         ? {
+                              // DefiLlama timestamps are in seconds. Fall back to now if missing.
                               timestamp: toISOString(
-                                  coin.timestamp > 1775369079 ? coin.timestamp : Date.now() // If default date, take the current one.
+                                  coin.timestamp > 0 ? coin.timestamp * 1000 : Date.now()
                               ),
                               usd: coin.price,
                           }
