@@ -1,0 +1,23 @@
+[
+    {
+        "date": "September 15, 2017",
+        "timestamp": "2017-09-16T00:00:00.000Z",
+        "source": "Final-Tether-Consulting-Report-9-15-17_Redacted.pdf",
+        "note": "Friedman LLP: USD balances at two banks as of 8:00 PM EDT. EUR 1,590 at a third bank is left out.",
+        "cat": { "rwa:USD": 442984592 }
+    },
+    {
+        "date": "June 01, 2018",
+        "timestamp": "2018-06-01T23:59:59.000Z",
+        "source": "FSS1JUN18-Account-Snapshot-Statement-final-15JUN18.pdf",
+        "note": "Freeh, Sporkin & Sullivan: confirmed unencumbered USD balances at two banks, close of business.",
+        "cat": { "rwa:USD": 2545067236.82 }
+    },
+    {
+        "date": "October 31, 2018",
+        "timestamp": "2018-10-31T23:59:59.000Z",
+        "source": "Tether-Letter.pdf",
+        "note": "Deltec Bank & Trust: portfolio cash value of the account at one bank (scanned letter, read manually). Composition not stated.",
+        "cat": { "rwa:undefined": 1831322828 }
+    }
+]

@@ -1,0 +1,8 @@
+[
+    {
+        "date": "May 31, 2022",
+        "source": "2022_USDC_Circle_Grant_Thornton_Report_May.pdf",
+        "note": "Scanned report, read manually: USDC in circulation 54,005,995,420, reserves at least equal (cash and short-dated U.S. government obligations).",
+        "cat": { "rwa:undefined": 54005995420 }
+    }
+]
