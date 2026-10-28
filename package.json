@@ -15,7 +15,7 @@
         "verify-api": "bun src/api/verify.ts",
         "check-freshness": "bun src/api/freshness.ts"
     },
-    "license": "GPL-3.0",
+    "license": "PolyForm-Noncommercial-1.0.0",
     "engines": {
         "bun": ">=1.3.0"
     },

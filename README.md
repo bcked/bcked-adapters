@@ -18,11 +18,15 @@ Tokens need a circulating market cap of at least $100M and backing that can be c
 
 ## License
 
-The code and data within this repository is released under the [GNU General Public License, Version 3](LICENSE).
-The icons are property of respective copyright holders, used under fair use or with permissions.
+- **Code:** [PolyForm Noncommercial 1.0.0](LICENSE). Free for personal use, research, education, and
+  for non-profit and public organizations. Everything outside the data below.
+- **Data:** [CC BY-NC 4.0](LICENSE-DATA). Covers the records on the `records` branch, the stored evidence
+  index and the API at [api.bcked.com](https://api.bcked.com). Attribution: "Data: bcked.com".
+- **Commercial use** of the code or the data needs a separate license. Contact [contact@bcked.com](mailto:contact@bcked.com).
 
-If you have any concerns regarding the license or code, data and icons in this repository,
-please [contact us](mailto:contact@bcked.com).
+Versions released before this change stay available under the GNU General Public License, Version 3.
+Attestation reports in `records/evidence` belong to their issuers and auditors and are not covered by
+these licenses. The icons are property of their respective copyright holders.
 
 ## Legal Notice
 
