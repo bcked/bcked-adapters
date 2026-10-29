@@ -61,6 +61,22 @@ async function compileGraphSeries() {
     );
 }
 
+/** USD value per underlying asset on the latest day with a breakdown, or null without one. */
+function latestComposition(composition: Record<string, [string, number][]>) {
+    const date = Object.values(composition)
+        .map((series) => series.at(-1)?.[0])
+        .filter((d): d is string => !!d)
+        .sort()
+        .at(-1);
+    if (!date) return null;
+    const parts = Object.fromEntries(
+        Object.entries(composition)
+            .map(([id, series]) => [id, series.findLast(([d]) => d == date)?.[1]] as const)
+            .filter((entry): entry is readonly [string, number] => typeof entry[1] == "number")
+    );
+    return { date, parts };
+}
+
 async function compileAsset(id: bcked.asset.Id) {
     const csv = (file: string) => recordsPath(PATHS.assets, id, file);
     const [details, price, supply, marketCap, collateralizationRatio, collateral, composition] =
@@ -102,6 +118,7 @@ async function compileAsset(id: bcked.asset.Id) {
         assetClasses: details?.assetClasses ?? [],
         tags: details?.tags ?? [],
         backing: details?.backing?.method ?? null,
+        composition: latestComposition(composition),
         icon: iconPath(PATHS.assets, id),
         price: latestWithChange(price),
         supply: latestWithChange(supply),
