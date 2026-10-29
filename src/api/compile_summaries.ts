@@ -10,7 +10,9 @@ import { readJson } from "../utils/files";
 import { ASSET_RESOURCES } from "./resources/assets";
 import { ENTITY_RESOURCES } from "./resources/entities";
 import { SYSTEM_RESOURCES } from "./resources/systems";
-import { dailySeries, latestWithChange } from "./utils/series";
+import { readCSV } from "../utils/csv";
+import { GRAPH_RESOURCES } from "./resources/graphs";
+import { dailyComposition, dailySeries, latestWithChange } from "./utils/series";
 
 /** Path of the icon resource, or null if the item has no icon. */
 function iconPath(kind: string, id: string) {
@@ -21,9 +23,47 @@ function recordsPath(kind: string, id: string, file: string) {
     return path.join(kind, id, PATHS.records, file);
 }
 
+type Report = { report: string; file: string; sha256: string; url: string };
+
+/** Reports listed in an evidence.csv, newest first. */
+async function readReports(csvPath: string): Promise<Report[]> {
+    if (!existsSync(csvPath)) return [];
+    const reports: Report[] = [];
+    for await (const row of readCSV<Report>(csvPath))
+        reports.push({ ...row, report: String(row.report), sha256: String(row.sha256) });
+    return reports.toSorted((a, b) => b.report.localeCompare(a.report));
+}
+
+/**
+ * The backing graph of the last recorded day of every month, with links as [from, to, USD] triples.
+ * One resource for clients that show how the graph changed, instead of one request per day.
+ */
+async function compileGraphSeries() {
+    const csvPath = path.join(PATHS.graphs, PATHS.records, FILES.csv.collateralizationGraph);
+    if (!existsSync(csvPath)) return;
+    type Row = primitive.Timestamped & {
+        graph: { links?: { fromId?: string; toId?: string; data?: { value?: number } }[] };
+    };
+    const months = new Map<string, Row>();
+    for await (const row of readCSV<Row>(csvPath)) months.set(row.timestamp.slice(0, 7), row);
+    await GRAPH_RESOURCES.collateralizationGraphSeries(
+        [...months].map(([month, row]) => ({
+            month,
+            date: row.timestamp.slice(0, 10),
+            links: (row.graph.links ?? [])
+                .filter((link) => link.fromId && link.toId)
+                .map((link) => [
+                    link.fromId!,
+                    link.toId!,
+                    typeof link.data?.value == "number" ? link.data.value : null,
+                ]),
+        }))
+    );
+}
+
 async function compileAsset(id: bcked.asset.Id) {
     const csv = (file: string) => recordsPath(PATHS.assets, id, file);
-    const [details, price, supply, marketCap, collateralizationRatio, collateral] =
+    const [details, price, supply, marketCap, collateralizationRatio, collateral, composition] =
         await Promise.all([
             readJson<bcked.asset.DetailsRecord>(csv(FILES.json.details)),
             dailySeries(csv(FILES.csv.price), "usd"),
@@ -31,6 +71,7 @@ async function compileAsset(id: bcked.asset.Id) {
             dailySeries(csv(FILES.csv.marketCap), "usd"),
             dailySeries(csv(FILES.csv.collateralizationRatio), "ratio"),
             dailySeries(csv(FILES.csv.collateralizationRatio), "collateral.usd"),
+            dailyComposition(csv(FILES.csv.underlyingAssets)),
         ]);
 
     await ASSET_RESOURCES.series(id, {
@@ -39,7 +80,17 @@ async function compileAsset(id: bcked.asset.Id) {
         "market-cap": marketCap,
         "collateralization-ratio": collateralizationRatio,
         collateral,
+        composition,
     });
+
+    if (details?.backing) {
+        const issuer = details.linkedEntities.issuer;
+        const evidence =
+            details.backing.reports == "issuer" && issuer
+                ? recordsPath(PATHS.entities, issuer, FILES.csv.evidence)
+                : csv(FILES.csv.evidence);
+        await ASSET_RESOURCES.reports(id, details.backing, await readReports(evidence));
+    }
 
     return {
         id,
@@ -50,6 +101,7 @@ async function compileAsset(id: bcked.asset.Id) {
         linkedEntities: details?.linkedEntities ?? {},
         assetClasses: details?.assetClasses ?? [],
         tags: details?.tags ?? [],
+        backing: details?.backing?.method ?? null,
         icon: iconPath(PATHS.assets, id),
         price: latestWithChange(price),
         supply: latestWithChange(supply),
@@ -91,6 +143,7 @@ export async function compileSummaries(
     ]);
 
     await Promise.all([
+        compileGraphSeries(),
         ASSET_RESOURCES.summary(assets),
         ENTITY_RESOURCES.summary(entities),
         SYSTEM_RESOURCES.summary(systems),

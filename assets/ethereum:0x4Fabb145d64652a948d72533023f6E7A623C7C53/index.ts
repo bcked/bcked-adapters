@@ -14,6 +14,12 @@ const details: bcked.asset.Details = {
     },
     reference: "https://paxos.com/busd/",
     tags: ["stablecoin", "real-world-asset"],
+    backing: {
+        method: "reports",
+        description: "Monthly attestation reports of Paxos, with the reserves by type of holding.",
+        reference: "https://paxos.com/busd-transparency/",
+        reports: "asset",
+    },
 };
 
 export default class Adapter implements bcked.asset.Adapter {

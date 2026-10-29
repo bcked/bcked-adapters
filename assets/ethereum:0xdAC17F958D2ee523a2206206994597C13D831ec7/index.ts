@@ -18,6 +18,13 @@ const details: bcked.asset.Details = {
     },
     reference: "https://tether.to/en/transparency/",
     tags: ["stablecoin", "real-world-asset"],
+    backing: {
+        method: "reports",
+        description:
+            "Tether's quarterly assurance reports, for all chains together. USDT on Ethereum gets the Ethereum share of the reserves, by circulating supply.",
+        reference: "https://tether.to/en/transparency/",
+        reports: "issuer",
+    },
 };
 
 export default class Adapter implements bcked.asset.Adapter {

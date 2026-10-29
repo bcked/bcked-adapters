@@ -21,6 +21,12 @@ const details: bcked.asset.Details = {
     },
     reference: "https://wbtc.network/dashboard/audit",
     tags: ["bridged-asset"],
+    backing: {
+        method: "custodian",
+        description:
+            "The bitcoin held by the custodians, as published by the WBTC network. Updated hourly.",
+        reference: "https://wbtc.network/dashboard/audit",
+    },
 };
 
 interface wbtcApiTokenResponse {

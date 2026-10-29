@@ -27,6 +27,7 @@ export const FILES = {
         underlyingAssets: "underlying_assets.csv",
         collateralizationRatio: "collateralization_ratio.csv",
         collateralizationGraph: "collateralization_graph.csv",
+        evidence: "evidence.csv",
     },
     svg: {
         icon: "icon.svg",

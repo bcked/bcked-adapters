@@ -33,6 +33,24 @@ export class Graph extends JsonResources {
     }
 
     @JsonResources.register({
+        path: "/graphs/collateralization/series",
+        summary: "Get the collateralization graph per month",
+        description:
+            "Get the graph of the last recorded day of every month in one resource, with links as [from, to, value in USD] triples",
+        type: "CollateralizationGraphSeries",
+        // TODO write schema
+        schema: {},
+    })
+    async collateralizationGraphSeries(
+        months: { month: string; date: string; links: [string, string, number | null][] }[]
+    ) {
+        return {
+            $id: "/graphs/collateralization/series",
+            months,
+        };
+    }
+
+    @JsonResources.register({
         path: "/graphs/collateralization",
         summary: "Get collateralization graph",
         description: "Get the global collateralization graph of all assets",

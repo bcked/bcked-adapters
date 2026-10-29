@@ -16,6 +16,7 @@ const [assetIds, entityIds, systemIds] = await Promise.all([
 const expected = [
     path.join(PATHS.api, FILES.json.index),
     path.join(PATHS.api, FILES.json.openapi),
+    path.join(PATHS.api, PATHS.graphs, "collateralization", "series", FILES.json.index),
     ...[PATHS.assets, PATHS.entities, PATHS.systems].map((kind) =>
         path.join(PATHS.api, kind, "summary", FILES.json.index)
     ),
