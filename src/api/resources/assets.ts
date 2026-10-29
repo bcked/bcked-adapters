@@ -109,10 +109,31 @@ export class Asset extends JsonResources {
         // TODO write schema
         schema: {},
     })
-    async series(id: string, series: Record<string, DailySeries>) {
+    async series(id: string, series: Record<string, DailySeries | Record<string, DailySeries>>) {
         return {
             $id: `/assets/${id}/series`,
             ...series,
+        };
+    }
+
+    @JsonResources.register({
+        path: "/assets/{id}/reports",
+        summary: "Get the source of an asset's backing and its reports",
+        description:
+            "Get how the backing of an asset is obtained and, for backing from reports, every report with its month, SHA-256 hash and download URL. The reports themselves are not redistributed.",
+        type: "AssetReports",
+        // TODO write schema
+        schema: {},
+    })
+    async reports(
+        id: string,
+        source: bcked.asset.BackingSource | null,
+        reports: { report: string; file: string; sha256: string; url: string }[]
+    ) {
+        return {
+            $id: `/assets/${id}/reports`,
+            source,
+            reports,
         };
     }
 
@@ -140,6 +161,7 @@ export class Asset extends JsonResources {
             linkedEntities: details.linkedEntities,
             reference: details.reference,
             tags: details.tags,
+            backing: details.backing ?? null,
             listed: details.listed,
             updated: details.updated,
         };

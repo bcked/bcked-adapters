@@ -43,3 +43,26 @@ export function latestWithChange(series: DailySeries, days: number[] = [1, 7, 30
     }
     return { date, value, change };
 }
+
+/**
+ * Daily series of the USD value per underlying asset, from an underlying_assets.csv. Uses the last
+ * record of each UTC day. Days without a record for an underlying asset are left out of its series.
+ */
+export async function dailyComposition(csvPath: string): Promise<Record<string, DailySeries>> {
+    if (!existsSync(csvPath)) return {};
+
+    const composition: Record<string, DailySeries> = {};
+    for await (const record of readCSV<
+        primitive.Timestamped & { breakdown?: Record<string, { usd?: unknown }> }
+    >(csvPath)) {
+        const date = record.timestamp.slice(0, 10);
+        for (const [id, part] of Object.entries(record.breakdown ?? {})) {
+            const value = part.usd;
+            if (typeof value !== "number" || !Number.isFinite(value)) continue;
+            const series = (composition[id] ??= []);
+            if (series.at(-1)?.[0] === date) series[series.length - 1] = [date, value];
+            else series.push([date, value]);
+        }
+    }
+    return composition;
+}

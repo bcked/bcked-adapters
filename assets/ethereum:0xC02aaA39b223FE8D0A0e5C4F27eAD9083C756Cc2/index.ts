@@ -14,6 +14,12 @@ const details: bcked.asset.Details = {
     },
     reference: "https://ethereum.org/en/",
     tags: ["wrapped-token"],
+    backing: {
+        method: "on-chain",
+        description: "The ETH held by the WETH contract, read from the chain every hour.",
+        reference: "https://etherscan.io/address/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    },
 };
 
 export default class Adapter implements bcked.asset.Adapter {

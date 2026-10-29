@@ -98,6 +98,26 @@ declare namespace bcked {
             linkedEntities: Partial<Record<entity.Role, entity.Id>>;
             reference: primitive.URL | null; // If unknown, this must be set to null.
             tags: Tag[];
+            /** How the backing is obtained. Only for assets with backing. */
+            backing?: BackingSource;
+        }
+
+        /**
+         * Where the backing of an asset comes from, shown next to its values.
+         * - reports: attestation or assurance reports, listed in evidence.csv of the asset or its issuer
+         * - on-chain: read from the contract or address that holds it
+         * - custodian: published by the custodian or issuer (API or page), without reports
+         */
+        interface BackingSource {
+            method: "reports" | "on-chain" | "custodian";
+            /** One or two sentences on how the values are obtained. */
+            description: string;
+            /** Page where the issuer publishes the backing. */
+            reference: primitive.URL | null;
+            /** Contract or address holding the backing, for on-chain backing. */
+            address?: string;
+            /** Whose evidence.csv lists the reports: the asset's own or its issuer's. */
+            reports?: "asset" | "issuer";
         }
 
         type DetailsRecord = Details & {

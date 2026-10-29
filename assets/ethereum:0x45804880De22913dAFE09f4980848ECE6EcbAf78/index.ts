@@ -14,6 +14,13 @@ const details: bcked.asset.Details = {
     },
     reference: "https://paxos.com/paxgold/",
     tags: ["real-world-asset"],
+    backing: {
+        method: "reports",
+        description:
+            "Monthly attestation reports of Paxos, with the gold held in fine troy ounces.",
+        reference: "https://paxos.com/paxg-transparency/",
+        reports: "asset",
+    },
 };
 
 export default class Adapter implements bcked.asset.Adapter {

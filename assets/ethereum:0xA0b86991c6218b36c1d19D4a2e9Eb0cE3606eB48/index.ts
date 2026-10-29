@@ -18,6 +18,13 @@ const details: bcked.asset.Details = {
     },
     reference: "https://www.circle.com/en/usdc",
     tags: ["stablecoin", "real-world-asset"],
+    backing: {
+        method: "reports",
+        description:
+            "Circle's monthly attestation reports and its transparency page, with the daily holdings of the Circle Reserve Fund, for all chains together. USDC on Ethereum gets the Ethereum share of the reserves, by circulating supply.",
+        reference: "https://www.circle.com/transparency",
+        reports: "issuer",
+    },
 };
 
 export default class Adapter implements bcked.asset.Adapter {
