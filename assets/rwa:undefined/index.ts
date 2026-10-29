@@ -1,11 +1,13 @@
 /**
- * This asset can be used as fallback for an undefined US dollar denominated asset.
+ * Reserves an issuer reports only as a total, without saying which assets they are, for example
+ * Tether's "other investments" or Circle's early fund holdings. Counted at their US dollar value.
+ * The id stays rwa:undefined so recorded backing keeps its columns.
  */
 import { toISOString } from "../../src/utils/string_formatting";
 
 const details: bcked.asset.Details = {
-    name: "Undefined US Dollar denominated Asset",
-    symbol: "undef",
+    name: "Other reserves (not broken down)",
+    symbol: "OTHER",
     identifier: {
         address: "undefined",
         system: "rwa",
