@@ -1,6 +1,6 @@
 """Writes extracted attestation data to the records of an asset or entity.
 
-Usage: python3 write_backing.py <extracted.json> <records dir> <evidence prefix> [--keep <from> <to> | --append]
+Usage: python3 write_backing.py <extracted.json> <records dir> <evidence prefix> [--keep <from> <to> | --append] [--evidence <dir>]
 Example: python3 write_backing.py busd.json "assets/ethereum:0x4Fabb.../records" BUSD
 
 - Rewrites <records dir>/backing.csv with one row per report date and one column per underlying asset.
@@ -8,11 +8,14 @@ Example: python3 write_backing.py busd.json "assets/ethereum:0x4Fabb.../records"
   dates in that range are left out. Used where an automated source covers that period (Circle).
 - With --append, all existing rows are kept and only report dates after the latest row are added.
   Used by update.sh, which only downloads new reports.
-- Copies every report to <records dir>/evidence/<year>/<prefix>-<YYYY-MM>-Attestation-report.pdf,
-  unless a report for that month is already stored.
+- Lists every report in <records dir>/evidence.csv as <prefix>-<YYYY-MM>-Attestation-report.pdf with
+  its SHA-256 hash and download URL, unless a report for that month is already listed.
+- With --evidence, copies new reports to <dir>/<year>/<file>. The reports belong to their issuers and
+  auditors and are kept in the private repository bcked/bcked-evidence, not on the public records branch.
 """
 import csv
 import datetime
+import hashlib
 import json
 import os
 import shutil
@@ -39,7 +42,38 @@ def existing_rows(path, start, end):
     return rows
 
 
-def main(extracted, records, prefix, keep=None, append=False):
+def sha256(path):
+    with open(path, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+
+def source_url(path):
+    """Download URL from sources.json next to the report, written by the fetch scripts."""
+    sources = os.path.join(os.path.dirname(path), "sources.json")
+    if not os.path.exists(sources):
+        return ""
+    return json.load(open(sources)).get(os.path.basename(path), "")
+
+
+INDEX_COLUMNS = ["report", "file", "sha256", "url"]
+
+
+def read_index(records):
+    path = os.path.join(records, "evidence.csv")
+    if not os.path.exists(path):
+        return {}
+    with open(path) as f:
+        return {row["file"]: row for row in csv.DictReader(f)}
+
+
+def write_index(records, index):
+    with open(os.path.join(records, "evidence.csv"), "w", newline="") as f:
+        writer = csv.DictWriter(f, INDEX_COLUMNS, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(sorted(index.values(), key=lambda row: row["file"]))
+
+
+def main(extracted, records, prefix, keep=None, append=False, evidence=None):
     path = os.path.join(records, "backing.csv")
     reports = [r for r in json.load(open(extracted)) if r["sections"]]
     if append:
@@ -62,16 +96,22 @@ def main(extracted, records, prefix, keep=None, append=False):
             f.write(timestamp + "," + ",".join(fmt(cat.get(c)) for c in columns) + "\n")
 
     added = 0
+    index = read_index(records)
     for report in reports:
         # Name the evidence by the report's own (local) date, which can differ from the UTC date.
         last = max(report["sections"], key=lambda s: s["timestamp"])
         month = datetime.datetime.strptime(last["date"].replace(",", ""), "%B %d %Y").strftime("%Y-%m")
-        target = os.path.join(records, "evidence", month[:4], f"{prefix}-{month}-Attestation-report.pdf")
-        if not os.path.exists(target):
+        name = f"{prefix}-{month}-Attestation-report.pdf"
+        if name in index:
+            continue
+        index[name] = {"report": month, "file": name, "sha256": sha256(report["file"]), "url": source_url(report["file"])}
+        added += 1
+        if evidence:
+            target = os.path.join(evidence, month[:4], name)
             os.makedirs(os.path.dirname(target), exist_ok=True)
             shutil.copy(report["file"], target)
-            added += 1
-    print(f"{len(rows)} rows, {len(columns)} columns, {added} new evidence files", file=sys.stderr)
+    write_index(records, index)
+    print(f"{len(rows)} rows, {len(columns)} columns, {added} new reports", file=sys.stderr)
 
 
 if __name__ == "__main__":
@@ -79,8 +119,13 @@ if __name__ == "__main__":
     keep = None
     append = "--append" in args
     args = [a for a in args if a != "--append"]
+    evidence = None
+    if "--evidence" in args:
+        i = args.index("--evidence")
+        evidence = args[i + 1]
+        args = args[:i] + args[i + 2 :]
     if "--keep" in args:
         i = args.index("--keep")
         keep = (args[i + 1], args[i + 2])
         args = args[:i] + args[i + 3 :]
-    main(*args[:3], keep=keep, append=append)
+    main(*args[:3], keep=keep, append=append, evidence=evidence)

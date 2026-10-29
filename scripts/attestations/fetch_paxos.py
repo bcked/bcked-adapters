@@ -5,8 +5,10 @@ Example: python3 fetch_paxos.py https://www.paxos.com/paxg-transparency "PAX Gol
 
 The Paxos website is built with Framer. The report PDFs are not linked in the HTML but referenced
 in the page's JavaScript modules, which also contain reports of other products. All referenced PDFs
-are downloaded, and those whose text matches the product pattern are kept and printed.
+are downloaded, and those whose text matches the product pattern are kept and printed. Their download
+URLs are written to sources.json in the output dir.
 """
+import json
 import os
 import re
 import subprocess
@@ -29,7 +31,7 @@ def main(page, product, out):
     for module in modules:
         code = get(module).decode("utf-8", "ignore")
         pdfs.update(re.findall(r"https://framerusercontent\.com/assets/[A-Za-z0-9]+\.pdf", code))
-    kept = []
+    kept, sources = [], {}
     for url in sorted(pdfs):
         path = os.path.join(out, os.path.basename(url))
         if not os.path.exists(path):
@@ -38,8 +40,11 @@ def main(page, product, out):
         text = subprocess.run(["pdftotext", path, "-"], capture_output=True, text=True, timeout=60).stdout
         if re.search(product, text):
             kept.append(path)
+            sources[os.path.basename(path)] = url
         else:
             os.remove(path)
+    with open(os.path.join(out, "sources.json"), "w") as f:
+        json.dump(sources, f, indent=1)
     print("\n".join(kept))
     print(f"{len(kept)} of {len(pdfs)} referenced reports match {product!r}", file=sys.stderr)
 

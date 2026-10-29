@@ -18,6 +18,8 @@ jobs:
     attestations:
         runs-on: ubuntu-latest
         name: Attestation Update
+        env:
+            HAS_EVIDENCE_KEY: ${{ secrets.EVIDENCE_DEPLOY_KEY != '' }}
         steps:
             - name: Checkout Code
               uses: actions/checkout@v7
@@ -26,11 +28,20 @@ jobs:
               with:
                   ref: records
                   path: .records
+            - name: Checkout Evidence
+              # Private copies of the reports. Needs a deploy key of bcked/bcked-evidence with write
+              # access in the secret EVIDENCE_DEPLOY_KEY. Without it, reports are only listed in evidence.csv.
+              if: ${{ env.HAS_EVIDENCE_KEY == 'true' }}
+              uses: actions/checkout@v7
+              with:
+                  repository: bcked/bcked-evidence
+                  path: .evidence
+                  ssh-key: ${{ secrets.EVIDENCE_DEPLOY_KEY }}
             - name: Install pdftotext
               run: sudo apt-get update && sudo apt-get install -y poppler-utils
             - name: Add New Reports
               # Fails without writing if a new report does not add up (see scripts/attestations/check_new.py).
-              run: scripts/attestations/update.sh .records
+              run: scripts/attestations/update.sh .records ${{ env.HAS_EVIDENCE_KEY == 'true' && '.evidence' || '' }}
             - name: Commit Results on records Branch
               uses: stefanzweifel/git-auto-commit-action@v7
               with:
@@ -39,4 +50,14 @@ jobs:
                   commit_user_name: GitHub Action
                   commit_user_email: action@github.com
                   commit_author: actions-user <action@github.com>
-                  file_pattern: "*.csv *.pdf"
+                  file_pattern: "*.csv"
+            - name: Commit Reports to bcked-evidence
+              if: ${{ env.HAS_EVIDENCE_KEY == 'true' }}
+              uses: stefanzweifel/git-auto-commit-action@v7
+              with:
+                  repository: .evidence
+                  commit_message: Add attestation reports
+                  commit_user_name: GitHub Action
+                  commit_user_email: action@github.com
+                  commit_author: actions-user <action@github.com>
+                  file_pattern: "*.pdf"

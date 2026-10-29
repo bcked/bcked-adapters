@@ -5,9 +5,10 @@ import { sendErrorReport } from "../../watcher/bot";
 import { hoursToMilliseconds } from "date-fns";
 import { existsSync } from "fs";
 import path from "path";
-import { ConsecutiveLookup, readCSV, writeToCsv } from "../../utils/csv";
+import { ConsecutiveLookup, LatestLookup, readCSV, writeToCsv } from "../../utils/csv";
 import { remove } from "../../utils/files";
 import { round } from "../../utils/math";
+import { daysInMs } from "../../utils/time";
 
 async function* match(
     id: bcked.asset.Id,
@@ -38,6 +39,49 @@ async function* match(
     }
 }
 
+/** Supply of real-world assets is published yearly (gold) or monthly (US dollar). */
+const MAX_RWA_SUPPLY_AGE = daysInMs(2 * 365);
+
+/**
+ * Market cap of a real-world asset at every price and supply record, from the latest supply and
+ * price at that time. Supply changes slowly and is recorded rarely, so it is not matched within a
+ * few hours like token supply. A price with a single record is constant (US dollar).
+ */
+async function* matchRealWorldAsset(
+    id: bcked.asset.Id
+): AsyncIterableIterator<bcked.asset.MarketCap> {
+    const supplyCsv = path.join(PATHS.assets, id, PATHS.records, FILES.csv.supplyAmount);
+    const priceCsv = path.join(PATHS.assets, id, PATHS.records, FILES.csv.price);
+
+    if (!existsSync(supplyCsv) || !existsSync(priceCsv)) return;
+
+    const timestamps = new Set<string>();
+    let priceCount = 0;
+    for await (const { timestamp } of readCSV<bcked.asset.Price>(priceCsv)) {
+        timestamps.add(timestamp);
+        priceCount++;
+    }
+    for await (const { timestamp } of readCSV<bcked.asset.SupplyAmount>(supplyCsv))
+        timestamps.add(timestamp);
+
+    const supplyLookup = new LatestLookup<bcked.asset.SupplyAmount>(supplyCsv);
+    const priceLookup = new LatestLookup<bcked.asset.Price>(priceCsv);
+    const maxPriceAge = priceCount == 1 ? Infinity : MAX_RWA_SUPPLY_AGE;
+
+    for (const timestamp of [...timestamps].sort()) {
+        const supply = await supplyLookup.getLatest(timestamp, MAX_RWA_SUPPLY_AGE);
+        const price = await priceLookup.getLatest(timestamp, maxPriceAge);
+        if (!supply || !price) continue;
+
+        yield {
+            timestamp: timestamp as bcked.asset.MarketCap["timestamp"],
+            price,
+            supply,
+            usd: round(price.usd * supply.amount, 2),
+        };
+    }
+}
+
 parentPort?.on("message", async (id: bcked.asset.Id) => {
     console.log(`Precompiling market cap for asset ${id}`);
     const filePath = path.join(PATHS.assets, id, PATHS.records, FILES.csv.marketCap);
@@ -46,7 +90,7 @@ parentPort?.on("message", async (id: bcked.asset.Id) => {
         // TODO Later change this to start at the current date and only append changes
         await remove(filePath);
 
-        const entries = match(id);
+        const entries = id.startsWith("rwa:") ? matchRealWorldAsset(id) : match(id);
         await writeToCsv(filePath, entries, "timestamp");
 
         parentPort?.postMessage(null);

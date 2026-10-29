@@ -2,7 +2,7 @@
 
 Some issuers only publish their reserves in attestation reports (PDF). These scripts download the
 reports, extract the reserve composition per report date and write it to the records of the asset,
-together with the report as evidence. They require Python 3.9+ and `pdftotext` (poppler-utils).
+and list each report in `evidence.csv`. They require Python 3.9+ and `pdftotext` (poppler-utils).
 
 The records live on the `records` branch. Check it out next to this repository (or into `.records`)
 and pass the records folder of the asset, e.g. `assets/<asset id>/records`.
@@ -11,12 +11,14 @@ and pass the records folder of the asset, e.g. `assets/<asset id>/records`.
 
 The workflow `Attestation Update` runs `update.sh` every Monday. It downloads the Paxos and Tether
 reports, checks every report date after the latest recorded row against the report total
-(`check_new.py`) and appends those rows with the report as evidence (`write_backing.py --append`).
+(`check_new.py`) and appends those rows, listing each report in `evidence.csv` with its download URL
+and SHA-256 hash (`write_backing.py --append`). With the secret `EVIDENCE_DEPLOY_KEY` (a deploy key of
+the private repository bcked/bcked-evidence), the PDFs are also copied there.
 If a new report does not add up, for example because its layout changed, the run fails and nothing
 is written. Extract that report by hand with the commands below.
 
 ```shell
-scripts/attestations/update.sh <records checkout>
+scripts/attestations/update.sh <records checkout> [<bcked-evidence checkout>]
 ```
 
 The commands below rebuild the full history of an asset from all reports.

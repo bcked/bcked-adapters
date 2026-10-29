@@ -15,8 +15,8 @@ class Index extends JsonResources {
                     email: "contact@bcked.com",
                 },
                 license: {
-                    name: "Data: CC BY-NC 4.0, code: PolyForm Noncommercial 1.0.0",
-                    url: "https://github.com/bcked/bcked-adapters#license",
+                    name: "GPL-3.0 license",
+                    url: "https://github.com/bcked/bcked-adapters/blob/main/LICENSE",
                 },
                 // TODO maybe use the current commit hash here
                 version: "1.0.0",

@@ -55,7 +55,8 @@ tags) and a class with `getPrice`, `getSupply` and `getBacking`. Most tokens reu
 - Backing of an issuer that reports for all chains together: record the reserves on the issuer entity
   and use `getIssuerBackingShare` (see USDT and USDC).
 - Backing from attestation reports: the scripts in [`scripts/attestations`](scripts/attestations).
-  Every report is stored as evidence next to the records.
+  Every report is listed in `evidence.csv` next to the records with its download URL and SHA-256
+  hash. The reports belong to their issuers and auditors, so the PDFs are not published here.
 
 Issuers are folders under `entities/` and chains under `systems/`. Copy an existing asset as a starting
 point and change the details. Every asset, issuer and chain needs an `icon.svg`, and `bun test` fails
@@ -172,10 +173,3 @@ Lower precision (`-p 1`) keeps large logos below 30 KB. Check the result visuall
 
 - [publicdomainvectors.org](https://publicdomainvectors.org/)
 - [SVG Repo](https://www.svgrepo.com/)
-
-## License of contributions
-
-The project is licensed for non-commercial use, and commercial licenses are sold separately (see the
-[README](README.md#license)). By submitting a contribution you confirm that you have the right to
-submit it, and you grant Sebastian Penhouet a perpetual, worldwide, royalty-free license to use,
-modify and relicense your contribution, including under commercial licenses.
