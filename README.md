@@ -16,6 +16,11 @@ bcked grows with every token someone adds. Pick the route that fits:
 
 Tokens need a circulating market cap of at least $100M and backing that can be checked from public sources. Smaller tokens are kept in [`watchlist.csv`](watchlist.csv). The [contribution guide](CONTRIBUTING.md) explains the rules and how a token is defined.
 
+## Data Sources
+
+The data comes from issuer reports, on-chain data and third-party APIs. All sources are listed in the
+[methodology](https://bcked.com/methodology). Ethereum data: Powered by Etherscan.io APIs.
+
 ## License
 
 The code and data within this repository is released under the [GNU General Public License, Version 3](LICENSE).

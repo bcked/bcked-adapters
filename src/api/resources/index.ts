@@ -6,9 +6,9 @@ class Index extends JsonResources {
             openapi: "3.1.0",
             info: {
                 title: "bcked API",
-                // TODO Multiline description.
-                description: "Free API for all data on bcked.com",
-                termsOfService: "https://github.com/bcked/bcked-adapters/blob/main/LEGAL_NOTICE.md",
+                description:
+                    "Free API for all data on bcked.com. The data comes from issuer reports, on-chain data and third-party APIs, listed at https://bcked.com/methodology. Powered by Etherscan.io APIs.",
+                termsOfService: "https://bcked.com/legal-notice",
                 contact: {
                     name: "API Support",
                     url: "https://github.com/bcked/bcked-adapters/issues",
