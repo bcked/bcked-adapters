@@ -2,7 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { ConsecutiveLookup, LatestLookup } from "./csv";
+import { ConsecutiveLookup, LatestLookup, readCSV, writeToCsv } from "./csv";
+import { toAsync } from "./array";
 
 describe("ConsecutiveLookup", () => {
     test("returns only entries within the time window", async () => {
@@ -37,5 +38,24 @@ describe("LatestLookup", () => {
             usd: 2,
         });
         expect(await lookup.getLatest("2027-06-01T00:00:00.000Z", 140 * day)).toBeUndefined();
+    });
+});
+
+describe("writeToCsv", () => {
+    test("writes the columns of all rows, not only of the first", async () => {
+        const dir = await mkdtemp(path.join(tmpdir(), "write-"));
+        const csvPath = path.join(dir, "rows.csv");
+        await writeToCsv(
+            csvPath,
+            toAsync([
+                { timestamp: "2026-01-01T00:00:00.000Z", btc: { amount: 1 } },
+                { timestamp: "2026-01-02T00:00:00.000Z", btc: { amount: 2, usd: 160000 } },
+            ]),
+            "timestamp"
+        );
+        const rows = [];
+        for await (const row of readCSV<{ btc: { amount: number; usd?: number } }>(csvPath))
+            rows.push(row);
+        expect(rows[1]!.btc).toEqual({ amount: 2, usd: 160000 });
     });
 });

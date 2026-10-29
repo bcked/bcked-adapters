@@ -7,7 +7,7 @@ import fs from "fs";
 
 import _ from "lodash";
 import { Readable } from "stream";
-import { concat, sortWithoutIndex } from "./array";
+import { concat, sortWithoutIndex, toAsync } from "./array";
 import { ensurePath, readFirstLine, readLastLines } from "./files";
 import { isCloser } from "./time";
 
@@ -116,16 +116,27 @@ export async function rewriteCSV<T>(
     await fs.promises.rename(tempPath, pathToFile);
 }
 
+/**
+ * Write rows to a CSV file, or append them if it exists. Nested values are flattened into columns.
+ * The header covers the columns of all rows, because later rows can have more columns than the
+ * first one (e.g. a price that only becomes known later). The rows are held in memory for that.
+ */
 export async function writeToCsv<T>(pathToFile: string, rows: AsyncIterable<T>, index?: string) {
-    const [_rows, _header] = await readHeadersFromStream(rows);
-    if (!_rows || !_header.length) return;
+    const all: T[] = [];
+    const columns = new Set<string>();
+    for await (const row of rows) {
+        all.push(row);
+        for (const column of Object.keys(flatten<object, object>(row as object)))
+            columns.add(column);
+    }
+    if (!all.length || !columns.size) return;
 
-    // By default, take first key as index
-    const headerIndex = index ?? _header[0]!;
+    // By default, take the first key of the first row as index
+    const headerIndex = index ?? Object.keys(flatten<object, object>(all[0] as object))[0]!;
 
-    const header = sortWithoutIndex(_header, headerIndex);
+    const header = sortWithoutIndex([...columns], headerIndex);
 
-    await appendCsv(pathToFile, _rows, header);
+    await appendCsv(pathToFile, toAsync(all), header);
 }
 
 export async function ensureSameHeader(pathToFile: string, header: string[]) {
