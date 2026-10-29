@@ -16,6 +16,12 @@
     "tags": [
         "wrapped-token"
     ],
+    "backing": {
+        "method": "on-chain",
+        "description": "The ETH held by the WETH contract, read from the chain every hour.",
+        "reference": "https://etherscan.io/address/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+    },
     "listed": "2023-07-29T22:37:16.149Z",
-    "updated": "2023-07-29T22:37:16.149Z"
+    "updated": "2026-10-29T15:22:08.181Z"
 }

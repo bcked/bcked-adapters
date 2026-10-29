@@ -16,6 +16,11 @@
     "tags": [
         "bridged-asset"
     ],
+    "backing": {
+        "method": "custodian",
+        "description": "The bitcoin held by the custodians, as published by the WBTC network. Updated hourly.",
+        "reference": "https://wbtc.network/dashboard/audit"
+    },
     "listed": "2023-07-29T22:37:16.265Z",
-    "updated": "2023-07-29T22:37:16.265Z"
+    "updated": "2026-10-29T15:22:08.156Z"
 }

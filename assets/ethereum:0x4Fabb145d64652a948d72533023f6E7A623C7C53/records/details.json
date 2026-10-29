@@ -17,6 +17,12 @@
         "stablecoin",
         "real-world-asset"
     ],
+    "backing": {
+        "method": "reports",
+        "description": "Monthly attestation reports of Paxos, with the reserves by type of holding.",
+        "reference": "https://paxos.com/busd-transparency/",
+        "reports": "asset"
+    },
     "listed": "2023-07-29T22:37:16.069Z",
-    "updated": "2023-07-29T22:37:16.069Z"
+    "updated": "2026-10-29T15:22:08.369Z"
 }
