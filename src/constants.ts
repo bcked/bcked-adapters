@@ -1,5 +1,6 @@
 export const PATHS = {
     entities: "entities",
+    tokens: "tokens",
     systems: "systems",
     assets: "assets",
     graphs: "graphs",

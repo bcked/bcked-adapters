@@ -1,5 +1,5 @@
 import {
-    getIssuerBackingShare,
+    getTokenBackingShare,
     getIssuerCirculating,
 } from "../../src/crawler/adapters/issuer_backing";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
@@ -18,12 +18,13 @@ const details: bcked.asset.Details = {
     },
     reference: "https://www.circle.com/transparency",
     tags: ["stablecoin", "real-world-asset"],
+    token: "usdc",
     backing: {
         method: "reports",
         description:
             "Circle's monthly attestation reports, for all chains together. USDC on Base gets the Base share of the reserves, by circulating supply.",
         reference: "https://www.circle.com/transparency",
-        reports: "issuer",
+        reports: "token",
     },
 };
 
@@ -61,8 +62,8 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
-        // Circle's reserves cover all chains (see entities/circle). USDC on Base is backed by the
+        // Circle's reserves cover all chains (see tokens/usdc). USDC on Base is backed by the
         // Base share of the circulating supply.
-        return getIssuerBackingShare("circle", 2, "Base", lastRecorded);
+        return getTokenBackingShare("usdc", 2, "Base", lastRecorded);
     }
 }

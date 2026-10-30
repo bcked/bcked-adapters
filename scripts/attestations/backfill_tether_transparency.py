@@ -6,7 +6,7 @@ Tether published no reserve reports from 2018-11 to 2021-01. Its transparency pa
 (wallet.tether.to/transparency) stated "USD₮ Total Assets", without a breakdown. The Wayback Machine
 archived it several times a month. For every month this takes the last capture that states the
 total and prints [capture timestamp, total assets, total liabilities]. The totals are Tether's own,
-unaudited. They are recorded as rwa:undefined ("Composition not reported") on the tether entity.
+unaudited. They are recorded as rwa:undefined ("Composition not reported") on the token usdt.
 USDT on Ethereum gets its share by the circulating supply on that day (see chainShare in
 src/crawler/adapters/issuer_backing.ts), with the reserves as total where DefiLlama misses Omni.
 """

@@ -1,5 +1,5 @@
 import {
-    getIssuerBackingShare,
+    getTokenBackingShare,
     getIssuerCirculating,
 } from "../../src/crawler/adapters/issuer_backing";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
@@ -18,12 +18,13 @@ const details: bcked.asset.Details = {
     },
     reference: "https://tether.to/en/transparency/",
     tags: ["stablecoin", "real-world-asset"],
+    token: "usdt",
     backing: {
         method: "reports",
         description:
             "Tether's quarterly assurance reports, for all chains together. USDT on Solana gets the Solana share of the reserves, by circulating supply.",
         reference: "https://tether.to/en/transparency/",
-        reports: "issuer",
+        reports: "token",
     },
 };
 
@@ -61,8 +62,8 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
-        // Tether's reserves cover all chains (see entities/tether). USDT on Solana is backed by the
+        // Tether's reserves cover all chains (see tokens/usdt). USDT on Solana is backed by the
         // Solana share of the circulating supply.
-        return getIssuerBackingShare("tether", 1, "Solana", lastRecorded);
+        return getTokenBackingShare("usdt", 1, "Solana", lastRecorded);
     }
 }

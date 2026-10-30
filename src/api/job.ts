@@ -11,7 +11,7 @@ import { ASSET_RESOURCES } from "./resources/assets";
 import { ENTITY_RESOURCES } from "./resources/entities";
 import { GRAPH_RESOURCES } from "./resources/graphs";
 import { SYSTEM_RESOURCES } from "./resources/systems";
-import { getAssetIds, getEntityIds, getSystemIds } from "./utils/ids";
+import { getAssetIds, getEntityIds, getSystemIds, getTokenIds } from "./utils/ids";
 
 const WORKERS_PATH = "src/api/workers";
 
@@ -43,10 +43,11 @@ async function generate404() {
 }
 
 job("API Job", async () => {
-    const [assetIds, entityIds, systemIds] = await Promise.all([
+    const [assetIds, entityIds, systemIds, tokenIds] = await Promise.all([
         getAssetIds(),
         getEntityIds(),
         getSystemIds(),
+        getTokenIds(),
     ]);
 
     // TODO this could already be done during data collection, not requiring a post-processing step
@@ -105,7 +106,7 @@ job("API Job", async () => {
         executeInWorkerPool(path.resolve(WORKERS_PATH, "compile_system.ts"), systemIds), // Depends on
         GRAPH_RESOURCES.index(),
         executeInWorker(path.resolve(WORKERS_PATH, "compile_graph.ts")), // Depends on "precompile_collateralization_graph.ts"
-        compileSummaries(assetIds, entityIds, systemIds), // Depends on all precompile steps
+        compileSummaries(assetIds, entityIds, systemIds, tokenIds), // Depends on all precompile steps
         generateOasSchema(),
         generate404(),
     ]);

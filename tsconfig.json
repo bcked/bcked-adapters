@@ -37,6 +37,12 @@
         "useUnknownInCatchVariables": true,
         "noPropertyAccessFromIndexSignature": true
     },
-    "include": ["src/**/*.ts", "entities/**/*.ts", "systems/**/*.ts", "assets/**/*.ts"],
+    "include": [
+        "src/**/*.ts",
+        "entities/**/*.ts",
+        "tokens/**/*.ts",
+        "systems/**/*.ts",
+        "assets/**/*.ts"
+    ],
     "exclude": ["node_modules", ".vscode"]
 }

@@ -10,9 +10,11 @@ import { readJson } from "../utils/files";
 import { ASSET_RESOURCES } from "./resources/assets";
 import { ENTITY_RESOURCES } from "./resources/entities";
 import { SYSTEM_RESOURCES } from "./resources/systems";
+import { TOKEN_RESOURCES } from "./resources/tokens";
+import { compileDetails, compileIcons } from "./utils/compile";
 import { readCSV } from "../utils/csv";
 import { GRAPH_RESOURCES } from "./resources/graphs";
-import { dailyComposition, dailySeries, latestWithChange } from "./utils/series";
+import { dailyComposition, dailySeries, latestWithChange, type DailySeries } from "./utils/series";
 
 /** Path of the icon resource, or null if the item has no icon. */
 function iconPath(kind: string, id: string) {
@@ -49,10 +51,9 @@ async function readReportDates(assetIds: bcked.asset.Id[]): Promise<Map<string, 
                 recordsPath(PATHS.assets, id, FILES.json.details)
             );
             if (details?.backing?.method != "reports") return null;
-            const issuer = details.linkedEntities.issuer;
             const csvPath =
-                details.backing.reports == "issuer" && issuer
-                    ? recordsPath(PATHS.entities, issuer, FILES.csv.backing)
+                details.backing.reports == "token" && details.token
+                    ? recordsPath(PATHS.tokens, details.token, FILES.csv.backing)
                     : recordsPath(PATHS.assets, id, FILES.csv.backing);
             if (!existsSync(csvPath)) return null;
             const dates = new Set<string>();
@@ -148,6 +149,17 @@ function latestComposition(composition: Record<string, [string, number][]>) {
     return { date, parts };
 }
 
+/** Series of every compiled asset, to add up the chains of a token. */
+const compiledSeries = new Map<
+    bcked.asset.Id,
+    {
+        marketCap: DailySeries;
+        collateralizationRatio: DailySeries;
+        collateral: DailySeries;
+        composition: Record<string, DailySeries>;
+    }
+>();
+
 async function compileAsset(id: bcked.asset.Id) {
     const csv = (file: string) => recordsPath(PATHS.assets, id, file);
     const [details, price, supply, marketCap, collateralizationRatio, collateral, composition] =
@@ -171,17 +183,19 @@ async function compileAsset(id: bcked.asset.Id) {
     });
 
     if (details?.backing) {
-        const issuer = details.linkedEntities.issuer;
         const evidence =
-            details.backing.reports == "issuer" && issuer
-                ? recordsPath(PATHS.entities, issuer, FILES.csv.evidence)
+            details.backing.reports == "token" && details.token
+                ? recordsPath(PATHS.tokens, details.token, FILES.csv.evidence)
                 : csv(FILES.csv.evidence);
         await ASSET_RESOURCES.reports(id, details.backing, await readReports(evidence));
     }
 
+    compiledSeries.set(id, { marketCap, collateralizationRatio, collateral, composition });
+
     return {
         id,
         $ref: `/assets/${id}`,
+        token: details?.token ?? null,
         name: details?.name ?? null,
         symbol: details?.symbol ?? null,
         system: details?.identifier.system ?? null,
@@ -219,20 +233,103 @@ async function compileGroup(kind: typeof PATHS.entities | typeof PATHS.systems, 
     };
 }
 
+/** Adds up daily series by date. A date counts every series that has a value on it. */
+function addSeries(series: DailySeries[]): DailySeries {
+    const sums = new Map<string, number>();
+    for (const one of series)
+        for (const [date, value] of one) sums.set(date, (sums.get(date) ?? 0) + value);
+    return [...sums].sort(([a], [b]) => a.localeCompare(b));
+}
+
+/**
+ * A token from its chain assets: market cap, reserves and composition added up per day. The ratio
+ * is the combined reserves over the combined market cap at the backing dates, which is each
+ * chain's reserves over its own ratio, so a chain without backing on a day does not lower it.
+ */
+async function compileToken(
+    id: bcked.token.Id,
+    assets: { id: bcked.asset.Id; token: string | null }[]
+) {
+    const details = await readJson<bcked.token.DetailsRecord>(
+        recordsPath(PATHS.tokens, id, FILES.json.details)
+    );
+    const members = assets.filter((a) => a.token == id).map((a) => a.id);
+    const series = members.map((m) => compiledSeries.get(m)).filter((s) => s != null);
+
+    const marketCap = addSeries(series.map((s) => s.marketCap));
+    const collateral = addSeries(series.map((s) => s.collateral));
+    const marketCapThen = addSeries(
+        series.map((s) => {
+            const ratios = new Map(s.collateralizationRatio);
+            return s.collateral
+                .filter(([date]) => ratios.get(date))
+                .map(([date, usd]): [string, number] => [date, usd / ratios.get(date)!]);
+        })
+    );
+    const thenByDate = new Map(marketCapThen);
+    const collateralizationRatio: DailySeries = collateral
+        .filter(([date]) => thenByDate.get(date))
+        .map(([date, usd]) => [date, usd / thenByDate.get(date)!]);
+    const composition: Record<string, DailySeries> = {};
+    for (const reserve of new Set(series.flatMap((s) => Object.keys(s.composition))))
+        composition[reserve] = addSeries(series.map((s) => s.composition[reserve] ?? []));
+
+    await Promise.all([
+        TOKEN_RESOURCES.token(id),
+        compileDetails(TOKEN_RESOURCES, PATHS.tokens, id),
+        compileIcons(TOKEN_RESOURCES, PATHS.tokens, id),
+        TOKEN_RESOURCES.assets(id, members),
+        TOKEN_RESOURCES.series(id, {
+            "market-cap": marketCap,
+            "collateralization-ratio": collateralizationRatio,
+            collateral,
+            composition,
+        }),
+        details?.backing
+            ? TOKEN_RESOURCES.reports(
+                  id,
+                  details.backing,
+                  await readReports(recordsPath(PATHS.tokens, id, FILES.csv.evidence))
+              )
+            : null,
+    ]);
+
+    return {
+        id,
+        $ref: `/tokens/${id}`,
+        name: details?.name ?? null,
+        symbol: details?.symbol ?? null,
+        issuer: details?.issuer ?? null,
+        tags: details?.tags ?? [],
+        backing: details?.backing?.method ?? null,
+        icon: iconPath(PATHS.tokens, id),
+        assets: members,
+        composition: latestComposition(composition),
+        "market-cap": latestWithChange(marketCap),
+        "collateralization-ratio": latestWithChange(collateralizationRatio),
+        collateral: latestWithChange(collateral),
+    };
+}
+
 export async function compileSummaries(
     assetIds: bcked.asset.Id[],
     entityIds: bcked.entity.Id[],
-    systemIds: bcked.system.Id[]
+    systemIds: bcked.system.Id[],
+    tokenIds: bcked.token.Id[]
 ) {
     const [assets, entities, systems] = await Promise.all([
         Promise.all(assetIds.map(compileAsset)),
         Promise.all(entityIds.map((id) => compileGroup(PATHS.entities, id))),
         Promise.all(systemIds.map((id) => compileGroup(PATHS.systems, id))),
     ]);
+    // After the assets, whose series the tokens add up.
+    const tokens = await Promise.all(tokenIds.map((id) => compileToken(id, assets)));
 
     await Promise.all([
         compileGraphSeries(await readReportDates(assetIds)),
         ASSET_RESOURCES.summary(assets),
+        TOKEN_RESOURCES.index(tokenIds),
+        TOKEN_RESOURCES.summary(tokens),
         ENTITY_RESOURCES.summary(entities),
         SYSTEM_RESOURCES.summary(systems),
     ]);

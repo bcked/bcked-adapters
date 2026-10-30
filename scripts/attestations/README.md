@@ -38,14 +38,14 @@ python3 write_backing.py busd.json "<records>/assets/ethereum:0x4Fabb145d64652a9
 
 ## Tether (USDT)
 
-Tether's reports cover all chains, so the reserves are recorded on the `tether` entity. The USDT adapter
+Tether's reports cover all chains, so the reserves are recorded on the token `usdt`. The USDT adapters
 derives the backing of USDT on Ethereum from it (see `src/crawler/adapters/issuer_backing.ts`).
 
 ```shell
 python3 fetch_tether.py /tmp/tether > tether-reports.json
 python3 extract_tether.py tether-reports.json tether_manual.json > tether.json
 python3 convert_prices.py tether.json > tether-units.json
-python3 write_backing.py tether-units.json "<records>/entities/tether/records" USDT
+python3 write_backing.py tether-units.json "<records>/tokens/usdt/records" USDT
 ```
 
 ## Tether Gold (XAUt)
@@ -61,14 +61,14 @@ python3 write_backing.py xaut.json "<records>/assets/ethereum:0x68749665FF8D2d11
 
 ## Circle (USDC)
 
-Circle's reserves are recorded on the `circle` entity, from its attestation reports only. Each report
+Circle's reserves are recorded on the token `usdc`, from its attestation reports only. Each report
 lists two dates. `update.sh` adds new reports every week (`fetch_circle.py` takes the newest from the
 transparency page). Until 2025-11 the Circle Reserve Fund was crawled daily from BlackRock, whose
 terms do not allow that. Those rows were replaced by the report dates on 2026-10-30.
 
 ```shell
 python3 extract_circle.py circle_manual.json /tmp/circle/*.pdf > circle.json
-python3 write_backing.py circle.json "<records>/entities/circle/records" USDC
+python3 write_backing.py circle.json "<records>/tokens/usdc/records" USDC
 ```
 
 The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs with "USDC" in the name).

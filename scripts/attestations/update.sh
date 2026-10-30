@@ -35,21 +35,21 @@ paxos paxg https://www.paxos.com/paxg-transparency "PAX Gold|PAXG" \
 paxos busd https://www.paxos.com/busd-transparency "Binance USD|BUSD" \
     "ethereum:0x4Fabb145d64652a948d72533023f6E7A623C7C53" BUSD
 
-tether="$records/entities/tether/records"
+tether="$records/tokens/usdt/records"
 python3 fetch_tether.py "$work/tether" > "$work/tether-reports.json"
 python3 extract_tether.py "$work/tether-reports.json" tether_manual.json > "$work/tether.json"
 python3 check_new.py "$work/tether.json" "$tether/backing.csv"
 python3 convert_prices.py "$work/tether.json" > "$work/tether-units.json"
 # shellcheck disable=SC2046
-python3 write_backing.py "$work/tether-units.json" "$tether" USDT --append $(evidence_args entities/tether/records)
+python3 write_backing.py "$work/tether-units.json" "$tether" USDT --append $(evidence_args tokens/usdt/records)
 
-circle="$records/entities/circle/records"
+circle="$records/tokens/usdc/records"
 python3 fetch_circle.py "$work/circle" > "$work/circle.txt"
 # shellcheck disable=SC2046
 python3 extract_circle.py circle_manual.json $(cat "$work/circle.txt") > "$work/circle.json"
 python3 check_new.py "$work/circle.json" "$circle/backing.csv"
 # shellcheck disable=SC2046
-python3 write_backing.py "$work/circle.json" "$circle" USDC --append $(evidence_args entities/circle/records)
+python3 write_backing.py "$work/circle.json" "$circle" USDC --append $(evidence_args tokens/usdc/records)
 
 xaut="$records/assets/ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38/records"
 python3 fetch_xaut.py "$work/xaut" > "$work/xaut-reports.json"

@@ -58,7 +58,7 @@ tags) and a class with `getPrice`, `getSupply` and `getBacking`. Most tokens reu
   Every report is listed in `evidence.csv` next to the records with its download URL and SHA-256
   hash. The reports belong to their issuers and auditors, so the PDFs are not published here.
 
-Issuers are folders under `entities/` and chains under `systems/`. Copy an existing asset as a starting
+Issuers are folders under `entities/` and chains under `systems/`. A product on several chains (USDT, USDC) is a folder under `tokens/`, with the reserves its issuer reports for all chains together. Each of its chain assets links it in `token` and gets its chain's share. Copy an existing asset as a starting
 point and change the details. Every asset, issuer and chain needs an `icon.svg`, and `bun test` fails
 without one.
 
@@ -90,7 +90,7 @@ Bun loads it automatically.
 ## How to locally run the adapters?
 
 Collected records are stored on the `records` branch. To work with existing data, copy the
-`records` folders from that branch into the matching `assets/`, `entities/` and `systems/` folders.
+`records` folders from that branch into the matching `assets/`, `entities/`, `tokens/` and `systems/` folders.
 They are ignored by git on `main`.
 
 ```shell

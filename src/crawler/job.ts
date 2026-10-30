@@ -1,15 +1,16 @@
 import path from "node:path";
-import { getAssetIds, getEntityIds, getSystemIds } from "../api/utils/ids";
+import { getAssetIds, getEntityIds, getSystemIds, getTokenIds } from "../api/utils/ids";
 import { job } from "../utils/job";
 import { executeInWorkerPool } from "../utils/worker_pool";
 
 const WORKERS_PATH = "src/crawler/workers";
 
 job("Crawler Job", async () => {
-    const [assetIds, entityIds, systemIds] = await Promise.all([
+    const [assetIds, entityIds, systemIds, tokenIds] = await Promise.all([
         getAssetIds(),
         getEntityIds(),
         getSystemIds(),
+        getTokenIds(),
     ]);
 
     // Query everything even if some items fail, so all available data is recorded.
@@ -22,6 +23,12 @@ job("Crawler Job", async () => {
     );
     results.push(
         await executeInWorkerPool(path.resolve(WORKERS_PATH, "query_entity.ts"), entityIds).then(
+            () => null,
+            (error: unknown) => error
+        )
+    );
+    results.push(
+        await executeInWorkerPool(path.resolve(WORKERS_PATH, "query_token.ts"), tokenIds).then(
             () => null,
             (error: unknown) => error
         )
