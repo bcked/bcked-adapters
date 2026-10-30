@@ -70,6 +70,8 @@ without one.
 - Report dates are stored in UTC with the time the report states.
 - When a source is wrong or a report contradicts itself, record what the report says and note the
   problem in the adapter. Do not correct values by guessing.
+- Every statement about an asset, like a `warning` that a token is discontinued, links an external
+  source in `reference`. Prefer an official one: the regulator, the issuer or the auditor, over news.
 
 ## How do I get set up?
 
