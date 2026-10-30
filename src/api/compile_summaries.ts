@@ -38,7 +38,33 @@ async function readReports(csvPath: string): Promise<Report[]> {
  * The backing graph of the last recorded day of every month, with links as [from, to, USD] triples.
  * One resource for clients that show how the graph changed, instead of one request per day.
  */
-async function compileGraphSeries() {
+/**
+ * Dates of the reports behind every asset whose backing comes from reports: the timestamps of its
+ * backing records, or of its issuer's when the issuer reports for all chains together.
+ */
+async function readReportDates(assetIds: bcked.asset.Id[]): Promise<Map<string, string[]>> {
+    const entries = await Promise.all(
+        assetIds.map(async (id) => {
+            const details = await readJson<bcked.asset.DetailsRecord>(
+                recordsPath(PATHS.assets, id, FILES.json.details)
+            );
+            if (details?.backing?.method != "reports") return null;
+            const issuer = details.linkedEntities.issuer;
+            const csvPath =
+                details.backing.reports == "issuer" && issuer
+                    ? recordsPath(PATHS.entities, issuer, FILES.csv.backing)
+                    : recordsPath(PATHS.assets, id, FILES.csv.backing);
+            if (!existsSync(csvPath)) return null;
+            const dates = new Set<string>();
+            for await (const row of readCSV<primitive.Timestamped>(csvPath))
+                dates.add(row.timestamp.slice(0, 10));
+            return [id, [...dates].sort()] as const;
+        })
+    );
+    return new Map(entries.filter((e) => e != null));
+}
+
+async function compileGraphSeries(reportDates: Map<string, string[]>) {
     const csvPath = path.join(PATHS.graphs, PATHS.records, FILES.csv.collateralizationGraph);
     if (!existsSync(csvPath)) return;
     type Row = primitive.Timestamped & {
@@ -87,7 +113,15 @@ async function compileGraphSeries() {
                 links: linksOf(row).map(([from, to, value]) => [from, to, value]),
             }))
         ),
-        GRAPH_RESOURCES.collateralizationGraphWeekly(nodes, weekly),
+        GRAPH_RESOURCES.collateralizationGraphWeekly(
+            nodes,
+            weekly,
+            Object.fromEntries(
+                [...reportDates]
+                    .filter(([id]) => index.has(id))
+                    .map(([id, dates]) => [index.get(id)!, dates])
+            )
+        ),
     ]);
 }
 
@@ -197,7 +231,7 @@ export async function compileSummaries(
     ]);
 
     await Promise.all([
-        compileGraphSeries(),
+        compileGraphSeries(await readReportDates(assetIds)),
         ASSET_RESOURCES.summary(assets),
         ENTITY_RESOURCES.summary(entities),
         SYSTEM_RESOURCES.summary(systems),
