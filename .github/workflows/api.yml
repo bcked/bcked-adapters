@@ -67,13 +67,22 @@ jobs:
 
         environment:
             name: github-pages
-            url: ${{ steps.deployment.outputs.page_url }}
+            url: ${{ steps.deployment.outputs.page_url || steps.retry.outputs.page_url }}
 
         name: API Deployment
         runs-on: ubuntu-latest
         steps:
+            # Pages refuses a deployment while the previous one is still finishing. Retry once.
             - name: Deploy to GitHub Pages
               id: deployment
+              continue-on-error: true
+              uses: actions/deploy-pages@v5
+            - name: Wait for the previous deployment
+              if: steps.deployment.outcome == 'failure'
+              run: sleep 90
+            - name: Deploy to GitHub Pages (retry)
+              id: retry
+              if: steps.deployment.outcome == 'failure'
               uses: actions/deploy-pages@v5
 
     freshness:

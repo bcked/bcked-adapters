@@ -11,17 +11,13 @@ const DAY = 24 * 60 * 60 * 1000;
 const MAX_AGE_DAYS = 3;
 
 /**
- * Backing that comes from reports is older by design. Allowed age in days: the report interval
- * plus the time until the report is published.
+ * Backing that comes from reports is older by design. Allowed age in days per issuer: the report
+ * interval plus the time until the report is published. Applies to all its tokens on every chain.
  */
-const MAX_BACKING_AGE_DAYS: Record<string, number> = {
-    // Paxos: monthly attestation reports
-    "ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78": 62, // PAXG
-    "ethereum:0x4Fabb145d64652a948d72533023f6E7A623C7C53": 62, // BUSD
-    // Tether: quarterly assurance reports
-    "ethereum:0xdAC17F958D2ee523a2206206994597C13D831ec7": 140, // USDT
-    // Circle: the cash on the transparency page is updated about weekly
-    "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": 10, // USDC
+const MAX_REPORT_AGE_DAYS: Record<string, number> = {
+    paxos: 62, // monthly attestation reports (PAXG, BUSD)
+    circle: 62, // monthly attestation reports, published weeks after the dates they cover (USDC)
+    tether: 140, // quarterly reports (USDT, XAUT)
 };
 
 /** Assets whose price is constant or never crawled. */
@@ -35,6 +31,8 @@ interface AssetSummary {
     id: string;
     symbol: string;
     system: string;
+    backing: "reports" | "on-chain" | "custodian" | null;
+    linkedEntities: { issuer?: string };
     price: Dated | null;
     supply: Dated | null;
     collateral: Dated | null;
@@ -62,9 +60,12 @@ function check(asset: AssetSummary, field: string, value: Dated | null, maxDays:
 for (const asset of assets) {
     if (!STATIC_PRICES(asset.id)) check(asset, "price", asset.price, MAX_AGE_DAYS);
     if (asset.system !== "rwa") check(asset, "supply", asset.supply, MAX_AGE_DAYS);
-    const backingAge = MAX_BACKING_AGE_DAYS[asset.id];
-    if (backingAge !== undefined || asset.collateral)
-        check(asset, "backing", asset.collateral, backingAge ?? MAX_AGE_DAYS);
+    const reportAge =
+        asset.backing == "reports"
+            ? MAX_REPORT_AGE_DAYS[asset.linkedEntities.issuer ?? ""]
+            : undefined;
+    if (reportAge !== undefined || asset.collateral)
+        check(asset, "backing", asset.collateral, reportAge ?? MAX_AGE_DAYS);
 }
 
 if (problems.length) {
