@@ -16,7 +16,7 @@ Sources:
 - ETH supply: ultrasound.money (total supply after burns, daily since the Merge).
 - Gold: daily spot rate from the currency-api dataset on jsdelivr (matches the Swissquote records).
 
-Not backfilled: WBTC backing (custodian holdings have no history).
+WBTC backing is backfilled separately by backfill_wbtc_custody.py.
 """
 import csv
 import datetime
