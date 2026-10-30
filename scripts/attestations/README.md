@@ -48,6 +48,17 @@ python3 convert_prices.py tether.json > tether-units.json
 python3 write_backing.py tether-units.json "<records>/entities/tether/records" USDT
 ```
 
+## Tether Gold (XAUt)
+
+The quarterly reports of TG Commodities state the fine troy ounces of gold held for all XAUt tokens.
+`fetch_xaut.py` reads the report list from the gold.tether.to bundle, `update.sh` adds new reports.
+
+```shell
+python3 fetch_xaut.py /tmp/xaut > xaut-reports.json
+python3 extract_xaut.py xaut-reports.json > xaut.json
+python3 write_backing.py xaut.json "<records>/assets/ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38/records" XAUT
+```
+
 ## Circle (USDC)
 
 Circle's reserves are recorded on the `circle` entity, from its attestation reports only. Each report
