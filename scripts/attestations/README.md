@@ -69,7 +69,7 @@ The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs
 - BUSD 2022-08 to 2025-01: holdings per CUSIP. Treasury bills are `rwa:USTB`, other Treasury debt
   is split by CUSIP into bonds (`912810…`, `rwa:USTBOND`) and notes (`rwa:USTNOTE`), dollars are `rwa:USD`.
 - BUSD from 2025-02: KPMG's Exhibit B by asset type. Repurchase agreements are `rwa:USTrepo`,
-  government money market funds `rwa:undefined`.
+  government money market funds `rwa:MMF`.
 - `validate_busd.py` compares the extracted values with the subtotals in each report. Known report
   errors: the total differs from the subtotals on 2022-10-19, 2022-10-31 and 2023-02-13, and the
   debt subtotal on 2024-07-26 is 45,000 higher than its holdings. The holdings are used.
@@ -81,9 +81,11 @@ The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs
   `rwa:NONUSTB`. Other investments, which Tether does not break down, and the 2021 and 2022 line
   "Corporate Bonds, Funds & Precious Metals", one sum of three kinds of assets, are `rwa:undefined`. Feb and Mar 2021 only report total assets. The bank confirmations of 2017 and 2018
   were read manually (`tether_manual.json`), the 2018-10 Deltec letter is a scan.
-- Circle until 2021-04: US dollars in custody accounts (`rwa:USD`). 2021-05 to 2022: only the total of
-  a mix of cash, short-dated U.S. government obligations and (2021) commercial paper and bonds
-  (`rwa:undefined`). The 2022 reserve pages use a broken font, so the total is read from the auditor's
+- Circle until 2021-04: US dollars in custody accounts (`rwa:USD`). 2021-05 to 2021-10: the breakdown
+  table (cash, Yankee CDs and commercial paper as `rwa:CP`, US Treasuries as `rwa:USTB`, corporate
+  bonds), scaled to the USDC in circulation. 2022-07 to 2022-12: treasuries by CUSIP and cash.
+  2021-11 to 2022-06: only the total of a mix
+  of cash and short-dated U.S. government obligations (`rwa:undefined`, "Composition not reported"). The 2022 reserve pages use a broken font, so the total is read from the auditor's
   letter. The May 2022 report is a scan and was read manually (`circle_manual.json`). From 2023:
   Treasuries by CUSIP, repurchase agreements and cash, checked against the total reserve assets.
 - Times: Paxos reports are at 5:00 PM New York time, Circle reports at 11:59 PM Pacific time, Tether

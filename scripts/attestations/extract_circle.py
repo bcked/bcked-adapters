@@ -7,10 +7,14 @@ Scanned reports without text layer were read manually and are kept in circle_man
 Prints JSON in the same format as the other extract_* scripts. Report dates are at 11:59 PM Pacific time.
 
 - 2018 to 2020: US dollars held in custody accounts (rwa:USD).
-- 2021 and 2022: only the total of a mix of cash and short-dated U.S. government obligations
-  (2021 also commercial paper and bonds), recorded as rwa:undefined. The total equals the USDC in
-  circulation, which is read from the auditor's letter because the reserve page of the 2022 reports
-  uses a broken font encoding.
+- 2021-05 to 2021-10: a breakdown table in $bn. Cash and cash equivalents are rwa:USD, Yankee CDs and
+  commercial paper rwa:CP, corporate bonds rwa:CORPBOND. US Treasuries (maturity up to 3 years) are
+  recorded as rwa:USTB, the table does not split them. Municipal and agency bonds (at most $0.2bn)
+  are rwa:undefined. The values are scaled to the USDC in circulation.
+- 2021-11 to 2022-06: only the total of a mix of cash and short-dated U.S. government obligations,
+  recorded as rwa:undefined. The total equals the USDC in circulation, which is read from the
+  auditor's letter because the reserve page of some reports uses a broken font encoding.
+- 2022-07 to 2022-12: treasuries listed by CUSIP and cash deposits, split like the Deloitte reports.
 - From 2023: Deloitte reports with two report dates each. Treasury securities are split by CUSIP into
   bills, notes and bonds. The rest of the Circle Reserve Fund is cash and repurchase agreements,
   other reserve assets are cash. Each date is checked against the total reserve assets.
@@ -106,26 +110,95 @@ def deloitte(lines):
     return sections
 
 
-def grant_thornton(flat):
+TABLE_2021 = [
+    (r"(?i)^cash", "rwa:USD"),
+    (r"(?i)^yankee cds", "rwa:CP"),
+    (r"(?i)^commercial paper", "rwa:CP"),
+    (r"(?i)^us treasuries", "rwa:USTB"),
+    (r"(?i)^corporate bonds", "rwa:CORPBOND"),
+    (r"(?i)^municipal", "rwa:undefined"),
+]
+
+
+def breakdown_2021(lines, total):
+    """2021-05 to 2021-10: the "USDC Reserve Breakdown" table in $bn, scaled to the total."""
+    starts = [i for i, l in enumerate(lines) if "Reserve Breakdown" in l]
+    if not starts:
+        return None
+    parts = {}
+    for line in lines[starts[-1] + 1 : starts[-1] + 30]:
+        s = re.sub(r"\s+", " ", line).strip()
+        if re.match(r"(?i)^total\b(?! allocation)", s):
+            break
+        row = re.match(r"^(.*?[A-Za-z])\s(?:\d\s)?(-|[\d.]+) [\d.]+%$", s)
+        if not row:
+            continue
+        key = next((k for pattern, k in TABLE_2021 if re.search(pattern, row.group(1))), None)
+        if key is None:
+            return None  # An unknown row: better unsplit than wrong.
+        value = 0.0 if row.group(2) == "-" else float(row.group(2))
+        parts[key] = parts.get(key, 0) + value
+    sum_bn = sum(parts.values())
+    if not sum_bn:
+        return None
+    return {k: round(v / sum_bn * total, 2) for k, v in parts.items() if v}
+
+
+def cusip_listing(lines):
+    """2022-07 to 2022-12: treasuries by CUSIP and cash, checked against the total reserve assets."""
+    cat, total = {}, None
+    for line in lines:
+        s = re.sub(r"\s+", " ", line).strip()
+        value = last_amount(s)
+        if value is None:
+            continue
+        cusip = re.search(r"\b(912[0-9A-Z]{6})\b", s)
+        if re.match(r"(?i)^TOTAL USDC RESERVE ASSETS\b", s):
+            total = value
+        elif re.match(r"(?i)^TOTAL", s):
+            continue
+        elif cusip:
+            key = (
+                "rwa:USTB"
+                if cusip.group(1).startswith(("912796", "912797"))
+                else "rwa:USTBOND" if cusip.group(1).startswith("912810") else "rwa:USTNOTE"
+            )
+            cat[key] = cat.get(key, 0) + value
+        elif re.search(r"(?i)\bcash\b", s):
+            cat["rwa:USD"] = cat.get("rwa:USD", 0) + value
+    if total is None or not cat or abs(sum(cat.values()) - total) > 1000:
+        return None
+    return {k: round(v, 2) for k, v in cat.items() if round(v, 2)}, total
+
+
+def grant_thornton(flat, lines):
     date = re.search(rf"as of ({DATE}) at 11:59 ?PM", flat, re.I)
     if not date:
         return []
+    section = lambda cat, total: [
+        {"date": date.group(1), "timestamp": to_utc(date.group(1)), "cat": cat, "total": total}
+    ]
+    # 2022-07 to 2022-12 list every treasury. These reports also state the tokens outstanding, which
+    # would otherwise be read as cash below.
+    listing = cusip_listing(lines)
+    if listing:
+        return section(*listing)
     cash = re.search(r"US Dollars held in custody accounts = \$([\d,]+)", flat)
     # March and April 2021: custody accounts are at least equal to the tokens outstanding.
     outstanding = re.search(r"less blacklisted tokens = ([\d,]+) USDC", flat)
     if cash or outstanding:
-        key, value = "rwa:USD", num((cash or outstanding).group(1))
-    else:
-        circulation = re.search(r"in Circulation\s?\d? = ([\d,]+) USDC", flat)
-        if not circulation:
-            return []
-        key, value = "rwa:undefined", num(circulation.group(1))
-    return [{"date": date.group(1), "timestamp": to_utc(date.group(1)), "cat": {key: value}, "total": value}]
+        value = num((cash or outstanding).group(1))
+        return section({"rwa:USD": value}, value)
+    circulation = re.search(r"in Circulation\s?\d? = ([\d,]+) USDC", flat)
+    if not circulation:
+        return []
+    value = num(circulation.group(1))
+    return section(breakdown_2021(lines, value) or {"rwa:undefined": value}, value)
 
 
 def extract(path, manual):
     text = pdf_text(path)
-    sections = deloitte(text.splitlines()) or grant_thornton(re.sub(r"\s+", " ", text))
+    sections = deloitte(text.splitlines()) or grant_thornton(re.sub(r"\s+", " ", text), text.splitlines())
     name = path.rsplit("/", 1)[-1]
     if not sections and name in manual:
         entry = manual[name]

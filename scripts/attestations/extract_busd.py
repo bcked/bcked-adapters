@@ -84,7 +84,7 @@ def exhibit_b(lines):
     rows = {}
     mapping = [
         ("rwa:USD", r"^Cash\b"),
-        ("rwa:undefined", r"^Government money market funds"),
+        ("rwa:MMF", r"^Government money market funds"),
         ("rwa:USTrepo", r"^Repurchase agreements"),
         ("treasury", r"^Obligations of U\.?S\.? Treasury"),
         ("total", r"^Total\b"),
