@@ -1,0 +1,16 @@
+{
+    "name": "Corporate Bonds",
+    "symbol": "CORPBOND",
+    "identifier": {
+        "address": "CORPBOND",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "fixed-income-security"
+    ],
+    "linkedEntities": {},
+    "reference": null,
+    "tags": [],
+    "listed": "2026-10-30T07:06:05.884Z",
+    "updated": "2026-10-30T07:06:05.884Z"
+}

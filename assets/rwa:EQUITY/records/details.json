@@ -1,0 +1,16 @@
+{
+    "name": "Public Equities",
+    "symbol": "EQUITY",
+    "identifier": {
+        "address": "EQUITY",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "equity"
+    ],
+    "linkedEntities": {},
+    "reference": null,
+    "tags": [],
+    "listed": "2026-10-30T07:06:06.717Z",
+    "updated": "2026-10-30T07:06:06.717Z"
+}

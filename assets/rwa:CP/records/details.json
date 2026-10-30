@@ -1,0 +1,17 @@
+{
+    "name": "Commercial Paper and Certificates of Deposit",
+    "symbol": "CP",
+    "identifier": {
+        "address": "CP",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "fixed-income-security",
+        "cash-equivalent"
+    ],
+    "linkedEntities": {},
+    "reference": null,
+    "tags": [],
+    "listed": "2026-10-30T07:06:05.456Z",
+    "updated": "2026-10-30T07:06:05.456Z"
+}

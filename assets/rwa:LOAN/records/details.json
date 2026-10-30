@@ -1,0 +1,16 @@
+{
+    "name": "Secured Loans",
+    "symbol": "LOAN",
+    "identifier": {
+        "address": "LOAN",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "loan"
+    ],
+    "linkedEntities": {},
+    "reference": null,
+    "tags": [],
+    "listed": "2026-10-30T07:06:06.280Z",
+    "updated": "2026-10-30T07:06:06.280Z"
+}

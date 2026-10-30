@@ -1,0 +1,16 @@
+{
+    "name": "Non-US Treasury Bills",
+    "symbol": "NONUSTB",
+    "identifier": {
+        "address": "NONUSTB",
+        "system": "rwa"
+    },
+    "assetClasses": [
+        "fixed-income-security"
+    ],
+    "linkedEntities": {},
+    "reference": null,
+    "tags": [],
+    "listed": "2026-10-30T07:06:06.229Z",
+    "updated": "2026-10-30T07:06:06.229Z"
+}
