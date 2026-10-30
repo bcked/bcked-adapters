@@ -162,6 +162,7 @@ export class Asset extends JsonResources {
             reference: details.reference,
             tags: details.tags,
             backing: details.backing ?? null,
+            warning: details.warning ?? null,
             listed: details.listed,
             updated: details.updated,
         };

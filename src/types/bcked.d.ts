@@ -101,6 +101,16 @@ declare namespace bcked {
             tags: Tag[];
             /** How the backing is obtained. Only for assets with backing. */
             backing?: BackingSource;
+            /** Shown as a banner on the asset page, e.g. for a discontinued token. */
+            warning?: Warning;
+        }
+
+        interface Warning {
+            /** One or two sentences, stated as facts with the source in `reference`. */
+            text: string;
+            /** Day the warning applies from. */
+            date: primitive.ISODateString;
+            reference: primitive.URL | null;
         }
 
         /**
