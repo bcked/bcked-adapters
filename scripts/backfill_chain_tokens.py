@@ -9,6 +9,8 @@ at 00:00 UTC. Days that already have a row are skipped, so the script can be run
 
 Sources: DefiLlama coins API (price), DefiLlama stablecoins API (circulating supply per chain).
 
+Days without a DefiLlama price take the price of the day before, for up to 3 days.
+
 USDC on Arbitrum and Polygon starts at Circle's native launch there (2023-06-08 and 2023-10-10). The
 earlier rows of DefiLlama's chain supply are bridged USDC.e and were removed from the records.
 """
@@ -78,7 +80,15 @@ def main(records):
             for p in data["coins"].get(asset, {}).get("prices", []):
                 prices[p["timestamp"] // DAY * DAY] = p["price"]
         days = range(start, today, DAY)
-        price_rows = [{"timestamp": iso(d), "usd": prices[d]} for d in days if d in prices]
+        # DefiLlama skips some days. A missing day takes the price of the day before, for up to 3
+        # days, so every day has a market cap (the market cap needs a price within 12 hours).
+        filled, missing = {}, 0
+        for d in days:
+            if d in prices:
+                filled[d], missing = prices[d], 0
+            elif d - DAY in filled and missing < 3:
+                filled[d], missing = filled[d - DAY], missing + 1
+        price_rows = [{"timestamp": iso(d), "usd": filled[d]} for d in days if d in filled]
         supply_rows = [
             {"timestamp": iso(d), "circulating": supply[d], "burned": "", "issued": "", "max": "", "total": ""}
             for d in days
