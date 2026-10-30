@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Adds new attestation reports of Paxos (PAXG, BUSD), Tether (USDT) and Circle (USDC) to the records.
+# Adds new attestation reports of Paxos (PAXG, BUSD), Tether (USDT, XAUt) and Circle (USDC) to the records.
 #
 # Usage: scripts/attestations/update.sh <records checkout> [<evidence checkout>]
 #
@@ -50,3 +50,10 @@ python3 extract_circle.py circle_manual.json $(cat "$work/circle.txt") > "$work/
 python3 check_new.py "$work/circle.json" "$circle/backing.csv"
 # shellcheck disable=SC2046
 python3 write_backing.py "$work/circle.json" "$circle" USDC --append $(evidence_args entities/circle/records)
+
+xaut="$records/assets/ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38/records"
+python3 fetch_xaut.py "$work/xaut" > "$work/xaut-reports.json"
+python3 extract_xaut.py "$work/xaut-reports.json" > "$work/xaut.json"
+python3 check_new.py "$work/xaut.json" "$xaut/backing.csv"
+# shellcheck disable=SC2046
+python3 write_backing.py "$work/xaut.json" "$xaut" XAUT --append $(evidence_args "assets/ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38/records")
