@@ -1,0 +1,27 @@
+{
+    "name": "Lido Staked Ether",
+    "symbol": "stETH",
+    "identifier": {
+        "address": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+        "system": "ethereum"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "lido"
+    },
+    "reference": "https://lido.fi/ethereum",
+    "tags": [
+        "staking-token"
+    ],
+    "backing": {
+        "method": "on-chain",
+        "description": "ETH pooled in Lido, read from the stETH contract. One stETH stands for one pooled ETH, by Lido's accounting that its oracles update daily.",
+        "reference": "https://docs.lido.fi/contracts/lido",
+        "address": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
+    },
+    "listed": "2026-10-30T12:08:07.160Z",
+    "updated": "2026-10-30T12:08:07.160Z"
+}

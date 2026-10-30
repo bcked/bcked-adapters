@@ -1,0 +1,27 @@
+{
+    "name": "Tether Gold",
+    "symbol": "XAUT",
+    "identifier": {
+        "address": "0x68749665FF8D2d112Fa859AA293F07A622782F38",
+        "system": "ethereum"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "tether"
+    },
+    "reference": "https://gold.tether.to/",
+    "tags": [
+        "real-world-asset"
+    ],
+    "backing": {
+        "method": "reports",
+        "description": "Quarterly attestation reports of TG Commodities, which state the fine troy ounces of gold the custodian holds for all XAUt tokens.",
+        "reference": "https://gold.tether.to/reports",
+        "reports": "asset"
+    },
+    "listed": "2026-10-30T12:08:06.801Z",
+    "updated": "2026-10-30T12:08:06.801Z"
+}
