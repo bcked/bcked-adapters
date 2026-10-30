@@ -1,24 +1,11 @@
 /**
- * Circles reserves are two fold.
- *
- * 1. Reserve holdings managed by BlackRock, see: https://www.blackrock.com/cash/en-us/products/329365/
- * 2. Cash holdings by Circle, see: https://www.circle.com/en/transparency
- *
- * Note: Cash holdings are reported infrequently or via the attestation reports.
+ * Circle's USDC reserves come from its attestation reports (Grant Thornton, Deloitte), which list the
+ * reserves on two dates a month. scripts/attestations/update.sh adds new reports every week, see
+ * scripts/attestations/README.md. Until 2025-11 the holdings of the Circle Reserve Fund were crawled
+ * daily from BlackRock, whose terms do not allow that. The reports also include all cash, which the
+ * transparency page figure did not.
  */
-import axios from "axios";
-import { load } from "cheerio";
-import dateFormat from "dateformat";
 import fs from "fs";
-import _ from "lodash";
-import path from "path";
-import { FILES } from "../../src/constants";
-import { BRManager } from "../../src/crawler/apis/br_manager";
-import { toAsync } from "../../src/utils/array";
-import { getClosest, getLatest } from "../../src/utils/cache";
-import { writeToCsv } from "../../src/utils/csv";
-import { toISOString } from "../../src/utils/string_formatting";
-import { daysInMs, getDatesBetween, hoursInMs, isClose, isNewer } from "../../src/utils/time";
 
 const details: bcked.entity.Details = {
     name: "Circle",
@@ -27,137 +14,15 @@ const details: bcked.entity.Details = {
     tags: [],
 };
 
-export interface Cash {
-    timestamp: `${number}-${number}-${number}`; // yyyy-mm-dd
-    usd: number;
-}
-
 export default class Adapter implements bcked.entity.Adapter {
-    treasuryManager: BRManager;
-    recordsPath: string;
-
-    constructor() {
-        this.treasuryManager = new BRManager();
-        this.recordsPath = `entities/${details.identifier}/records`;
-    }
+    recordsPath = `entities/${details.identifier}/records`;
 
     async getDetails(): Promise<bcked.entity.Details> {
         return details;
     }
 
-    async fetchLatestTreasuryReserves(): Promise<void> {
-        const csvPath = path.join(this.recordsPath, FILES.csv.reserves);
-
-        const lastEntry = await getLatest<bcked.asset.Backing>(csvPath);
-        // Check if the latest records are of the same day. If yes, don't fetch, as there can be no newer data.
-        if (lastEntry !== null && isClose(lastEntry.timestamp, Date.now(), hoursInMs(23.99)))
-            return;
-
-        const startOfRecordings = new Date("2022-11-02");
-        const startDate = new Date(lastEntry?.timestamp ?? startOfRecordings);
-
-        // Loop through the dates using timestamps and create Date objects
-        for (const timestamp of getDatesBetween(startDate, Date.now(), daysInMs(1))) {
-            // await this.fetchTreasuryReserves(timestamp);
-            const positions = await this.treasuryManager.getPositions("329365", "1464253357814", {
-                fileType: "csv",
-                fileName: "USDXX_holdings",
-                dataType: "fund",
-                asOfDate: dateFormat(timestamp, "yyyymmdd"), // yyyymmdd
-            });
-
-            if (!positions?.length) continue;
-
-            const grouped = _.groupBy(positions, "asset");
-            const summed = Object.fromEntries(
-                Object.entries(grouped).map(([asset, group]) => [asset, _.sumBy(group, "par")])
-            );
-
-            const res: bcked.asset.Backing = {
-                timestamp: toISOString(timestamp),
-                underlying: summed,
-            };
-
-            await writeToCsv(csvPath, toAsync([res]), "timestamp");
-        }
-    }
-
-    async fetchLatestCashReserves(): Promise<void> {
-        const csvPath = path.join(this.recordsPath, FILES.csv.cash);
-
-        const lastEntry = await getLatest<bcked.asset.Backing>(csvPath);
-        // Check if the latest records are of the same day. If yes, don't fetch, as there can be no newer data.
-        if (lastEntry !== null && isClose(lastEntry.timestamp, Date.now(), hoursInMs(23.99)))
-            return;
-
-        const response = await axios.get<string>("https://www.circle.com/en/transparency");
-        const $ = load(response.data);
-
-        // The date used to be in the element after "As of", now it is in the same paragraph.
-        const asOf = $("p:contains('As of')").first();
-        const dateText =
-            /As of (.+)/.exec(asOf.text().trim())?.[1]?.trim() ?? asOf.next().text().trim();
-        const cashText = $("#usdc_chartjs_canvas").attr("data-usdc-cash");
-
-        if (!dateText || !cashText) return;
-
-        const parsedDate = Date.parse(dateText);
-        if (lastEntry !== null && !isNewer(lastEntry.timestamp, parsedDate, hoursInMs(12))) return;
-
-        const cashUsd = parseFloat(cashText) * 1000000000;
-        const entry = {
-            timestamp: dateFormat(parsedDate, "yyyy-mm-dd"),
-            underlying: {
-                "rwa:USD": cashUsd,
-            },
-        };
-
-        await writeToCsv(csvPath, toAsync([entry]), "timestamp");
-    }
-
-    async fetchLatestBacking(): Promise<void> {
-        const csvPath = path.join(this.recordsPath, FILES.csv.backing);
-
-        const lastEntry = await getLatest<bcked.asset.Backing>(csvPath);
-        // Check if the latest records are of the same day. If yes, don't fetch, as there can be no newer data.
-        if (lastEntry !== null && isClose(lastEntry.timestamp, Date.now(), hoursInMs(23.99)))
-            return;
-
-        const startDate = new Date(lastEntry?.timestamp ?? 0);
-
-        // Loop through the dates using timestamps and create Date objects
-        for (const timestamp of getDatesBetween(startDate, Date.now(), daysInMs(1))) {
-            const treasuryReserves = await getClosest<bcked.asset.Backing>(
-                path.join(this.recordsPath, FILES.csv.reserves),
-                timestamp,
-                hoursInMs(12.0)
-            );
-            if (!treasuryReserves) continue;
-            const cashReserves = await getClosest<bcked.asset.Backing>(
-                path.join(this.recordsPath, FILES.csv.cash),
-                timestamp,
-                hoursInMs(12.0)
-            );
-            if (!cashReserves) continue;
-
-            const res: bcked.asset.Backing = {
-                timestamp: toISOString(timestamp),
-                underlying: _.mergeWith(
-                    treasuryReserves.underlying,
-                    cashReserves.underlying,
-                    (a, b) => _.sum([a, b])
-                ),
-            };
-
-            await writeToCsv(csvPath, toAsync([res]), "timestamp");
-        }
-    }
-
     async update(): Promise<void> {
-        // Update Circle reserves data.
+        // The reserves are written by the attestation workflow.
         await fs.promises.mkdir(this.recordsPath, { recursive: true });
-        await this.fetchLatestTreasuryReserves();
-        await this.fetchLatestCashReserves();
-        await this.fetchLatestBacking();
     }
 }

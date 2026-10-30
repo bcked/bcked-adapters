@@ -9,8 +9,8 @@ and pass the records folder of the asset, e.g. `assets/<asset id>/records`.
 
 ## Automatic updates
 
-The workflow `Attestation Update` runs `update.sh` every Monday. It downloads the Paxos and Tether
-reports, checks every report date after the latest recorded row against the report total
+The workflow `Attestation Update` runs `update.sh` every Monday. It downloads the Paxos, Tether and
+Circle reports, checks every report date after the latest recorded row against the report total
 (`check_new.py`) and appends those rows, listing each report in `evidence.csv` with its download URL
 and SHA-256 hash (`write_backing.py --append`). With the secret `EVIDENCE_DEPLOY_KEY` (a deploy key of
 the private repository bcked/bcked-evidence), the PDFs are also copied there.
@@ -50,12 +50,14 @@ python3 write_backing.py tether-units.json "<records>/entities/tether/records" U
 
 ## Circle (USDC)
 
-Circle's reserves are recorded on the `circle` entity. The adapter records them daily from the BlackRock
-fund data and the transparency page. The reports fill the time before and after that data.
+Circle's reserves are recorded on the `circle` entity, from its attestation reports only. Each report
+lists two dates. `update.sh` adds new reports every week (`fetch_circle.py` takes the newest from the
+transparency page). Until 2025-11 the Circle Reserve Fund was crawled daily from BlackRock, whose
+terms do not allow that. Those rows were replaced by the report dates on 2026-10-30.
 
 ```shell
 python3 extract_circle.py circle_manual.json /tmp/circle/*.pdf > circle.json
-python3 write_backing.py circle.json "<records>/entities/circle/records" USDC --keep <first automated timestamp> <last automated timestamp>
+python3 write_backing.py circle.json "<records>/entities/circle/records" USDC
 ```
 
 The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs with "USDC" in the name).

@@ -1,6 +1,6 @@
 /**
- * The BTC price is queried using the BitGo API.
- * All attribution goes to the [BitGo API](https://developers.bitgo.com/).
+ * The BTC price is queried using the mempool.space API, an open source Bitcoin explorer.
+ * All attribution goes to [mempool.space](https://mempool.space/docs/api/rest#get-price).
  *
  * The block height to calculate supply is queried using the Blockstream API.
  * All attribution goes to the [Blockstream API](https://github.com/Blockstream/esplora/blob/master/API.md).
@@ -42,37 +42,18 @@ function computeIssuedSupply(blockHeight: number) {
     return totalSupply;
 }
 
-interface BitGoPriceResponse {
-    latest: {
-        date: primitive.ISODateTimeString;
-        blockchain: { cacheTime: number; totalbc: number; transactions: number };
-        currencies: {
-            USD: {
-                "24h_avg": number;
-                bid: number;
-                ask: number;
-                monthlyLow: number;
-                monthlyHigh: number;
-                prevDayLow: number;
-                prevDayHigh: number;
-                lastHourLow: number;
-                lastHourHigh: number;
-                last: number;
-                timestamp: number;
-                cacheTime: number;
-            };
-        };
-        coin: "btc";
-    };
+interface MempoolPriceResponse {
+    /** Unix time in seconds. */
+    time: number;
+    USD: number;
 }
 
 export default class Adapter implements bcked.asset.Adapter {
-    bitgoApi: JsonApi;
+    mempoolApi: JsonApi;
     blockstreamApi: JsonApi;
 
     constructor() {
-        // See also: https://developers.bitgo.com/
-        this.bitgoApi = new JsonApi("https://www.bitgo.com/api");
+        this.mempoolApi = new JsonApi("https://mempool.space/api");
         this.blockstreamApi = new JsonApi("https://blockstream.info/api");
     }
 
@@ -81,12 +62,11 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getPrice(): Promise<bcked.asset.Price[]> {
-        const response = await this.bitgoApi.fetchJson<BitGoPriceResponse>("/v2/btc/market/latest");
-        const usdPrice = response.latest.currencies.USD;
+        const response = await this.mempoolApi.fetchJson<MempoolPriceResponse>("/v1/prices");
         return [
             {
-                timestamp: toISOString(usdPrice.timestamp),
-                usd: usdPrice.ask,
+                timestamp: toISOString(response.time * 1000),
+                usd: response.USD,
             },
         ];
     }

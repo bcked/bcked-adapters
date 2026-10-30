@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-# Adds new attestation reports of Paxos (PAXG, BUSD) and Tether (USDT) to the records.
+# Adds new attestation reports of Paxos (PAXG, BUSD), Tether (USDT) and Circle (USDC) to the records.
 #
 # Usage: scripts/attestations/update.sh <records checkout> [<evidence checkout>]
 #
 # Downloads the reports, checks every report date after the latest recorded row (check_new.py) and
 # appends those rows, listing each report in evidence.csv (write_backing.py --append). With an
 # evidence checkout (private repository bcked/bcked-evidence), the reports are copied there under the
-# same path. Fails without writing if a new report does not add up. Circle is not included, its
-# reserves are crawled daily.
+# same path. Fails without writing if a new report does not add up.
 set -euo pipefail
 
 records=$(realpath "$1")
@@ -43,3 +42,11 @@ python3 check_new.py "$work/tether.json" "$tether/backing.csv"
 python3 convert_prices.py "$work/tether.json" > "$work/tether-units.json"
 # shellcheck disable=SC2046
 python3 write_backing.py "$work/tether-units.json" "$tether" USDT --append $(evidence_args entities/tether/records)
+
+circle="$records/entities/circle/records"
+python3 fetch_circle.py "$work/circle" > "$work/circle.txt"
+# shellcheck disable=SC2046
+python3 extract_circle.py circle_manual.json $(cat "$work/circle.txt") > "$work/circle.json"
+python3 check_new.py "$work/circle.json" "$circle/backing.csv"
+# shellcheck disable=SC2046
+python3 write_backing.py "$work/circle.json" "$circle" USDC --append $(evidence_args entities/circle/records)

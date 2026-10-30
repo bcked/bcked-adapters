@@ -20,8 +20,6 @@ export const FILES = {
         supply: "supply.csv",
         supplyAmount: "supply_amount.csv",
         backing: "backing.csv",
-        cash: "cash.csv",
-        reserves: "reserves.csv",
         marketCap: "market_cap.csv",
         totalValueLocked: "total_value_locked.csv",
         underlyingAssets: "underlying_assets.csv",
