@@ -50,6 +50,7 @@ declare namespace bcked {
             | "real-estate"
             | "tangible-asset"
             | "derivative"
+            | "loan"
             | "commodity";
 
         /**

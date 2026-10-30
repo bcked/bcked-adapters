@@ -21,7 +21,8 @@ AMOUNT = re.compile(r"\$?\s?(\d{1,3}(?:,\d{3}){2,}(?:\.\d+)?)")
 
 def category(label):
     """Maps a reserve category of the report to an underlying asset."""
-    l = label.lower()
+    # Without zero-width spaces and footnote numbers ("Corporate Bonds 14").
+    l = re.sub(r"\s*\d{1,2}$", "", label.replace("\u200b", "").strip()).lower()
     if "precious metals" in l and not re.search(r"bonds|funds", l):
         return "usd:XAU"
     if "bitcoin" in l:
@@ -32,7 +33,20 @@ def category(label):
         return "rwa:USTrepo"
     if re.search(r"cash (&|and) bank deposits|^cash$|fiduciary deposits", l):
         return "rwa:USD"
-    # Commercial paper, money market funds, non-U.S. bills, bonds, equities, loans, other investments.
+    if "commercial paper" in l or "certificates of deposit" in l:
+        return "rwa:CP"
+    if "secured loans" in l:
+        return "rwa:LOAN"
+    if "money market funds" in l:
+        return "rwa:MMF"
+    if "equities" in l:
+        return "rwa:EQUITY"
+    if "treasury bills" in l:  # U.S. treasury bills are matched above
+        return "rwa:NONUSTB"
+    # "Corporate Bonds, Funds & Precious Metals" (2021, 2022) is one sum of three kinds of assets.
+    if re.fullmatch(r"corporate bonds", l):
+        return "rwa:CORPBOND"
+    # Other investments (Tether gives no breakdown) and sums of several kinds of assets.
     return "rwa:undefined"
 
 
