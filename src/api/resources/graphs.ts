@@ -54,19 +54,21 @@ export class Graph extends JsonResources {
         path: "/graphs/collateralization/weekly",
         summary: "Get the collateralization graph per week",
         description:
-            "Get the graph of the last recorded day of every week in one resource. Links are [from, to, value in USD] with from and to as indexes into nodes, so the history stays small enough to animate.",
+            "Get the graph of the last recorded day of every week in one resource. Links are [from, to, value in USD] with from and to as indexes into nodes, so the history stays small enough to animate. Reports lists the report dates per node index for assets whose backing comes from reports, so clients can tell a new report from a price move.",
         type: "CollateralizationGraphWeekly",
         // TODO write schema
         schema: {},
     })
     async collateralizationGraphWeekly(
         nodes: string[],
-        weeks: { date: string; links: [number, number, number | null][] }[]
+        weeks: { date: string; links: [number, number, number | null][] }[],
+        reports: Record<number, string[]>
     ) {
         return {
             $id: "/graphs/collateralization/weekly",
             nodes,
             weeks,
+            reports,
         };
     }
 
