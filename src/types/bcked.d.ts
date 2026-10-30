@@ -110,7 +110,8 @@ declare namespace bcked {
             text: string;
             /** Day the warning applies from. */
             date: primitive.ISODateString;
-            reference: primitive.URL | null;
+            /** External source of the statement, an official one where it exists (regulator, issuer). */
+            reference: primitive.URL;
         }
 
         /**
