@@ -5,22 +5,17 @@ import { toISOString } from "../../utils/string_formatting";
 import { DefiLlamaStablecoins, type ChainSupply } from "../apis/defillama_stablecoins";
 
 /** Supply at the last day on or before the timestamp. */
+/**
+ * Supply point closest to a backing record, within 3 days. Reports are dated at the end of a day and
+ * DefiLlama's points are at its start, so the closest point is the next day's: the same point the
+ * market cap at the report time uses. The point before could be a day older and differ a lot.
+ */
 function supplyAt(supply: ChainSupply[], timestamp: number): ChainSupply | null {
-    let low = 0;
-    let high = supply.length - 1;
     let found: ChainSupply | null = null;
-    while (low <= high) {
-        const mid = (low + high) >> 1;
-        const point = supply[mid]!;
-        if (point.timestamp <= timestamp) {
+    for (const point of supply)
+        if (!found || Math.abs(point.timestamp - timestamp) < Math.abs(found.timestamp - timestamp))
             found = point;
-            low = mid + 1;
-        } else {
-            high = mid - 1;
-        }
-    }
-    // Only use supply data that is at most a few days older than the backing record.
-    return found && timestamp - found.timestamp <= 3 * 24 * 60 * 60 * 1000 ? found : null;
+    return found && Math.abs(timestamp - found.timestamp) <= 3 * 24 * 60 * 60 * 1000 ? found : null;
 }
 
 /** USD value of the reserves held in USD-denominated assets (amounts of other assets are not in USD). */
