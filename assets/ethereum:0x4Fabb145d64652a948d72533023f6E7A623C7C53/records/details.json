@@ -17,6 +17,11 @@
         "stablecoin",
         "real-world-asset"
     ],
+    "warning": {
+        "text": "Discontinued: Paxos stopped minting BUSD on February 21, 2023, on order of the New York State Department of Financial Services. Only the remaining tokens are left.",
+        "date": "2023-02-21",
+        "reference": "https://www.dfs.ny.gov/consumers/alerts/Paxos_and_Binance"
+    },
     "backing": {
         "method": "reports",
         "description": "Monthly attestation reports of Paxos, with the reserves by type of holding.",
@@ -24,5 +29,5 @@
         "reports": "asset"
     },
     "listed": "2023-07-29T22:37:16.069Z",
-    "updated": "2026-10-29T15:22:08.369Z"
+    "updated": "2026-10-30T09:31:52.156Z"
 }
