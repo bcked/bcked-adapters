@@ -1,0 +1,19 @@
+{
+    "name": "Tether USD",
+    "symbol": "USDT",
+    "identifier": "usdt",
+    "issuer": "tether",
+    "reference": "https://tether.to/en/transparency/",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "backing": {
+        "method": "reports",
+        "description": "Tether's quarterly assurance reports (BDO), for all chains together. Each chain gets its share by circulating supply.",
+        "reference": "https://tether.to/en/transparency/",
+        "reports": "token"
+    },
+    "listed": "2026-10-30T18:50:19.613Z",
+    "updated": "2026-10-30T18:50:19.613Z"
+}

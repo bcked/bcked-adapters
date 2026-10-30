@@ -17,12 +17,13 @@
         "stablecoin",
         "real-world-asset"
     ],
+    "token": "usdt",
     "backing": {
         "method": "reports",
         "description": "Tether's quarterly assurance reports, for all chains together. USDT on Ethereum gets the Ethereum share of the reserves, by circulating supply.",
         "reference": "https://tether.to/en/transparency/",
-        "reports": "issuer"
+        "reports": "token"
     },
     "listed": "2023-07-29T22:37:15.998Z",
-    "updated": "2026-10-29T15:22:08.154Z"
+    "updated": "2026-10-30T18:50:20.126Z"
 }

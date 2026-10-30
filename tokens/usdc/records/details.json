@@ -1,0 +1,19 @@
+{
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "identifier": "usdc",
+    "issuer": "circle",
+    "reference": "https://www.circle.com/transparency",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "backing": {
+        "method": "reports",
+        "description": "Circle's monthly attestation reports (Grant Thornton, Deloitte), for all chains together. Each chain gets its share by circulating supply.",
+        "reference": "https://www.circle.com/transparency",
+        "reports": "token"
+    },
+    "listed": "2026-10-30T18:50:19.616Z",
+    "updated": "2026-10-30T18:50:19.616Z"
+}

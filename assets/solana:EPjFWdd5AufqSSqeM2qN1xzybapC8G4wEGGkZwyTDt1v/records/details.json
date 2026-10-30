@@ -17,12 +17,13 @@
         "stablecoin",
         "real-world-asset"
     ],
+    "token": "usdc",
     "backing": {
         "method": "reports",
         "description": "Circle's monthly attestation reports, for all chains together. USDC on Solana gets the Solana share of the reserves, by circulating supply.",
         "reference": "https://www.circle.com/transparency",
-        "reports": "issuer"
+        "reports": "token"
     },
     "listed": "2026-10-30T12:01:26.626Z",
-    "updated": "2026-10-30T12:01:26.626Z"
+    "updated": "2026-10-30T18:50:20.910Z"
 }

@@ -17,12 +17,13 @@
         "stablecoin",
         "real-world-asset"
     ],
+    "token": "usdc",
     "backing": {
         "method": "reports",
         "description": "Circle's monthly attestation reports and its transparency page, with the daily holdings of the Circle Reserve Fund, for all chains together. USDC on Ethereum gets the Ethereum share of the reserves, by circulating supply.",
         "reference": "https://www.circle.com/transparency",
-        "reports": "issuer"
+        "reports": "token"
     },
     "listed": "2023-07-29T22:37:16.633Z",
-    "updated": "2026-10-29T15:22:08.797Z"
+    "updated": "2026-10-30T18:50:21.037Z"
 }
