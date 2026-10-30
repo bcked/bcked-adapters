@@ -1,13 +1,14 @@
 /**
- * Reserves an issuer reports only as a total, without saying which assets they are, for example
- * Tether's "other investments" or Circle's early fund holdings. Counted at their US dollar value.
+ * Reserves whose composition the issuer does not report: lines like Tether's "other investments",
+ * one sum of several kinds of assets, or periods where a report only states the total. Counted at
+ * their US dollar value. One group for all such cases, so mixed sums do not each get an asset.
  * The id stays rwa:undefined so recorded backing keeps its columns.
  */
 import { toISOString } from "../../src/utils/string_formatting";
 
 const details: bcked.asset.Details = {
-    name: "Other reserves (not broken down)",
-    symbol: "OTHER",
+    name: "Composition not reported",
+    symbol: "UNREPORTED",
     identifier: {
         address: "undefined",
         system: "rwa",
