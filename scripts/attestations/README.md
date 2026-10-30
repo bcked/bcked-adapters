@@ -76,8 +76,10 @@ The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs
 - Tether: U.S. Treasury bills are `rwa:USTB`, reverse repurchase agreements `rwa:USTrepo`, cash and
   bank deposits `rwa:USD`. Precious metals and Bitcoin are converted from USD to troy ounces (`rwa:XAU`)
   and BTC (`bitcoin:BTC`) with the DefiLlama price at the report date (`convert_prices.py`). Commercial
-  paper, money market funds, non-U.S. bills, bonds, equities, loans and other investments are
-  `rwa:undefined`. Feb and Mar 2021 only report total assets. The bank confirmations of 2017 and 2018
+  paper and certificates of deposit are `rwa:CP`, secured loans `rwa:LOAN`, money market funds
+  `rwa:MMF`, public equities `rwa:EQUITY`, corporate bonds `rwa:CORPBOND` and non-U.S. treasury bills
+  `rwa:NONUSTB`. Other investments, which Tether does not break down, and the 2021 and 2022 line
+  "Corporate Bonds, Funds & Precious Metals", one sum of three kinds of assets, are `rwa:undefined`. Feb and Mar 2021 only report total assets. The bank confirmations of 2017 and 2018
   were read manually (`tether_manual.json`), the 2018-10 Deltec letter is a scan.
 - Circle until 2021-04: US dollars in custody accounts (`rwa:USD`). 2021-05 to 2022: only the total of
   a mix of cash, short-dated U.S. government obligations and (2021) commercial paper and bonds
