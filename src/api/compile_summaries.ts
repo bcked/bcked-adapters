@@ -44,21 +44,58 @@ async function compileGraphSeries() {
     type Row = primitive.Timestamped & {
         graph: { links?: { fromId?: string; toId?: string; data?: { value?: number } }[] };
     };
+    const linksOf = (row: Row) =>
+        (row.graph.links ?? [])
+            .filter((link) => link.fromId && link.toId)
+            .map(
+                (link) =>
+                    [
+                        link.fromId!,
+                        link.toId!,
+                        typeof link.data?.value == "number" ? link.data.value : null,
+                    ] as const
+            );
+    // The last recorded day of every month and of every week (weeks start on Monday).
     const months = new Map<string, Row>();
-    for await (const row of readCSV<Row>(csvPath)) months.set(row.timestamp.slice(0, 7), row);
-    await GRAPH_RESOURCES.collateralizationGraphSeries(
-        [...months].map(([month, row]) => ({
-            month,
-            date: row.timestamp.slice(0, 10),
-            links: (row.graph.links ?? [])
-                .filter((link) => link.fromId && link.toId)
-                .map((link) => [
-                    link.fromId!,
-                    link.toId!,
-                    typeof link.data?.value == "number" ? link.data.value : null,
-                ]),
-        }))
-    );
+    const weeks = new Map<string, Row>();
+    for await (const row of readCSV<Row>(csvPath)) {
+        months.set(row.timestamp.slice(0, 7), row);
+        weeks.set(weekStart(row.timestamp.slice(0, 10)), row);
+    }
+    const nodes: string[] = [];
+    const index = new Map<string, number>();
+    const nodeIndex = (id: string) => {
+        if (!index.has(id)) index.set(id, nodes.push(id) - 1);
+        return index.get(id)!;
+    };
+    const weekly = [...weeks.values()].map((row) => ({
+        date: row.timestamp.slice(0, 10),
+        links: linksOf(row).map(
+            ([from, to, value]) =>
+                [nodeIndex(from), nodeIndex(to), value == null ? null : Math.round(value)] as [
+                    number,
+                    number,
+                    number | null,
+                ]
+        ),
+    }));
+    await Promise.all([
+        GRAPH_RESOURCES.collateralizationGraphSeries(
+            [...months].map(([month, row]) => ({
+                month,
+                date: row.timestamp.slice(0, 10),
+                links: linksOf(row).map(([from, to, value]) => [from, to, value]),
+            }))
+        ),
+        GRAPH_RESOURCES.collateralizationGraphWeekly(nodes, weekly),
+    ]);
+}
+
+/** Monday of the week of a `YYYY-MM-DD` date, as `YYYY-MM-DD`. */
+function weekStart(date: string): string {
+    const day = new Date(`${date}T00:00:00Z`);
+    day.setUTCDate(day.getUTCDate() - ((day.getUTCDay() + 6) % 7));
+    return day.toISOString().slice(0, 10);
 }
 
 /** USD value per underlying asset on the latest day with a breakdown, or null without one. */
