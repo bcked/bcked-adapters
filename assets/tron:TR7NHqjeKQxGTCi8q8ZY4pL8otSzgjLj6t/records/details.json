@@ -1,0 +1,28 @@
+{
+    "name": "Tether USD",
+    "symbol": "USDT",
+    "identifier": {
+        "address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+        "system": "tron"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "tether"
+    },
+    "reference": "https://tether.to/en/transparency/",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "backing": {
+        "method": "reports",
+        "description": "Tether's quarterly assurance reports, for all chains together. USDT on Tron gets the Tron share of the reserves, by circulating supply.",
+        "reference": "https://tether.to/en/transparency/",
+        "reports": "issuer"
+    },
+    "listed": "2026-10-30T12:01:26.867Z",
+    "updated": "2026-10-30T12:01:26.867Z"
+}

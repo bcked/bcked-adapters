@@ -1,0 +1,28 @@
+{
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "identifier": {
+        "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "system": "solana"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "circle"
+    },
+    "reference": "https://www.circle.com/transparency",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "backing": {
+        "method": "reports",
+        "description": "Circle's monthly attestation reports, for all chains together. USDC on Solana gets the Solana share of the reserves, by circulating supply.",
+        "reference": "https://www.circle.com/transparency",
+        "reports": "issuer"
+    },
+    "listed": "2026-10-30T12:01:26.626Z",
+    "updated": "2026-10-30T12:01:26.626Z"
+}

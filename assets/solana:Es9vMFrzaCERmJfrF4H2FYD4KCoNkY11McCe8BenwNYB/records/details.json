@@ -1,0 +1,28 @@
+{
+    "name": "Tether USD",
+    "symbol": "USDT",
+    "identifier": {
+        "address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+        "system": "solana"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "tether"
+    },
+    "reference": "https://tether.to/en/transparency/",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "backing": {
+        "method": "reports",
+        "description": "Tether's quarterly assurance reports, for all chains together. USDT on Solana gets the Solana share of the reserves, by circulating supply.",
+        "reference": "https://tether.to/en/transparency/",
+        "reports": "issuer"
+    },
+    "listed": "2026-10-30T12:01:27.306Z",
+    "updated": "2026-10-30T12:01:27.306Z"
+}

@@ -1,0 +1,28 @@
+{
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "identifier": {
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "system": "base"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "circle"
+    },
+    "reference": "https://www.circle.com/transparency",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "backing": {
+        "method": "reports",
+        "description": "Circle's monthly attestation reports, for all chains together. USDC on Base gets the Base share of the reserves, by circulating supply.",
+        "reference": "https://www.circle.com/transparency",
+        "reports": "issuer"
+    },
+    "listed": "2026-10-30T12:01:26.243Z",
+    "updated": "2026-10-30T12:01:26.243Z"
+}
