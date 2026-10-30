@@ -253,6 +253,11 @@ async function compileToken(
     const details = await readJson<bcked.token.DetailsRecord>(
         recordsPath(PATHS.tokens, id, FILES.json.details)
     );
+    // The crawler writes the details. A token added since its last run is left out until then.
+    if (!details) {
+        console.warn(`Token ${id} has no details yet, skipped`);
+        return null;
+    }
     const members = assets.filter((a) => a.token == id).map((a) => a.id);
     const series = members.map((m) => compiledSeries.get(m)).filter((s) => s != null);
 
@@ -323,12 +328,14 @@ export async function compileSummaries(
         Promise.all(systemIds.map((id) => compileGroup(PATHS.systems, id))),
     ]);
     // After the assets, whose series the tokens add up.
-    const tokens = await Promise.all(tokenIds.map((id) => compileToken(id, assets)));
+    const tokens = (await Promise.all(tokenIds.map((id) => compileToken(id, assets)))).filter(
+        (token) => token != null
+    );
 
     await Promise.all([
         compileGraphSeries(await readReportDates(assetIds)),
         ASSET_RESOURCES.summary(assets),
-        TOKEN_RESOURCES.index(tokenIds),
+        TOKEN_RESOURCES.index(tokens.map((token) => token.id)),
         TOKEN_RESOURCES.summary(tokens),
         ENTITY_RESOURCES.summary(entities),
         SYSTEM_RESOURCES.summary(systems),
