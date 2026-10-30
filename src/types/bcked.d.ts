@@ -103,6 +103,8 @@ declare namespace bcked {
             backing?: BackingSource;
             /** Shown as a banner on the asset page, e.g. for a discontinued token. */
             warning?: Warning;
+            /** The token this asset is a chain of, for products on several chains (see token). */
+            token?: token.Id;
         }
 
         interface Warning {
@@ -128,8 +130,11 @@ declare namespace bcked {
             reference: primitive.URL | null;
             /** Contract or address holding the backing, for on-chain backing. */
             address?: string;
-            /** Whose evidence.csv lists the reports: the asset's own or its issuer's. */
-            reports?: "asset" | "issuer";
+            /**
+             * Whose records hold the reports: the asset's own, or its token's when the reports cover
+             * all chains (the asset then gets its chain's share).
+             */
+            reports?: "asset" | "token";
         }
 
         type DetailsRecord = Details & {
@@ -293,6 +298,40 @@ declare namespace bcked {
         interface Adapter {
             getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;
             // Generic method to update any type of entity related data.
+            update(): Promise<void>;
+        }
+    }
+
+    /**
+     * A token is one product on several chains, e.g. USDT on Ethereum, Tron and Solana. Each chain is
+     * an asset (system:address) with its own price and supply, and links its token in `token`. The
+     * token holds what all chains share: the reserves when the issuer reports them for all chains
+     * together (records/backing.csv and evidence.csv). Products on one chain need no token.
+     */
+    declare namespace token {
+        // The folder names in `./tokens` are all token.Ids
+        type Id = string;
+
+        interface Details {
+            name: asset.Name;
+            symbol: asset.Symbol;
+            identifier: Id;
+            /** The entity that issues the token on all chains. */
+            issuer: entity.Id;
+            reference: primitive.URL | null;
+            tags: asset.Tag[];
+            /** How the shared reserves are obtained. */
+            backing?: asset.BackingSource;
+        }
+
+        type DetailsRecord = Details & {
+            listed: primitive.ISODateTimeString;
+            updated: primitive.ISODateTimeString;
+        };
+
+        interface Adapter {
+            getDetails(lastRecorded: DetailsRecord | null): Promise<Details>;
+            /** The shared reserves are written by scripts/attestations, nothing to crawl. */
             update(): Promise<void>;
         }
     }

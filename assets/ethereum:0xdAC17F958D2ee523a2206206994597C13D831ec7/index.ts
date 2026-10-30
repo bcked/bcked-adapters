@@ -1,5 +1,5 @@
 import {
-    getIssuerBackingShare,
+    getTokenBackingShare,
     getIssuerCirculating,
 } from "../../src/crawler/adapters/issuer_backing";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
@@ -18,12 +18,13 @@ const details: bcked.asset.Details = {
     },
     reference: "https://tether.to/en/transparency/",
     tags: ["stablecoin", "real-world-asset"],
+    token: "usdt",
     backing: {
         method: "reports",
         description:
             "Tether's quarterly assurance reports, for all chains together. USDT on Ethereum gets the Ethereum share of the reserves, by circulating supply.",
         reference: "https://tether.to/en/transparency/",
-        reports: "issuer",
+        reports: "token",
     },
 };
 
@@ -64,9 +65,9 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
-        // Tether's reserves cover all chains. They are recorded for the tether entity from the
+        // Tether's reserves cover all chains. They are recorded for the token usdt from the
         // assurance reports (https://tether.to/en/transparency/, see scripts/attestations).
         // USDT on Ethereum is backed by the Ethereum share of the circulating supply.
-        return getIssuerBackingShare("tether", 1, "Ethereum", lastRecorded);
+        return getTokenBackingShare("usdt", 1, "Ethereum", lastRecorded);
     }
 }

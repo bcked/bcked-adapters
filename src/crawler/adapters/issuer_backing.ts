@@ -37,24 +37,24 @@ function chainShare(point: ChainSupply, row: bcked.asset.Backing): number {
 }
 
 /**
- * Backing of a token on one chain as its share of the issuer's reserves.
+ * Backing of a token on one chain as its share of the token's reserves.
  *
  * Issuers like Tether and Circle report reserves for all chains together. The reserves are recorded
- * on the issuer entity (entities/<id>/records/backing.csv). The token's share is the chain's share of
- * the total circulating supply on that day, from DefiLlama (see chainShare).
+ * on the token (tokens/<id>/records/backing.csv). The chain's share is its share of the total
+ * circulating supply at the report time, from DefiLlama (see chainShare).
  *
- * @param entityId Issuer entity holding the reserves
+ * @param tokenId Token holding the reserves of all chains
  * @param stablecoinId DefiLlama stablecoin ID
  * @param chain DefiLlama chain name
  * @param lastRecorded Latest backing already recorded for the token
  */
-export async function getIssuerBackingShare(
-    entityId: bcked.entity.Id,
+export async function getTokenBackingShare(
+    tokenId: bcked.token.Id,
     stablecoinId: number,
     chain: string,
     lastRecorded: bcked.asset.Backing | null
 ): Promise<bcked.asset.Backing[]> {
-    const csvPath = path.join(PATHS.entities, entityId, PATHS.records, FILES.csv.backing);
+    const csvPath = path.join(PATHS.tokens, tokenId, PATHS.records, FILES.csv.backing);
     const reserves: bcked.asset.Backing[] = [];
     for await (const row of readCSV<bcked.asset.Backing>(csvPath)) reserves.push(row);
 

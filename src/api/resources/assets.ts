@@ -163,6 +163,7 @@ export class Asset extends JsonResources {
             tags: details.tags,
             backing: details.backing ?? null,
             warning: details.warning ?? null,
+            token: details.token ?? null,
             listed: details.listed,
             updated: details.updated,
         };

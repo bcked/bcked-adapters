@@ -4,7 +4,7 @@ import path from "node:path";
 
 // Rules from CONTRIBUTING.md#icons: every asset, issuer and chain has an icon.svg with a square
 // view box, at most 30 KB, with text as outlines.
-const folders = ["assets", "entities", "systems"].flatMap((kind) =>
+const folders = ["assets", "entities", "systems", "tokens"].flatMap((kind) =>
     readdirSync(kind)
         .filter((name) => statSync(path.join(kind, name)).isDirectory())
         .map((name) => path.join(kind, name))

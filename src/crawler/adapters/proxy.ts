@@ -76,6 +76,31 @@ export class SystemAdapterProxy extends AdapterCache<bcked.system.Adapter> {
     }
 }
 
+export class TokenAdapterProxy extends AdapterCache<bcked.token.Adapter> {
+    async getDetails(id: bcked.token.Id): Promise<bcked.token.DetailsRecord> {
+        const pathToFile = path.join(PATHS.tokens, id, PATHS.records, FILES.json.details);
+        const lastRecorded = await readJson<bcked.token.DetailsRecord>(pathToFile);
+        const adapter = await this.getAdapterInstance("tokens", id);
+        const details = await adapter.getDetails(lastRecorded);
+
+        if (lastRecorded && _.isEqual(_.omit(lastRecorded, ["listed", "updated"]), details))
+            return lastRecorded;
+
+        const detailsRecord = {
+            ...details,
+            listed: lastRecorded ? lastRecorded.listed : toISOString(Date.now()),
+            updated: toISOString(Date.now()),
+        };
+        await writeJson(pathToFile, detailsRecord);
+        return detailsRecord;
+    }
+
+    async update(id: bcked.token.Id): Promise<void> {
+        const adapter = await this.getAdapterInstance("tokens", id);
+        await adapter.update();
+    }
+}
+
 export class EntityAdapterProxy extends AdapterCache<bcked.entity.Adapter> {
     async getDetails(id: bcked.entity.Id): Promise<bcked.entity.DetailsRecord> {
         const pathToFile = path.join(PATHS.entities, id, PATHS.records, FILES.json.details);

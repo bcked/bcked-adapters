@@ -1,5 +1,5 @@
 import {
-    getIssuerBackingShare,
+    getTokenBackingShare,
     getIssuerCirculating,
 } from "../../src/crawler/adapters/issuer_backing";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
@@ -18,12 +18,13 @@ const details: bcked.asset.Details = {
     },
     reference: "https://www.circle.com/en/usdc",
     tags: ["stablecoin", "real-world-asset"],
+    token: "usdc",
     backing: {
         method: "reports",
         description:
             "Circle's monthly attestation reports and its transparency page, with the daily holdings of the Circle Reserve Fund, for all chains together. USDC on Ethereum gets the Ethereum share of the reserves, by circulating supply.",
         reference: "https://www.circle.com/transparency",
-        reports: "issuer",
+        reports: "token",
     },
 };
 
@@ -67,6 +68,6 @@ export default class Adapter implements bcked.asset.Adapter {
         // Circle's reserves cover all chains. They are recorded for the circle entity from the
         // BlackRock fund data, the transparency page and the attestation reports.
         // USDC on Ethereum is backed by the Ethereum share of the circulating supply.
-        return getIssuerBackingShare("circle", 2, "Ethereum", lastRecorded);
+        return getTokenBackingShare("usdc", 2, "Ethereum", lastRecorded);
     }
 }
