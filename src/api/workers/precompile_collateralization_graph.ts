@@ -143,7 +143,10 @@ async function* createGraphs(assetIds: bcked.asset.Id[]): AsyncIterableIterator<
 
     // Loop through the dates using timestamps and create Date objects
     for (const timestamp of getDatesBetween(startDate, Date.now(), daysInMs(1))) {
-        const graph = await createGraphForTimestamp(timestamp, collateralizationLookups);
+        // The graph of a day shows the backing at its end, or now for today. At its start, an asset
+        // added during the day would only show up the next day.
+        const endOfDay = Math.min(new Date(timestamp).getTime() + daysInMs(1) - 1, Date.now());
+        const graph = await createGraphForTimestamp(endOfDay, collateralizationLookups);
 
         if (graph.getNodesCount() === 0 || graph.getLinksCount() === 0) continue;
 
