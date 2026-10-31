@@ -2,140 +2,233 @@
     {
         "source": "aGz5Rm6q7lLMp4npnB2X3oaVEgg.pdf",
         "date": "2024-10-29",
-        "note": "No text layer, read manually from the 2024-10 report: Treasury bills 2,398,430, cash and cash equivalents 8,352,329, total 10,750,759.",
+        "note": "No text layer, read manually from the 2024-10 report: Treasury bills 2,398,430, cash and cash equivalents 8,352,329, total 10,750,759. USDG tokens outstanding read manually from the report: 10,750,140, all on Ethereum.",
         "cat": {
             "rwa:USTB": 2398430,
             "rwa:undefined": 8352329
+        },
+        "supply": {
+            "total": 10750140,
+            "Ethereum": 10750140
         }
     },
     {
         "source": "aGz5Rm6q7lLMp4npnB2X3oaVEgg.pdf",
         "date": "2024-10-31",
-        "note": "No text layer, read manually from the 2024-10 report: Treasury bills 2,398,430, cash and cash equivalents 8,359,385, total 10,757,815.",
+        "note": "No text layer, read manually from the 2024-10 report: Treasury bills 2,398,430, cash and cash equivalents 8,359,385, total 10,757,815. USDG tokens outstanding read manually from the report: 10,750,140, all on Ethereum.",
         "cat": {
             "rwa:USTB": 2398430,
             "rwa:undefined": 8359385
+        },
+        "supply": {
+            "total": 10750140,
+            "Ethereum": 10750140
+        }
+    },
+    {
+        "source": "bXg8txy2JhkmAnK77PqWdZlKs40.pdf",
+        "date": "2024-11-26",
+        "note": "All USDG on Ethereum (the report names only the Ethereum contract).",
+        "supply": {
+            "Ethereum": 26436864
+        }
+    },
+    {
+        "source": "bXg8txy2JhkmAnK77PqWdZlKs40.pdf",
+        "date": "2024-11-29",
+        "note": "All USDG on Ethereum (the report names only the Ethereum contract).",
+        "supply": {
+            "Ethereum": 29386864
         }
     },
     {
         "source": "09o6oGvVPtVJce6B8CYd9GfwdIQ.pdf",
         "date": "2024-12-26",
-        "note": "No text layer, read manually from the 2024-12 report: Treasury bills 8,083,176, cash and cash equivalents 21,260,822, total 29,343,998.",
+        "note": "No text layer, read manually from the 2024-12 report: Treasury bills 8,083,176, cash and cash equivalents 21,260,822, total 29,343,998. USDG tokens outstanding read manually from the report: 29,235,175, all on Ethereum.",
         "cat": {
             "rwa:USTB": 8083176,
             "rwa:undefined": 21260822
+        },
+        "supply": {
+            "total": 29235175,
+            "Ethereum": 29235175
         }
     },
     {
         "source": "09o6oGvVPtVJce6B8CYd9GfwdIQ.pdf",
         "date": "2024-12-31",
-        "note": "No text layer, read manually from the 2024-12 report: Treasury bills 8,087,803, cash and cash equivalents 21,962,076, total 30,049,879.",
+        "note": "No text layer, read manually from the 2024-12 report: Treasury bills 8,087,803, cash and cash equivalents 21,962,076, total 30,049,879. USDG tokens outstanding read manually from the report: 29,860,177, all on Ethereum.",
         "cat": {
             "rwa:USTB": 8087803,
             "rwa:undefined": 21962076
+        },
+        "supply": {
+            "total": 29860177,
+            "Ethereum": 29860177
+        }
+    },
+    {
+        "source": "fElQitaIqsvPcsyVVGCxj80FrM.pdf",
+        "date": "2025-03-14",
+        "note": "Ethereum: totalSupply of 0xe343167631d89B6Ffc58B88d6b7fB0228795491D at the report time (archive call), Solana: the reported 130,230,654 less Ethereum.",
+        "supply": {
+            "Ethereum": 103229392.98,
+            "Solana": 27001261.02
         }
     },
     {
         "source": "fElQitaIqsvPcsyVVGCxj80FrM.pdf",
         "date": "2025-03-31",
-        "note": "No text layer, read manually from the 2025-03 report: Treasury bills 107,786,554, cash and cash equivalents 81,848,699, total 189,635,253.",
+        "note": "No text layer, read manually from the 2025-03 report: Treasury bills 107,786,554, cash and cash equivalents 81,848,699, total 189,635,253. Ethereum: totalSupply of 0xe343167631d89B6Ffc58B88d6b7fB0228795491D at the report time (archive call), Solana: the reported 189,048,942 less Ethereum.",
         "cat": {
             "rwa:USTB": 107786554,
             "rwa:undefined": 81848699
+        },
+        "supply": {
+            "Ethereum": 105155366.55,
+            "Solana": 83893575.45
+        }
+    },
+    {
+        "source": "qKQpExO8wE2EbetBMsu8kqIs.pdf",
+        "date": "2025-05-12",
+        "note": "Ethereum: totalSupply of 0xe343167631d89B6Ffc58B88d6b7fB0228795491D at the report time (archive call), Solana: the reported 285,900,885 less Ethereum.",
+        "supply": {
+            "Ethereum": 170947637.249744,
+            "Solana": 114953247.750256
+        }
+    },
+    {
+        "source": "qKQpExO8wE2EbetBMsu8kqIs.pdf",
+        "date": "2025-05-30",
+        "note": "Ethereum: totalSupply of 0xe343167631d89B6Ffc58B88d6b7fB0228795491D at the report time (archive call), Solana: the reported 313,642,614 less Ethereum.",
+        "supply": {
+            "Ethereum": 214681103.949744,
+            "Solana": 98961510.050256
         }
     },
     {
         "source": "1a5XGyUwTIlbKBRTgM5wPvwIo8.pdf",
         "date": "2025-09-19",
-        "note": "No text layer, read manually from the 2025-09 report: Treasury bills 106,828,833, cash and cash equivalents 558,206,663, total 665,035,496.",
+        "note": "No text layer, read manually from the 2025-09 report: Treasury bills 106,828,833, cash and cash equivalents 558,206,663, total 665,035,496. USDG tokens outstanding read manually from the report: 664,533,671.",
         "cat": {
             "rwa:USTB": 106828833,
             "rwa:undefined": 558206663
+        },
+        "supply": {
+            "total": 664533671
         }
     },
     {
         "source": "1a5XGyUwTIlbKBRTgM5wPvwIo8.pdf",
         "date": "2025-09-30",
-        "note": "No text layer, read manually from the 2025-09 report: Treasury bills 106,769,292, cash and cash equivalents 626,126,937, total 732,896,229.",
+        "note": "No text layer, read manually from the 2025-09 report: Treasury bills 106,769,292, cash and cash equivalents 626,126,937, total 732,896,229. USDG tokens outstanding read manually from the report: 730,514,012.",
         "cat": {
             "rwa:USTB": 106769292,
             "rwa:undefined": 626126937
+        },
+        "supply": {
+            "total": 730514012
         }
     },
     {
         "source": "1juvrsIQxQq8WHTEiM8uq0VGqA.pdf",
         "date": "2025-10-17",
-        "note": "No text layer, read manually from the 2025-10 report: Treasury bills 126,648,101, cash and cash equivalents 784,546,864, total 911,194,965.",
+        "note": "No text layer, read manually from the 2025-10 report: Treasury bills 126,648,101, cash and cash equivalents 784,546,864, total 911,194,965. USDG tokens outstanding read manually from the report: 910,730,502.",
         "cat": {
             "rwa:USTB": 126648101,
             "rwa:undefined": 784546864
+        },
+        "supply": {
+            "total": 910730502
         }
     },
     {
         "source": "1juvrsIQxQq8WHTEiM8uq0VGqA.pdf",
         "date": "2025-10-31",
-        "note": "No text layer, read manually from the 2025-10 report: Treasury bills 78,847,638, cash and cash equivalents 927,740,008, total 1,006,587,646.",
+        "note": "No text layer, read manually from the 2025-10 report: Treasury bills 78,847,638, cash and cash equivalents 927,740,008, total 1,006,587,646. USDG tokens outstanding read manually from the report: 1,005,923,645.",
         "cat": {
             "rwa:USTB": 78847638,
             "rwa:undefined": 927740008
+        },
+        "supply": {
+            "total": 1005923645
         }
     },
     {
         "source": "gLMvyyXZKsRUjgmCqZfdHxrpZyI.pdf",
         "date": "2025-12-12",
-        "note": "No text layer, read manually from the 2025-12 report: Treasury bills 185,470,674, cash and cash equivalents 1,222,846,583, total 1,408,317,257.",
+        "note": "No text layer, read manually from the 2025-12 report: Treasury bills 185,470,674, cash and cash equivalents 1,222,846,583, total 1,408,317,257. USDG tokens outstanding read manually from the report: 1,399,832,357.",
         "cat": {
             "rwa:USTB": 185470674,
             "rwa:undefined": 1222846583
+        },
+        "supply": {
+            "total": 1399832357
         }
     },
     {
         "source": "gLMvyyXZKsRUjgmCqZfdHxrpZyI.pdf",
         "date": "2025-12-31",
-        "note": "No text layer, read manually from the 2025-12 report: Treasury bills 282,246,742, cash and cash equivalents 1,256,129,141, total 1,538,375,883.",
+        "note": "No text layer, read manually from the 2025-12 report: Treasury bills 282,246,742, cash and cash equivalents 1,256,129,141, total 1,538,375,883. USDG tokens outstanding read manually from the report: 1,529,283,030.",
         "cat": {
             "rwa:USTB": 282246742,
             "rwa:undefined": 1256129141
+        },
+        "supply": {
+            "total": 1529283030
         }
     },
     {
         "source": "ptcVTO4X3jjFQmL9vVItVw6M0Z8.pdf",
         "date": "2026-01-16",
-        "note": "Exhibit B without text layer, read manually from the 2026-01 report: cash 105,768,706, government money market funds 1,115,828,912, repurchase agreements none, Treasury obligations 350,607,737, total 1,572,205,355.",
+        "note": "Exhibit B without text layer, read manually from the 2026-01 report: cash 105,768,706, government money market funds 1,115,828,912, repurchase agreements none, Treasury obligations 350,607,737, total 1,572,205,355. USDG tokens outstanding read manually from the report: 1,571,151,177.",
         "cat": {
             "rwa:USD": 105768706,
             "rwa:MMF": 1115828912,
             "rwa:USTB": 350607737
+        },
+        "supply": {
+            "total": 1571151177
         }
     },
     {
         "source": "ptcVTO4X3jjFQmL9vVItVw6M0Z8.pdf",
         "date": "2026-01-30",
-        "note": "Exhibit B without text layer, read manually from the 2026-01 report: cash 123,148,013, government money market funds 1,089,963,479, repurchase agreements none, Treasury obligations 382,838,255, total 1,595,949,747.",
+        "note": "Exhibit B without text layer, read manually from the 2026-01 report: cash 123,148,013, government money market funds 1,089,963,479, repurchase agreements none, Treasury obligations 382,838,255, total 1,595,949,747. USDG tokens outstanding read manually from the report: 1,590,150,523.",
         "cat": {
             "rwa:USD": 123148013,
             "rwa:MMF": 1089963479,
             "rwa:USTB": 382838255
+        },
+        "supply": {
+            "total": 1590150523
         }
     },
     {
         "source": "fwQprdJGSsRaS32svUmkqG3JYNY.pdf",
         "date": "2026-02-10",
-        "note": "Exhibit B without text layer, read manually from the 2026-02 report: cash 201,327,185, government money market funds 880,916,270, repurchase agreements none, Treasury obligations 498,698,472, total 1,580,941,927.",
+        "note": "Exhibit B without text layer, read manually from the 2026-02 report: cash 201,327,185, government money market funds 880,916,270, repurchase agreements none, Treasury obligations 498,698,472, total 1,580,941,927. USDG tokens outstanding read manually from the report: 1,579,822,398.",
         "cat": {
             "rwa:USD": 201327185,
             "rwa:MMF": 880916270,
             "rwa:USTB": 498698472
+        },
+        "supply": {
+            "total": 1579822398
         }
     },
     {
         "source": "fwQprdJGSsRaS32svUmkqG3JYNY.pdf",
         "date": "2026-02-27",
-        "note": "Exhibit B without text layer, read manually from the 2026-02 report: cash 145,514,767, government money market funds 949,426,904, repurchase agreements none, Treasury obligations 674,091,528, total 1,769,033,199.",
+        "note": "Exhibit B without text layer, read manually from the 2026-02 report: cash 145,514,767, government money market funds 949,426,904, repurchase agreements none, Treasury obligations 674,091,528, total 1,769,033,199. USDG tokens outstanding read manually from the report: 1,767,447,250.",
         "cat": {
             "rwa:USD": 145514767,
             "rwa:MMF": 949426904,
             "rwa:USTB": 674091528
+        },
+        "supply": {
+            "total": 1767447250
         }
     }
 ]
