@@ -35,6 +35,7 @@ const RPC_URLS: Record<string, string> = {
     polygon: "https://polygon-mainnet.g.alchemy.com/v2/{ALCHEMY_POLYGON}",
     arbitrum: "https://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_ARBITRUM}",
     base: "https://base-rpc.publicnode.com",
+    robinhood: "https://rpc.mainnet.chain.robinhood.com",
 };
 
 const CHAIN_IDS: Record<string, number> = {
@@ -45,6 +46,7 @@ const CHAIN_IDS: Record<string, number> = {
     polygon: 137,
     arbitrum: 42161,
     base: 8453,
+    robinhood: 4663,
 };
 
 export class EVMChain implements bcked.query.ChainModule {
@@ -168,6 +170,11 @@ export class EVMChain implements bcked.query.ChainModule {
             console.log(error);
             throw Error(`Error for query of supply of ${system}:${token}.`, { cause: error });
         }
+    }
+
+    /** Sends a raw JSON-RPC request, e.g. a provider-specific method like alchemy_getAssetTransfers. */
+    async send<T>(method: string, params: unknown[], system: bcked.system.Id): Promise<T> {
+        return (await this.getProvider(system).send(method, params)) as T;
     }
 
     /**
