@@ -34,6 +34,7 @@ const RPC_URLS: Record<string, string> = {
     moonriver: "https://rpc.api.moonriver.moonbeam.network",
     polygon: "https://polygon-mainnet.g.alchemy.com/v2/{ALCHEMY_POLYGON}",
     arbitrum: "https://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_ARBITRUM}",
+    base: "https://base-rpc.publicnode.com",
 };
 
 const CHAIN_IDS: Record<string, number> = {
@@ -43,6 +44,7 @@ const CHAIN_IDS: Record<string, number> = {
     moonriver: 1285,
     polygon: 137,
     arbitrum: 42161,
+    base: 8453,
 };
 
 export class EVMChain implements bcked.query.ChainModule {
