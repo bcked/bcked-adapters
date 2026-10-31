@@ -15,7 +15,15 @@
  *
  * Contracts: https://chainlog.sky.money/
  */
-import { decodeBytes32String, encodeBytes32String, formatUnits } from "ethers";
+import {
+    FunctionFragment,
+    Interface,
+    decodeBytes32String,
+    encodeBytes32String,
+    formatUnits,
+    type Result,
+} from "ethers";
+import _ from "lodash";
 
 import { ChainProxy } from "../chains/proxy";
 import { toISOString } from "../../utils/string_formatting";
@@ -63,64 +71,131 @@ interface Reserves {
 
 let cached: Promise<Reserves> | null = null;
 
-async function readReserves(chain: ChainProxy): Promise<Reserves> {
-    const call = <T>(address: string, signature: string, args: unknown[] = []) =>
-        chain.call<T>(address, signature, args, SYSTEM);
-    const address = (key: string) =>
-        call<string>(CHAINLOG, ABI.getAddress, [encodeBytes32String(key)]);
+// Multicall3 bundles many view calls into one eth_call, so the RPC provider sees a few requests
+// instead of hundreds. https://www.multicall3.com/
+const MULTICALL3 = "0xcA11bde05977b3631167028862bE2a173976CA11";
+const AGGREGATE3 =
+    "function aggregate3((address target, bool allowFailure, bytes callData)[] calls) view returns ((bool success, bytes returnData)[])";
+const CHUNK_SIZE = 50;
 
-    const [vat, vow, registry, psm, pocket] = await Promise.all(
-        [
-            "MCD_VAT",
-            "MCD_VOW",
-            "ILK_REGISTRY",
-            "MCD_LITE_PSM_USDC_A",
-            "MCD_LITE_PSM_USDC_A_POCKET",
-        ].map(address)
-    );
-    const [debt, surplus, psmDai, ilks] = await Promise.all([
-        call<bigint>(vat!, ABI.debt),
-        call<bigint>(vat!, ABI.dai, [vow]),
-        call<bigint>(DAI, ABI.balanceOf, [psm]),
-        call<string[]>(registry!, ABI.list),
+interface Call {
+    target: string;
+    signature: string;
+    args?: unknown[];
+}
+
+/** Runs view calls through Multicall3, in chunks one after another. Returns the decoded results. */
+async function multicall(chain: ChainProxy, calls: Call[]): Promise<Result[]> {
+    const fragments = calls.map(({ signature }) => FunctionFragment.from(signature));
+    const results: Result[] = [];
+    for (const chunk of _.chunk(_.range(calls.length), CHUNK_SIZE)) {
+        const encoded = chunk.map((i) => ({
+            target: calls[i]!.target,
+            allowFailure: false,
+            callData: new Interface([fragments[i]!]).encodeFunctionData(
+                fragments[i]!,
+                calls[i]!.args ?? []
+            ),
+        }));
+        const returned = await chain.call<[boolean, string][]>(
+            MULTICALL3,
+            AGGREGATE3,
+            [encoded],
+            SYSTEM
+        );
+        chunk.forEach((i, j) => {
+            results.push(
+                new Interface([fragments[i]!]).decodeFunctionResult(fragments[i]!, returned[j]![1])
+            );
+        });
+    }
+    return results;
+}
+
+async function readReserves(chain: ChainProxy): Promise<Reserves> {
+    const keys = [
+        "MCD_VAT",
+        "MCD_VOW",
+        "ILK_REGISTRY",
+        "MCD_LITE_PSM_USDC_A",
+        "MCD_LITE_PSM_USDC_A_POCKET",
+    ];
+    const [vat, vow, registry, psm, pocket] = (
+        await multicall(
+            chain,
+            keys.map((key) => ({
+                target: CHAINLOG,
+                signature: ABI.getAddress,
+                args: [encodeBytes32String(key)],
+            }))
+        )
+    ).map((result) => result[0] as string) as [string, string, string, string, string];
+
+    const [debt, surplus, psmDai, usdc, list] = await multicall(chain, [
+        { target: vat, signature: ABI.debt },
+        { target: vat, signature: ABI.dai, args: [vow] },
+        { target: DAI, signature: ABI.balanceOf, args: [psm] },
+        { target: USDC, signature: ABI.balanceOf, args: [pocket] },
+        { target: registry, signature: ABI.list },
     ]);
+
+    // Debt of each vault type, without those below MIN_DEBT.
+    const allIlks = [...(list![0] as string[])];
+    const ilkData = await multicall(
+        chain,
+        allIlks.map((ilk) => ({ target: vat, signature: ABI.ilks, args: [ilk] }))
+    );
+    const ilks = allIlks
+        .map((ilk, i) => {
+            const [art, rate] = ilkData[i]! as unknown as [bigint, bigint];
+            return { ilk, debt: parseFloat(formatUnits(art * rate, RAD)) };
+        })
+        .filter(({ debt }) => debt >= MIN_DEBT);
+
+    const infos = await multicall(
+        chain,
+        ilks.map(({ ilk }) => ({ target: registry, signature: ABI.info, args: [ilk] }))
+    );
 
     const underlying: Record<bcked.asset.Id, number> = {};
     const add = (id: bcked.asset.Id, amount: number) => {
         underlying[id] = (underlying[id] ?? 0) + amount;
     };
+    add(`${SYSTEM}:${USDC}`, parseFloat(formatUnits(usdc![0] as bigint, 6)));
 
-    await Promise.all(
-        ilks.map(async (ilk) => {
-            const [art, rate] = await call<bigint[]>(vat!, ABI.ilks, [ilk]);
-            const ilkDebt = parseFloat(formatUnits(art! * rate!, RAD));
-            if (ilkDebt < MIN_DEBT) return;
-
-            if (decodeBytes32String(ilk) == LITE_PSM_ILK) {
-                const usdc = await call<bigint>(USDC, ABI.balanceOf, [pocket]);
-                add(`${SYSTEM}:${USDC}`, parseFloat(formatUnits(usdc, 6)));
-                return;
-            }
-
-            const info = await call<[string, string, bigint, bigint, string, string, string]>(
-                registry!,
-                ABI.info,
-                [ilk]
-            );
-            const [, , ilkClass, decimals, gem, , join] = info;
-            const tracked = TRACKED_COLLATERAL[gem];
-            if (ilkClass == GEM_JOIN_CLASS && tracked) {
-                const balance = await call<bigint>(gem, ABI.balanceOf, [join]);
-                add(tracked, parseFloat(formatUnits(balance, decimals)));
-            } else {
-                add(UNREPORTED, ilkDebt);
-            }
-        })
+    // Collateral bcked tracks is read from the vault's join, the rest counts at the vault's debt.
+    const joins: { id: bcked.asset.Id; gem: string; join: string; decimals: bigint }[] = [];
+    ilks.forEach(({ ilk, debt }, i) => {
+        if (decodeBytes32String(ilk) == LITE_PSM_ILK) return; // USDC in the pocket, added above
+        const [, , ilkClass, decimals, gem, , join] = infos[i]! as unknown as [
+            string,
+            string,
+            bigint,
+            bigint,
+            string,
+            string,
+            string,
+        ];
+        const tracked = TRACKED_COLLATERAL[gem];
+        if (ilkClass == GEM_JOIN_CLASS && tracked) {
+            joins.push({ id: tracked, gem, join, decimals });
+        } else {
+            add(UNREPORTED, debt);
+        }
+    });
+    const balances = await multicall(
+        chain,
+        joins.map(({ gem, join }) => ({ target: gem, signature: ABI.balanceOf, args: [join] }))
     );
+    joins.forEach(({ id, decimals }, i) => {
+        add(id, parseFloat(formatUnits(balances[i]![0] as bigint, decimals)));
+    });
 
-    const psmDaiAmount = parseFloat(formatUnits(psmDai, 18));
+    const psmDaiAmount = parseFloat(formatUnits(psmDai![0] as bigint, 18));
     const claims =
-        parseFloat(formatUnits(debt, RAD)) - parseFloat(formatUnits(surplus, RAD)) - psmDaiAmount;
+        parseFloat(formatUnits(debt![0] as bigint, RAD)) -
+        parseFloat(formatUnits(surplus![0] as bigint, RAD)) -
+        psmDaiAmount;
 
     return { timestamp: toISOString(Date.now()), underlying, claims, psmDai: psmDaiAmount };
 }
