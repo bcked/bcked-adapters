@@ -1,4 +1,11 @@
-import { Contract, JsonRpcProvider, Network, formatEther, formatUnits } from "ethers";
+import {
+    Contract,
+    FunctionFragment,
+    JsonRpcProvider,
+    Network,
+    formatEther,
+    formatUnits,
+} from "ethers";
 import _ from "lodash";
 
 import { toId } from "../../utils/helper";
@@ -158,6 +165,27 @@ export class EVMChain implements bcked.query.ChainModule {
         } catch (error) {
             console.log(error);
             throw Error(`Error for query of supply of ${system}:${token}.`, { cause: error });
+        }
+    }
+
+    /**
+     * Calls a view function of a contract, e.g. `call(vat, "function debt() view returns (uint256)", [])`.
+     * Returns the raw result, bigints stay bigints.
+     */
+    async call<T>(
+        address: string,
+        signature: string,
+        args: unknown[],
+        system: bcked.system.Id
+    ): Promise<T> {
+        const fragment = FunctionFragment.from(signature);
+        const contract = new Contract(address, [fragment], this.getProvider(system));
+        try {
+            return (await contract.getFunction(fragment.name)(...args)) as T;
+        } catch (error) {
+            throw Error(`Error for call of ${fragment.name} on ${system}:${address}.`, {
+                cause: error,
+            });
         }
     }
 }
