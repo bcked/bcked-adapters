@@ -13,8 +13,10 @@
  * - Sky's own tokens (USDS, DAI, sUSDS and vaults over them): these are claims on Sky itself. They are
  *   neither reserves nor holders' claims, so they are left out of both.
  *
- * Proxies and positions: Spark from https://github.com/sparkdotfi/spark-address-registry, Grove and
- * Obex from the USDS transfers of their allocator buffers in the Chainlog. Positions not listed here
+ * Proxies and positions: Spark from https://github.com/sparkdotfi/spark-address-registry, Grove from
+ * https://github.com/grove-labs/grove-address-registry, Obex from the USDS transfers of its allocator
+ * buffer in the Chainlog. USDC Grove lends off-chain (Galaxy, FalconX) counts as sent to the
+ * borrowers' deposit addresses in its registry, less what came back. Positions not listed here
  * are not seen. Debt that the listed positions do not cover stays "not traced yet".
  */
 import { FunctionFragment, Interface, formatUnits, type Result } from "ethers";
@@ -48,7 +50,10 @@ type Position =
     // A SparkLend deposit (aToken). The part not lent out is the underlying token.
     | { kind: "lend"; address: string; underlying: string; idle: bcked.asset.Id | Sky }
     // A fund token, counted at its DefiLlama price in US dollars.
-    | { kind: "fund"; address: string; to: bcked.asset.Id };
+    | { kind: "fund"; address: string; to: bcked.asset.Id }
+    // Tokens sent to an off-chain borrower's deposit address, less what came back from it. Read
+    // with Alchemy's transfer API on Ethereum. If that fails, the amount stays not traced yet.
+    | { kind: "sent"; address: string; to: string; decimals: number; as: bcked.asset.Id };
 
 interface Proxy {
     system: bcked.system.Id;
@@ -189,6 +194,51 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
                     decimals: 6,
                     to: LOAN,
                 },
+                // Securitize Tokenized AAA CLO Fund (STAC): pools of corporate loans.
+                { kind: "fund", address: "0x51C2d74017390CbBd30550179A16A1c28F7210fc", to: LOAN },
+                // USDC lent off-chain: Galaxy Arch CLO, Galaxy warehouse facility, FalconX.
+                ...[
+                    "0x2E3A11807B94E689387f60CD4BF52A56857f2eDC",
+                    "0x3E23311f9FF660E3c3d87E4b7c207b3c3D7e04f0",
+                    "0xD94F9ef3395BBE41C1f05ced3C9a7dc520D08036",
+                ].map((to): Position => ({
+                    kind: "sent",
+                    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                    to,
+                    decimals: 6,
+                    as: LOAN,
+                })),
+            ],
+        },
+        {
+            // Grove on Base: Grove x Steakhouse USDC (Morpho).
+            system: "base",
+            address: "0x9B746dBC5269e1DF6e4193Bcb441C0FbBF1CeCEe",
+            positions: [
+                {
+                    kind: "vault",
+                    address: "0xbeef0786756810478b88982DE00F3CD7fdB8e7c7",
+                    decimals: 6,
+                    to: LOAN,
+                },
+            ],
+        },
+        {
+            // Grove on Robinhood Chain: USDG and Grove x Steakhouse USDG (Morpho).
+            system: "robinhood",
+            address: "0x29626c2d8Ca49A51E4dECEEc5499e52983c42BD5",
+            positions: [
+                {
+                    kind: "token",
+                    address: "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+                    to: "robinhood:0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+                },
+                {
+                    kind: "vault",
+                    address: "0xBEEff039907422219Fb367e525954DDC092854d9",
+                    decimals: 6,
+                    to: LOAN,
+                },
             ],
         },
     ],
@@ -249,6 +299,46 @@ async function multicall(chain: ChainProxy, system: string, calls: Call[]): Prom
 
 const big = (result: Result | undefined) => result![0] as bigint;
 
+interface AssetTransfers {
+    transfers: { rawContract: { value: string | null } }[];
+    pageKey?: string;
+}
+
+/** Sum of all transfers of a token from one address to another, with Alchemy's transfer API. */
+async function transferred(
+    chain: ChainProxy,
+    system: string,
+    token: string,
+    from: string,
+    to: string,
+    decimals: number
+): Promise<number> {
+    let total = 0n;
+    let pageKey: string | undefined;
+    do {
+        const page: AssetTransfers = await chain.send<AssetTransfers>(
+            "alchemy_getAssetTransfers",
+            [
+                {
+                    fromBlock: "0x0",
+                    toBlock: "latest",
+                    fromAddress: from,
+                    toAddress: to,
+                    contractAddresses: [token],
+                    category: ["erc20"],
+                    excludeZeroValue: true,
+                    maxCount: "0x3e8",
+                    ...(pageKey ? { pageKey } : {}),
+                },
+            ],
+            system
+        );
+        for (const transfer of page.transfers) total += BigInt(transfer.rawContract.value ?? 0);
+        pageKey = page.pageKey;
+    } while (pageKey);
+    return parseFloat(formatUnits(total, decimals));
+}
+
 /** Reads one proxy: its positions, each mapped to reserves or to Sky's own tokens. */
 async function readProxy(
     chain: ChainProxy,
@@ -258,12 +348,6 @@ async function readProxy(
 ): Promise<AllocatorPositions> {
     const { system, address: holder, positions } = proxy;
     // Balance and decimals of each position, plus what each kind needs to value it.
-    const calls: Call[] = positions.flatMap((p) => [
-        { target: p.address, signature: ABI.balanceOf, args: [holder] },
-        { target: p.address, signature: ABI.decimals },
-    ]);
-    const base = await multicall(chain, system, calls);
-
     const result: AllocatorPositions = { underlying: {}, sky: { USDS: 0, DAI: 0 } };
     const add = (to: bcked.asset.Id | Sky, amount: number) => {
         if (amount <= 0) return;
@@ -271,7 +355,25 @@ async function readProxy(
         else result.underlying[to] = (result.underlying[to] ?? 0) + amount;
     };
 
-    for (const [i, p] of positions.entries()) {
+    for (const p of positions) {
+        if (p.kind != "sent") continue;
+        try {
+            const out = await transferred(chain, system, p.address, holder, p.to, p.decimals);
+            const back = await transferred(chain, system, p.address, p.to, holder, p.decimals);
+            add(p.as, out - back);
+        } catch (error) {
+            console.log(`Transfers of ${holder} to ${p.to} not read:`, error);
+        }
+    }
+    const held = positions.filter((p) => p.kind != "sent");
+
+    const calls: Call[] = held.flatMap((p) => [
+        { target: p.address, signature: ABI.balanceOf, args: [holder] },
+        { target: p.address, signature: ABI.decimals },
+    ]);
+    const base = await multicall(chain, system, calls);
+
+    for (const [i, p] of held.entries()) {
         const raw = big(base[2 * i]);
         const decimals = Number(big(base[2 * i + 1]));
         const balance = parseFloat(formatUnits(raw, decimals));
