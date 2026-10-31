@@ -1,0 +1,19 @@
+{
+    "name": "Global Dollar",
+    "symbol": "USDG",
+    "identifier": "usdg",
+    "issuer": "paxos",
+    "reference": "https://www.paxos.com/usdg-transparency",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "backing": {
+        "method": "reports",
+        "description": "Paxos's monthly attestation reports, for all chains together. Each chain gets its share by circulating supply.",
+        "reference": "https://www.paxos.com/usdg-transparency",
+        "reports": "token"
+    },
+    "listed": "2026-10-31T08:46:35.463Z",
+    "updated": "2026-10-31T08:46:35.463Z"
+}

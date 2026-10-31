@@ -1,0 +1,29 @@
+{
+    "name": "Global Dollar",
+    "symbol": "USDG",
+    "identifier": {
+        "address": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+        "system": "robinhood"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "paxos"
+    },
+    "reference": "https://www.paxos.com/usdg-transparency",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "token": "usdg",
+    "backing": {
+        "method": "reports",
+        "description": "Paxos's monthly attestation reports, for all chains together. USDG on Robinhood Chain gets the Robinhood Chain share of the reserves, by circulating supply.",
+        "reference": "https://www.paxos.com/usdg-transparency",
+        "reports": "token"
+    },
+    "listed": "2026-10-31T08:46:38.102Z",
+    "updated": "2026-10-31T08:46:38.102Z"
+}
