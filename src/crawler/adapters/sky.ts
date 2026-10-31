@@ -7,9 +7,9 @@
  * - Crypto vaults (ETH, wstETH, WBTC) hold their collateral in a join contract. All of it is counted,
  *   which is more than the debt, since these vaults are overcollateralized.
  * - Allocator vaults (Spark, Grove, Obex) deploy their USDS through ALM proxies. Their positions are
- *   read there, see sky_allocators.ts. Debt the positions do not cover is not reported.
+ *   read there, see sky_allocators.ts. Debt the positions do not cover is not traced yet.
  * - Real-world-asset, staking and other vaults have no collateral bcked can value on-chain. Their debt
- *   is counted as reserves whose composition is not reported.
+ *   is counted as reserves bcked has not traced yet.
  *
  * Holders' claims are all DAI in the Vat (Vat.debt) less the surplus of the protocol (Vat.dai of the
  * Vow), the DAI the Lite PSM keeps and the USDS and DAI the allocators hold. DAI and USDS each get the
@@ -39,7 +39,7 @@ export const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 export const USDS = "0xdC035D45d973E3EC169d2276DDab16f1e407384F";
 const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const LITE_PSM_ILK = "LITE-PSM-USDC-A";
-const UNREPORTED = "rwa:undefined";
+const UNTRACKED = "rwa:UNTRACKED";
 
 // Collateral that bcked tracks, by token contract. Other collateral counts at the vault's debt.
 const TRACKED_COLLATERAL: Record<string, bcked.asset.Id> = {
@@ -191,12 +191,12 @@ async function readReserves(chain: ChainProxy): Promise<Reserves> {
         } else if (decodeBytes32String(ilk) in ALLOCATORS) {
             allocators.push({ ilk: decodeBytes32String(ilk), debt });
         } else {
-            add(UNREPORTED, debt);
+            add(UNTRACKED, debt);
         }
     });
 
     // Allocators: their positions, all of them, even where they exceed the debt. Debt that the
-    // positions do not cover stays not reported. Sky's own tokens they hold are not reserves and not
+    // positions do not cover stays not traced yet. Sky's own tokens they hold are not reserves and not
     // holders' claims either.
     const held = { USDS: 0, DAI: 0 };
     for (const { ilk, debt } of allocators) {
@@ -204,7 +204,7 @@ async function readReserves(chain: ChainProxy): Promise<Reserves> {
         for (const [id, amount] of Object.entries(positions.underlying)) {
             add(id as bcked.asset.Id, amount);
         }
-        add(UNREPORTED, Math.max(0, debt - positionsValue(positions)));
+        add(UNTRACKED, Math.max(0, debt - positionsValue(positions)));
         held.USDS += positions.sky.USDS;
         held.DAI += positions.sky.DAI;
     }

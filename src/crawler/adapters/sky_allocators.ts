@@ -15,7 +15,7 @@
  *
  * Proxies and positions: Spark from https://github.com/sparkdotfi/spark-address-registry, Grove and
  * Obex from the USDS transfers of their allocator buffers in the Chainlog. Positions not listed here
- * are not seen. Debt that the listed positions do not cover stays "composition not reported".
+ * are not seen. Debt that the listed positions do not cover stays "not traced yet".
  */
 import { FunctionFragment, Interface, formatUnits, type Result } from "ethers";
 import _ from "lodash";
@@ -29,7 +29,7 @@ const AGGREGATE3 =
 
 const LOAN: bcked.asset.Id = "rwa:LOAN";
 const MMF: bcked.asset.Id = "rwa:MMF";
-const UNREPORTED: bcked.asset.Id = "rwa:undefined";
+const UNTRACKED: bcked.asset.Id = "rwa:UNTRACKED";
 const USDC: bcked.asset.Id = "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const USDT: bcked.asset.Id = "ethereum:0xdAC17F958D2ee523a2206206994597C13D831ec7";
 const PYUSD: bcked.asset.Id = "ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8";
@@ -69,7 +69,7 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
                 {
                     kind: "token",
                     address: "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
-                    to: UNREPORTED,
+                    to: UNTRACKED,
                 },
                 // Morpho vaults: sparkUSDCbc, sparkUSDTbc, Sentora RLUSD, Arkis (USDC).
                 {
@@ -131,7 +131,7 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
                     kind: "lend",
                     address: "0x59275Fb72c8004F44BA44432e25082932Fd677f1",
                     underlying: "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
-                    idle: UNREPORTED,
+                    idle: UNTRACKED,
                 },
             ],
         },
@@ -210,7 +210,7 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
 };
 
 export interface AllocatorPositions {
-    // Reserves in units of each asset (US dollars for rwa:LOAN, rwa:MMF and rwa:undefined).
+    // Reserves in units of each asset (US dollars for rwa:LOAN, rwa:MMF and rwa:UNTRACKED).
     underlying: Record<bcked.asset.Id, number>;
     // Sky's own tokens held by the allocator, in USDS and DAI.
     sky: Record<Sky, number>;
