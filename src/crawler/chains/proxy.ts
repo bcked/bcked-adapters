@@ -18,6 +18,20 @@ export class ChainProxy
         });
     }
 
+    /** Calls a view function of a contract. Only EVM chains support this. */
+    async call<T>(
+        address: string,
+        signature: string,
+        args: unknown[],
+        system: bcked.system.Id
+    ): Promise<T> {
+        const instance = this.getInstance(system);
+        if (!(instance instanceof EVMChain)) {
+            throw Error(`Contract calls are not supported on ${system}.`);
+        }
+        return instance.call<T>(address, signature, args, system);
+    }
+
     async getDecimals(
         token: bcked.asset.Address,
         system: bcked.system.Id

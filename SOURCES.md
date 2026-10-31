@@ -31,11 +31,12 @@ on bcked.com.
 
 ## Chains
 
-| Source                                                                                             | Used for                                       | Terms and notes                                                                                                             |
-| -------------------------------------------------------------------------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| [Etherscan](https://etherscan.io/apis)                                                             | Ethereum contract data                         | [Terms](https://etherscan.io/terms). Attribution "Powered by Etherscan.io APIs". Permission to republish is being requested |
-| [Alchemy](https://www.alchemy.com/)                                                                | RPC for Ethereum, Arbitrum, Polygon and Solana | [Terms](https://www.alchemy.com/policies/terms). Contract calls, the results are facts                                      |
-| [dRPC](https://drpc.org/), [1RPC](https://1rpc.io/), public Moonbeam, Moonriver and BNB Chain RPCs | Archive calls for the backfill, other chains   | Public RPC endpoints                                                                                                        |
+| Source                                                                                             | Used for                                                                                     | Terms and notes                                                                                                             |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| [Etherscan](https://etherscan.io/apis)                                                             | Ethereum contract data                                                                       | [Terms](https://etherscan.io/terms). Attribution "Powered by Etherscan.io APIs". Permission to republish is being requested |
+| [Alchemy](https://www.alchemy.com/)                                                                | RPC for Ethereum, Arbitrum, Polygon and Solana                                               | [Terms](https://www.alchemy.com/policies/terms). Contract calls, the results are facts                                      |
+| [Sky Chainlog](https://chainlog.sky.money/)                                                        | Addresses of the Sky contracts (Vat, Lite PSM, vault joins) for the reserves of DAI and USDS | Read on-chain from the Chainlog contract. Contract state, the results are facts                                             |
+| [dRPC](https://drpc.org/), [1RPC](https://1rpc.io/), public Moonbeam, Moonriver and BNB Chain RPCs | Archive calls for the backfill, other chains                                                 | Public RPC endpoints                                                                                                        |
 
 ## Official statistics
 
