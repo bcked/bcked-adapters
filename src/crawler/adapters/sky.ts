@@ -8,8 +8,9 @@
  *   which is more than the debt, since these vaults are overcollateralized.
  * - Allocator vaults (Spark, Grove, Obex) deploy their USDS through ALM proxies. Their positions are
  *   read there, see sky_allocators.ts. Debt the positions do not cover is not traced yet.
- * - Real-world-asset, staking and other vaults have no collateral bcked can value on-chain. Their debt
- *   is counted as reserves bcked has not traced yet.
+ * - Staking vaults lock SKY in the lockstake engine. All of it is counted, like crypto collateral.
+ * - Real-world-asset vaults are loans to off-chain borrowers, counted at their debt.
+ * - Other vaults are counted at their debt as reserves bcked has not traced yet.
  *
  * Holders' claims are all DAI in the Vat (Vat.debt) less the surplus of the protocol (Vat.dai of the
  * Vow), the DAI the Lite PSM keeps and the USDS and DAI the allocators hold. DAI and USDS each get the
@@ -39,6 +40,11 @@ export const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 export const USDS = "0xdC035D45d973E3EC169d2276DDab16f1e407384F";
 const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const LITE_PSM_ILK = "LITE-PSM-USDC-A";
+const SKY = "0x56072C95FAA701256059aa122697B133aDEd9279";
+const LOAN = "rwa:LOAN";
+// IlkRegistry classes of real-world-asset and lockstake (staking) vaults.
+const RWA_CLASS = 3n;
+const LOCKSTAKE_CLASS = 7n;
 const UNTRACKED = "rwa:UNTRACKED";
 
 // Collateral that bcked tracks, by token contract. Other collateral counts at the vault's debt.
@@ -127,8 +133,9 @@ async function readReserves(chain: ChainProxy): Promise<Reserves> {
         "ILK_REGISTRY",
         "MCD_LITE_PSM_USDC_A",
         "MCD_LITE_PSM_USDC_A_POCKET",
+        "LOCKSTAKE_ENGINE",
     ];
-    const [vat, vow, registry, psm, pocket] = (
+    const [vat, vow, registry, psm, pocket, lockstake] = (
         await multicall(
             chain,
             keys.map((key) => ({
@@ -137,7 +144,7 @@ async function readReserves(chain: ChainProxy): Promise<Reserves> {
                 args: [encodeBytes32String(key)],
             }))
         )
-    ).map((result) => result[0] as string) as [string, string, string, string, string];
+    ).map((result) => result[0] as string) as [string, string, string, string, string, string];
 
     const [debt, surplus, psmDai, usdc, list] = await multicall(chain, [
         { target: vat, signature: ABI.debt },
@@ -188,6 +195,13 @@ async function readReserves(chain: ChainProxy): Promise<Reserves> {
         const tracked = TRACKED_COLLATERAL[gem];
         if (ilkClass == GEM_JOIN_CLASS && tracked) {
             joins.push({ id: tracked, gem, join, decimals });
+        } else if (ilkClass == LOCKSTAKE_CLASS && gem == SKY) {
+            // Staking vaults lock SKY in the lockstake engine. All of it is counted, like crypto
+            // collateral in a join.
+            joins.push({ id: `${SYSTEM}:${SKY}`, gem, join: lockstake, decimals });
+        } else if (ilkClass == RWA_CLASS) {
+            // Real-world-asset vaults: loans to off-chain borrowers, counted at their debt.
+            add(LOAN, debt);
         } else if (decodeBytes32String(ilk) in ALLOCATORS) {
             allocators.push({ ilk: decodeBytes32String(ilk), debt });
         } else {
