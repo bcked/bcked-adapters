@@ -1,0 +1,29 @@
+{
+    "name": "PayPal USD",
+    "symbol": "PYUSD",
+    "identifier": {
+        "address": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+        "system": "solana"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "paxos"
+    },
+    "reference": "https://www.paxos.com/pyusd-transparency",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "token": "pyusd",
+    "backing": {
+        "method": "reports",
+        "description": "Paxos's monthly attestation reports, for all chains together. PYUSD on Solana gets the Solana share of the reserves, by circulating supply.",
+        "reference": "https://www.paxos.com/pyusd-transparency",
+        "reports": "token"
+    },
+    "listed": "2026-10-31T00:20:14.199Z",
+    "updated": "2026-10-31T00:20:14.199Z"
+}

@@ -1,0 +1,29 @@
+{
+    "name": "PayPal USD",
+    "symbol": "PYUSD",
+    "identifier": {
+        "address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+        "system": "ethereum"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "paxos"
+    },
+    "reference": "https://www.paxos.com/pyusd-transparency",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "token": "pyusd",
+    "backing": {
+        "method": "reports",
+        "description": "Paxos's monthly attestation reports, for all chains together. PYUSD on Ethereum gets the Ethereum share of the reserves, by circulating supply.",
+        "reference": "https://www.paxos.com/pyusd-transparency",
+        "reports": "token"
+    },
+    "listed": "2026-10-31T00:20:13.976Z",
+    "updated": "2026-10-31T00:20:13.976Z"
+}

@@ -1,0 +1,19 @@
+{
+    "name": "PayPal USD",
+    "symbol": "PYUSD",
+    "identifier": "pyusd",
+    "issuer": "paxos",
+    "reference": "https://www.paxos.com/pyusd-transparency",
+    "tags": [
+        "stablecoin",
+        "real-world-asset"
+    ],
+    "backing": {
+        "method": "reports",
+        "description": "Paxos's monthly attestation reports, for all chains together. Each chain gets its share by circulating supply.",
+        "reference": "https://www.paxos.com/pyusd-transparency",
+        "reports": "token"
+    },
+    "listed": "2026-10-31T00:20:10.852Z",
+    "updated": "2026-10-31T00:20:10.852Z"
+}
