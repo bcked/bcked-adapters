@@ -38,6 +38,10 @@ python3 write_backing.py busd.json "<records>/assets/ethereum:0x4Fabb145d64652a9
 python3 fetch_paxos.py https://www.paxos.com/pyusd-transparency "PayPal USD|PYUSD" /tmp/pyusd > pyusd.txt
 python3 extract_busd.py $(cat pyusd.txt) > pyusd.json
 python3 write_backing.py pyusd.json "<records>/tokens/pyusd/records" PYUSD
+
+python3 fetch_paxos.py https://www.paxos.com/usdg-transparency "Global Dollar|USDG" /tmp/usdg > usdg.txt
+python3 extract_usdg.py usdg_manual.json $(cat usdg.txt) > usdg.json
+python3 write_backing.py usdg.json "<records>/tokens/usdg/records" USDG
 ```
 
 ## Tether (USDT)
@@ -89,6 +93,12 @@ The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs
 - BUSD and PYUSD from 2025-02: KPMG's Exhibit B by asset type. Repurchase agreements are
   `rwa:USTrepo`, government money market funds `rwa:MMF`. "Obligations of U.S. Treasury" are not
   split by maturity and recorded as `rwa:USTB`.
+- USDG (Paxos Digital Singapore and Paxos Issuance Europe): reports cover two dates each, at 5:00 PM
+  Singapore time until 2025-12 and New York time after. Until 2025-12 they list Treasury bills
+  (`rwa:USTB`) and one total of "Cash and Cash Equivalents", which mixes deposits and money market
+  funds (`rwa:undefined`). From 2026-01 Exhibit B splits cash (`rwa:USD`), government money market
+  funds (`rwa:MMF`), repurchase agreements (`rwa:USTrepo`) and Treasury obligations of at most three
+  months (`rwa:USTB`). Reports without a text layer were read manually into `usdg_manual.json`.
 - `validate_busd.py` compares the extracted values with the subtotals in each report. Known report
   errors: the total differs from the subtotals on 2022-10-19, 2022-10-31 and 2023-02-13, and the
   debt subtotal on 2024-07-26 is 45,000 higher than its holdings. The holdings are used.

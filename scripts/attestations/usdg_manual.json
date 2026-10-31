@@ -1,0 +1,141 @@
+[
+    {
+        "source": "aGz5Rm6q7lLMp4npnB2X3oaVEgg.pdf",
+        "date": "2024-10-29",
+        "note": "No text layer, read manually from the 2024-10 report: Treasury bills 2,398,430, cash and cash equivalents 8,352,329, total 10,750,759.",
+        "cat": {
+            "rwa:USTB": 2398430,
+            "rwa:undefined": 8352329
+        }
+    },
+    {
+        "source": "aGz5Rm6q7lLMp4npnB2X3oaVEgg.pdf",
+        "date": "2024-10-31",
+        "note": "No text layer, read manually from the 2024-10 report: Treasury bills 2,398,430, cash and cash equivalents 8,359,385, total 10,757,815.",
+        "cat": {
+            "rwa:USTB": 2398430,
+            "rwa:undefined": 8359385
+        }
+    },
+    {
+        "source": "09o6oGvVPtVJce6B8CYd9GfwdIQ.pdf",
+        "date": "2024-12-26",
+        "note": "No text layer, read manually from the 2024-12 report: Treasury bills 8,083,176, cash and cash equivalents 21,260,822, total 29,343,998.",
+        "cat": {
+            "rwa:USTB": 8083176,
+            "rwa:undefined": 21260822
+        }
+    },
+    {
+        "source": "09o6oGvVPtVJce6B8CYd9GfwdIQ.pdf",
+        "date": "2024-12-31",
+        "note": "No text layer, read manually from the 2024-12 report: Treasury bills 8,087,803, cash and cash equivalents 21,962,076, total 30,049,879.",
+        "cat": {
+            "rwa:USTB": 8087803,
+            "rwa:undefined": 21962076
+        }
+    },
+    {
+        "source": "fElQitaIqsvPcsyVVGCxj80FrM.pdf",
+        "date": "2025-03-31",
+        "note": "No text layer, read manually from the 2025-03 report: Treasury bills 107,786,554, cash and cash equivalents 81,848,699, total 189,635,253.",
+        "cat": {
+            "rwa:USTB": 107786554,
+            "rwa:undefined": 81848699
+        }
+    },
+    {
+        "source": "1a5XGyUwTIlbKBRTgM5wPvwIo8.pdf",
+        "date": "2025-09-19",
+        "note": "No text layer, read manually from the 2025-09 report: Treasury bills 106,828,833, cash and cash equivalents 558,206,663, total 665,035,496.",
+        "cat": {
+            "rwa:USTB": 106828833,
+            "rwa:undefined": 558206663
+        }
+    },
+    {
+        "source": "1a5XGyUwTIlbKBRTgM5wPvwIo8.pdf",
+        "date": "2025-09-30",
+        "note": "No text layer, read manually from the 2025-09 report: Treasury bills 106,769,292, cash and cash equivalents 626,126,937, total 732,896,229.",
+        "cat": {
+            "rwa:USTB": 106769292,
+            "rwa:undefined": 626126937
+        }
+    },
+    {
+        "source": "1juvrsIQxQq8WHTEiM8uq0VGqA.pdf",
+        "date": "2025-10-17",
+        "note": "No text layer, read manually from the 2025-10 report: Treasury bills 126,648,101, cash and cash equivalents 784,546,864, total 911,194,965.",
+        "cat": {
+            "rwa:USTB": 126648101,
+            "rwa:undefined": 784546864
+        }
+    },
+    {
+        "source": "1juvrsIQxQq8WHTEiM8uq0VGqA.pdf",
+        "date": "2025-10-31",
+        "note": "No text layer, read manually from the 2025-10 report: Treasury bills 78,847,638, cash and cash equivalents 927,740,008, total 1,006,587,646.",
+        "cat": {
+            "rwa:USTB": 78847638,
+            "rwa:undefined": 927740008
+        }
+    },
+    {
+        "source": "gLMvyyXZKsRUjgmCqZfdHxrpZyI.pdf",
+        "date": "2025-12-12",
+        "note": "No text layer, read manually from the 2025-12 report: Treasury bills 185,470,674, cash and cash equivalents 1,222,846,583, total 1,408,317,257.",
+        "cat": {
+            "rwa:USTB": 185470674,
+            "rwa:undefined": 1222846583
+        }
+    },
+    {
+        "source": "gLMvyyXZKsRUjgmCqZfdHxrpZyI.pdf",
+        "date": "2025-12-31",
+        "note": "No text layer, read manually from the 2025-12 report: Treasury bills 282,246,742, cash and cash equivalents 1,256,129,141, total 1,538,375,883.",
+        "cat": {
+            "rwa:USTB": 282246742,
+            "rwa:undefined": 1256129141
+        }
+    },
+    {
+        "source": "ptcVTO4X3jjFQmL9vVItVw6M0Z8.pdf",
+        "date": "2026-01-16",
+        "note": "Exhibit B without text layer, read manually from the 2026-01 report: cash 105,768,706, government money market funds 1,115,828,912, repurchase agreements none, Treasury obligations 350,607,737, total 1,572,205,355.",
+        "cat": {
+            "rwa:USD": 105768706,
+            "rwa:MMF": 1115828912,
+            "rwa:USTB": 350607737
+        }
+    },
+    {
+        "source": "ptcVTO4X3jjFQmL9vVItVw6M0Z8.pdf",
+        "date": "2026-01-30",
+        "note": "Exhibit B without text layer, read manually from the 2026-01 report: cash 123,148,013, government money market funds 1,089,963,479, repurchase agreements none, Treasury obligations 382,838,255, total 1,595,949,747.",
+        "cat": {
+            "rwa:USD": 123148013,
+            "rwa:MMF": 1089963479,
+            "rwa:USTB": 382838255
+        }
+    },
+    {
+        "source": "fwQprdJGSsRaS32svUmkqG3JYNY.pdf",
+        "date": "2026-02-10",
+        "note": "Exhibit B without text layer, read manually from the 2026-02 report: cash 201,327,185, government money market funds 880,916,270, repurchase agreements none, Treasury obligations 498,698,472, total 1,580,941,927.",
+        "cat": {
+            "rwa:USD": 201327185,
+            "rwa:MMF": 880916270,
+            "rwa:USTB": 498698472
+        }
+    },
+    {
+        "source": "fwQprdJGSsRaS32svUmkqG3JYNY.pdf",
+        "date": "2026-02-27",
+        "note": "Exhibit B without text layer, read manually from the 2026-02 report: cash 145,514,767, government money market funds 949,426,904, repurchase agreements none, Treasury obligations 674,091,528, total 1,769,033,199.",
+        "cat": {
+            "rwa:USD": 145514767,
+            "rwa:MMF": 949426904,
+            "rwa:USTB": 674091528
+        }
+    }
+]
