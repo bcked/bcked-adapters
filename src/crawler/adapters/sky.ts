@@ -6,12 +6,15 @@
  * - The Lite PSM holds USDC in its pocket, plus DAI it minted in advance and keeps for swaps.
  * - Crypto vaults (ETH, wstETH, WBTC) hold their collateral in a join contract. All of it is counted,
  *   which is more than the debt, since these vaults are overcollateralized.
- * - Allocator, real-world-asset and staking vaults have no collateral bcked can value on-chain. Their
- *   debt is counted as reserves whose composition is not reported.
+ * - Allocator vaults (Spark, Grove, Obex) deploy their USDS through ALM proxies. Their positions are
+ *   read there, see sky_allocators.ts. Debt the positions do not cover is not reported.
+ * - Real-world-asset, staking and other vaults have no collateral bcked can value on-chain. Their debt
+ *   is counted as reserves whose composition is not reported.
  *
  * Holders' claims are all DAI in the Vat (Vat.debt) less the surplus of the protocol (Vat.dai of the
- * Vow) and the DAI the Lite PSM keeps. DAI and USDS each get the share of the reserves that their
- * circulating supply has of these claims. The rest belongs to savings (sUSDS, sDAI) and DAI in the Vat.
+ * Vow), the DAI the Lite PSM keeps and the USDS and DAI the allocators hold. DAI and USDS each get the
+ * share of the reserves that their circulating supply has of these claims. The rest belongs to DAI in
+ * the Vat, for example in the DAI savings rate.
  *
  * Contracts: https://chainlog.sky.money/
  */
@@ -25,8 +28,10 @@ import {
 } from "ethers";
 import _ from "lodash";
 
+import { ApiProxy } from "../apis/proxy";
 import { ChainProxy } from "../chains/proxy";
 import { toISOString } from "../../utils/string_formatting";
+import { ALLOCATORS, positionsValue, readAllocator } from "./sky_allocators";
 
 const SYSTEM = "ethereum";
 const CHAINLOG = "0xdA0Ab1e0017DEbCd72Be8599041a2aa3bA7e740F";
@@ -67,6 +72,8 @@ interface Reserves {
     underlying: Record<bcked.asset.Id, number>;
     claims: number;
     psmDai: number;
+    // USDS and DAI held by the allocators, which are not circulating.
+    held: { USDS: number; DAI: number };
 }
 
 let cached: Promise<Reserves> | null = null;
@@ -113,6 +120,7 @@ async function multicall(chain: ChainProxy, calls: Call[]): Promise<Result[]> {
 }
 
 async function readReserves(chain: ChainProxy): Promise<Reserves> {
+    const api = new ApiProxy();
     const keys = [
         "MCD_VAT",
         "MCD_VOW",
@@ -165,6 +173,7 @@ async function readReserves(chain: ChainProxy): Promise<Reserves> {
 
     // Collateral bcked tracks is read from the vault's join, the rest counts at the vault's debt.
     const joins: { id: bcked.asset.Id; gem: string; join: string; decimals: bigint }[] = [];
+    const allocators: { ilk: string; debt: number }[] = [];
     ilks.forEach(({ ilk, debt }, i) => {
         if (decodeBytes32String(ilk) == LITE_PSM_ILK) return; // USDC in the pocket, added above
         const [, , ilkClass, decimals, gem, , join] = infos[i]! as unknown as [
@@ -179,10 +188,26 @@ async function readReserves(chain: ChainProxy): Promise<Reserves> {
         const tracked = TRACKED_COLLATERAL[gem];
         if (ilkClass == GEM_JOIN_CLASS && tracked) {
             joins.push({ id: tracked, gem, join, decimals });
+        } else if (decodeBytes32String(ilk) in ALLOCATORS) {
+            allocators.push({ ilk: decodeBytes32String(ilk), debt });
         } else {
             add(UNREPORTED, debt);
         }
     });
+
+    // Allocators: their positions, all of them, even where they exceed the debt. Debt that the
+    // positions do not cover stays not reported. Sky's own tokens they hold are not reserves and not
+    // holders' claims either.
+    const held = { USDS: 0, DAI: 0 };
+    for (const { ilk, debt } of allocators) {
+        const positions = (await readAllocator(chain, api, ilk))!;
+        for (const [id, amount] of Object.entries(positions.underlying)) {
+            add(id as bcked.asset.Id, amount);
+        }
+        add(UNREPORTED, Math.max(0, debt - positionsValue(positions)));
+        held.USDS += positions.sky.USDS;
+        held.DAI += positions.sky.DAI;
+    }
     const balances = await multicall(
         chain,
         joins.map(({ gem, join }) => ({ target: gem, signature: ABI.balanceOf, args: [join] }))
@@ -195,9 +220,17 @@ async function readReserves(chain: ChainProxy): Promise<Reserves> {
     const claims =
         parseFloat(formatUnits(debt![0] as bigint, RAD)) -
         parseFloat(formatUnits(surplus![0] as bigint, RAD)) -
-        psmDaiAmount;
+        psmDaiAmount -
+        held.USDS -
+        held.DAI;
 
-    return { timestamp: toISOString(Date.now()), underlying, claims, psmDai: psmDaiAmount };
+    return {
+        timestamp: toISOString(Date.now()),
+        underlying,
+        claims,
+        psmDai: psmDaiAmount,
+        held,
+    };
 }
 
 /** Reads the reserves once per crawl, DAI and USDS share them. */
@@ -209,12 +242,16 @@ export function getSkyReserves(chain: ChainProxy): Promise<Reserves> {
     return cached;
 }
 
-/** Circulating supply of DAI or USDS: issued tokens less the DAI the Lite PSM keeps for swaps. */
+/**
+ * Circulating supply of DAI or USDS: issued tokens less the DAI the Lite PSM keeps for swaps and the
+ * tokens the allocators hold, directly or through sUSDS.
+ */
 export async function getSkyCirculating(token: string, chain: ChainProxy): Promise<number> {
-    const { issued } = await chain.getSupply(token, SYSTEM);
-    if (token != DAI) return issued;
-    const { psmDai } = await getSkyReserves(chain);
-    return issued - psmDai;
+    const [{ issued }, { psmDai, held }] = await Promise.all([
+        chain.getSupply(token, SYSTEM),
+        getSkyReserves(chain),
+    ]);
+    return token == DAI ? issued - psmDai - held.DAI : issued - held.USDS;
 }
 
 /** The share of the reserves that backs the circulating supply of DAI or USDS. */

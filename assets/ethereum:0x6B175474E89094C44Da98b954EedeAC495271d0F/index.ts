@@ -23,7 +23,7 @@ const details: bcked.asset.Details = {
     backing: {
         method: "on-chain",
         description:
-            "Vaults in the Sky Vat, read on-chain: USDC in the Lite PSM, all ETH, wstETH and WBTC locked in vaults, and the debt of allocator, real-world-asset and staking vaults, whose composition is not reported on-chain. DAI gets the share of its circulating supply, without the DAI the Lite PSM keeps for swaps.",
+            "Vaults in the Sky Vat, read on-chain: USDC in the Lite PSM, all ETH, wstETH and WBTC locked in vaults, and the positions of the Spark, Grove and Obex allocators (loans, money market funds, stablecoins). Debt of other vaults, and allocator debt whose positions are not found, is composition not reported. DAI gets the share of its circulating supply, without the DAI the Lite PSM keeps for swaps and the DAI the allocators hold.",
         reference: "https://chainlog.sky.money/",
         address: "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B",
     },

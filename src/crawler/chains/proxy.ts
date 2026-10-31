@@ -14,6 +14,7 @@ export class ChainProxy
             moonriver: EVMChain,
             polygon: EVMChain,
             arbitrum: EVMChain,
+            base: EVMChain,
             solana: SolanaChain,
         });
     }
