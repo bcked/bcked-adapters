@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Adds new attestation reports of Paxos (PAXG, BUSD), Tether (USDT, XAUt) and Circle (USDC) to the records.
+# Adds new attestation reports of Paxos (PAXG, BUSD, PYUSD), Tether (USDT, XAUt) and Circle (USDC) to the records.
 #
 # Usage: scripts/attestations/update.sh <records checkout> [<evidence checkout>]
 #
@@ -34,6 +34,15 @@ paxos paxg https://www.paxos.com/paxg-transparency "PAX Gold|PAXG" \
     "ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78" PAXG
 paxos busd https://www.paxos.com/busd-transparency "Binance USD|BUSD" \
     "ethereum:0x4Fabb145d64652a948d72533023f6E7A623C7C53" BUSD
+
+# PYUSD: Paxos reports for all chains, recorded on the token.
+pyusd="$records/tokens/pyusd/records"
+python3 fetch_paxos.py https://www.paxos.com/pyusd-transparency "PayPal USD|PYUSD" "$work/pyusd" > "$work/pyusd.txt"
+# shellcheck disable=SC2046
+python3 extract_busd.py $(cat "$work/pyusd.txt") > "$work/pyusd.json"
+python3 check_new.py "$work/pyusd.json" "$pyusd/backing.csv"
+# shellcheck disable=SC2046
+python3 write_backing.py "$work/pyusd.json" "$pyusd" PYUSD --append $(evidence_args tokens/pyusd/records)
 
 tether="$records/tokens/usdt/records"
 python3 fetch_tether.py "$work/tether" > "$work/tether-reports.json"

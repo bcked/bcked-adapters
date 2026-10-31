@@ -30,6 +30,8 @@ TOKENS = [
     ("base:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", 2, "Base"),
     ("arbitrum:0xaf88d065e77c8cC2239327C5EDb3A432268e5831", 2, "Arbitrum"),
     ("polygon:0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359", 2, "Polygon"),
+    ("ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8", 120, "Ethereum"),
+    ("solana:2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo", 120, "Solana"),
 ]
 DAY = 24 * 60 * 60
 

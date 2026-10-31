@@ -58,6 +58,11 @@ function check(asset: AssetSummary, field: string, value: Dated | null, maxDays:
 }
 
 for (const asset of assets) {
+    // Added since the last crawl: no details, price or supply yet. The next crawl records them.
+    if (asset.symbol == null) {
+        console.log(`${asset.id}: not crawled yet, skipped`);
+        continue;
+    }
     if (!STATIC_PRICES(asset.id)) check(asset, "price", asset.price, MAX_AGE_DAYS);
     if (asset.system !== "rwa") check(asset, "supply", asset.supply, MAX_AGE_DAYS);
     const reportAge =
