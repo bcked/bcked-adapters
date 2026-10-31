@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { FILES, PATHS } from "../../constants";
 import { readCSV } from "../../utils/csv";
@@ -36,12 +37,30 @@ function chainShare(point: ChainSupply, row: bcked.asset.Backing): number {
     return Math.min(1, point.chain / total);
 }
 
+/** Tokens outstanding per report date, as reported by the issuer (tokens/<id>/records/supply.csv). */
+type ReportedSupply = Map<number, Record<string, number>>;
+
+async function readReportedSupply(tokenId: bcked.token.Id): Promise<ReportedSupply> {
+    const csvPath = path.join(PATHS.tokens, tokenId, PATHS.records, FILES.csv.supply);
+    const supply: ReportedSupply = new Map();
+    if (!existsSync(csvPath)) return supply;
+    for await (const row of readCSV<Record<string, unknown>>(csvPath)) {
+        const values: Record<string, number> = {};
+        for (const [key, value] of Object.entries(row))
+            if (key != "timestamp" && typeof value === "number") values[key] = value;
+        supply.set(Date.parse(String(row["timestamp"])), values);
+    }
+    return supply;
+}
+
 /**
  * Backing of a token on one chain as its share of the token's reserves.
  *
  * Issuers like Tether and Circle report reserves for all chains together. The reserves are recorded
  * on the token (tokens/<id>/records/backing.csv). The chain's share is its share of the total
- * circulating supply at the report time, from DefiLlama (see chainShare).
+ * circulating supply at the report time, from DefiLlama (see chainShare). Where the issuer reports
+ * the tokens outstanding (tokens/<id>/records/supply.csv), the share is taken against that total, and
+ * a chain count in the report replaces DefiLlama's, e.g. before DefiLlama has the chain.
  *
  * @param tokenId Token holding the reserves of all chains
  * @param stablecoinId DefiLlama stablecoin ID
@@ -68,13 +87,23 @@ export async function getTokenBackingShare(
         ...new Set(reserves.flatMap((row) => Object.keys(row.underlying))),
     ] as bcked.asset.Id[];
 
-    const supply = await new DefiLlamaStablecoins().getChainSupply(stablecoinId, chain);
+    const [supply, reported] = await Promise.all([
+        new DefiLlamaStablecoins().getChainSupply(stablecoinId, chain),
+        readReportedSupply(tokenId),
+    ]);
 
     const backing: bcked.asset.Backing[] = [];
     for (const row of newReserves) {
         const point = supplyAt(supply, Date.parse(row.timestamp));
-        if (point === null) continue;
-        const share = chainShare(point, row);
+        const report = reported.get(Date.parse(row.timestamp));
+        const chainSupply = report?.[chain] ?? point?.chain;
+        if (chainSupply === undefined) continue;
+        const share = report?.["total"]
+            ? Math.min(1, chainSupply / report["total"])
+            : point
+              ? chainShare(point, row)
+              : null;
+        if (share === null) continue;
         const underlying: Partial<Record<bcked.asset.Id, number>> = {};
         for (const asset of assets) {
             const value = row.underlying[asset];

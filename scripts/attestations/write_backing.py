@@ -10,6 +10,9 @@ Example: python3 write_backing.py busd.json "assets/ethereum:0x4Fabb.../records"
   Used by update.sh, which only downloads new reports.
 - Lists every report in <records dir>/evidence.csv as <prefix>-<YYYY-MM>-Attestation-report.pdf with
   its SHA-256 hash and download URL, unless a report for that month is already listed.
+- If the extracted sections have a "supply" (tokens outstanding in the report, in total and per chain
+  where known), writes <records dir>/supply.csv with one row per report date, with the same --keep and
+  --append rules. getTokenBackingShare takes the chain shares against it.
 - With --evidence, copies new reports to <dir>/<year>/<file>. The reports belong to their issuers and
   auditors and are kept in the private repository bcked/bcked-evidence, not on the public records branch.
 """
@@ -73,6 +76,34 @@ def write_index(records, index):
         writer.writerows(sorted(index.values(), key=lambda row: row["file"]))
 
 
+def write_supply(records, reports, append, keep):
+    """Tokens outstanding per report date, if the extractor reports them."""
+    new = {s["timestamp"]: s["supply"] for r in reports for s in r["sections"] if s.get("supply")}
+    if not new:
+        return
+    path = os.path.join(records, "supply.csv")
+    existing = {}
+    if os.path.exists(path):
+        with open(path) as f:
+            for row in csv.DictReader(f):
+                existing[row.pop("timestamp")] = {k: float(v) for k, v in row.items() if v}
+    if append:
+        rows = {**existing, **new}
+    elif keep:
+        start, end = keep
+        rows = {t: v for t, v in new.items() if not start <= t <= end}
+        rows.update({t: v for t, v in existing.items() if start <= t <= end})
+    else:
+        rows = new
+    chains = sorted({k for v in rows.values() for k in v if k != "total"})
+    columns = ["total", *chains]
+    with open(path, "w") as f:
+        f.write("timestamp," + ",".join(columns) + "\n")
+        for timestamp in sorted(rows):
+            f.write(timestamp + "," + ",".join(fmt(rows[timestamp].get(c)) for c in columns) + "\n")
+    print(f"{len(rows)} supply rows", file=sys.stderr)
+
+
 def main(extracted, records, prefix, keep=None, append=False, evidence=None):
     path = os.path.join(records, "backing.csv")
     reports = [r for r in json.load(open(extracted)) if r["sections"]]
@@ -94,6 +125,8 @@ def main(extracted, records, prefix, keep=None, append=False, evidence=None):
         f.write("timestamp," + ",".join(f"underlying.{c}" for c in columns) + "\n")
         for timestamp, cat in rows:
             f.write(timestamp + "," + ",".join(fmt(cat.get(c)) for c in columns) + "\n")
+
+    write_supply(records, reports, append, keep)
 
     added = 0
     index = read_index(records)
