@@ -18,10 +18,10 @@
     ],
     "backing": {
         "method": "on-chain",
-        "description": "Vaults in the Sky Vat, read on-chain: USDC in the Lite PSM, all ETH, wstETH and WBTC locked in vaults, and the debt of allocator, real-world-asset and staking vaults, whose composition is not reported on-chain. USDS gets the share of its circulating supply. It shares the reserves with DAI.",
+        "description": "Vaults in the Sky Vat, read on-chain: USDC in the Lite PSM, all ETH, wstETH and WBTC locked in vaults, and the positions of the Spark, Grove and Obex allocators (loans, money market funds, stablecoins). Debt of other vaults, and allocator debt whose positions are not found, is composition not reported. USDS gets the share of its circulating supply, without the USDS the allocators hold. It shares the reserves with DAI.",
         "reference": "https://chainlog.sky.money/",
         "address": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B"
     },
     "listed": "2026-10-31T02:59:37.048Z",
-    "updated": "2026-10-31T02:59:37.048Z"
+    "updated": "2026-10-31T09:19:38.529Z"
 }
