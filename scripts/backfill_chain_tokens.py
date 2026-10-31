@@ -32,6 +32,11 @@ TOKENS = [
     ("polygon:0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359", 2, "Polygon"),
     ("ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8", 120, "Ethereum"),
     ("solana:2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo", 120, "Solana"),
+    ("ethereum:0xe343167631d89B6Ffc58B88d6b7fB0228795491D", 286, "Ethereum"),
+    ("solana:2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH", 286, "Solana"),
+    ("xlayer:0x4ae46a509F6b1D9056937BA4500cb143933D2dc8", 286, "X Layer"),
+    ("robinhood:0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168", 286, "Robinhood Chain"),
+    ("ink:0xe343167631d89B6Ffc58B88d6b7fB0228795491D", 286, "Ink"),
 ]
 DAY = 24 * 60 * 60
 

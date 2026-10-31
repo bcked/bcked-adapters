@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Adds new attestation reports of Paxos (PAXG, BUSD, PYUSD), Tether (USDT, XAUt) and Circle (USDC) to the records.
+# Adds new attestation reports of Paxos (PAXG, BUSD, PYUSD, USDG), Tether (USDT, XAUt) and Circle (USDC) to the records.
 #
 # Usage: scripts/attestations/update.sh <records checkout> [<evidence checkout>]
 #
@@ -43,6 +43,15 @@ python3 extract_busd.py $(cat "$work/pyusd.txt") > "$work/pyusd.json"
 python3 check_new.py "$work/pyusd.json" "$pyusd/backing.csv"
 # shellcheck disable=SC2046
 python3 write_backing.py "$work/pyusd.json" "$pyusd" PYUSD --append $(evidence_args tokens/pyusd/records)
+
+# USDG: Paxos reports for all chains, recorded on the token.
+usdg="$records/tokens/usdg/records"
+python3 fetch_paxos.py https://www.paxos.com/usdg-transparency "Global Dollar|USDG" "$work/usdg" > "$work/usdg.txt"
+# shellcheck disable=SC2046
+python3 extract_usdg.py usdg_manual.json $(cat "$work/usdg.txt") > "$work/usdg.json"
+python3 check_new.py "$work/usdg.json" "$usdg/backing.csv"
+# shellcheck disable=SC2046
+python3 write_backing.py "$work/usdg.json" "$usdg" USDG --append $(evidence_args tokens/usdg/records)
 
 tether="$records/tokens/usdt/records"
 python3 fetch_tether.py "$work/tether" > "$work/tether-reports.json"
