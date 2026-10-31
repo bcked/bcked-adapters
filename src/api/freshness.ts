@@ -38,7 +38,9 @@ interface AssetSummary {
     collateral: Dated | null;
 }
 
-const response = await fetch(`${base}/assets/summary/`);
+// GitHub Pages serves cached copies for a few minutes after a deploy. A unique query string skips
+// the cache, so the check sees the summary that was just deployed.
+const response = await fetch(`${base}/assets/summary/?t=${Date.now()}`, { cache: "no-store" });
 if (!response.ok) throw new Error(`${base}/assets/summary/ returned ${response.status}`);
 const { assets } = (await response.json()) as { assets: AssetSummary[] };
 
