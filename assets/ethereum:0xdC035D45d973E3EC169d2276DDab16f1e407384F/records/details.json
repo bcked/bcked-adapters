@@ -1,0 +1,27 @@
+{
+    "name": "USDS",
+    "symbol": "USDS",
+    "identifier": {
+        "address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+        "system": "ethereum"
+    },
+    "assetClasses": [
+        "cryptocurrency",
+        "derivative"
+    ],
+    "linkedEntities": {
+        "issuer": "sky"
+    },
+    "reference": "https://sky.money/",
+    "tags": [
+        "stablecoin"
+    ],
+    "backing": {
+        "method": "on-chain",
+        "description": "Vaults in the Sky Vat, read on-chain: USDC in the Lite PSM, all ETH, wstETH and WBTC locked in vaults, and the debt of allocator, real-world-asset and staking vaults, whose composition is not reported on-chain. USDS gets the share of its circulating supply. It shares the reserves with DAI.",
+        "reference": "https://chainlog.sky.money/",
+        "address": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B"
+    },
+    "listed": "2026-10-31T02:59:37.048Z",
+    "updated": "2026-10-31T02:59:37.048Z"
+}
