@@ -44,6 +44,9 @@ def holdings_tables(lines):
             continue
         if current is None:
             continue
+        # Treasuries listed as collateral of reverse repurchase agreements are repos, not holdings.
+        if re.search(r"(?i)Collateral Held Pursuant|Held Pursuant to Overnight", s):
+            kind = "repo"
         amount = re.search(AMOUNT + r"\s*$", s)
         if not amount:
             continue
@@ -51,15 +54,19 @@ def holdings_tables(lines):
         cusip = re.search(r"\b(9127[0-9A-Z]{5}|9128[0-9A-Z]{5})\b", s)
         if cusip:
             # A holding without description continues the description of the line above.
-            if re.match(r"(?i)U\.?S\.? Treasury Bills?", s):
+            if kind != "repo" and re.match(r"(?i)U\.?S\.? Treasury Bills?", s):
                 kind = "bills"
-            elif re.match(r"(?i)U\.?S\.? Treasury", s):
+            elif kind != "repo" and re.match(r"(?i)U\.?S\.? Treasury", s):
                 kind = "debt"
+            # Paxos holds Treasury bills directly. Notes and bonds are only listed as the collateral of
+            # overnight reverse repurchase agreements, so they count as repos.
             if kind == "bills":
                 add(current["cat"], "rwa:USTB", value)
-            elif kind == "debt":
-                key = "rwa:USTBOND" if cusip.group(1).startswith("912810") else "rwa:USTNOTE"
-                add(current["cat"], key, value)
+            elif kind in ("debt", "repo"):
+                add(current["cat"], "rwa:USTrepo", value)
+        elif re.search(r"(?i)^Total U\.?S\.? Government Guaranteed Debt Instruments Held Pursuant", s):
+            current["subtotals"]["rwa:USTrepo"] = value
+            kind = None
         elif re.search(r"(?i)Total U\.?S\.? Treasury Bills", s):
             current["subtotals"]["rwa:USTB"] = value
         elif re.search(r"(?i)Government Guaranteed Debt|Reverse Repurchase Agreements:|Reserve Repurchase Agreements:", s):
@@ -86,7 +93,8 @@ def exhibit_b(lines):
         ("rwa:USD", r"^Cash\b"),
         ("rwa:MMF", r"^Government money market funds"),
         ("rwa:USTrepo", r"^Repurchase agreements"),
-        ("treasury", r"^Obligations of U\.?S\.? Treasury"),
+        # Not split by maturity in this layout. Recorded as T-bills, the usual reserve holding.
+        ("rwa:USTB", r"^Obligations of U\.?S\.? Treasury"),
         ("total", r"^Total\b"),
     ]
     for line in lines[start + 1 : start + 40]:

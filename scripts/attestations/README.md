@@ -34,6 +34,10 @@ python3 fetch_paxos.py https://www.paxos.com/busd-transparency "Binance USD|BUSD
 python3 extract_busd.py $(cat busd.txt) > busd.json
 python3 validate_busd.py busd.json
 python3 write_backing.py busd.json "<records>/assets/ethereum:0x4Fabb145d64652a948d72533023f6E7A623C7C53/records" BUSD
+
+python3 fetch_paxos.py https://www.paxos.com/pyusd-transparency "PayPal USD|PYUSD" /tmp/pyusd > pyusd.txt
+python3 extract_busd.py $(cat pyusd.txt) > pyusd.json
+python3 write_backing.py pyusd.json "<records>/tokens/pyusd/records" PYUSD
 ```
 
 ## Tether (USDT)
@@ -79,10 +83,12 @@ The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs
 - PAXG: fine troy ounces of gold held in custody (`rwa:XAU`).
 - BUSD until 2022-07: only the total reserve, a mix of deposits, U.S. government debt and PAX tokens,
   recorded as `rwa:undefined`. If a report describes the reserve as deposits only, it is `rwa:USD`.
-- BUSD 2022-08 to 2025-01: holdings per CUSIP. Treasury bills are `rwa:USTB`, other Treasury debt
-  is split by CUSIP into bonds (`912810…`, `rwa:USTBOND`) and notes (`rwa:USTNOTE`), dollars are `rwa:USD`.
-- BUSD from 2025-02: KPMG's Exhibit B by asset type. Repurchase agreements are `rwa:USTrepo`,
-  government money market funds `rwa:MMF`.
+- BUSD and PYUSD from 2022-08: holdings per CUSIP. Treasury bills are `rwa:USTB`, dollars `rwa:USD`.
+  Notes and bonds are only listed as collateral of overnight reverse repurchase agreements, so they
+  are `rwa:USTrepo`.
+- BUSD and PYUSD from 2025-02: KPMG's Exhibit B by asset type. Repurchase agreements are
+  `rwa:USTrepo`, government money market funds `rwa:MMF`. "Obligations of U.S. Treasury" are not
+  split by maturity and recorded as `rwa:USTB`.
 - `validate_busd.py` compares the extracted values with the subtotals in each report. Known report
   errors: the total differs from the subtotals on 2022-10-19, 2022-10-31 and 2023-02-13, and the
   debt subtotal on 2024-07-26 is 45,000 higher than its holdings. The holdings are used.
