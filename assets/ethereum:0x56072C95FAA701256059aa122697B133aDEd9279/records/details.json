@@ -1,0 +1,20 @@
+{
+    "name": "SKY",
+    "symbol": "SKY",
+    "identifier": {
+        "address": "0x56072C95FAA701256059aa122697B133aDEd9279",
+        "system": "ethereum"
+    },
+    "assetClasses": [
+        "cryptocurrency"
+    ],
+    "linkedEntities": {
+        "issuer": "sky"
+    },
+    "reference": "https://sky.money/",
+    "tags": [
+        "governance-token"
+    ],
+    "listed": "2026-10-31T18:41:45.590Z",
+    "updated": "2026-10-31T18:41:45.590Z"
+}
