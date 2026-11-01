@@ -22,19 +22,13 @@
         />
         <meta name="description" content="Free API for all data on bcked.com" />
         <title>bcked API</title>
-        <link rel="stylesheet" href="https://esm.sh/swagger-ui@5.11.2/dist/swagger-ui.css" />
+        <link rel="stylesheet" href="./vendor/swagger-ui/swagger-ui.css" />
     </head>
 
     <body>
         <div id="swagger-ui"></div>
 
-        <script type="importmap">
-            {
-                "imports": {
-                    "swagger-ui-dist": "https://esm.sh/swagger-ui-dist@5.11.2/"
-                }
-            }
-        </script>
+        <script src="./vendor/swagger-ui/swagger-ui-bundle.js"></script>
         <script type="module" src="./main.js"></script>
     </body>
 </html>
