@@ -11,6 +11,23 @@ import _ from "lodash";
 import { toId } from "../../utils/helper";
 import { format, toISOString } from "../../utils/string_formatting";
 
+const RETRY_DELAYS = [1000, 3000, 8000];
+
+/**
+ * Runs a read and retries it after a pause if it fails. RPC providers reject bursts of requests
+ * (rate limits), which shows up as failed calls.
+ */
+async function retry<T>(read: () => Promise<T>): Promise<T> {
+    for (const delay of RETRY_DELAYS) {
+        try {
+            return await read();
+        } catch {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+    }
+    return read();
+}
+
 const BURN_ADDRESSES = [
     "0x000000000000000000000000000000000000dEaD",
     "0x0000000000000000000000000000000000000000",
@@ -133,10 +150,12 @@ export class EVMChain implements bcked.query.ChainModule {
                 };
             } else {
                 const contract = this.getTokenContract(token, system);
-                const [balance, decimals] = await Promise.all([
-                    contract.getFunction("balanceOf")(address) as Promise<bigint>,
-                    this._getDecimals(contract),
-                ]);
+                const [balance, decimals] = await retry(() =>
+                    Promise.all([
+                        contract.getFunction("balanceOf")(address) as Promise<bigint>,
+                        this._getDecimals(contract),
+                    ])
+                );
                 return {
                     timestamp: toISOString(Date.now()),
                     balance: parseFloat(formatUnits(balance, decimals)),
@@ -173,10 +192,9 @@ export class EVMChain implements bcked.query.ChainModule {
         system: bcked.system.Id
     ): Promise<bcked.query.Supply> {
         try {
-            const [burned, issued] = await Promise.all([
-                this.getBurned(token, system),
-                this.getTokenSupply(token, system),
-            ]);
+            const [burned, issued] = await retry(() =>
+                Promise.all([this.getBurned(token, system), this.getTokenSupply(token, system)])
+            );
             return { timestamp: toISOString(Date.now()), burned, issued };
         } catch (error) {
             console.log(error);
@@ -204,7 +222,9 @@ export class EVMChain implements bcked.query.ChainModule {
         const contract = new Contract(address, [fragment], this.getProvider(system));
         try {
             const overrides = blockTag === undefined ? [] : [{ blockTag }];
-            return (await contract.getFunction(fragment.name)(...args, ...overrides)) as T;
+            return (await retry(() =>
+                contract.getFunction(fragment.name)(...args, ...overrides)
+            )) as T;
         } catch (error) {
             throw Error(`Error for call of ${fragment.name} on ${system}:${address}.`, {
                 cause: error,

@@ -98,8 +98,24 @@ const TOKEN_ASSETS: Record<string, string[]> = {
 for (const [symbol, ids] of Object.entries(TOKEN_ASSETS))
     for (const id of ids) PRICE_SOURCES[id] = BY_SYMBOL[symbol]!;
 
+// The latest feed values, read once per process and shared by all assets of a crawl.
+let latest: Promise<{
+    feeds: Record<Feed, { usd: number; updatedAt: number }>;
+    rate: number;
+}> | null = null;
+
 export class Chainlink implements bcked.query.ApiModule {
     chain = new ChainProxy();
+
+    private latest() {
+        latest ??= Promise.all([this.readFeeds(Object.keys(FEEDS) as Feed[]), this.wstEthRate()])
+            .then(([feeds, rate]) => ({ feeds, rate }))
+            .catch((error: unknown) => {
+                latest = null;
+                throw error;
+            });
+        return latest;
+    }
 
     /** Latest answer of each feed, at the given block (latest if omitted). */
     async readFeeds(
@@ -149,19 +165,7 @@ export class Chainlink implements bcked.query.ApiModule {
             .filter((entry): entry is readonly [bcked.asset.Id, Source] => !!entry[1]);
         if (!wanted.length) return {};
 
-        const feeds = [
-            ...new Set(
-                wanted.flatMap(([, source]) =>
-                    source.times && source.times != "wstETH"
-                        ? [source.feed, source.times]
-                        : [source.feed]
-                )
-            ),
-        ] as Feed[];
-        const values = await this.readFeeds(feeds);
-        const rate = wanted.some(([, source]) => source.times == "wstETH")
-            ? await this.wstEthRate()
-            : 1;
+        const { feeds: values, rate } = await this.latest();
 
         return Object.fromEntries(
             wanted.map(([id, source]) => {
