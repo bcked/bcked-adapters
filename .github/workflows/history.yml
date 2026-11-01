@@ -1,0 +1,61 @@
+name: Rebuild History
+
+# Rebuilds price, supply and custody history from Chainlink feeds and token contracts through
+# archive calls (scripts/history). Run by hand. Days that already have a row are kept.
+
+on:
+    workflow_dispatch:
+        inputs:
+            from:
+                description: "First day (YYYY-MM-DD)"
+                required: false
+                default: "2019-01-01"
+
+# Shares the group with the crawler, so both never push to the records at the same time.
+concurrency:
+    group: "crawler"
+    cancel-in-progress: false
+
+jobs:
+    rebuild:
+        runs-on: ubuntu-latest
+        timeout-minutes: 300
+        name: Rebuild History
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v7
+            - name: Checkout Records
+              uses: actions/checkout@v7
+              with:
+                  # Private repository. Needs a deploy key of bcked/bcked-records with write access.
+                  repository: bcked/bcked-records
+                  ref: records
+                  path: .records
+                  ssh-key: ${{ secrets.RECORDS_DEPLOY_KEY }}
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version-file: package.json
+            - name: Install Dependencies
+              run: bun install --frozen-lockfile
+            - name: Rebuild Prices
+              working-directory: .records
+              env:
+                  ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
+              run: bun ../scripts/history/rebuild_prices.ts ${{ inputs.from }}
+            - name: Rebuild Supply and Custody
+              working-directory: .records
+              env:
+                  ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
+                  ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
+                  ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
+              run: bun ../scripts/history/rebuild_onchain.ts ${{ inputs.from }}
+            - name: Commit Results
+              uses: stefanzweifel/git-auto-commit-action@v7
+              with:
+                  repository: .records
+                  commit_message: Rebuild history from Chainlink and token contracts
+                  commit_user_name: GitHub Action
+                  commit_user_email: action@github.com
+                  commit_author: actions-user <action@github.com>
+                  file_pattern: "*.csv"
