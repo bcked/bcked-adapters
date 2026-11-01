@@ -49,6 +49,17 @@ on bcked.com.
 | [USGS](https://www.usgs.gov/)                                                                | Gold supply until 2018                             | Public domain (US government work)                                                                  |
 | [World Gold Council](https://www.gold.org/goldhub/data/how-much-gold)                        | Above-ground gold stock from 2019 (yearly figures) | [Terms](https://www.gold.org/terms-and-conditions): reproduction with accreditation, single figures |
 
+## Not used because of their terms
+
+- [Ripple USD transparency reports](https://ripple.com/products/stablecoin/transparency/): monthly reserve
+  reports of RLUSD. Ripple's [terms of use](https://ripple.com/terms-of-use/) prohibit data mining, robots
+  and similar extraction, and distribution without written permission. RLUSD is tracked with price and
+  supply, its backing is not recorded until Ripple allows it.
+- [Agora attestations](https://developer.agora.finance/attestations): monthly reserve reports of AUSD.
+  Agora's [terms of use](https://static.agora.finance/termsofuse.pdf) prohibit automatic access, including
+  copying material, and use of Agora's name or logo without consent. AUSD is tracked with price and supply
+  and a generic icon, its backing is not recorded until Agora allows it.
+
 ## Not used anymore
 
 - BlackRock (holdings of the Circle Reserve Fund): crawled until 2025-11, replaced by Circle's reports. The crawled files were removed from the `records` branch on 2026-10-30.
