@@ -151,7 +151,8 @@ const to = process.argv[3]
 
 const supplies = new Map<string, Map<string, string[]>>();
 const custody = new Map<string, string[]>();
-const PARALLEL_DAYS = 16;
+// Days read at once. More gets throttled by the RPC provider, and the retries cost more than they save.
+const PARALLEL_DAYS = Number(process.env["PARALLEL_DAYS"] ?? 4);
 for (const system of Object.keys(RPC)) {
     const latest = await providers[system]!.getBlockNumber();
     const first = await blockAt(system, from, RPC[system]!.start, latest);
