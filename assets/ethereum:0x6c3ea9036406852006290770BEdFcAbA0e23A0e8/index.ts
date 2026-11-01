@@ -1,7 +1,5 @@
-import {
-    getTokenBackingShare,
-    getIssuerCirculating,
-} from "../../src/crawler/adapters/issuer_backing";
+import { getTokenBackingShare } from "../../src/crawler/adapters/issuer_backing";
+import { onChainSupply } from "../../src/crawler/adapters/circulating";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { toISOString } from "../../src/utils/string_formatting";
 
@@ -45,10 +43,12 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
-        // Paxos issues PYUSD natively on Ethereum. The circulating supply comes from DefiLlama, without
-        // tokens in the issuer's treasury.
-        const circulating = await getIssuerCirculating(120, "Ethereum");
-        if (circulating === null) return [];
+        // Paxos issues PYUSD natively on Ethereum. Circulating supply is the token's totalSupply on-chain:
+        // the issuer mints on demand and holds no unissued tokens.
+        const circulating = await onChainSupply(
+            details.identifier.address,
+            details.identifier.system
+        );
         return [
             {
                 timestamp: toISOString(Date.now()),
@@ -64,6 +64,11 @@ export default class Adapter implements bcked.asset.Adapter {
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
         // Paxos's reserves cover all chains (see tokens/pyusd). PYUSD on Ethereum is backed by the
         // Ethereum share of the circulating supply.
-        return getTokenBackingShare("pyusd", 120, "Ethereum", lastRecorded);
+        return getTokenBackingShare(
+            "pyusd",
+            "ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+            "Ethereum",
+            lastRecorded
+        );
     }
 }

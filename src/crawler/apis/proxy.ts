@@ -1,7 +1,6 @@
 import { toId } from "../../utils/helper";
 import { InstanceProxy } from "../../utils/instance_proxy";
-import { DefiLlama } from "./defillama";
-import { Dexscreener } from "./dexscreener";
+import { Chainlink } from "./chainlink";
 
 export class ApiProxy
     extends InstanceProxy<bcked.query.ApiModule>
@@ -9,8 +8,7 @@ export class ApiProxy
 {
     constructor() {
         super({
-            defillama: DefiLlama,
-            dexscreener: Dexscreener,
+            chainlink: Chainlink,
         });
     }
 

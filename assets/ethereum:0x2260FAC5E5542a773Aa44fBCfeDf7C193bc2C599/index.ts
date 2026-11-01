@@ -1,12 +1,14 @@
 /**
- * The WBTC backing is queried using the WBTC API.
- * All attribution goes to the WBTC API.
+ * Wrapped Bitcoin. The backing is the bitcoin held by the WBTC custodians, from Chainlink's WBTC
+ * Proof of Reserves feed on Ethereum (https://data.chain.link/feeds/ethereum/mainnet/wbtc-por).
  */
 import { formatUnits } from "ethers";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
+import { multicall } from "../../src/crawler/chains/multicall";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
-import { JsonApi } from "../../src/utils/requests";
 import { toISOString } from "../../src/utils/string_formatting";
+
+const WBTC_POR = "0xa81FE04086865e63E12dD3776978E49DEEa2ea4e";
 
 const details: bcked.asset.Details = {
     name: "Wrapped Bitcoin",
@@ -19,34 +21,23 @@ const details: bcked.asset.Details = {
     linkedEntities: {
         issuer: "bitgo",
     },
-    reference: "https://wbtc.network/dashboard/audit",
+    reference: "https://www.wbtc.network/",
     tags: ["bridged-asset"],
     backing: {
         method: "custodian",
         description:
-            "The bitcoin held by the custodians, as published by the WBTC network. Updated hourly.",
-        reference: "https://wbtc.network/dashboard/audit",
+            "The bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed on Ethereum. Updated daily.",
+        reference: "https://data.chain.link/feeds/ethereum/mainnet/wbtc-por",
     },
 };
-
-interface wbtcApiTokenResponse {
-    id: string;
-    token: string;
-    name: string;
-    symbol: string;
-    supply: string;
-    holdings: string;
-}
 
 export default class Adapter implements bcked.asset.Adapter {
     api: ApiProxy;
     chain: ChainProxy;
-    wbtcApi: JsonApi;
 
     constructor() {
         this.api = new ApiProxy();
         this.chain = new ChainProxy();
-        this.wbtcApi = new JsonApi("https://wbtc.network/api");
     }
 
     async getDetails(): Promise<bcked.asset.Details> {
@@ -76,21 +67,19 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getBacking(): Promise<bcked.asset.Backing[]> {
-        // As an alternative to relying on the wbtc API, one could do the following:
-        // Track list (json or yml) of custodian addresses.
-        // Load and update custodian list from: https://wbtc.network/api/chain/eth/token/wbtc/addresses?type=custodial
-        // Query custodian addresses for holdings via Blockstream API: https://github.com/Blockstream/esplora/blob/master/API.md
-
-        const response =
-            await this.wbtcApi.fetchJson<wbtcApiTokenResponse>("/chain/eth/token/wbtc");
-        // Convert holdings from satoshis to bitcoins
-        const holdings = parseFloat(formatUnits(response.holdings, 8));
+        // Bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed on-chain.
+        const [round] = await multicall(this.chain, "ethereum", [
+            {
+                target: WBTC_POR,
+                signature:
+                    "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)",
+            },
+        ]);
+        const [, answer, , updatedAt] = round! as unknown as [bigint, bigint, bigint, bigint];
         return [
             {
-                timestamp: toISOString(Date.now()),
-                underlying: {
-                    "bitcoin:BTC": holdings,
-                },
+                timestamp: toISOString(Number(updatedAt) * 1000),
+                underlying: { "bitcoin:BTC": parseFloat(formatUnits(answer, 8)) },
             },
         ];
     }

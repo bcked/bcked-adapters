@@ -1,7 +1,5 @@
-import {
-    getTokenBackingShare,
-    getIssuerCirculating,
-} from "../../src/crawler/adapters/issuer_backing";
+import { getTokenBackingShare } from "../../src/crawler/adapters/issuer_backing";
+import { tetherCirculating } from "../../src/crawler/adapters/circulating";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 
@@ -55,7 +53,7 @@ export default class Adapter implements bcked.asset.Adapter {
             {
                 timestamp,
                 // Without the tokens held in the issuer's treasury, which are not backed.
-                circulating: await getIssuerCirculating(1, "Ethereum"),
+                circulating: await tetherCirculating("usdt", "eth"),
                 burned: burned ?? null,
                 total: burned ? issued - burned : issued,
                 issued: issued,
@@ -68,6 +66,11 @@ export default class Adapter implements bcked.asset.Adapter {
         // Tether's reserves cover all chains. They are recorded for the token usdt from the
         // assurance reports (https://tether.to/en/transparency/, see scripts/attestations).
         // USDT on Ethereum is backed by the Ethereum share of the circulating supply.
-        return getTokenBackingShare("usdt", 1, "Ethereum", lastRecorded);
+        return getTokenBackingShare(
+            "usdt",
+            "ethereum:0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "Ethereum",
+            lastRecorded
+        );
     }
 }

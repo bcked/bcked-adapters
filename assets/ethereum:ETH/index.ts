@@ -1,8 +1,8 @@
 /**
- * The ETH price and supply is queried using the Etherscan API.
- * All attribution goes to the [Etherscan API](https://etherscan.io/apis).
+ * Ether. The price comes from Chainlink's ETH/USD feed on-chain, the supply from ultrasound.money.
  */
-import { Etherscan } from "../../src/crawler/apis/etherscan";
+import { ApiProxy } from "../../src/crawler/apis/proxy";
+import { Ultrasound } from "../../src/crawler/apis/ultrasound";
 
 const details: bcked.asset.Details = {
     name: "Ether",
@@ -20,10 +20,12 @@ const details: bcked.asset.Details = {
 };
 
 export default class Adapter implements bcked.asset.Adapter {
-    etherscan: Etherscan;
+    api: ApiProxy;
+    ultrasound: Ultrasound;
 
     constructor() {
-        this.etherscan = new Etherscan();
+        this.api = new ApiProxy();
+        this.ultrasound = new Ultrasound();
     }
 
     async getDetails(): Promise<bcked.asset.Details> {
@@ -31,19 +33,19 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getPrice(): Promise<bcked.asset.Price[]> {
-        // Use WETH as price proxy.
-        return [await this.etherscan.getEthPrice()];
+        const price = await this.api.getPrice(details.identifier);
+        return price ? [price] : [];
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
-        const { timestamp, issued, burned } = await this.etherscan.getEthSupply();
+        const { timestamp, supply } = await this.ultrasound.getEthSupply();
         return [
             {
                 timestamp,
                 circulating: null,
-                burned: burned ?? null,
-                total: burned ? issued - burned : issued,
-                issued: issued,
+                burned: null,
+                total: supply,
+                issued: supply,
                 max: null,
             },
         ];

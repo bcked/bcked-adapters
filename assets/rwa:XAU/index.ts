@@ -1,4 +1,4 @@
-import { ForexData } from "../../src/crawler/apis/forex_data";
+import { ApiProxy } from "../../src/crawler/apis/proxy";
 
 const details: bcked.asset.Details = {
     name: "Gold",
@@ -14,10 +14,10 @@ const details: bcked.asset.Details = {
 };
 
 export default class Adapter implements bcked.asset.Adapter {
-    api: ForexData;
+    api: ApiProxy;
 
     constructor() {
-        this.api = new ForexData();
+        this.api = new ApiProxy();
     }
 
     async getDetails(): Promise<bcked.asset.Details> {
@@ -28,7 +28,9 @@ export default class Adapter implements bcked.asset.Adapter {
      * Gold price in USD/t.oz (troy ounce)
      */
     async getPrice(): Promise<bcked.asset.Price[]> {
-        return [await this.api.getPrice(details.identifier)];
+        // Chainlink's XAU/USD feed, USD per troy ounce.
+        const price = await this.api.getPrice(details.identifier);
+        return price ? [price] : [];
     }
 
     /**

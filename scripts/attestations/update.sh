@@ -57,7 +57,7 @@ tether="$records/tokens/usdt/records"
 python3 fetch_tether.py "$work/tether" > "$work/tether-reports.json"
 python3 extract_tether.py "$work/tether-reports.json" tether_manual.json > "$work/tether.json"
 python3 check_new.py "$work/tether.json" "$tether/backing.csv"
-python3 convert_prices.py "$work/tether.json" > "$work/tether-units.json"
+python3 convert_prices.py "$work/tether.json" "$tether/backing.csv" > "$work/tether-units.json"
 # shellcheck disable=SC2046
 python3 write_backing.py "$work/tether-units.json" "$tether" USDT --append $(evidence_args tokens/usdt/records)
 

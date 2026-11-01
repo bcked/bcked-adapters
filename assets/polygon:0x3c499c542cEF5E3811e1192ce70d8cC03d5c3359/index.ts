@@ -1,7 +1,5 @@
-import {
-    getTokenBackingShare,
-    getIssuerCirculating,
-} from "../../src/crawler/adapters/issuer_backing";
+import { getTokenBackingShare } from "../../src/crawler/adapters/issuer_backing";
+import { onChainSupply } from "../../src/crawler/adapters/circulating";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { toISOString } from "../../src/utils/string_formatting";
 
@@ -45,10 +43,12 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
-        // Circle issues USDC natively on Polygon. The circulating supply comes from DefiLlama, without
-        // tokens in the issuer's treasury.
-        const circulating = await getIssuerCirculating(2, "Polygon");
-        if (circulating === null) return [];
+        // Circle issues USDC natively on Polygon. Circulating supply is the token's totalSupply on-chain:
+        // the issuer mints on demand and holds no unissued tokens.
+        const circulating = await onChainSupply(
+            details.identifier.address,
+            details.identifier.system
+        );
         return [
             {
                 timestamp: toISOString(Date.now()),
@@ -64,6 +64,11 @@ export default class Adapter implements bcked.asset.Adapter {
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
         // Circle's reserves cover all chains (see tokens/usdc). USDC on Polygon is backed by the
         // Polygon share of the circulating supply.
-        return getTokenBackingShare("usdc", 2, "Polygon", lastRecorded);
+        return getTokenBackingShare(
+            "usdc",
+            "polygon:0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+            "Polygon",
+            lastRecorded
+        );
     }
 }

@@ -1,7 +1,5 @@
-import {
-    getTokenBackingShare,
-    getIssuerCirculating,
-} from "../../src/crawler/adapters/issuer_backing";
+import { getTokenBackingShare } from "../../src/crawler/adapters/issuer_backing";
+import { tetherCirculating } from "../../src/crawler/adapters/circulating";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { toISOString } from "../../src/utils/string_formatting";
 
@@ -45,10 +43,9 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
-        // Tether issues USDT natively on Solana. The circulating supply comes from DefiLlama, without
-        // tokens in the issuer's treasury.
-        const circulating = await getIssuerCirculating(1, "Solana");
-        if (circulating === null) return [];
+        // Tether issues USDT natively on Solana. Circulating supply from Tether's per-chain figures,
+        // without the tokens in its treasury.
+        const circulating = await tetherCirculating("usdt", "sol");
         return [
             {
                 timestamp: toISOString(Date.now()),
@@ -64,6 +61,11 @@ export default class Adapter implements bcked.asset.Adapter {
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
         // Tether's reserves cover all chains (see tokens/usdt). USDT on Solana is backed by the
         // Solana share of the circulating supply.
-        return getTokenBackingShare("usdt", 1, "Solana", lastRecorded);
+        return getTokenBackingShare(
+            "usdt",
+            "solana:Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+            "Solana",
+            lastRecorded
+        );
     }
 }

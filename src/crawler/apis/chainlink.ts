@@ -1,0 +1,179 @@
+/**
+ * Prices from Chainlink Data Feeds on Ethereum, read on-chain from the feed contracts.
+ * Feeds: https://docs.chain.link/data-feeds (addresses from Chainlink's feed directory).
+ *
+ * A token has the same price on every chain, so all chain versions of a token use its feed. Some
+ * prices are derived from a feed: wstETH from stETH and the wstETH exchange rate, WBTC from the
+ * WBTC/BTC and BTC/USD feeds, XAUt (one troy ounce of gold per token) from gold.
+ */
+import { formatUnits } from "ethers";
+
+import { ChainProxy } from "../chains/proxy";
+import { multicall, type Call } from "../chains/multicall";
+import { toId } from "../../utils/helper";
+import { toISOString } from "../../utils/string_formatting";
+
+const LATEST = "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)";
+
+// Canonical Chainlink feeds on Ethereum (USD prices, 8 decimals unless noted).
+export const FEEDS = {
+    ETH: { address: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419", decimals: 8 },
+    BTC: { address: "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c", decimals: 8 },
+    WBTC_BTC: { address: "0xfdFD9C85aD200c506Cf9e21F1FD8dd01932FBB23", decimals: 8 },
+    USDT: { address: "0x3E7d1eAB13ad0104d2750B8863b489D65364e32D", decimals: 8 },
+    USDC: { address: "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6", decimals: 8 },
+    DAI: { address: "0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9", decimals: 8 },
+    USDS: { address: "0xfF30586cD0F29eD462364C7e81375FC0C71219b1", decimals: 8 },
+    PYUSD: { address: "0x8f1dF6D7F2db73eECE86a18b4381F4707b918FB1", decimals: 8 },
+    RLUSD: { address: "0x26C46B7aD0012cA71F2298ada567dC9Af14E7f2A", decimals: 8 },
+    AUSD: { address: "0xB00341502DfEA6Ced8A5786b4059d29dA5E4D1FD", decimals: 18 },
+    USDG: { address: "0x14f0737d6b705259e521EA6E9E3506AC78dBd311", decimals: 8 },
+    SKY: { address: "0xee10fE5E7aa92dd7b136597449c3d5813cFC5F18", decimals: 8 },
+    PAXG: { address: "0x9944D86CEB9160aF5C5feB251FD671923323f8C3", decimals: 8 },
+    XAU: { address: "0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6", decimals: 8 },
+    STETH: { address: "0xCfE54B5cD566aB89272946F602D76Ea879CAb4a8", decimals: 8 },
+} as const;
+type Feed = keyof typeof FEEDS;
+
+const WSTETH = "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0";
+const ST_ETH_PER_TOKEN = "function stEthPerToken() view returns (uint256)";
+
+/** How each asset is priced: a feed, or a feed times a factor read on-chain. */
+interface Source {
+    feed: Feed;
+    times?: Feed | "wstETH";
+}
+
+const BY_SYMBOL: Record<string, Source> = {
+    USDT: { feed: "USDT" },
+    USDC: { feed: "USDC" },
+    PYUSD: { feed: "PYUSD" },
+    USDG: { feed: "USDG" },
+};
+
+// Assets by id. Chain versions of USDT, USDC, PYUSD and USDG are added below from TOKEN_ASSETS.
+export const PRICE_SOURCES: Record<string, Source> = {
+    "ethereum:ETH": { feed: "ETH" },
+    "ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": { feed: "ETH" }, // WETH
+    "bitcoin:BTC": { feed: "BTC" },
+    "ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": { feed: "WBTC_BTC", times: "BTC" },
+    "ethereum:0x6B175474E89094C44Da98b954EedeAC495271d0F": { feed: "DAI" },
+    "ethereum:0xdC035D45d973E3EC169d2276DDab16f1e407384F": { feed: "USDS" },
+    "ethereum:0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD": { feed: "RLUSD" },
+    "ethereum:0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a": { feed: "AUSD" },
+    "ethereum:0x56072C95FAA701256059aa122697B133aDEd9279": { feed: "SKY" },
+    "ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78": { feed: "PAXG" },
+    "ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38": { feed: "XAU" }, // XAUt
+    "rwa:XAU": { feed: "XAU" },
+    "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84": { feed: "STETH" },
+    [`ethereum:${WSTETH}`]: { feed: "STETH", times: "wstETH" },
+};
+
+// Chain versions of tokens that share one price.
+const TOKEN_ASSETS: Record<string, string[]> = {
+    USDT: [
+        "ethereum:0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        "tron:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+        "solana:Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+    ],
+    USDC: [
+        "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "base:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "arbitrum:0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+        "polygon:0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+    ],
+    PYUSD: [
+        "ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+        "solana:2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+    ],
+    USDG: [
+        "ethereum:0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
+        "solana:2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH",
+        "xlayer:0x4ae46a509F6b1D9056937BA4500cb143933D2dc8",
+        "robinhood:0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+        "ink:0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
+    ],
+};
+for (const [symbol, ids] of Object.entries(TOKEN_ASSETS))
+    for (const id of ids) PRICE_SOURCES[id] = BY_SYMBOL[symbol]!;
+
+export class Chainlink implements bcked.query.ApiModule {
+    chain = new ChainProxy();
+
+    /** Latest answer of each feed, at the given block (latest if omitted). */
+    async readFeeds(
+        feeds: Feed[],
+        blockTag?: number
+    ): Promise<Record<Feed, { usd: number; updatedAt: number }>> {
+        const calls: Call[] = feeds.map((feed) => ({
+            target: FEEDS[feed].address,
+            signature: LATEST,
+        }));
+        const results = await multicall(this.chain, "ethereum", calls, blockTag);
+        return Object.fromEntries(
+            feeds.map((feed, i) => {
+                const [, answer, , updatedAt] = results[i]! as unknown as [
+                    bigint,
+                    bigint,
+                    bigint,
+                    bigint,
+                ];
+                return [
+                    feed,
+                    {
+                        usd: parseFloat(formatUnits(answer, FEEDS[feed].decimals)),
+                        updatedAt: Number(updatedAt) * 1000,
+                    },
+                ];
+            })
+        ) as Record<Feed, { usd: number; updatedAt: number }>;
+    }
+
+    /** stETH per wstETH, at the given block. */
+    async wstEthRate(blockTag?: number): Promise<number> {
+        const [rate] = await multicall(
+            this.chain,
+            "ethereum",
+            [{ target: WSTETH, signature: ST_ETH_PER_TOKEN }],
+            blockTag
+        );
+        return parseFloat(formatUnits(rate![0] as bigint, 18));
+    }
+
+    async getPrices(
+        identifiers: bcked.asset.Identifier[]
+    ): Promise<Partial<Record<bcked.asset.Id, bcked.asset.Price>>> {
+        const wanted = identifiers
+            .map((identifier) => [toId(identifier), PRICE_SOURCES[toId(identifier)]] as const)
+            .filter((entry): entry is readonly [bcked.asset.Id, Source] => !!entry[1]);
+        if (!wanted.length) return {};
+
+        const feeds = [
+            ...new Set(
+                wanted.flatMap(([, source]) =>
+                    source.times && source.times != "wstETH"
+                        ? [source.feed, source.times]
+                        : [source.feed]
+                )
+            ),
+        ] as Feed[];
+        const values = await this.readFeeds(feeds);
+        const rate = wanted.some(([, source]) => source.times == "wstETH")
+            ? await this.wstEthRate()
+            : 1;
+
+        return Object.fromEntries(
+            wanted.map(([id, source]) => {
+                const base = values[source.feed];
+                const factor =
+                    source.times == "wstETH" ? rate : source.times ? values[source.times].usd : 1;
+                return [id, { timestamp: toISOString(base.updatedAt), usd: base.usd * factor }];
+            })
+        );
+    }
+
+    async getPrice(identifier: bcked.asset.Identifier): Promise<bcked.asset.Price | undefined> {
+        return (await this.getPrices([identifier]))[toId(identifier)];
+    }
+}

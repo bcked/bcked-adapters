@@ -29,7 +29,6 @@ import {
 } from "ethers";
 import _ from "lodash";
 
-import { ApiProxy } from "../apis/proxy";
 import { ChainProxy } from "../chains/proxy";
 import { toISOString } from "../../utils/string_formatting";
 import { ALLOCATORS, positionsValue, readAllocator } from "./sky_allocators";
@@ -126,7 +125,6 @@ async function multicall(chain: ChainProxy, calls: Call[]): Promise<Result[]> {
 }
 
 async function readReserves(chain: ChainProxy): Promise<Reserves> {
-    const api = new ApiProxy();
     const keys = [
         "MCD_VAT",
         "MCD_VOW",
@@ -214,7 +212,7 @@ async function readReserves(chain: ChainProxy): Promise<Reserves> {
     // holders' claims either.
     const held = { USDS: 0, DAI: 0 };
     for (const { ilk, debt } of allocators) {
-        const positions = (await readAllocator(chain, api, ilk))!;
+        const positions = (await readAllocator(chain, ilk))!;
         for (const [id, amount] of Object.entries(positions.underlying)) {
             add(id as bcked.asset.Id, amount);
         }

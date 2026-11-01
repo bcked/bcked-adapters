@@ -18,6 +18,8 @@ export class ChainProxy
             robinhood: EVMChain,
             avalanche: EVMChain,
             plume: EVMChain,
+            xlayer: EVMChain,
+            ink: EVMChain,
             solana: SolanaChain,
         });
     }
@@ -27,13 +29,14 @@ export class ChainProxy
         address: string,
         signature: string,
         args: unknown[],
-        system: bcked.system.Id
+        system: bcked.system.Id,
+        blockTag?: number
     ): Promise<T> {
         const instance = this.getInstance(system);
         if (!(instance instanceof EVMChain)) {
             throw Error(`Contract calls are not supported on ${system}.`);
         }
-        return instance.call<T>(address, signature, args, system);
+        return instance.call<T>(address, signature, args, system, blockTag);
     }
 
     /** Sends a raw JSON-RPC request. Only EVM chains support this. */

@@ -19,7 +19,7 @@ Tokens need a circulating market cap of at least $100M and backing that can be c
 ## Data Sources
 
 The data comes from issuer reports, on-chain data and third-party APIs. All sources are listed in the
-[methodology](https://bcked.com/methodology). Ethereum data: Powered by Etherscan.io APIs.
+[methodology](https://bcked.com/methodology).
 
 ## License
 

@@ -30,15 +30,19 @@ const TOKEN_ABI = {
 const RPC_URLS: Record<string, string> = {
     bsc: "https://bsc-dataseed3.binance.org/",
     ethereum: "https://eth-mainnet.g.alchemy.com/v2/{ALCHEMY_ETHEREUM}",
-    moonbeam: "https://moonbeam.public.blastapi.io", //'https://1rpc.io/glmr', //'https://rpc.api.moonbeam.network',
+    moonbeam: "https://rpc.api.moonbeam.network",
     moonriver: "https://rpc.api.moonriver.moonbeam.network",
     polygon: "https://polygon-mainnet.g.alchemy.com/v2/{ALCHEMY_POLYGON}",
     arbitrum: "https://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_ARBITRUM}",
-    base: "https://base-rpc.publicnode.com",
+    base: "https://mainnet.base.org",
     robinhood: "https://rpc.mainnet.chain.robinhood.com",
-    avalanche: "https://avalanche-c-chain-rpc.publicnode.com",
+    avalanche: "https://api.avax.network/ext/bc/C/rpc",
+    xlayer: "https://rpc.xlayer.tech",
+    ink: "https://rpc-gel.inkonchain.com",
     plume: "https://rpc.plume.org",
 };
+
+const NO_BATCH = new Set(["xlayer"]);
 
 const CHAIN_IDS: Record<string, number> = {
     bsc: 56,
@@ -51,6 +55,8 @@ const CHAIN_IDS: Record<string, number> = {
     robinhood: 4663,
     avalanche: 43114,
     plume: 98866,
+    xlayer: 196,
+    ink: 57073,
 };
 
 export class EVMChain implements bcked.query.ChainModule {
@@ -65,6 +71,8 @@ export class EVMChain implements bcked.query.ChainModule {
         const network = Network.from(CHAIN_IDS[chain]);
         const provider = new JsonRpcProvider(this.getRpcUrl(chain, true), network, {
             staticNetwork: network,
+            // Some public RPCs do not accept batched requests.
+            ...(NO_BATCH.has(chain) ? { batchMaxCount: 1 } : {}),
         });
         this._providers[chain] = provider;
         return provider;
@@ -189,12 +197,14 @@ export class EVMChain implements bcked.query.ChainModule {
         address: string,
         signature: string,
         args: unknown[],
-        system: bcked.system.Id
+        system: bcked.system.Id,
+        blockTag?: number
     ): Promise<T> {
         const fragment = FunctionFragment.from(signature);
         const contract = new Contract(address, [fragment], this.getProvider(system));
         try {
-            return (await contract.getFunction(fragment.name)(...args)) as T;
+            const overrides = blockTag === undefined ? [] : [{ blockTag }];
+            return (await contract.getFunction(fragment.name)(...args, ...overrides)) as T;
         } catch (error) {
             throw Error(`Error for call of ${fragment.name} on ${system}:${address}.`, {
                 cause: error,

@@ -15,6 +15,7 @@ Prints JSON in the same format as the other extract_* scripts. Report dates are 
   recorded as rwa:undefined. The total equals the USDC in circulation, which is read from the
   auditor's letter because the reserve page of some reports uses a broken font encoding.
 - 2022-07 to 2022-12: treasuries listed by CUSIP and cash deposits, split like the Deloitte reports.
+- Each section has the USDC in circulation as "supply" (token total for the chain shares).
 - From 2023: Deloitte reports with two report dates each. Treasury securities are split by CUSIP into
   bills, notes and bonds. The rest of the Circle Reserve Fund is cash and repurchase agreements,
   other reserve assets are cash. Each date is checked against the total reserve assets.
@@ -196,9 +197,23 @@ def grant_thornton(flat, lines):
     return section(breakdown_2021(lines, value) or {"rwa:undefined": value}, value)
 
 
+def add_supply(sections, flat):
+    """USDC in circulation at each report date, as the token total for the chain shares.
+
+    Deloitte reports list it for both dates on one line. Until 2022 the reserves are scaled to the
+    USDC in circulation, so the total is the token count."""
+    both = re.search(r"USDC in Circulation\s+([\d,]+)\s+([\d,]+)", flat)
+    if both and len(sections) == 2:
+        for section, value in zip(sorted(sections, key=lambda s: s["timestamp"]), both.groups()):
+            section["supply"] = {"total": num(value)}
+    elif len(sections) == 1 and sections[0].get("total") and not both:
+        sections[0]["supply"] = {"total": sections[0]["total"]}
+
+
 def extract(path, manual):
     text = pdf_text(path)
     sections = deloitte(text.splitlines()) or grant_thornton(re.sub(r"\s+", " ", text), text.splitlines())
+    add_supply(sections, re.sub(r"\s+", " ", text))
     name = path.rsplit("/", 1)[-1]
     if not sections and name in manual:
         entry = manual[name]

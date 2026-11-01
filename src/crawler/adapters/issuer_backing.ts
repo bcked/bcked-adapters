@@ -3,73 +3,62 @@ import path from "node:path";
 import { FILES, PATHS } from "../../constants";
 import { readCSV } from "../../utils/csv";
 import { toISOString } from "../../utils/string_formatting";
-import { DefiLlamaStablecoins, type ChainSupply } from "../apis/defillama_stablecoins";
 
-/** Supply at the last day on or before the timestamp. */
-/**
- * Supply point closest to a backing record, within 3 days. Reports are dated at the end of a day and
- * DefiLlama's points are at its start, so the closest point is the next day's: the same point the
- * market cap at the report time uses. The point before could be a day older and differ a lot.
- */
-function supplyAt(supply: ChainSupply[], timestamp: number): ChainSupply | null {
-    let found: ChainSupply | null = null;
-    for (const point of supply)
-        if (!found || Math.abs(point.timestamp - timestamp) < Math.abs(found.timestamp - timestamp))
-            found = point;
-    return found && Math.abs(timestamp - found.timestamp) <= 3 * 24 * 60 * 60 * 1000 ? found : null;
+const DAY = 24 * 60 * 60 * 1000;
+// A supply point counts for a report if it is at most this far from the report time.
+const MAX_DISTANCE = 3 * DAY;
+
+interface Point {
+    timestamp: number;
+    values: Record<string, number>;
 }
 
-/** USD value of the reserves held in USD-denominated assets (amounts of other assets are not in USD). */
-function usdReserves(row: bcked.asset.Backing): number {
-    return Object.entries(row.underlying)
-        .filter(([asset]) => asset.startsWith("rwa:") && asset !== "rwa:XAU")
-        .reduce((sum, [, value]) => sum + (typeof value === "number" ? value : 0), 0);
-}
-
-/**
- * Share of the chain in all tokens of the issuer. DefiLlama misses early history of some chains
- * (e.g. Omni for USDT), so its total can be far below the actual supply. The reserves cover all
- * tokens, so if the tracked total is below 90% of the USD reserves, the reserves are used instead.
- */
-function chainShare(point: ChainSupply, row: bcked.asset.Backing): number {
-    const reserves = usdReserves(row);
-    const total = point.total < 0.9 * reserves ? reserves : point.total;
-    return Math.min(1, point.chain / total);
-}
-
-/** Tokens outstanding per report date, as reported by the issuer (tokens/<id>/records/supply.csv). */
-type ReportedSupply = Map<number, Record<string, number>>;
-
-async function readReportedSupply(tokenId: bcked.token.Id): Promise<ReportedSupply> {
-    const csvPath = path.join(PATHS.tokens, tokenId, PATHS.records, FILES.csv.supply);
-    const supply: ReportedSupply = new Map();
-    if (!existsSync(csvPath)) return supply;
+/** Numeric columns of a CSV with a timestamp column, oldest first. Empty if the file is missing. */
+async function readPoints(csvPath: string): Promise<Point[]> {
+    if (!existsSync(csvPath)) return [];
+    const points: Point[] = [];
     for await (const row of readCSV<Record<string, unknown>>(csvPath)) {
         const values: Record<string, number> = {};
         for (const [key, value] of Object.entries(row))
             if (key != "timestamp" && typeof value === "number") values[key] = value;
-        supply.set(Date.parse(String(row["timestamp"])), values);
+        points.push({ timestamp: Date.parse(String(row["timestamp"])), values });
     }
-    return supply;
+    return points.sort((a, b) => a.timestamp - b.timestamp);
+}
+
+/** The value of a column at the point closest to a time, within MAX_DISTANCE. */
+function closest(points: Point[], time: number, column: string): number | undefined {
+    let best: Point | undefined;
+    for (const point of points) {
+        if (point.values[column] === undefined) continue;
+        if (!best || Math.abs(point.timestamp - time) < Math.abs(best.timestamp - time))
+            best = point;
+    }
+    return best && Math.abs(best.timestamp - time) <= MAX_DISTANCE
+        ? best.values[column]
+        : undefined;
 }
 
 /**
  * Backing of a token on one chain as its share of the token's reserves.
  *
- * Issuers like Tether and Circle report reserves for all chains together. The reserves are recorded
- * on the token (tokens/<id>/records/backing.csv). The chain's share is its share of the total
- * circulating supply at the report time, from DefiLlama (see chainShare). Where the issuer reports
- * the tokens outstanding (tokens/<id>/records/supply.csv), the share is taken against that total, and
- * a chain count in the report replaces DefiLlama's, e.g. before DefiLlama has the chain.
+ * Issuers like Tether, Circle and Paxos report reserves for all chains together. The reserves are
+ * recorded on the token (tokens/<id>/records/backing.csv). The chain's share is its circulating
+ * supply over the token's total at the report time:
+ * - The total is the tokens outstanding from the token's supply records
+ *   (tokens/<id>/records/supply.csv): from the reports, or for USDT from Tether's daily figures.
+ * - The chain's supply is the chain asset's own supply records. A chain count in the token's supply
+ *   records (from a report) takes precedence.
+ * Report dates without both are skipped.
  *
  * @param tokenId Token holding the reserves of all chains
- * @param stablecoinId DefiLlama stablecoin ID
- * @param chain DefiLlama chain name
- * @param lastRecorded Latest backing already recorded for the token
+ * @param assetId The chain asset, e.g. "tron:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+ * @param chain Column name of the chain in the token's supply records, e.g. "Ethereum"
+ * @param lastRecorded Latest backing already recorded for the chain asset
  */
 export async function getTokenBackingShare(
     tokenId: bcked.token.Id,
-    stablecoinId: number,
+    assetId: bcked.asset.Id,
     chain: string,
     lastRecorded: bcked.asset.Backing | null
 ): Promise<bcked.asset.Backing[]> {
@@ -87,23 +76,24 @@ export async function getTokenBackingShare(
         ...new Set(reserves.flatMap((row) => Object.keys(row.underlying))),
     ] as bcked.asset.Id[];
 
-    const [supply, reported] = await Promise.all([
-        new DefiLlamaStablecoins().getChainSupply(stablecoinId, chain),
-        readReportedSupply(tokenId),
+    const [tokenSupply, chainSupply] = await Promise.all([
+        readPoints(path.join(PATHS.tokens, tokenId, PATHS.records, FILES.csv.supply)),
+        readPoints(path.join(PATHS.assets, assetId, PATHS.records, FILES.csv.supply)),
     ]);
 
     const backing: bcked.asset.Backing[] = [];
     for (const row of newReserves) {
-        const point = supplyAt(supply, Date.parse(row.timestamp));
-        const report = reported.get(Date.parse(row.timestamp));
-        const chainSupply = report?.[chain] ?? point?.chain;
-        if (chainSupply === undefined) continue;
-        const share = report?.["total"]
-            ? Math.min(1, chainSupply / report["total"])
-            : point
-              ? chainShare(point, row)
-              : null;
-        if (share === null) continue;
+        const time = Date.parse(row.timestamp);
+        const total = closest(tokenSupply, time, "total");
+        const onChain =
+            closest(tokenSupply, time, chain) ??
+            closest(chainSupply, time, "circulating") ??
+            closest(chainSupply, time, "issued");
+        if (!total || onChain === undefined) {
+            console.log(`${assetId}: no supply for the report of ${row.timestamp}, skipped`);
+            continue;
+        }
+        const share = Math.min(1, onChain / total);
         const underlying: Partial<Record<bcked.asset.Id, number>> = {};
         for (const asset of assets) {
             const value = row.underlying[asset];
@@ -112,18 +102,4 @@ export async function getTokenBackingShare(
         backing.push({ timestamp: toISOString(row.timestamp), underlying });
     }
     return backing;
-}
-
-/**
- * Circulating supply of an issuer's token on one chain, from DefiLlama. It leaves out tokens the
- * issuer holds in its own treasury, which the token's total supply includes.
- * @param stablecoinId DefiLlama stablecoin ID
- * @param chain DefiLlama chain name
- */
-export async function getIssuerCirculating(
-    stablecoinId: number,
-    chain: string
-): Promise<number | null> {
-    const supply = await new DefiLlamaStablecoins().getChainSupply(stablecoinId, chain);
-    return supplyAt(supply, Date.now())?.chain ?? null;
 }

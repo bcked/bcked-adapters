@@ -142,6 +142,11 @@ def extract(path):
     for s in sections:
         s["date"] = re.sub(r"\s+", " ", s["date"])
         s["timestamp"] = to_utc(s["date"])
+    # Tokens outstanding at both report dates, as the token total for the chain shares (from 2025).
+    tokens = re.search(r"redeemable tokens\s+outstanding \(Exhibit A line d\)\s+([\d,]+)\s+([\d,]+)", flat)
+    if tokens and len(sections) == 2:
+        for section, value in zip(sorted(sections, key=lambda s: s["timestamp"]), tokens.groups()):
+            section["supply"] = {"total": num(value)}
     return {"file": path, "sections": sections}
 
 
