@@ -1,7 +1,9 @@
 // @ts-check
-import swagger from "swagger-ui-dist";
+// Swagger UI 5.11.2 is self-hosted in ./vendor/swagger-ui so the page loads no third-party scripts.
+// The bundle defines window.SwaggerUIBundle.
 
-const ui = swagger.SwaggerUIBundle({
+// @ts-ignore
+const ui = window.SwaggerUIBundle({
     url: "https://api.bcked.com/openapi.json",
     tryItOutEnabled: true,
     // filter: true,
