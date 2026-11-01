@@ -172,7 +172,9 @@ export class Chainlink implements bcked.query.ApiModule {
                 const base = values[source.feed];
                 const factor =
                     source.times == "wstETH" ? rate : source.times ? values[source.times].usd : 1;
-                return [id, { timestamp: toISOString(base.updatedAt), usd: base.usd * factor }];
+                // A feed's latest answer is its valid price at the time it is read, even when the
+                // feed last updated hours ago (feeds update on a deviation or once a day).
+                return [id, { timestamp: toISOString(Date.now()), usd: base.usd * factor }];
             })
         );
     }
