@@ -6,7 +6,10 @@ export async function getLatest<T extends object & { timestamp: primitive.DateLi
     pathToFile: string
 ): Promise<T | null> {
     if (!fs.existsSync(pathToFile)) return null;
-    return await readLastEntry<T>(pathToFile);
+    const entry = await readLastEntry<T>(pathToFile);
+    // A file with only a header has no entry. Without this check its header would count as one.
+    if (!entry || Number.isNaN(new Date(entry.timestamp).getTime())) return null;
+    return entry;
 }
 
 export async function getClosest<T extends object & { timestamp: primitive.DateLike }>(
