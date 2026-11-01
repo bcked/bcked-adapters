@@ -101,13 +101,33 @@ const today = process.argv[3]
     : Math.floor(Date.now() / 1000 / DAY) * DAY;
 const latest = await provider.getBlockNumber();
 const prices: Record<string, Map<string, number>> = {};
-let guess = 7_000_000; // Ethereum block at the start of 2019
 
-for (let day = from; day < today; day += DAY) {
-    const block = await blockAt(day, guess, latest);
-    guess = block + 7000;
+// Guess each day's block by interpolating between the first day and now, then search near it.
+const first = await blockAt(from, 7_000_000, latest);
+const now = await timeOf(latest);
+const guessFor = (day: number) =>
+    Math.round(first + ((day - from) * (latest - first)) / Math.max(1, now - from));
+
+const secondsPerBlock = (now - (await timeOf(first))) / Math.max(1, latest - first);
+
+/**
+ * A block close to a time (within about a minute): a few steps from the interpolated guess. A
+ * daily price does not need the exact first block of the day.
+ */
+async function blockNear(day: number): Promise<number> {
+    let block = Math.min(latest, Math.max(first, guessFor(day)));
+    for (let step = 0; step < 4; step++) {
+        const offset = Math.round((day - (await timeOf(block))) / secondsPerBlock);
+        if (Math.abs(offset) <= 5) break;
+        block = Math.min(latest, Math.max(1, block + offset));
+    }
+    return block;
+}
+
+async function priceDay(day: number) {
+    const block = await blockNear(day);
     const feeds = await feedsAt(block);
-    if (!Object.keys(feeds).length) continue;
+    if (!Object.keys(feeds).length) return;
     const rawRate =
         feeds.STETH !== undefined
             ? await read(
@@ -124,8 +144,16 @@ for (let day = from; day < today; day += DAY) {
         if (factor === undefined) continue;
         (prices[id] ??= new Map()).set(timestamp, base * factor);
     }
-    if (new Date(day * 1000).getUTCDate() == 1)
-        console.log(timestamp.slice(0, 10), Object.keys(feeds).length, "feeds");
+}
+
+// Several days at once, each with its own reads.
+const PARALLEL_DAYS = 16;
+const days: number[] = [];
+for (let day = from; day < today; day += DAY) days.push(day);
+for (let i = 0; i < days.length; i += PARALLEL_DAYS) {
+    await Promise.all(days.slice(i, i + PARALLEL_DAYS).map(priceDay));
+    if (i % (PARALLEL_DAYS * 8) == 0)
+        console.log(new Date(days[i]! * 1000).toISOString().slice(0, 10));
 }
 
 for (const [id, series] of Object.entries(prices)) {

@@ -1,15 +1,26 @@
 name: Rebuild History
 
 # Rebuilds price, supply and custody history from Chainlink feeds and token contracts through
-# archive calls (scripts/history). Run by hand. Days that already have a row are kept.
+# archive calls (scripts/history). Run by hand, one part and one span of years per run, so each run
+# finishes and commits within the job's time limit. Days that already have a row are kept.
 
 on:
     workflow_dispatch:
         inputs:
+            part:
+                description: "What to rebuild"
+                required: true
+                default: "prices"
+                type: choice
+                options: [prices, onchain]
             from:
                 description: "First day (YYYY-MM-DD)"
                 required: false
                 default: "2019-01-01"
+            to:
+                description: "Day after the last day (YYYY-MM-DD), empty for today"
+                required: false
+                default: ""
 
 # Shares the group with the crawler, so both never push to the records at the same time.
 concurrency:
@@ -19,7 +30,7 @@ concurrency:
 jobs:
     rebuild:
         runs-on: ubuntu-latest
-        timeout-minutes: 300
+        timeout-minutes: 340
         name: Rebuild History
         steps:
             - name: Checkout Code
@@ -36,17 +47,19 @@ jobs:
             - name: Install Dependencies
               run: bun install --frozen-lockfile
             - name: Rebuild Prices
+              if: ${{ inputs.part == 'prices' }}
               working-directory: .records
               env:
                   ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
-              run: bun ../scripts/history/rebuild_prices.ts ${{ inputs.from }}
+              run: bun ../scripts/history/rebuild_prices.ts ${{ inputs.from }} ${{ inputs.to }}
             - name: Rebuild Supply and Custody
+              if: ${{ inputs.part == 'onchain' }}
               working-directory: .records
               env:
                   ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
                   ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
                   ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
-              run: bun ../scripts/history/rebuild_onchain.ts ${{ inputs.from }}
+              run: bun ../scripts/history/rebuild_onchain.ts ${{ inputs.from }} ${{ inputs.to }}
             - name: Commit Results
               uses: stefanzweifel/git-auto-commit-action@v7
               with:

@@ -151,12 +151,28 @@ const to = process.argv[3]
 
 const supplies = new Map<string, Map<string, string[]>>();
 const custody = new Map<string, string[]>();
+const PARALLEL_DAYS = 16;
 for (const system of Object.keys(RPC)) {
     const latest = await providers[system]!.getBlockNumber();
-    let guess = RPC[system]!.start;
-    for (let day = from; day < to; day += DAY) {
-        const block = await blockAt(system, day, guess, latest);
-        guess = block + RPC[system]!.perDay;
+    const first = await blockAt(system, from, RPC[system]!.start, latest);
+    const now = await timeOf(system, latest);
+    const guessFor = (day: number) =>
+        Math.round(first + ((day - from) * (latest - first)) / Math.max(1, now - from));
+
+    const secondsPerBlock = (now - (await timeOf(system, first))) / Math.max(1, latest - first);
+    // A block close to the time (within about a minute), in a few steps from the guess.
+    const blockNear = async (day: number) => {
+        let block = Math.min(latest, Math.max(first, guessFor(day)));
+        for (let step = 0; step < 4; step++) {
+            const offset = Math.round((day - (await timeOf(system, block))) / secondsPerBlock);
+            if (Math.abs(offset) * secondsPerBlock <= 60) break;
+            block = Math.min(latest, Math.max(1, block + offset));
+        }
+        return block;
+    };
+
+    const readDay = async (day: number) => {
+        const block = await blockNear(day);
         const timestamp = new Date(day * 1000).toISOString();
         for (const token of SUPPLY.filter((s) => s.system == system)) {
             const supply = await read(
@@ -189,7 +205,14 @@ for (const system of Object.keys(RPC)) {
             if (round && round[1] > 0n)
                 custody.set(timestamp, [timestamp, formatUnits(round[1], 8)]);
         }
-        if (new Date(day * 1000).getUTCDate() == 1) console.log(system, timestamp.slice(0, 10));
+    };
+
+    const days: number[] = [];
+    for (let day = from; day < to; day += DAY) days.push(day);
+    for (let i = 0; i < days.length; i += PARALLEL_DAYS) {
+        await Promise.all(days.slice(i, i + PARALLEL_DAYS).map(readDay));
+        if (i % (PARALLEL_DAYS * 8) == 0)
+            console.log(system, new Date(days[i]! * 1000).toISOString().slice(0, 10));
     }
 }
 
