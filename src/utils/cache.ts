@@ -6,7 +6,8 @@ export async function getLatest<T extends object & { timestamp: primitive.DateLi
     pathToFile: string
 ): Promise<T | null> {
     if (!fs.existsSync(pathToFile)) return null;
-    const entry = await readLastEntry<T>(pathToFile);
+    // Empty at runtime for a file without rows, although the type says otherwise.
+    const entry = (await readLastEntry<T>(pathToFile)) as T | undefined;
     // A file with only a header has no entry. Without this check its header would count as one.
     if (!entry || Number.isNaN(new Date(entry.timestamp).getTime())) return null;
     return entry;
