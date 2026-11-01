@@ -40,6 +40,18 @@ const PYUSD: bcked.asset.Id = "ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0
 type Sky = "USDS" | "DAI";
 const SUSDS_ETHEREUM = "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD";
 
+// Uniswap V3 on Ethereum, AUSD/USDC positions. AUSD (Agora) is not tracked yet.
+const UNISWAP_AUSD_USDC = {
+    kind: "uniswap",
+    manager: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
+    factory: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+    tokens: {
+        "0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a": "rwa:UNTRACKED",
+        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48":
+            "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    },
+} as const;
+
 type Position =
     // A token held as it is, counted in units of `to`.
     | { kind: "token"; address: string; to: bcked.asset.Id | Sky }
@@ -50,7 +62,11 @@ type Position =
     // A SparkLend deposit (aToken). The part not lent out is the underlying token.
     | { kind: "lend"; address: string; underlying: string; idle: bcked.asset.Id | Sky }
     // A fund token, counted at its DefiLlama price in US dollars.
-    | { kind: "fund"; address: string; to: bcked.asset.Id }
+    // A fund token, counted at its DefiLlama price in US dollars. `llama` is DefiLlama's chain name
+    // where it differs from the system id.
+    | { kind: "fund"; address: string; to: bcked.asset.Id; llama?: string }
+    // Uniswap V3 positions of the holder, each token in units of the asset it maps to.
+    | { kind: "uniswap"; manager: string; factory: string; tokens: Record<string, bcked.asset.Id> }
     // Tokens sent to an off-chain borrower's deposit address, less what came back from it. Read
     // with Alchemy's transfer API on Ethereum. If that fails, the amount stays not traced yet.
     | { kind: "sent"; address: string; to: string; decimals: number; as: bcked.asset.Id };
@@ -194,6 +210,35 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
                     decimals: 6,
                     to: LOAN,
                 },
+                // Other Grove x Steakhouse vaults (Morpho): AUSD and an earlier USDC vault.
+                {
+                    kind: "vault",
+                    address: "0xBEEfF0d672ab7F5018dFB614c93981045D4aA98a",
+                    decimals: 6,
+                    to: LOAN,
+                },
+                {
+                    kind: "vault",
+                    address: "0xBEEf2B5FD3D94469b7782aeBe6364E6e6FB1B709",
+                    decimals: 6,
+                    to: LOAN,
+                },
+                // RLUSD lent on Aave Core and Aave Horizon. RLUSD is not tracked yet.
+                ...[
+                    "0xFa82580c16A31D0c1bC632A36F82e83EfEF3Eec0",
+                    "0xE3190143Eb552456F88464662f0c0C4aC67A77eB",
+                ].map((address): Position => ({
+                    kind: "lend",
+                    address,
+                    underlying: "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
+                    idle: UNTRACKED,
+                })),
+                // Agora AUSD is not tracked yet.
+                {
+                    kind: "token",
+                    address: "0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a",
+                    to: UNTRACKED,
+                },
                 // Securitize Tokenized AAA CLO Fund (STAC): pools of corporate loans.
                 { kind: "fund", address: "0x51C2d74017390CbBd30550179A16A1c28F7210fc", to: LOAN },
                 // USDC lent off-chain: Galaxy Arch CLO, Galaxy warehouse facility, FalconX.
@@ -211,15 +256,38 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
             ],
         },
         {
-            // Grove on Base: Grove x Steakhouse USDC (Morpho).
+            // Grove on Base: Grove x Steakhouse USDC and other Steakhouse USDC vaults (Morpho).
             system: "base",
             address: "0x9B746dBC5269e1DF6e4193Bcb441C0FbBF1CeCEe",
             positions: [
+                "0xbeef0786756810478b88982DE00F3CD7fdB8e7c7",
+                "0xBeEf2d50B428675a1921bC6bBF4bfb9D8cF1461A",
+                "0xbeef0e0834849aCC03f0089F01f4F1Eeb06873C9",
+            ].map((address): Position => ({ kind: "vault", address, decimals: 6, to: LOAN })),
+        },
+        {
+            // Grove on Avalanche: Janus Henderson Anemoy AAA CLO Fund.
+            system: "avalanche",
+            address: "0x7107DD8F56642327945294a18A4280C78e153644",
+            positions: [
                 {
-                    kind: "vault",
-                    address: "0xbeef0786756810478b88982DE00F3CD7fdB8e7c7",
-                    decimals: 6,
+                    kind: "fund",
+                    address: "0x58f93d6b1ef2f44ec379cb975657c132cbed3b6b",
                     to: LOAN,
+                    llama: "avax",
+                },
+            ],
+        },
+        {
+            // Grove on Plume: Apollo Diversified Credit (ACRDX), private credit.
+            system: "plume",
+            address: "0x1DB91ad50446a671e2231f77e00948E68876F812",
+            positions: [
+                {
+                    kind: "fund",
+                    address: "0x9477724Bb54AD5417de8Baff29e59DF3fB4DA74f",
+                    to: LOAN,
+                    llama: "plume_mainnet",
                 },
             ],
         },
@@ -236,6 +304,41 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
                 {
                     kind: "vault",
                     address: "0xBEEff039907422219Fb367e525954DDC092854d9",
+                    decimals: 6,
+                    to: LOAN,
+                },
+            ],
+        },
+    ],
+    "ALLOCATOR-GROVE-A": [
+        {
+            // Grove's PAU proxy keeps idle USDS in a pocket contract: Sky's own token.
+            system: "ethereum",
+            address: "0x2Cd296095788A2741e72056D66B3Ae1fAeE23ea2",
+            positions: [
+                {
+                    kind: "token",
+                    address: "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+                    to: "USDS",
+                },
+            ],
+        },
+        {
+            // Uniswap V3 AUSD/USDC positions of the PAU proxy.
+            system: "ethereum",
+            address: "0x0DcD9298e163dFD3c0B5b00F0d9093C36e40A153",
+            positions: [UNISWAP_AUSD_USDC],
+        },
+    ],
+    "ALLOCATOR-PRYSM-A": [
+        {
+            // Osero x Gauntlet USDC Prime (Morpho).
+            system: "ethereum",
+            address: "0x6d370e359e9cbd0Fd35Bb38fAF705D84238CB884",
+            positions: [
+                {
+                    kind: "vault",
+                    address: "0x802148D518A6De2aF866f9A61ffB5e5C39156dB2",
                     decimals: 6,
                     to: LOAN,
                 },
@@ -298,6 +401,84 @@ async function multicall(chain: ChainProxy, system: string, calls: Call[]): Prom
 }
 
 const big = (result: Result | undefined) => result![0] as bigint;
+
+/**
+ * Token amounts of all Uniswap V3 positions of a holder, from each position's liquidity and range
+ * at the pool's current price. Uncollected fees are left out.
+ */
+async function uniswapAmounts(
+    chain: ChainProxy,
+    system: string,
+    manager: string,
+    factory: string,
+    holder: string
+): Promise<[string, number][]> {
+    const [count] = await multicall(chain, system, [
+        {
+            target: manager,
+            signature: "function balanceOf(address) view returns (uint256)",
+            args: [holder],
+        },
+    ]);
+    const ids = await multicall(
+        chain,
+        system,
+        _.range(Number(big(count))).map((i) => ({
+            target: manager,
+            signature: "function tokenOfOwnerByIndex(address,uint256) view returns (uint256)",
+            args: [holder, i],
+        }))
+    );
+    const amounts: [string, number][] = [];
+    for (const id of ids) {
+        const [position] = await multicall(chain, system, [
+            {
+                target: manager,
+                signature:
+                    "function positions(uint256) view returns (uint96, address, address, address, uint24, int24, int24, uint128, uint256, uint256, uint128, uint128)",
+                args: [big(id)],
+            },
+        ]);
+        const [, , token0, token1, fee, tickLower, tickUpper, liquidity] = position as unknown as [
+            bigint,
+            string,
+            string,
+            string,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+        ];
+        if (liquidity == 0n) continue;
+        const [pool] = await multicall(chain, system, [
+            {
+                target: factory,
+                signature: "function getPool(address,address,uint24) view returns (address)",
+                args: [token0, token1, fee],
+            },
+        ]);
+        const [slot0, decimals0, decimals1] = await multicall(chain, system, [
+            {
+                target: pool![0] as string,
+                signature:
+                    "function slot0() view returns (uint160, int24, uint16, uint16, uint16, uint8, bool)",
+            },
+            { target: token0, signature: ABI.decimals },
+            { target: token1, signature: ABI.decimals },
+        ]);
+        const price = Number(big(slot0)) / 2 ** 96;
+        const lower = Math.sqrt(1.0001 ** Number(tickLower));
+        const upper = Math.sqrt(1.0001 ** Number(tickUpper));
+        const current = Math.min(Math.max(price, lower), upper);
+        const L = Number(liquidity);
+        amounts.push([
+            token0,
+            (L * (upper - current)) / (current * upper) / 10 ** Number(big(decimals0)),
+        ]);
+        amounts.push([token1, (L * (current - lower)) / 10 ** Number(big(decimals1))]);
+    }
+    return amounts;
+}
 
 interface AssetTransfers {
     transfers: { rawContract: { value: string | null } }[];
@@ -365,7 +546,20 @@ async function readProxy(
             console.log(`Transfers of ${holder} to ${p.to} not read:`, error);
         }
     }
-    const held = positions.filter((p) => p.kind != "sent");
+    for (const p of positions) {
+        if (p.kind != "uniswap") continue;
+        for (const [token, amount] of await uniswapAmounts(
+            chain,
+            system,
+            p.manager,
+            p.factory,
+            holder
+        )) {
+            const to = p.tokens[token];
+            add(to ?? UNTRACKED, amount);
+        }
+    }
+    const held = positions.filter((p) => p.kind != "sent" && p.kind != "uniswap");
 
     const calls: Call[] = held.flatMap((p) => [
         { target: p.address, signature: ABI.balanceOf, args: [holder] },
@@ -409,7 +603,7 @@ async function readProxy(
                 break;
             }
             case "fund": {
-                const price = await api.getPrice({ address: p.address, system });
+                const price = await api.getPrice({ address: p.address, system: p.llama ?? system });
                 if (!price) throw Error(`No price for fund ${system}:${p.address}.`);
                 add(p.to, balance * price.usd);
                 break;

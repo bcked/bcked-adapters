@@ -16,6 +16,8 @@ export class ChainProxy
             arbitrum: EVMChain,
             base: EVMChain,
             robinhood: EVMChain,
+            avalanche: EVMChain,
+            plume: EVMChain,
             solana: SolanaChain,
         });
     }
