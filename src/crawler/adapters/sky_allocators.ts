@@ -34,19 +34,22 @@ const MMF: bcked.asset.Id = "rwa:MMF";
 const UNTRACKED: bcked.asset.Id = "rwa:UNTRACKED";
 const USDC: bcked.asset.Id = "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const USDT: bcked.asset.Id = "ethereum:0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const RLUSD: bcked.asset.Id = "ethereum:0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD";
+const AUSD: bcked.asset.Id = "ethereum:0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a";
 const PYUSD: bcked.asset.Id = "ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8";
 // Sky's own tokens: they count against the circulating supply of USDS or DAI. sUSDS and vaults
 // over it hold USDS.
 type Sky = "USDS" | "DAI";
 const SUSDS_ETHEREUM = "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD";
 
-// Uniswap V3 on Ethereum, AUSD/USDC positions. AUSD (Agora) is not tracked yet.
+// Uniswap V3 on Ethereum, AUSD/USDC positions.
 const UNISWAP_AUSD_USDC = {
     kind: "uniswap",
     manager: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
     factory: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
     tokens: {
-        "0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a": "rwa:UNTRACKED",
+        "0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a":
+            "ethereum:0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a",
         "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48":
             "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     },
@@ -86,11 +89,10 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
             positions: [
                 { kind: "vault", address: SUSDS_ETHEREUM, decimals: 18, to: "USDS" },
                 { kind: "token", address: "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8", to: PYUSD },
-                // RLUSD is not tracked yet.
                 {
                     kind: "token",
                     address: "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
-                    to: UNTRACKED,
+                    to: RLUSD,
                 },
                 // Morpho vaults: sparkUSDCbc, sparkUSDTbc, Sentora RLUSD, Arkis (USDC).
                 {
@@ -152,7 +154,7 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
                     kind: "lend",
                     address: "0x59275Fb72c8004F44BA44432e25082932Fd677f1",
                     underlying: "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
-                    idle: UNTRACKED,
+                    idle: RLUSD,
                 },
             ],
         },
@@ -223,7 +225,7 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
                     decimals: 6,
                     to: LOAN,
                 },
-                // RLUSD lent on Aave Core and Aave Horizon. RLUSD is not tracked yet.
+                // RLUSD lent on Aave Core and Aave Horizon.
                 ...[
                     "0xFa82580c16A31D0c1bC632A36F82e83EfEF3Eec0",
                     "0xE3190143Eb552456F88464662f0c0C4aC67A77eB",
@@ -231,13 +233,12 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
                     kind: "lend",
                     address,
                     underlying: "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
-                    idle: UNTRACKED,
+                    idle: RLUSD,
                 })),
-                // Agora AUSD is not tracked yet.
                 {
                     kind: "token",
                     address: "0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a",
-                    to: UNTRACKED,
+                    to: AUSD,
                 },
                 // Securitize Tokenized AAA CLO Fund (STAC): pools of corporate loans.
                 { kind: "fund", address: "0x51C2d74017390CbBd30550179A16A1c28F7210fc", to: LOAN },
