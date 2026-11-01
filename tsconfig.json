@@ -39,6 +39,7 @@
     },
     "include": [
         "src/**/*.ts",
+        "scripts/**/*.ts",
         "entities/**/*.ts",
         "tokens/**/*.ts",
         "systems/**/*.ts",
