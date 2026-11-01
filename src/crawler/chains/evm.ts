@@ -36,6 +36,8 @@ const RPC_URLS: Record<string, string> = {
     arbitrum: "https://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_ARBITRUM}",
     base: "https://base-rpc.publicnode.com",
     robinhood: "https://rpc.mainnet.chain.robinhood.com",
+    avalanche: "https://avalanche-c-chain-rpc.publicnode.com",
+    plume: "https://rpc.plume.org",
 };
 
 const CHAIN_IDS: Record<string, number> = {
@@ -47,6 +49,8 @@ const CHAIN_IDS: Record<string, number> = {
     arbitrum: 42161,
     base: 8453,
     robinhood: 4663,
+    avalanche: 43114,
+    plume: 98866,
 };
 
 export class EVMChain implements bcked.query.ChainModule {
