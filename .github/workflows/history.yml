@@ -1,8 +1,10 @@
 name: Rebuild History
 
 # Rebuilds price, supply and custody history from Chainlink feeds and token contracts through
-# archive calls (scripts/history). Run by hand, one part and one span of years per run, so each run
-# finishes and commits within the job's time limit. Days that already have a row are kept.
+# archive calls (scripts/history). Run by hand. One run works through the years one after
+# another, each year as its own job that commits its results, so a failure loses at most one year.
+# A running workflow is never cancelled by the hourly crawler, which waits for the same group.
+# Days that already have a row are kept.
 
 on:
     workflow_dispatch:
@@ -10,17 +12,17 @@ on:
             part:
                 description: "What to rebuild"
                 required: true
-                default: "prices"
+                default: "both"
                 type: choice
-                options: [prices, onchain]
-            from:
-                description: "First day (YYYY-MM-DD)"
+                options: [both, prices, onchain]
+            from_year:
+                description: "First year of prices"
                 required: false
-                default: "2019-01-01"
-            to:
-                description: "Day after the last day (YYYY-MM-DD), empty for today"
+                default: "2020"
+            onchain_from_year:
+                description: "First year of supply and custody"
                 required: false
-                default: ""
+                default: "2020"
 
 # Shares the group with the crawler, so both never push to the records at the same time.
 concurrency:
@@ -28,43 +30,100 @@ concurrency:
     cancel-in-progress: false
 
 jobs:
-    rebuild:
+    prices:
+        if: ${{ inputs.part != 'onchain' }}
         runs-on: ubuntu-latest
         timeout-minutes: 340
-        name: Rebuild History
+        name: Prices ${{ matrix.year }}
+        strategy:
+            max-parallel: 1
+            fail-fast: true
+            matrix:
+                year: [2020, 2021, 2022, 2023, 2024, 2025, 2026]
         steps:
             - name: Checkout Code
+              if: ${{ matrix.year >= fromJSON(inputs.from_year) }}
               uses: actions/checkout@v7
             - name: Checkout Records
+              if: ${{ matrix.year >= fromJSON(inputs.from_year) }}
               uses: actions/checkout@v7
               with:
                   ref: records
                   path: .records
             - name: Setup Bun
+              if: ${{ matrix.year >= fromJSON(inputs.from_year) }}
               uses: oven-sh/setup-bun@v2
               with:
                   bun-version-file: package.json
             - name: Install Dependencies
+              if: ${{ matrix.year >= fromJSON(inputs.from_year) }}
               run: bun install --frozen-lockfile
             - name: Rebuild Prices
-              if: ${{ inputs.part == 'prices' }}
+              if: ${{ matrix.year >= fromJSON(inputs.from_year) }}
               working-directory: .records
               env:
                   ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
-              run: bun ../scripts/history/rebuild_prices.ts ${{ inputs.from }} ${{ inputs.to }}
+              run: |
+                  to=$(( ${{ matrix.year }} + 1 ))-01-01
+                  if [[ "$to" > "$(date -u +%F)" ]]; then to=""; fi
+                  bun ../scripts/history/rebuild_prices.ts ${{ matrix.year }}-01-01 $to
+            - name: Commit Results
+              if: ${{ matrix.year >= fromJSON(inputs.from_year) }}
+              uses: stefanzweifel/git-auto-commit-action@v7
+              with:
+                  repository: .records
+                  commit_message: Rebuild ${{ matrix.year }} prices from Chainlink
+                  commit_user_name: GitHub Action
+                  commit_user_email: action@github.com
+                  commit_author: actions-user <action@github.com>
+                  file_pattern: "*.csv"
+
+    onchain:
+        needs: prices
+        if: ${{ always() && inputs.part != 'prices' && (needs.prices.result == 'success' || needs.prices.result == 'skipped') }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 340
+        name: Supply and custody ${{ matrix.year }}
+        strategy:
+            max-parallel: 1
+            fail-fast: true
+            matrix:
+                year: [2020, 2021, 2022, 2023, 2024, 2025, 2026]
+        steps:
+            - name: Checkout Code
+              if: ${{ matrix.year >= fromJSON(inputs.onchain_from_year) }}
+              uses: actions/checkout@v7
+            - name: Checkout Records
+              if: ${{ matrix.year >= fromJSON(inputs.onchain_from_year) }}
+              uses: actions/checkout@v7
+              with:
+                  ref: records
+                  path: .records
+            - name: Setup Bun
+              if: ${{ matrix.year >= fromJSON(inputs.onchain_from_year) }}
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version-file: package.json
+            - name: Install Dependencies
+              if: ${{ matrix.year >= fromJSON(inputs.onchain_from_year) }}
+              run: bun install --frozen-lockfile
             - name: Rebuild Supply and Custody
-              if: ${{ inputs.part == 'onchain' }}
+              if: ${{ matrix.year >= fromJSON(inputs.onchain_from_year) }}
               working-directory: .records
               env:
                   ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
                   ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
                   ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
-              run: bun ../scripts/history/rebuild_onchain.ts ${{ inputs.from }} ${{ inputs.to }}
+              run: |
+                  to=$(( ${{ matrix.year }} + 1 ))-01-01
+                  if [[ "$to" > "$(date -u +%F)" ]]; then to=""; fi
+                  bun ../scripts/history/rebuild_onchain.ts ${{ matrix.year }}-01-01 $to
             - name: Commit Results
+              if: ${{ matrix.year >= fromJSON(inputs.onchain_from_year) }}
               uses: stefanzweifel/git-auto-commit-action@v7
               with:
                   repository: .records
-                  commit_message: Rebuild history from Chainlink and token contracts
+                  commit_message: Rebuild ${{ matrix.year }} supply and custody from token contracts
                   commit_user_name: GitHub Action
                   commit_user_email: action@github.com
                   commit_author: actions-user <action@github.com>
