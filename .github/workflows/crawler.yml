@@ -29,8 +29,11 @@ jobs:
             - name: Checkout Records
               uses: actions/checkout@v7
               with:
+                  # Private repository. Needs a deploy key of bcked/bcked-records with write access.
+                  repository: bcked/bcked-records
                   ref: records
                   path: .records
+                  ssh-key: ${{ secrets.RECORDS_DEPLOY_KEY }}
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
               with:

@@ -26,8 +26,11 @@ jobs:
             - name: Checkout Records
               uses: actions/checkout@v7
               with:
+                  # Private repository. Needs a deploy key of bcked/bcked-records with write access.
+                  repository: bcked/bcked-records
                   ref: records
                   path: .records
+                  ssh-key: ${{ secrets.RECORDS_DEPLOY_KEY }}
             - name: Checkout Evidence
               # Private copies of the reports. Needs a deploy key of bcked/bcked-evidence with write
               # access in the secret EVIDENCE_DEPLOY_KEY. Without it, reports are only listed in evidence.csv.
