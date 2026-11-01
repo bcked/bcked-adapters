@@ -147,7 +147,8 @@ async function priceDay(day: number) {
 }
 
 // Several days at once, each with its own reads.
-const PARALLEL_DAYS = 16;
+// Days read at once. More gets throttled by the RPC provider, and the retries cost more than they save.
+const PARALLEL_DAYS = Number(process.env["PARALLEL_DAYS"] ?? 4);
 const days: number[] = [];
 for (let day = from; day < today; day += DAY) days.push(day);
 for (let i = 0; i < days.length; i += PARALLEL_DAYS) {
