@@ -1,7 +1,5 @@
-import {
-    getTokenBackingShare,
-    getIssuerCirculating,
-} from "../../src/crawler/adapters/issuer_backing";
+import { getTokenBackingShare } from "../../src/crawler/adapters/issuer_backing";
+import { onChainSupply } from "../../src/crawler/adapters/circulating";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { toISOString } from "../../src/utils/string_formatting";
 
@@ -45,10 +43,12 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
-        // Circle issues USDC natively on Arbitrum. The circulating supply comes from DefiLlama, without
-        // tokens in the issuer's treasury.
-        const circulating = await getIssuerCirculating(2, "Arbitrum");
-        if (circulating === null) return [];
+        // Circle issues USDC natively on Arbitrum. Circulating supply is the token's totalSupply on-chain:
+        // the issuer mints on demand and holds no unissued tokens.
+        const circulating = await onChainSupply(
+            details.identifier.address,
+            details.identifier.system
+        );
         return [
             {
                 timestamp: toISOString(Date.now()),
@@ -64,6 +64,11 @@ export default class Adapter implements bcked.asset.Adapter {
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
         // Circle's reserves cover all chains (see tokens/usdc). USDC on Arbitrum is backed by the
         // Arbitrum share of the circulating supply.
-        return getTokenBackingShare("usdc", 2, "Arbitrum", lastRecorded);
+        return getTokenBackingShare(
+            "usdc",
+            "arbitrum:0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+            "Arbitrum",
+            lastRecorded
+        );
     }
 }

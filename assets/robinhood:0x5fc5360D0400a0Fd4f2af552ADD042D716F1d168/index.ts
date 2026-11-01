@@ -1,7 +1,5 @@
-import {
-    getTokenBackingShare,
-    getIssuerCirculating,
-} from "../../src/crawler/adapters/issuer_backing";
+import { getTokenBackingShare } from "../../src/crawler/adapters/issuer_backing";
+import { onChainSupply } from "../../src/crawler/adapters/circulating";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { toISOString } from "../../src/utils/string_formatting";
 
@@ -45,10 +43,12 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
-        // Paxos issues USDG natively on Robinhood Chain. The circulating supply comes from DefiLlama, without
-        // tokens in the issuer's treasury.
-        const circulating = await getIssuerCirculating(286, "Robinhood Chain");
-        if (circulating === null) return [];
+        // Paxos issues USDG natively on Robinhood Chain. Circulating supply is the token's totalSupply on-chain:
+        // the issuer mints on demand and holds no unissued tokens.
+        const circulating = await onChainSupply(
+            details.identifier.address,
+            details.identifier.system
+        );
         return [
             {
                 timestamp: toISOString(Date.now()),
@@ -64,6 +64,11 @@ export default class Adapter implements bcked.asset.Adapter {
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
         // Paxos's reserves cover all chains (see tokens/usdg). USDG on Robinhood Chain is backed by the
         // Robinhood Chain share of the circulating supply.
-        return getTokenBackingShare("usdg", 286, "Robinhood Chain", lastRecorded);
+        return getTokenBackingShare(
+            "usdg",
+            "robinhood:0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+            "Robinhood Chain",
+            lastRecorded
+        );
     }
 }

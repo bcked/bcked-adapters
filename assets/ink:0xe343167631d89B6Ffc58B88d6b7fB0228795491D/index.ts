@@ -1,7 +1,5 @@
-import {
-    getTokenBackingShare,
-    getIssuerCirculating,
-} from "../../src/crawler/adapters/issuer_backing";
+import { getTokenBackingShare } from "../../src/crawler/adapters/issuer_backing";
+import { onChainSupply } from "../../src/crawler/adapters/circulating";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { toISOString } from "../../src/utils/string_formatting";
 
@@ -45,10 +43,12 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
-        // Paxos issues USDG natively on Ink. The circulating supply comes from DefiLlama, without
-        // tokens in the issuer's treasury.
-        const circulating = await getIssuerCirculating(286, "Ink");
-        if (circulating === null) return [];
+        // Paxos issues USDG natively on Ink. Circulating supply is the token's totalSupply on-chain:
+        // the issuer mints on demand and holds no unissued tokens.
+        const circulating = await onChainSupply(
+            details.identifier.address,
+            details.identifier.system
+        );
         return [
             {
                 timestamp: toISOString(Date.now()),
@@ -64,6 +64,11 @@ export default class Adapter implements bcked.asset.Adapter {
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
         // Paxos's reserves cover all chains (see tokens/usdg). USDG on Ink is backed by the
         // Ink share of the circulating supply.
-        return getTokenBackingShare("usdg", 286, "Ink", lastRecorded);
+        return getTokenBackingShare(
+            "usdg",
+            "ink:0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
+            "Ink",
+            lastRecorded
+        );
     }
 }

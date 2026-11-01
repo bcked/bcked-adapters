@@ -104,7 +104,7 @@ The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs
   debt subtotal on 2024-07-26 is 45,000 higher than its holdings. The holdings are used.
 - Tether: U.S. Treasury bills are `rwa:USTB`, reverse repurchase agreements `rwa:USTrepo`, cash and
   bank deposits `rwa:USD`. Precious metals and Bitcoin are converted from USD to troy ounces (`rwa:XAU`)
-  and BTC (`bitcoin:BTC`) with the DefiLlama price at the report date (`convert_prices.py`). Commercial
+  and BTC (`bitcoin:BTC`) with the Chainlink BTC/USD and XAU/USD prices on-chain at the report date (`convert_prices.py`). Commercial
   paper and certificates of deposit are `rwa:CP`, secured loans `rwa:LOAN`, money market funds
   `rwa:MMF`, public equities `rwa:EQUITY`, corporate bonds `rwa:CORPBOND` and non-U.S. treasury bills
   `rwa:NONUSTB`. Other investments, which Tether does not break down, and the 2021 and 2022 line

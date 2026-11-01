@@ -22,7 +22,6 @@
 import { FunctionFragment, Interface, formatUnits, type Result } from "ethers";
 import _ from "lodash";
 
-import { ApiProxy } from "../apis/proxy";
 import { ChainProxy } from "../chains/proxy";
 
 const MULTICALL3 = "0xcA11bde05977b3631167028862bE2a173976CA11";
@@ -40,6 +39,9 @@ const PYUSD: bcked.asset.Id = "ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0
 // Sky's own tokens: they count against the circulating supply of USDS or DAI. sUSDS and vaults
 // over it hold USDS.
 type Sky = "USDS" | "DAI";
+const JAAA = "0x5a0F93D040De44e78F251b03c43be9CF317Dcf64";
+// Centrifuge vault of JAAA on Ethereum, which gives the share price.
+const JAAA_VAULT = "0x4880799eE5200fC58DA299e965df644fBf46780B";
 const SUSDS_ETHEREUM = "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD";
 
 // Uniswap V3 on Ethereum, AUSD/USDC positions.
@@ -65,9 +67,9 @@ type Position =
     // A SparkLend deposit (aToken). The part not lent out is the underlying token.
     | { kind: "lend"; address: string; underlying: string; idle: bcked.asset.Id | Sky }
     // A fund token, counted at its DefiLlama price in US dollars.
-    // A fund token, counted at its DefiLlama price in US dollars. `llama` is DefiLlama's chain name
-    // where it differs from the system id.
-    | { kind: "fund"; address: string; to: bcked.asset.Id; llama?: string }
+    // A fund token, counted at its share price from the fund's Centrifuge vault on Ethereum
+    // (convertToAssets of one share), in US dollars. Holdings on other chains use the same price.
+    | { kind: "nav"; address: string; vault: string; decimals: number; to: bcked.asset.Id }
     // Uniswap V3 positions of the holder, each token in units of the asset it maps to.
     | { kind: "uniswap"; manager: string; factory: string; tokens: Record<string, bcked.asset.Id> }
     // Tokens sent to an off-chain borrower's deposit address, less what came back from it. Read
@@ -201,10 +203,17 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
             address: "0x491EDFB0B8b608044e227225C715981a30F3A44E",
             positions: [
                 // Janus Henderson Anemoy AAA CLO Fund: pools of corporate loans.
-                { kind: "fund", address: "0x5a0F93D040De44e78F251b03c43be9CF317Dcf64", to: LOAN },
-                // BlackRock BUIDL-I and Janus Henderson Anemoy Treasury Fund.
-                { kind: "fund", address: "0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041", to: MMF },
-                { kind: "fund", address: "0x8c213ee79581Ff4984583C6a801e5263418C4b86", to: MMF },
+                { kind: "nav", address: JAAA, vault: JAAA_VAULT, decimals: 6, to: LOAN },
+                // BlackRock BUIDL-I, a money market fund at $1 per share.
+                { kind: "token", address: "0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041", to: MMF },
+                // Janus Henderson Anemoy Treasury Fund.
+                {
+                    kind: "nav",
+                    address: "0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+                    vault: "0xFE6920eB6C421f1179cA8c8d4170530CDBdfd77A",
+                    decimals: 6,
+                    to: MMF,
+                },
                 // Grove x Steakhouse USDC (Morpho).
                 {
                     kind: "vault",
@@ -240,8 +249,15 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
                     address: "0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a",
                     to: AUSD,
                 },
-                // Securitize Tokenized AAA CLO Fund (STAC): pools of corporate loans.
-                { kind: "fund", address: "0x51C2d74017390CbBd30550179A16A1c28F7210fc", to: LOAN },
+                // Securitize Tokenized AAA CLO Fund (STAC): pools of corporate loans. Its share price is
+                // not on-chain, so it counts at the USDC paid in, less what came back.
+                {
+                    kind: "sent",
+                    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                    to: "0x51e4C4A356784D0B3b698BFB277C626b2b9fe178",
+                    decimals: 6,
+                    as: LOAN,
+                },
                 // USDC lent off-chain: Galaxy Arch CLO, Galaxy warehouse facility, FalconX.
                 ...[
                     "0x2E3A11807B94E689387f60CD4BF52A56857f2eDC",
@@ -272,10 +288,11 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
             address: "0x7107DD8F56642327945294a18A4280C78e153644",
             positions: [
                 {
-                    kind: "fund",
+                    kind: "nav",
                     address: "0x58f93d6b1ef2f44ec379cb975657c132cbed3b6b",
+                    vault: JAAA_VAULT,
+                    decimals: 6,
                     to: LOAN,
-                    llama: "avax",
                 },
             ],
         },
@@ -284,12 +301,8 @@ export const ALLOCATORS: Record<string, Proxy[]> = {
             system: "plume",
             address: "0x1DB91ad50446a671e2231f77e00948E68876F812",
             positions: [
-                {
-                    kind: "fund",
-                    address: "0x9477724Bb54AD5417de8Baff29e59DF3fB4DA74f",
-                    to: LOAN,
-                    llama: "plume_mainnet",
-                },
+                // Its share price is not on-chain (the Ethereum vault is closed), so it counts at par.
+                { kind: "token", address: "0x9477724Bb54AD5417de8Baff29e59DF3fB4DA74f", to: LOAN },
             ],
         },
         {
@@ -524,7 +537,6 @@ async function transferred(
 /** Reads one proxy: its positions, each mapped to reserves or to Sky's own tokens. */
 async function readProxy(
     chain: ChainProxy,
-    api: ApiProxy,
     proxy: Proxy,
     susdsRate: number
 ): Promise<AllocatorPositions> {
@@ -603,10 +615,16 @@ async function readProxy(
                 add(LOAN, balance - idle);
                 break;
             }
-            case "fund": {
-                const price = await api.getPrice({ address: p.address, system: p.llama ?? system });
-                if (!price) throw Error(`No price for fund ${system}:${p.address}.`);
-                add(p.to, balance * price.usd);
+            case "nav": {
+                const [assets] = await multicall(chain, "ethereum", [
+                    {
+                        target: p.vault,
+                        signature: ABI.convertToAssets,
+                        args: [10n ** BigInt(p.decimals)],
+                    },
+                ]);
+                const price = parseFloat(formatUnits(big(assets), p.decimals));
+                add(p.to, balance * price);
                 break;
             }
         }
@@ -617,7 +635,6 @@ async function readProxy(
 /** Positions of one allocator ilk over all its proxies. */
 export async function readAllocator(
     chain: ChainProxy,
-    api: ApiProxy,
     ilk: string
 ): Promise<AllocatorPositions | null> {
     const proxies = ALLOCATORS[ilk];
@@ -630,7 +647,7 @@ export async function readAllocator(
 
     const total: AllocatorPositions = { underlying: {}, sky: { USDS: 0, DAI: 0 } };
     for (const proxy of proxies) {
-        const read = await readProxy(chain, api, proxy, susdsRate);
+        const read = await readProxy(chain, proxy, susdsRate);
         total.sky.USDS += read.sky.USDS;
         total.sky.DAI += read.sky.DAI;
         for (const [id, amount] of Object.entries(read.underlying)) {

@@ -7,7 +7,7 @@ class Index extends JsonResources {
             info: {
                 title: "bcked API",
                 description:
-                    "Free API for all data on bcked.com. The data comes from issuer reports, on-chain data and third-party APIs, listed at https://bcked.com/methodology. Powered by Etherscan.io APIs.",
+                    "Free API for all data on bcked.com. The data comes from issuer reports, on-chain data and third-party APIs, listed at https://bcked.com/methodology.",
                 termsOfService: "https://bcked.com/legal-notice",
                 contact: {
                     name: "API Support",

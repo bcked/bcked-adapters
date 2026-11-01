@@ -22,6 +22,9 @@ const MAX_REPORT_AGE_DAYS: Record<string, number> = {
 
 /** Assets whose price is constant or never crawled. */
 const STATIC_PRICES = (id: string) => id.startsWith("rwa:") && id !== "rwa:XAU";
+// Assets without a market price from a source bcked may use. BUSD has no Chainlink feed since
+// Paxos stopped minting it, so it has no price and no backing ratio.
+const NO_PRICE = new Set(["ethereum:0x4Fabb145d64652a948d72533023f6E7A623C7C53"]);
 
 interface Dated {
     date: string;
@@ -65,13 +68,15 @@ for (const asset of assets) {
         console.log(`${asset.id}: not crawled yet, skipped`);
         continue;
     }
-    if (!STATIC_PRICES(asset.id)) check(asset, "price", asset.price, MAX_AGE_DAYS);
+    if (!STATIC_PRICES(asset.id) && !NO_PRICE.has(asset.id))
+        check(asset, "price", asset.price, MAX_AGE_DAYS);
     if (asset.system !== "rwa") check(asset, "supply", asset.supply, MAX_AGE_DAYS);
     const reportAge =
         asset.backing == "reports"
             ? MAX_REPORT_AGE_DAYS[asset.linkedEntities.issuer ?? ""]
             : undefined;
-    if (reportAge !== undefined || asset.collateral)
+    // The backing check reads the backing ratio, which needs a price.
+    if (!NO_PRICE.has(asset.id) && (reportAge !== undefined || asset.collateral))
         check(asset, "backing", asset.collateral, reportAge ?? MAX_AGE_DAYS);
 }
 

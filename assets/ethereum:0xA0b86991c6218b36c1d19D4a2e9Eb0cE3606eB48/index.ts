@@ -1,7 +1,5 @@
-import {
-    getTokenBackingShare,
-    getIssuerCirculating,
-} from "../../src/crawler/adapters/issuer_backing";
+import { getTokenBackingShare } from "../../src/crawler/adapters/issuer_backing";
+import { onChainSupply } from "../../src/crawler/adapters/circulating";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 
@@ -55,7 +53,10 @@ export default class Adapter implements bcked.asset.Adapter {
             {
                 timestamp,
                 // Without the tokens held in the issuer's treasury, which are not backed.
-                circulating: await getIssuerCirculating(2, "Ethereum"),
+                circulating: await onChainSupply(
+                    details.identifier.address,
+                    details.identifier.system
+                ),
                 burned: burned ?? null,
                 total: burned ? issued - burned : issued,
                 issued: issued,
@@ -68,6 +69,11 @@ export default class Adapter implements bcked.asset.Adapter {
         // Circle's reserves cover all chains. They are recorded for the circle entity from the
         // BlackRock fund data, the transparency page and the attestation reports.
         // USDC on Ethereum is backed by the Ethereum share of the circulating supply.
-        return getTokenBackingShare("usdc", 2, "Ethereum", lastRecorded);
+        return getTokenBackingShare(
+            "usdc",
+            "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "Ethereum",
+            lastRecorded
+        );
     }
 }

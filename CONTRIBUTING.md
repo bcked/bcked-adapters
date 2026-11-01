@@ -23,8 +23,8 @@ A token is eligible if all of the following hold:
   Purely algorithmic tokens without reserves are out of scope.
 - **The backing can be checked from public sources.** On-chain balances, an API of the issuer, or
   published attestation or audit reports. Backing that is only stated in marketing text is not enough.
-- **It has a circulating market cap of at least $100M.** Measured on DefiLlama, rwa.xyz, Artemis or
-  CoinGecko at the time of the request.
+- **It has a circulating market cap of at least $100M.** Measured from its supply and price at the
+  time of the request.
 
 Assets that back an already tracked token are always eligible, whatever their market cap, because the
 backing chain is incomplete without them.
@@ -49,7 +49,7 @@ assets/ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78/
 `index.ts` exports the asset details (name, symbol, identifier, asset classes, issuer, reference link,
 tags) and a class with `getPrice`, `getSupply` and `getBacking`. Most tokens reuse the shared helpers:
 
-- Price: `ApiProxy.getPrice` (DefiLlama, DexScreener).
+- Price: `ApiProxy.getPrice` (Chainlink feeds on Ethereum, see `src/crawler/apis/chainlink.ts`). A new token needs a feed in `PRICE_SOURCES`.
 - Supply: `ChainProxy.getSupply` (total supply minus tokens at burn addresses).
 - Backing on-chain: `ChainProxy.getBalance` for tokens held by a contract (see WETH).
 - Backing of an issuer that reports for all chains together: record the reserves on the issuer entity
@@ -84,7 +84,7 @@ bun install
 ```
 
 API keys for the data sources are read from a `.env` file in the project root
-(`ALCHEMY_ETHEREUM`, `ALCHEMY_POLYGON`, `ALCHEMY_SOLANA`, `ALCHEMY_ARBITRUM`, `ETHERSCAN_API_KEY`).
+(`ALCHEMY_ETHEREUM`, `ALCHEMY_POLYGON`, `ALCHEMY_SOLANA`, `ALCHEMY_ARBITRUM`).
 Bun loads it automatically.
 
 ## How to locally run the adapters?

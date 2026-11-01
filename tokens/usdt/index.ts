@@ -1,3 +1,11 @@
+import path from "node:path";
+
+import { FILES, PATHS } from "../../src/constants";
+import { tetherTotalCirculating } from "../../src/crawler/adapters/circulating";
+import { toAsync } from "../../src/utils/array";
+import { writeToCsv } from "../../src/utils/csv";
+import { toISOString } from "../../src/utils/string_formatting";
+
 /**
  * Tether USD on every tracked chain. The reserves are reported for all chains together and recorded
  * here (records/backing.csv, evidence.csv) by scripts/attestations/update.sh. The chain assets link
@@ -24,5 +32,22 @@ export default class Adapter implements bcked.token.Adapter {
         return details;
     }
 
-    async update(): Promise<void> {}
+    /**
+     * Records the USDT circulating on all chains, from Tether's figures, as the token's total. The
+     * chain assets take their share of the reserves against it (see getTokenBackingShare).
+     */
+    async update(): Promise<void> {
+        const total = await tetherTotalCirculating("usdt");
+        const csvPath = path.join(
+            PATHS.tokens,
+            details.identifier,
+            PATHS.records,
+            FILES.csv.supply
+        );
+        await writeToCsv(
+            csvPath,
+            toAsync([{ timestamp: toISOString(Date.now()), total }]),
+            "timestamp"
+        );
+    }
 }
