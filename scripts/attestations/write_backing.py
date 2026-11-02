@@ -86,7 +86,8 @@ def write_supply(records, reports, append, keep):
     if os.path.exists(path):
         with open(path) as f:
             for row in csv.DictReader(f):
-                existing[row.pop("timestamp")] = {k: float(v) for k, v in row.items() if v}
+                timestamp = row.pop("timestamp")
+                existing[timestamp] = {k: float(v) for k, v in row.items() if v}
     if append:
         rows = {**existing, **new}
     elif keep:

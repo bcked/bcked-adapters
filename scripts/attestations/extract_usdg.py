@@ -12,11 +12,12 @@ assets by category, reported total). Each report covers two dates.
   mixes bank deposits and money market funds and is recorded as composition not reported. Some of these
   reports have no text layer either.
 
-Each section also has the reported number of USDG tokens outstanding ("supply": {"total": ...}). The
-chain shares of the reserves are taken against it (see getTokenBackingShare). Where DefiLlama has no
-supply per chain yet (before 2025-07), the chains are given too: until 2025-02 all tokens were on
-Ethereum, and in 2025-03 and 2025-05 Ethereum is its totalSupply at the report time, read with an
-archive call, and Solana the rest.
+Each section also has the reported number of USDG tokens outstanding ("supply": {"total": ...}) and,
+where known, the tokens per chain. The chain shares of the reserves are taken against them (see
+getTokenBackingShare). Since 2026-01 Exhibit A lists the tokens per chain. In reports without text
+these are read manually. Earlier reports give only the total: until 2025-02 all tokens were on
+Ethereum. For 2025-03 to 2025-12 Ethereum, Ink and X Layer are their totalSupply at the report time,
+read with archive calls, and Solana the rest. The archive calls match Exhibit A of 2026-01 to the token.
 
 Reports or dates without text are read manually and kept in usdg_manual.json, by file name and date.
 An entry has the reserves ("cat"), the supply ("supply") or both.
@@ -103,6 +104,38 @@ def token_totals(flat):
     return []
 
 
+# Chain names in the reports, as named in the token's supply records where they differ.
+CHAIN_NAMES = {"Robinhood": "Robinhood Chain", "Arbitrum One": "Arbitrum"}
+
+
+def chain_supply(text, count):
+    """USDG tokens outstanding per chain at each report date, from Exhibit A (since 2026-03).
+
+    The columns follow the order of the footnotes that name each chain's contract. Some reports have
+    one table with both dates per chain, others one table per date. Returns [] if the table is missing
+    or the chains do not add up to the total.
+    """
+    flat = re.sub(r"\s+", " ", text)
+    chains = list(dict.fromkeys(re.findall(r"Blockchain ([A-Za-z ]+?) refers to the smart contract", flat)))
+    rows = [
+        [num(v) for v in m.split()]
+        for m in re.findall(r"redeemable tokens (?:d\. )?((?:[\d,]{3,} )+)outstanding", flat)
+    ]
+    k = len(chains) + 1
+    if len(rows) == 1 and len(rows[0]) == k * count:  # one table, both dates per chain
+        per_date = [rows[0][i::count] for i in range(count)]
+    elif len(rows) == count and all(len(r) == k for r in rows):  # one table per date
+        per_date = rows
+    else:
+        return []
+    result = []
+    for values in per_date:
+        if abs(sum(values[:-1]) - values[-1]) > 1:
+            return []
+        result.append({CHAIN_NAMES.get(c, c): v for c, v in zip(chains, values)})
+    return result
+
+
 def extract(path, manual):
     text = pdf_text(path)
     flat = re.sub(r"\s+", " ", text)
@@ -115,6 +148,7 @@ def extract(path, manual):
         zone = "Asia/Singapore" if dates and dates[0].year < 2026 else zone
 
     tokens = token_totals(flat)
+    chains = chain_supply(text, len(dates))
 
     sections = []
     for i, date in enumerate(dates):
@@ -130,6 +164,8 @@ def extract(path, manual):
         if abs(sum(cat.values()) - total) > 1:
             print(f"{os.path.basename(path)} {date}: parts {sum(cat.values())} != total {total}", file=sys.stderr)
         supply = {"total": tokens[i]} if i < len(tokens) else {}
+        if i < len(chains):
+            supply.update(chains[i])
         supply.update(entry.get("supply", {}))
         if "total" not in supply:
             print(f"{os.path.basename(path)}: no token supply for {date}", file=sys.stderr)

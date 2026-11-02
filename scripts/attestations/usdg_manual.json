@@ -110,125 +110,271 @@
     {
         "source": "1a5XGyUwTIlbKBRTgM5wPvwIo8.pdf",
         "date": "2025-09-19",
-        "note": "No text layer, read manually from the 2025-09 report: Treasury bills 106,828,833, cash and cash equivalents 558,206,663, total 665,035,496. USDG tokens outstanding read manually from the report: 664,533,671.",
+        "note": "No text layer, read manually from the 2025-09 report: Treasury bills 106,828,833, cash and cash equivalents 558,206,663, total 665,035,496. USDG tokens outstanding read manually from the report: 664,533,671. The report gives no supply per chain: Ethereum, Ink and X Layer are their totalSupply at the report time, read with archive calls, and Solana the rest.",
         "cat": {
             "rwa:USTB": 106828833,
             "rwa:undefined": 558206663
         },
         "supply": {
-            "total": 664533671
+            "total": 664533671,
+            "Ethereum": 307913702.895043,
+            "Ink": 2125508.278746,
+            "X Layer": 0.0,
+            "Solana": 354494459.826211
         }
     },
     {
         "source": "1a5XGyUwTIlbKBRTgM5wPvwIo8.pdf",
         "date": "2025-09-30",
-        "note": "No text layer, read manually from the 2025-09 report: Treasury bills 106,769,292, cash and cash equivalents 626,126,937, total 732,896,229. USDG tokens outstanding read manually from the report: 730,514,012.",
+        "note": "No text layer, read manually from the 2025-09 report: Treasury bills 106,769,292, cash and cash equivalents 626,126,937, total 732,896,229. USDG tokens outstanding read manually from the report: 730,514,012. The report gives no supply per chain: Ethereum, Ink and X Layer are their totalSupply at the report time, read with archive calls, and Solana the rest.",
         "cat": {
             "rwa:USTB": 106769292,
             "rwa:undefined": 626126937
         },
         "supply": {
-            "total": 730514012
+            "total": 730514012,
+            "Ethereum": 237150265.916584,
+            "Ink": 2144019.912626,
+            "X Layer": 9000102.9091,
+            "Solana": 482219623.26169
         }
     },
     {
         "source": "1juvrsIQxQq8WHTEiM8uq0VGqA.pdf",
         "date": "2025-10-17",
-        "note": "No text layer, read manually from the 2025-10 report: Treasury bills 126,648,101, cash and cash equivalents 784,546,864, total 911,194,965. USDG tokens outstanding read manually from the report: 910,730,502.",
+        "note": "No text layer, read manually from the 2025-10 report: Treasury bills 126,648,101, cash and cash equivalents 784,546,864, total 911,194,965. USDG tokens outstanding read manually from the report: 910,730,502. The report gives no supply per chain: Ethereum, Ink and X Layer are their totalSupply at the report time, read with archive calls, and Solana the rest.",
         "cat": {
             "rwa:USTB": 126648101,
             "rwa:undefined": 784546864
         },
         "supply": {
-            "total": 910730502
+            "total": 910730502,
+            "Ethereum": 321568981.224006,
+            "Ink": 6408974.185703,
+            "X Layer": 9046298.506056,
+            "Solana": 573706248.084235
         }
     },
     {
         "source": "1juvrsIQxQq8WHTEiM8uq0VGqA.pdf",
         "date": "2025-10-31",
-        "note": "No text layer, read manually from the 2025-10 report: Treasury bills 78,847,638, cash and cash equivalents 927,740,008, total 1,006,587,646. USDG tokens outstanding read manually from the report: 1,005,923,645.",
+        "note": "No text layer, read manually from the 2025-10 report: Treasury bills 78,847,638, cash and cash equivalents 927,740,008, total 1,006,587,646. USDG tokens outstanding read manually from the report: 1,005,923,645. The report gives no supply per chain: Ethereum, Ink and X Layer are their totalSupply at the report time, read with archive calls, and Solana the rest.",
         "cat": {
             "rwa:USTB": 78847638,
             "rwa:undefined": 927740008
         },
         "supply": {
-            "total": 1005923645
+            "total": 1005923645,
+            "Ethereum": 330229379.035425,
+            "Ink": 11359248.290446,
+            "X Layer": 9026311.732284,
+            "Solana": 655308705.941845
+        }
+    },
+    {
+        "source": "bYuSqp9bbDEtpSkVxIAfeZxA6Q.pdf",
+        "date": "2025-11-14",
+        "note": "The report gives no supply per chain: Ethereum, Ink and X Layer are their totalSupply at the report time, read with archive calls, and Solana the rest.",
+        "supply": {
+            "Ethereum": 271574221.791111,
+            "Ink": 16275455.167626,
+            "X Layer": 87980878.68681,
+            "Solana": 738707750.354453
+        }
+    },
+    {
+        "source": "bYuSqp9bbDEtpSkVxIAfeZxA6Q.pdf",
+        "date": "2025-11-28",
+        "note": "The report gives no supply per chain: Ethereum, Ink and X Layer are their totalSupply at the report time, read with archive calls, and Solana the rest.",
+        "supply": {
+            "Ethereum": 285539070.433124,
+            "Ink": 21207187.1383,
+            "X Layer": 172951111.349827,
+            "Solana": 750856580.078749
         }
     },
     {
         "source": "gLMvyyXZKsRUjgmCqZfdHxrpZyI.pdf",
         "date": "2025-12-12",
-        "note": "No text layer, read manually from the 2025-12 report: Treasury bills 185,470,674, cash and cash equivalents 1,222,846,583, total 1,408,317,257. USDG tokens outstanding read manually from the report: 1,399,832,357.",
+        "note": "No text layer, read manually from the 2025-12 report: Treasury bills 185,470,674, cash and cash equivalents 1,222,846,583, total 1,408,317,257. USDG tokens outstanding read manually from the report: 1,399,832,357. The report gives no supply per chain: Ethereum, Ink and X Layer are their totalSupply at the report time, read with archive calls, and Solana the rest.",
         "cat": {
             "rwa:USTB": 185470674,
             "rwa:undefined": 1222846583
         },
         "supply": {
-            "total": 1399832357
+            "total": 1399832357,
+            "Ethereum": 344269229.500979,
+            "Ink": 35340873.252569,
+            "X Layer": 172955025.994414,
+            "Solana": 847267228.252038
         }
     },
     {
         "source": "gLMvyyXZKsRUjgmCqZfdHxrpZyI.pdf",
         "date": "2025-12-31",
-        "note": "No text layer, read manually from the 2025-12 report: Treasury bills 282,246,742, cash and cash equivalents 1,256,129,141, total 1,538,375,883. USDG tokens outstanding read manually from the report: 1,529,283,030.",
+        "note": "No text layer, read manually from the 2025-12 report: Treasury bills 282,246,742, cash and cash equivalents 1,256,129,141, total 1,538,375,883. USDG tokens outstanding read manually from the report: 1,529,283,030. The report gives no supply per chain: Ethereum, Ink and X Layer are their totalSupply at the report time, read with archive calls, and Solana the rest.",
         "cat": {
             "rwa:USTB": 282246742,
             "rwa:undefined": 1256129141
         },
         "supply": {
-            "total": 1529283030
+            "total": 1529283030,
+            "Ethereum": 367444484.238931,
+            "Ink": 44728969.239811,
+            "X Layer": 251718215.104461,
+            "Solana": 865391361.416797
         }
     },
     {
         "source": "ptcVTO4X3jjFQmL9vVItVw6M0Z8.pdf",
         "date": "2026-01-16",
-        "note": "Exhibit B without text layer, read manually from the 2026-01 report: cash 105,768,706, government money market funds 1,115,828,912, repurchase agreements none, Treasury obligations 350,607,737, total 1,572,205,355. USDG tokens outstanding read manually from the report: 1,571,151,177.",
+        "note": "Exhibit B without text layer, read manually from the 2026-01 report: cash 105,768,706, government money market funds 1,115,828,912, repurchase agreements none, Treasury obligations 350,607,737, total 1,572,205,355. USDG tokens outstanding read manually from the report: 1,571,151,177. USDG tokens outstanding per chain read manually from Exhibit A (no text layer).",
         "cat": {
             "rwa:USD": 105768706,
             "rwa:MMF": 1115828912,
             "rwa:USTB": 350607737
         },
         "supply": {
-            "total": 1571151177
+            "total": 1571151177,
+            "Ethereum": 362586728,
+            "Solana": 874947796,
+            "Ink": 93593835,
+            "X Layer": 240022818
         }
     },
     {
         "source": "ptcVTO4X3jjFQmL9vVItVw6M0Z8.pdf",
         "date": "2026-01-30",
-        "note": "Exhibit B without text layer, read manually from the 2026-01 report: cash 123,148,013, government money market funds 1,089,963,479, repurchase agreements none, Treasury obligations 382,838,255, total 1,595,949,747. USDG tokens outstanding read manually from the report: 1,590,150,523.",
+        "note": "Exhibit B without text layer, read manually from the 2026-01 report: cash 123,148,013, government money market funds 1,089,963,479, repurchase agreements none, Treasury obligations 382,838,255, total 1,595,949,747. USDG tokens outstanding read manually from the report: 1,590,150,523. USDG tokens outstanding per chain read manually from Exhibit A (no text layer).",
         "cat": {
             "rwa:USD": 123148013,
             "rwa:MMF": 1089963479,
             "rwa:USTB": 382838255
         },
         "supply": {
-            "total": 1590150523
+            "total": 1590150523,
+            "Ethereum": 364526040,
+            "Solana": 861135751,
+            "Ink": 102522405,
+            "X Layer": 261966327
         }
     },
     {
         "source": "fwQprdJGSsRaS32svUmkqG3JYNY.pdf",
         "date": "2026-02-10",
-        "note": "Exhibit B without text layer, read manually from the 2026-02 report: cash 201,327,185, government money market funds 880,916,270, repurchase agreements none, Treasury obligations 498,698,472, total 1,580,941,927. USDG tokens outstanding read manually from the report: 1,579,822,398.",
+        "note": "Exhibit B without text layer, read manually from the 2026-02 report: cash 201,327,185, government money market funds 880,916,270, repurchase agreements none, Treasury obligations 498,698,472, total 1,580,941,927. USDG tokens outstanding read manually from the report: 1,579,822,398. USDG tokens outstanding per chain read manually from Exhibit A (no text layer).",
         "cat": {
             "rwa:USD": 201327185,
             "rwa:MMF": 880916270,
             "rwa:USTB": 498698472
         },
         "supply": {
-            "total": 1579822398
+            "total": 1579822398,
+            "Ethereum": 362442342,
+            "Solana": 835668896,
+            "Ink": 105205695,
+            "X Layer": 276505466,
+            "Arbitrum": 0
         }
     },
     {
         "source": "fwQprdJGSsRaS32svUmkqG3JYNY.pdf",
         "date": "2026-02-27",
-        "note": "Exhibit B without text layer, read manually from the 2026-02 report: cash 145,514,767, government money market funds 949,426,904, repurchase agreements none, Treasury obligations 674,091,528, total 1,769,033,199. USDG tokens outstanding read manually from the report: 1,767,447,250.",
+        "note": "Exhibit B without text layer, read manually from the 2026-02 report: cash 145,514,767, government money market funds 949,426,904, repurchase agreements none, Treasury obligations 674,091,528, total 1,769,033,199. USDG tokens outstanding read manually from the report: 1,767,447,250. USDG tokens outstanding per chain read manually from Exhibit A (no text layer).",
         "cat": {
             "rwa:USD": 145514767,
             "rwa:MMF": 949426904,
             "rwa:USTB": 674091528
         },
         "supply": {
-            "total": 1767447250
+            "total": 1767447250,
+            "Ethereum": 357161708,
+            "Solana": 1001172048,
+            "Ink": 104102001,
+            "X Layer": 304761500,
+            "Arbitrum": 249992
+        }
+    },
+    {
+        "source": "o61pz3wuO4LmxEuDTUxmINc09qc.pdf",
+        "date": "2026-05-11",
+        "note": "USDG tokens outstanding per chain read manually from Exhibit A (no text layer).",
+        "supply": {
+            "Ethereum": 533982004,
+            "Solana": 1549336838,
+            "Ink": 111537208,
+            "X Layer": 1353623781,
+            "Arbitrum": 249992,
+            "total": 3548729823
+        }
+    },
+    {
+        "source": "o61pz3wuO4LmxEuDTUxmINc09qc.pdf",
+        "date": "2026-05-29",
+        "note": "USDG tokens outstanding per chain read manually from Exhibit A (no text layer).",
+        "supply": {
+            "Ethereum": 515207568,
+            "Solana": 686807503,
+            "Ink": 71608086,
+            "X Layer": 1358517248,
+            "Arbitrum": 249992,
+            "total": 2632390397
+        }
+    },
+    {
+        "source": "IJR7RhuqfckbBnl7fVubmqrnc.pdf",
+        "date": "2026-07-21",
+        "note": "USDG tokens outstanding per chain read manually from Exhibit A (no text layer).",
+        "supply": {
+            "Ethereum": 460102738,
+            "Solana": 609545110,
+            "Ink": 38834344,
+            "X Layer": 1852539363,
+            "Arbitrum": 601207,
+            "Robinhood Chain": 282808364,
+            "total": 3244431126
+        }
+    },
+    {
+        "source": "IJR7RhuqfckbBnl7fVubmqrnc.pdf",
+        "date": "2026-07-31",
+        "note": "USDG tokens outstanding per chain read manually from Exhibit A (no text layer).",
+        "supply": {
+            "Ethereum": 472801190,
+            "Solana": 648661178,
+            "Ink": 40946986,
+            "X Layer": 1902325435,
+            "Arbitrum": 601207,
+            "Robinhood Chain": 335138147,
+            "total": 3400474143
+        }
+    },
+    {
+        "source": "Xn1UQwAte85FnsDveIMX0n1qtVM.pdf",
+        "date": "2026-08-06",
+        "note": "USDG tokens outstanding per chain read manually from Exhibit A (no text layer).",
+        "supply": {
+            "Ethereum": 463314703,
+            "Solana": 643458024,
+            "Ink": 61737901,
+            "X Layer": 1955263698,
+            "Arbitrum": 601207,
+            "Robinhood Chain": 339340320,
+            "total": 3463715853
+        }
+    },
+    {
+        "source": "Xn1UQwAte85FnsDveIMX0n1qtVM.pdf",
+        "date": "2026-08-31",
+        "note": "USDG tokens outstanding per chain read manually from Exhibit A (no text layer).",
+        "supply": {
+            "Ethereum": 404278398,
+            "Solana": 616582089,
+            "Ink": 61712109,
+            "X Layer": 1792937313,
+            "Arbitrum": 601207,
+            "Robinhood Chain": 464539486,
+            "total": 3340650602
         }
     }
 ]
