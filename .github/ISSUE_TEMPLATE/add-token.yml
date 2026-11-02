@@ -45,7 +45,7 @@ body:
       id: mcap
       attributes:
           label: Market cap and source
-          placeholder: $250M on DefiLlama, 2026-10-28
+          placeholder: $250M per the issuer's transparency page, 2026-10-28
     - type: textarea
       id: notes
       attributes:

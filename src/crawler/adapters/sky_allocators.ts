@@ -66,7 +66,6 @@ type Position =
     | { kind: "susds"; address: string }
     // A SparkLend deposit (aToken). The part not lent out is the underlying token.
     | { kind: "lend"; address: string; underlying: string; idle: bcked.asset.Id | Sky }
-    // A fund token, counted at its DefiLlama price in US dollars.
     // A fund token, counted at its share price from the fund's Centrifuge vault on Ethereum
     // (convertToAssets of one share), in US dollars. Holdings on other chains use the same price.
     | { kind: "nav"; address: string; vault: string; decimals: number; to: bcked.asset.Id }
