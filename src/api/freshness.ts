@@ -63,6 +63,15 @@ function check(asset: AssetSummary, field: string, value: Dated | null, maxDays:
         );
 }
 
+// Latest backing of each token on any chain. All chains of a token share the same reports.
+const latestByToken = new Map<string, string>();
+for (const asset of assets) {
+    if (!asset.token || !asset.collateral) continue;
+    const latest = latestByToken.get(asset.token);
+    if (!latest || asset.collateral.date > latest)
+        latestByToken.set(asset.token, asset.collateral.date);
+}
+
 for (const asset of assets) {
     // Added since the last crawl: no details, price or supply yet. The next crawl records them.
     if (asset.symbol == null) {
@@ -82,6 +91,18 @@ for (const asset of assets) {
     if (asset.token && !asset.collateral) {
         console.log(
             `${asset.symbol} (${asset.id}): no backing ratio yet, waits for the next report`
+        );
+    } else if (
+        asset.token &&
+        asset.collateral &&
+        reportAge !== undefined &&
+        (now - Date.parse(asset.collateral.date)) / DAY > reportAge + 1 &&
+        (now - Date.parse(latestByToken.get(asset.token)!)) / DAY <= reportAge + 1
+    ) {
+        // Another chain of the token has a current report, so the reports are fresh. This chain
+        // has no supply recorded at the newer report dates yet (USDC on Solana before 2026-11).
+        console.log(
+            `${asset.symbol} (${asset.id}): backing from ${asset.collateral.date}, newer reports have no supply for this chain yet`
         );
     } else if (!NO_PRICE.has(asset.id) && (reportAge !== undefined || asset.collateral))
         check(asset, "backing", asset.collateral, reportAge ?? MAX_AGE_DAYS);
