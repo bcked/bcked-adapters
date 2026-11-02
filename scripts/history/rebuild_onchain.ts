@@ -1,12 +1,13 @@
 /**
  * Rebuilds daily on-chain history that does not depend on a third-party API:
- * - supply (totalSupply) of USDC on Ethereum, Arbitrum and Polygon, PYUSD and USDG on Ethereum,
+ * - supply (totalSupply) of USDC on Ethereum, Arbitrum, Polygon and Base, PYUSD and USDG on Ethereum,
  *   the same reads the crawler makes (src/crawler/adapters/circulating.ts),
  * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed.
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
  * ALCHEMY_POLYGON set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
- * Days that already have a row are kept. Reads need archive nodes, which Alchemy provides.
+ * SYSTEMS=<chain,...> limits the run to these chains. Days that already have a row are kept. Reads need archive nodes, which Alchemy provides. The
+ * official Base RPC serves archive reads too.
  */
 import { Contract, JsonRpcProvider, formatUnits } from "ethers";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -32,6 +33,12 @@ const RPC: Record<string, { url: string; chainId: number; perDay: number; start:
         perDay: 40_000,
         start: 1,
     },
+    base: {
+        url: "https://mainnet.base.org",
+        chainId: 8453,
+        perDay: 43_200,
+        start: 1,
+    },
 };
 
 const SUPPLY: { id: string; system: string; address: string; decimals: number }[] = [
@@ -51,6 +58,12 @@ const SUPPLY: { id: string; system: string; address: string; decimals: number }[
         id: "polygon:0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
         system: "polygon",
         address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+        decimals: 6,
+    },
+    {
+        id: "base:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        system: "base",
+        address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         decimals: 6,
     },
     {
@@ -153,7 +166,9 @@ const supplies = new Map<string, Map<string, string[]>>();
 const custody = new Map<string, string[]>();
 // Days read at once. More gets throttled by the RPC provider, and the retries cost more than they save.
 const PARALLEL_DAYS = Number(process.env["PARALLEL_DAYS"] ?? 4);
-for (const system of Object.keys(RPC)) {
+// SYSTEMS=base limits the run to some chains, e.g. to rebuild one without the Alchemy keys of the others.
+const systems = process.env["SYSTEMS"]?.split(",") ?? Object.keys(RPC);
+for (const system of systems) {
     const latest = await providers[system]!.getBlockNumber();
     const first = await blockAt(system, from, RPC[system]!.start, latest);
     const now = await timeOf(system, latest);
