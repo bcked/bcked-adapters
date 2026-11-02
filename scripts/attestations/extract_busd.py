@@ -1,14 +1,21 @@
-"""Extracts the BUSD reserve composition per report date from Paxos attestation PDFs.
+"""Extracts the BUSD reserve composition per report date from Paxos attestation PDFs (used for PYUSD).
+
+Usage: python3 extract_busd.py [pyusd_manual.json] <report.pdf>... > pyusd.json
 
 Prints JSON: one entry per report with its sections (report date, assets by category, reported total).
+For PYUSD each section also has the tokens outstanding ("supply"): the total, and per chain from
+Exhibit A (since 2025-01). The 2024 reports give one total for Ethereum and Solana. pyusd_manual.json
+has their split: Ethereum is its totalSupply at the report time, read with an archive call, and Solana
+the rest (0 before PYUSD launched on Solana in 2024-05).
 """
 import datetime
 import json
+import os
 import re
 import sys
 from zoneinfo import ZoneInfo
 
-from pdftext import pdf_text
+from pdftext import chain_supply, pdf_text
 
 MONTHS = "January|February|March|April|May|June|July|August|September|October|November|December"
 DATE = rf"(?:{MONTHS}) \d{{1,2}},? 20\d\d"
@@ -134,7 +141,7 @@ def reserve_total(flat):
     return [{"date": date.group(1), "cat": {key: value}, "total": value}]
 
 
-def extract(path):
+def extract(path, manual=None):
     text = pdf_text(path)
     lines = text.splitlines()
     flat = re.sub(r"\s+", " ", text)
@@ -142,13 +149,38 @@ def extract(path):
     for s in sections:
         s["date"] = re.sub(r"\s+", " ", s["date"])
         s["timestamp"] = to_utc(s["date"])
+    # The two dates of a report are weeks apart. A date far from the other one has a misprinted year
+    # (the 2026-01 PYUSD report says "January 16, 2025"), so it takes the year of the other date.
+    if len(sections) == 2:
+        first, second = sorted(sections, key=lambda s: s["timestamp"])
+        if (datetime.datetime.fromisoformat(second["timestamp"][:10]) - datetime.datetime.fromisoformat(first["timestamp"][:10])).days > 120:
+            first["date"] = re.sub(r"20\d\d$", second["date"][-4:], first["date"])
+            first["timestamp"] = to_utc(first["date"])
     # Tokens outstanding at both report dates, as the token total for the chain shares (from 2025).
-    tokens = re.search(r"redeemable tokens\s+outstanding \(Exhibit A line d\)\s+([\d,]+)\s+([\d,]+)", flat)
-    if tokens and len(sections) == 2:
-        for section, value in zip(sorted(sections, key=lambda s: s["timestamp"]), tokens.groups()):
-            section["supply"] = {"total": num(value)}
+    # Older PYUSD reports (until 2025-03) name it "PYUSD tokens in circulation", for both chains combined.
+    tokens = (
+        re.search(r"redeemable tokens\s+outstanding \(Exhibit A line d\)\s+([\d,]+)\s+([\d,]+)", flat)
+        or re.search(r"redeemable tokens outstanding ([\d,]+) ([\d,]+) \(Exhibit A line d\)", flat)
+        or re.search(r"PYUSD tokens in circulation\s+([\d,]+)\s+([\d,]+)", flat)
+    )
+    # Tokens per chain and in total from Exhibit A, where the report has it.
+    chains = chain_supply(text, len(sections)) if sections else []
+    if (tokens and len(sections) == 2) or chains:
+        for i, section in enumerate(sorted(sections, key=lambda s: s["timestamp"])):
+            supply = {"total": num(tokens.group(i + 1))} if tokens and len(sections) == 2 else {}
+            section["supply"] = {**supply, **(chains[i] if chains else {})}
+    # Supply per chain that the report does not give, by file name and date (pyusd_manual.json).
+    for entry in (manual or {}).get(os.path.basename(path), []):
+        for section in sections:
+            if section["timestamp"][:10] == entry["date"]:
+                section.setdefault("supply", {}).update(entry["supply"])
     return {"file": path, "sections": sections}
 
 
 if __name__ == "__main__":
-    print(json.dumps([extract(p) for p in sys.argv[1:]]))
+    args = sys.argv[1:]
+    manual = {}
+    if args and args[0].endswith(".json"):
+        for entry in json.load(open(args.pop(0))):
+            manual.setdefault(entry["source"], []).append(entry)
+    print(json.dumps([extract(p, manual) for p in args]))

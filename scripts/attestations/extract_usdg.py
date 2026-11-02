@@ -30,7 +30,7 @@ import re
 import sys
 from zoneinfo import ZoneInfo
 
-from pdftext import pdf_text
+from pdftext import chain_supply, pdf_text
 
 MONTHS = "January|February|March|April|May|June|July|August|September|October|November|December"
 AMOUNT = r"\$?([\d,]{3,}|-)"
@@ -102,38 +102,6 @@ def token_totals(flat):
         if m:
             return [num(v) for v in m.groups()]
     return []
-
-
-# Chain names in the reports, as named in the token's supply records where they differ.
-CHAIN_NAMES = {"Robinhood": "Robinhood Chain", "Arbitrum One": "Arbitrum"}
-
-
-def chain_supply(text, count):
-    """USDG tokens outstanding per chain at each report date, from Exhibit A (since 2026-03).
-
-    The columns follow the order of the footnotes that name each chain's contract. Some reports have
-    one table with both dates per chain, others one table per date. Returns [] if the table is missing
-    or the chains do not add up to the total.
-    """
-    flat = re.sub(r"\s+", " ", text)
-    chains = list(dict.fromkeys(re.findall(r"Blockchain ([A-Za-z ]+?) refers to the smart contract", flat)))
-    rows = [
-        [num(v) for v in m.split()]
-        for m in re.findall(r"redeemable tokens (?:d\. )?((?:[\d,]{3,} )+)outstanding", flat)
-    ]
-    k = len(chains) + 1
-    if len(rows) == 1 and len(rows[0]) == k * count:  # one table, both dates per chain
-        per_date = [rows[0][i::count] for i in range(count)]
-    elif len(rows) == count and all(len(r) == k for r in rows):  # one table per date
-        per_date = rows
-    else:
-        return []
-    result = []
-    for values in per_date:
-        if abs(sum(values[:-1]) - values[-1]) > 1:
-            return []
-        result.append({CHAIN_NAMES.get(c, c): v for c, v in zip(chains, values)})
-    return result
 
 
 def extract(path, manual):
