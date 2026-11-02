@@ -48,8 +48,11 @@ jobs:
               if: ${{ matrix.year >= fromJSON(inputs.from_year) }}
               uses: actions/checkout@v7
               with:
+                  # Private repository. Needs a deploy key of bcked/bcked-records with write access.
+                  repository: bcked/bcked-records
                   ref: records
                   path: .records
+                  ssh-key: ${{ secrets.RECORDS_DEPLOY_KEY }}
             - name: Setup Bun
               if: ${{ matrix.year >= fromJSON(inputs.from_year) }}
               uses: oven-sh/setup-bun@v2
@@ -97,8 +100,11 @@ jobs:
               if: ${{ matrix.year >= fromJSON(inputs.onchain_from_year) }}
               uses: actions/checkout@v7
               with:
+                  # Private repository. Needs a deploy key of bcked/bcked-records with write access.
+                  repository: bcked/bcked-records
                   ref: records
                   path: .records
+                  ssh-key: ${{ secrets.RECORDS_DEPLOY_KEY }}
             - name: Setup Bun
               if: ${{ matrix.year >= fromJSON(inputs.onchain_from_year) }}
               uses: oven-sh/setup-bun@v2
