@@ -22,7 +22,7 @@ import urllib.request
 
 RPC = os.environ.get("ETHEREUM_RPC") or "https://eth.drpc.org"
 WINDOW = 12 * 3600
-MIN_LIQUIDITY_USD = 1_000_000
+MIN_LIQUIDITY_USD = float(os.environ.get("MIN_LIQUIDITY_USD", 1_000_000))
 
 WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"

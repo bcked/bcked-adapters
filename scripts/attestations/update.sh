@@ -39,7 +39,7 @@ paxos busd https://www.paxos.com/busd-transparency "Binance USD|BUSD" \
 pyusd="$records/tokens/pyusd/records"
 python3 fetch_paxos.py https://www.paxos.com/pyusd-transparency "PayPal USD|PYUSD" "$work/pyusd" > "$work/pyusd.txt"
 # shellcheck disable=SC2046
-python3 extract_busd.py $(cat "$work/pyusd.txt") > "$work/pyusd.json"
+python3 extract_busd.py pyusd_manual.json $(cat "$work/pyusd.txt") > "$work/pyusd.json"
 python3 check_new.py "$work/pyusd.json" "$pyusd/backing.csv"
 # shellcheck disable=SC2046
 python3 write_backing.py "$work/pyusd.json" "$pyusd" PYUSD --append $(evidence_args tokens/pyusd/records)
