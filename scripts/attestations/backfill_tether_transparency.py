@@ -8,7 +8,7 @@ archived it several times a month. For every month this takes the last capture t
 total and prints [capture timestamp, total assets, total liabilities]. The totals are Tether's own,
 unaudited. They are recorded as rwa:undefined ("Composition not reported") on the token usdt.
 USDT on Ethereum gets its share by the circulating supply on that day (see chainShare in
-src/crawler/adapters/issuer_backing.ts), with the reserves as total where DefiLlama misses Omni.
+src/crawler/adapters/issuer_backing.ts).
 """
 import gzip
 import json
