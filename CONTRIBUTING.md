@@ -43,7 +43,7 @@ on another chain is a separate asset, because bridges and wrappers add their own
 assets/ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78/
   index.ts    details and the adapter that reads price, supply and backing
   icon.svg    the token icon, required (see Icons below)
-  records/    collected data, only on the records branch
+  records/    collected data, not in this repository
 ```
 
 `index.ts` exports the asset details (name, symbol, identifier, asset classes, issuer, reference link,
@@ -89,9 +89,10 @@ Bun loads it automatically.
 
 ## How to locally run the adapters?
 
-Collected records are stored on the `records` branch. To work with existing data, copy the
-`records` folders from that branch into the matching `assets/`, `entities/`, `tokens/` and `systems/` folders.
-They are ignored by git on `main`.
+Collected records are stored in a private repository and are not published as files. The data on
+bcked.com is available through the [bcked API](https://api.bcked.com/docs/). To run the adapters
+locally, start without records: the crawler creates the `records` folders in `assets/`, `entities/`,
+`tokens/` and `systems/`. They are ignored by git on `main`.
 
 ```shell
 bun run crawler      # query all adapters and append new records

@@ -4,8 +4,8 @@ Some issuers only publish their reserves in attestation reports (PDF). These scr
 reports, extract the reserve composition per report date and write it to the records of the asset,
 and list each report in `evidence.csv`. They require Python 3.9+ and `pdftotext` (poppler-utils).
 
-The records live on the `records` branch. Check it out next to this repository (or into `.records`)
-and pass the records folder of the asset, e.g. `assets/<asset id>/records`.
+The records live in a private repository. Pass a checkout of it (the workflows use `.records`) and
+the records folder of the asset, e.g. `assets/<asset id>/records`.
 
 ## Automatic updates
 
