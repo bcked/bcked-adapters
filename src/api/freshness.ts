@@ -35,6 +35,7 @@ interface AssetSummary {
     symbol: string;
     system: string;
     backing: "reports" | "on-chain" | "custodian" | null;
+    token?: string;
     linkedEntities: { issuer?: string };
     price: Dated | null;
     supply: Dated | null;
@@ -75,8 +76,14 @@ for (const asset of assets) {
         asset.backing == "reports"
             ? MAX_REPORT_AGE_DAYS[asset.linkedEntities.issuer ?? ""]
             : undefined;
-    // The backing check reads the backing ratio, which needs a price.
-    if (!NO_PRICE.has(asset.id) && (reportAge !== undefined || asset.collateral))
+    // The backing check reads the backing ratio, which needs a price. The chain assets of a token
+    // get a ratio only where their supply is recorded at a report date: supply recorded before
+    // 2026-11-01 came from a source no longer used, so some chains get a ratio from the next report.
+    if (asset.token && !asset.collateral) {
+        console.log(
+            `${asset.symbol} (${asset.id}): no backing ratio yet, waits for the next report`
+        );
+    } else if (!NO_PRICE.has(asset.id) && (reportAge !== undefined || asset.collateral))
         check(asset, "backing", asset.collateral, reportAge ?? MAX_AGE_DAYS);
 }
 
