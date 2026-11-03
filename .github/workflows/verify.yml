@@ -27,4 +27,5 @@ jobs:
                   ALCHEMY_SOLANA: ${{ secrets.ALCHEMY_SOLANA }}
                   ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
                   TARGETS: ${{ inputs.targets }}
+              timeout-minutes: 10
               run: bun scripts/verify_adapter.ts $TARGETS
