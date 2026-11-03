@@ -1,6 +1,6 @@
 """Prices USDG at a report time from executed swaps in the Orca USDG/USDC pool on Solana.
 
-Usage: python3 orca_usdg_price.py <output.json> <YYYY-MM-DDTHH:MM:SS>...
+Usage: SOLANA_RPC=<url> python3 orca_usdg_price.py <output.json> <YYYY-MM-DDTHH:MM:SS>...
 
 Before 2025-08 USDG had no Ethereum pool with liquidity (Uniswap v4 moved $29k in total). On Solana
 the Orca Whirlpool 9RqDTfwCx2SgxsvKpspQHc38HUo3B6hRd3oR9JR966Ps (USDG/USDC, 0.01% fee) traded from
@@ -16,7 +16,9 @@ import sys
 import time
 import urllib.request
 
-RPC = "https://api.mainnet-beta.solana.com"
+# A Solana RPC with an API key (Alchemy in CI). The public endpoint is meant for development, and the
+# Solana Foundation's terms forbid systematic data collection from its services.
+RPC = os.environ.get("SOLANA_RPC") or sys.exit("Set SOLANA_RPC to a Solana RPC URL")
 POOL = "9RqDTfwCx2SgxsvKpspQHc38HUo3B6hRd3oR9JR966Ps"
 USDG = "2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH"
 USDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
