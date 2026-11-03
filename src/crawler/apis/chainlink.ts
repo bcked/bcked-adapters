@@ -4,7 +4,8 @@
  *
  * A token has the same price on every chain, so all chain versions of a token use its feed. Some
  * prices are derived from a feed: wstETH from stETH and the wstETH exchange rate, WBTC from the
- * WBTC/BTC and BTC/USD feeds, XAUt (one troy ounce of gold per token) from gold.
+ * WBTC/BTC and BTC/USD feeds, XAUt (one troy ounce of gold per token) from gold. The euro (rwa:EUR)
+ * is priced by the EUR/USD feed.
  */
 import { formatUnits } from "ethers";
 
@@ -28,6 +29,8 @@ export const FEEDS = {
     RLUSD: { address: "0x26C46B7aD0012cA71F2298ada567dC9Af14E7f2A", decimals: 8 },
     AUSD: { address: "0xB00341502DfEA6Ced8A5786b4059d29dA5E4D1FD", decimals: 18 },
     USDG: { address: "0x14f0737d6b705259e521EA6E9E3506AC78dBd311", decimals: 8 },
+    EURC: { address: "0x04F84020Fdf10d9ee64D1dcC2986EDF2F556DA11", decimals: 8 },
+    EUR: { address: "0xb49f677943BC038e9857d61E7d053CaA2C1734C1", decimals: 8 },
     SKY: { address: "0xee10fE5E7aa92dd7b136597449c3d5813cFC5F18", decimals: 8 },
     PAXG: { address: "0x9944D86CEB9160aF5C5feB251FD671923323f8C3", decimals: 8 },
     XAU: { address: "0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6", decimals: 8 },
@@ -49,9 +52,10 @@ const BY_SYMBOL: Record<string, Source> = {
     USDC: { feed: "USDC" },
     PYUSD: { feed: "PYUSD" },
     USDG: { feed: "USDG" },
+    EURC: { feed: "EURC" },
 };
 
-// Assets by id. Chain versions of USDT, USDC, PYUSD and USDG are added below from TOKEN_ASSETS.
+// Assets by id. Chain versions of USDT, USDC, PYUSD, USDG and EURC are added below from TOKEN_ASSETS.
 export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:ETH": { feed: "ETH" },
     "ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": { feed: "ETH" }, // WETH
@@ -65,6 +69,7 @@ export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78": { feed: "PAXG" },
     "ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38": { feed: "XAU" }, // XAUt
     "rwa:XAU": { feed: "XAU" },
+    "rwa:EUR": { feed: "EUR" },
     "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84": { feed: "STETH" },
     [`ethereum:${WSTETH}`]: { feed: "STETH", times: "wstETH" },
 };
@@ -93,6 +98,11 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "xlayer:0x4ae46a509F6b1D9056937BA4500cb143933D2dc8",
         "robinhood:0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
         "ink:0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
+    ],
+    EURC: [
+        "ethereum:0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
+        "base:0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42",
+        "solana:HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr",
     ],
 };
 for (const [symbol, ids] of Object.entries(TOKEN_ASSETS))

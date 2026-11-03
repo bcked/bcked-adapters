@@ -1,6 +1,7 @@
 /**
  * Rebuilds daily on-chain history that does not depend on a third-party API:
  * - supply (totalSupply) of USDC on Ethereum, Arbitrum, Polygon and Base, PYUSD and USDG on Ethereum,
+ *   EURC on Ethereum and Base,
  *   the same reads the crawler makes (src/crawler/adapters/circulating.ts),
  * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed.
  *
@@ -76,6 +77,18 @@ const SUPPLY: { id: string; system: string; address: string; decimals: number }[
         id: "ethereum:0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
         system: "ethereum",
         address: "0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
+        decimals: 6,
+    },
+    {
+        id: "ethereum:0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
+        system: "ethereum",
+        address: "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
+        decimals: 6,
+    },
+    {
+        id: "base:0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42",
+        system: "base",
+        address: "0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42",
         decimals: 6,
     },
 ];

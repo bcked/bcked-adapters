@@ -6,6 +6,9 @@
  *   numbers are used as facts with attribution, like the figures from its reports.
  * - USDC, PYUSD and USDG: totalSupply of the token contract on the chain, read on-chain. These
  *   issuers mint on demand and hold no unissued tokens in a treasury.
+ * - EURC on Solana: Circle's own figure per chain (https://api.circle.com/v1/stablecoins). The token
+ *   on Solana also counts tokens that Circle has not issued yet ("Tokens Allowed But Not Issued" in
+ *   its reports), so its totalSupply is more than the EURC in circulation.
  */
 import { ChainProxy } from "../chains/proxy";
 import { SolanaChain } from "../chains/solana";
@@ -48,6 +51,35 @@ export async function tetherTotalCirculating(token: "usdt" | "xaut"): Promise<nu
     let total = 0;
     for (const chain of chains) total += await tetherCirculating(token, chain);
     return total;
+}
+
+interface CircleStablecoins {
+    data: { symbol: string; chains: { chain: string; amount: string }[] }[];
+}
+
+const circle = new JsonApi("https://api.circle.com");
+let circleCache: Promise<CircleStablecoins> | null = null;
+
+function circleData(): Promise<CircleStablecoins> {
+    circleCache ??= circle
+        .fetchJson<CircleStablecoins>("/v1/stablecoins")
+        .catch((error: unknown) => {
+            circleCache = null;
+            throw error;
+        });
+    return circleCache;
+}
+
+/**
+ * Circulating Circle tokens on one chain, from Circle's stablecoin data.
+ * @param symbol "USDC" or "EURC"
+ * @param chain Circle's chain key ("ETH", "SOL", "BASE", ...)
+ */
+export async function circleCirculating(symbol: string, chain: string): Promise<number> {
+    const token = (await circleData()).data.find((entry) => entry.symbol == symbol);
+    const amount = token?.chains.find((entry) => entry.chain == chain)?.amount;
+    if (amount === undefined) throw Error(`No ${symbol} on ${chain} in Circle's stablecoin data`);
+    return Number(amount);
 }
 
 const chain = new ChainProxy();
