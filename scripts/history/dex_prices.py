@@ -20,7 +20,9 @@ import sys
 import time
 import urllib.request
 
-RPC = os.environ.get("ETHEREUM_RPC") or "https://eth.drpc.org"
+# An Ethereum archive RPC with an API key (Alchemy in CI). Keyless public endpoints are not used:
+# their terms require an account.
+RPC = os.environ.get("ETHEREUM_RPC") or sys.exit("Set ETHEREUM_RPC to an Ethereum archive RPC URL")
 WINDOW = 12 * 3600
 MIN_LIQUIDITY_USD = float(os.environ.get("MIN_LIQUIDITY_USD", 1_000_000))
 
