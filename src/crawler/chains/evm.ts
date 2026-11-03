@@ -143,7 +143,8 @@ export class EVMChain implements bcked.query.ChainModule {
         try {
             if (token == null) {
                 const provider = this.getProvider(system);
-                const balance = await provider.getBalance(address);
+                // Retried like the token reads: Alchemy answers bursts with 429 (compute units per second).
+                const balance = await retry(() => provider.getBalance(address));
                 return {
                     timestamp: toISOString(Date.now()),
                     balance: parseFloat(formatEther(balance)),
@@ -163,9 +164,12 @@ export class EVMChain implements bcked.query.ChainModule {
             }
         } catch (error) {
             console.log(error);
-            throw Error(`Error for query of balance of ${system}:${token} on address ${address}.`, {
-                cause: error,
-            });
+            throw Error(
+                `Error for query of balance of ${system}:${token ?? "native"} on address ${address}.`,
+                {
+                    cause: error,
+                }
+            );
         }
     }
 
