@@ -2,7 +2,9 @@
  * Rebuilds daily on-chain history that does not depend on a third-party API:
  * - supply (totalSupply) of USDC on Ethereum, Arbitrum, Polygon and Base, PYUSD and USDG on Ethereum,
  *   the same reads the crawler makes (src/crawler/adapters/circulating.ts),
- * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed.
+ * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed,
+ * - supply and reserves of DOLA from FiRM's launch on, the same reads the crawler makes
+ *   (src/crawler/adapters/inverse.ts).
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
  * ALCHEMY_POLYGON set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
@@ -12,6 +14,16 @@
 import { Contract, JsonRpcProvider, formatUnits } from "ethers";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+
+import {
+    DOLA,
+    FIRM_FED_START,
+    LOAN,
+    UNTRACKED,
+    USDS_ID,
+    readDolaReserves,
+} from "../../src/crawler/adapters/inverse";
+import { ChainProxy } from "../../src/crawler/chains/proxy";
 
 const DAY = 24 * 60 * 60;
 const RPC: Record<string, { url: string; chainId: number; perDay: number; start: number }> = {
@@ -81,6 +93,9 @@ const SUPPLY: { id: string; system: string; address: string; decimals: number }[
 ];
 const WBTC = "ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
 const WBTC_POR = "0xa81FE04086865e63E12dD3776978E49DEEa2ea4e";
+const DOLA_ID = `ethereum:${DOLA}`;
+const DOLA_UNDERLYING = [LOAN, USDS_ID, UNTRACKED];
+const chainProxy = new ChainProxy();
 
 const providers = Object.fromEntries(
     Object.entries(RPC).map(([system, rpc]) => [
@@ -164,6 +179,7 @@ const to = process.argv[3]
 
 const supplies = new Map<string, Map<string, string[]>>();
 const custody = new Map<string, string[]>();
+const dolaBacking = new Map<string, string[]>();
 // Days read at once. More gets throttled by the RPC provider, and the retries cost more than they save.
 const PARALLEL_DAYS = Number(process.env["PARALLEL_DAYS"] ?? 4);
 // SYSTEMS=base limits the run to some chains, e.g. to rebuild one without the Alchemy keys of the others.
@@ -220,6 +236,18 @@ for (const system of systems) {
             );
             if (round && round[1] > 0n)
                 custody.set(timestamp, [timestamp, formatUnits(round[1], 8)]);
+            if (block >= FIRM_FED_START) {
+                const dola = await readDolaReserves(chainProxy, block);
+                if (!supplies.has(DOLA_ID)) supplies.set(DOLA_ID, new Map());
+                const [issued, circulating] = [String(dola.issued), String(dola.circulating)];
+                supplies
+                    .get(DOLA_ID)!
+                    .set(timestamp, [timestamp, "", circulating, issued, "", issued]);
+                dolaBacking.set(timestamp, [
+                    timestamp,
+                    ...DOLA_UNDERLYING.map((id) => String(dola.underlying[id] ?? 0)),
+                ]);
+            }
         }
     };
 
@@ -246,3 +274,9 @@ const added = merge(
     custody
 );
 console.log(`${WBTC}: ${added} custody rows added`);
+const dolaAdded = merge(
+    path.join("assets", DOLA_ID, "records", "backing.csv"),
+    ["timestamp", ...DOLA_UNDERLYING.map((id) => `underlying.${id}`)],
+    dolaBacking
+);
+console.log(`${DOLA_ID}: ${dolaAdded} backing rows added`);
