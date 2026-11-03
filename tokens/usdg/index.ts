@@ -12,7 +12,7 @@ const details: bcked.token.Details = {
     backing: {
         method: "reports",
         description:
-            "Paxos's monthly attestation reports, for all chains together. Each chain gets its share by circulating supply.",
+            "Paxos's monthly attestation reports, for all chains together. Each chain gets its share by circulating supply. USDG had no on-chain market before March 2025, so there is no backing ratio before then. From March to May 2025 its price comes from swaps in the Orca USDG/USDC pool on Solana.",
         reference: "https://www.paxos.com/usdg-transparency",
         reports: "token",
     },

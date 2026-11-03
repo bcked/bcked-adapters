@@ -17,7 +17,7 @@ const details: bcked.asset.Details = {
     backing: {
         method: "reports",
         description:
-            "Monthly attestation reports of Paxos, with the gold held in fine troy ounces.",
+            "Monthly attestation reports of Paxos, with the gold held in fine troy ounces. Before February 2021 no on-chain market for PAXG had enough liquidity for a price, so there is no backing ratio before then.",
         reference: "https://paxos.com/paxg-transparency/",
         reports: "asset",
     },

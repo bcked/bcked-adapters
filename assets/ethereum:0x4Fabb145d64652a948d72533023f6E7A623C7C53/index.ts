@@ -21,7 +21,8 @@ const details: bcked.asset.Details = {
     },
     backing: {
         method: "reports",
-        description: "Monthly attestation reports of Paxos, with the reserves by type of holding.",
+        description:
+            "Monthly attestation reports of Paxos, with the reserves by type of holding. BUSD never had a price feed. Its price comes from on-chain exchange pools until February 2023, so there is no backing ratio after that.",
         reference: "https://paxos.com/busd-transparency/",
         reports: "asset",
     },
