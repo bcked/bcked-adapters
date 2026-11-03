@@ -19,6 +19,7 @@ cgUSD,Cygnus Finance Global USD,"stablecoin (fiat-backed, USD)",75055649,2026-10
 mTBILL,Midas TBILL,tokenized treasuries,73189870,2026-10-28,,https://app.rwa.xyz/assets/mTBILL
 trUSD,Tori trUSD,"stablecoin (crypto-backed, USD)",72131189,2026-10-28,,https://defillama.com/stablecoin/tori-trusd
 USDon,Ondo U.S. Dollar Token,"stablecoin (fiat-backed, USD)",71124667,2026-10-28,,https://defillama.com/stablecoin/ondo-u-s-dollar-token https://www.artemis.ai/sectors/stablecoins/overview
+DOLA,Dola (Inverse Finance),"stablecoin (crypto-backed, USD)",70600000,2026-11-03,"Circulating supply on Ethereum (total supply less DOLA held unlent in FiRM markets, the PSM and Frontier) times the Chainlink price. See #95",https://data.chain.link/feeds/ethereum/mainnet/dola-usd https://docs.inverse.finance/
 IUSD,infiniFi USD,"stablecoin (crypto-backed, USD)",69391561,2026-10-28,,https://defillama.com/stablecoin/iusd
 XAUT0,XAUT0,stablecoin,68325753,2026-10-28,,https://www.artemis.ai/sectors/stablecoins/overview
 MUB,Micron Technology (bStocks),tokenized stock,66932629,2026-10-28,,https://app.rwa.xyz/assets/MUB
