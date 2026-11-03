@@ -66,8 +66,8 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
-        // Circle's reserves cover all chains. They are recorded for the circle entity from the
-        // BlackRock fund data, the transparency page and the attestation reports.
+        // Circle's reserves cover all chains. They are recorded on the token usdc from Circle's
+        // attestation reports.
         // USDC on Ethereum is backed by the Ethereum share of the circulating supply.
         return getTokenBackingShare(
             "usdc",
