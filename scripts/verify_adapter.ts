@@ -32,4 +32,5 @@ for (const target of process.argv.slice(2)) {
         }
     }
 }
-if (failed) process.exit(1);
+// RPC providers keep the process alive, so exit explicitly.
+process.exit(failed ? 1 : 0);
