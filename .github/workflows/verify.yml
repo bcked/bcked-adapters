@@ -1,7 +1,7 @@
 name: Verify Adapter
 
-# Runs the given adapters on the chosen branch with the RPC keys and prints what they return. Writes
-# no records. For checking new adapters before they are merged.
+# Runs the given adapters on the chosen branch with the RPC keys and the current records, and prints
+# what they return. Writes no records. For checking new adapters before they are merged.
 
 on:
     workflow_dispatch:
@@ -17,15 +17,30 @@ jobs:
     verify:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - uses: oven-sh/setup-bun@v2
-            - run: bun install --frozen-lockfile
+            - name: Checkout Code
+              uses: actions/checkout@v7
+            - name: Checkout Records
+              uses: actions/checkout@v7
+              with:
+                  # Private repository, read only here. Backing shares and report-based adapters need it.
+                  repository: bcked/bcked-records
+                  ref: records
+                  path: .records
+                  ssh-key: ${{ secrets.RECORDS_DEPLOY_KEY }}
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version-file: package.json
+            - name: Install Dependencies
+              run: bun install --frozen-lockfile
+            - name: Load Records
+              run: rsync -a --prune-empty-dirs --include='*/' --include='**/records/**' --exclude='*' .records/ ./
             - name: Run adapters
+              timeout-minutes: 10
               env:
                   ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
                   ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
                   ALCHEMY_SOLANA: ${{ secrets.ALCHEMY_SOLANA }}
                   ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
                   TARGETS: ${{ inputs.targets }}
-              timeout-minutes: 10
               run: bun scripts/verify_adapter.ts $TARGETS
