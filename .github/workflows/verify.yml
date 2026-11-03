@@ -1,0 +1,30 @@
+name: Verify Adapter
+
+# Runs the given adapters on the chosen branch with the RPC keys and prints what they return. Writes
+# no records. For checking new adapters before they are merged.
+
+on:
+    workflow_dispatch:
+        inputs:
+            targets:
+                description: "Adapter folders, space separated, e.g. assets/ethereum:0x… tokens/usdg"
+                required: true
+
+permissions:
+    contents: read
+
+jobs:
+    verify:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: oven-sh/setup-bun@v2
+            - run: bun install --frozen-lockfile
+            - name: Run adapters
+              env:
+                  ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
+                  ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
+                  ALCHEMY_SOLANA: ${{ secrets.ALCHEMY_SOLANA }}
+                  ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
+                  TARGETS: ${{ inputs.targets }}
+              run: bun scripts/verify_adapter.ts $TARGETS

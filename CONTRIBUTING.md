@@ -53,7 +53,7 @@ tags) and a class with `getPrice`, `getSupply` and `getBacking`. Most tokens reu
 - Supply: `ChainProxy.getSupply` (total supply minus tokens at burn addresses).
 - Backing on-chain: `ChainProxy.getBalance` for tokens held by a contract (see WETH).
 - Backing of an issuer that reports for all chains together: record the reserves on the issuer entity
-  and use `getIssuerBackingShare` (see USDT and USDC).
+  and use `getTokenBackingShare` (see USDT and USDC).
 - Backing from attestation reports: the scripts in [`scripts/attestations`](scripts/attestations).
   Every report is listed in `evidence.csv` next to the records with its download URL and SHA-256
   hash. The reports belong to their issuers and auditors, so the PDFs are not published here.
@@ -64,7 +64,10 @@ without one.
 
 ## Rules for data
 
-- Every value comes from a public source, and the adapter or record names it.
+- Every value comes from a public source whose terms allow automated collection and republishing, and
+  the adapter or record names it. [SOURCES.md](SOURCES.md) lists the sources in use and the ones that
+  are not used because of their terms. Maintainers can use the `add-token` and `source-terms` skills in
+  `.claude/skills`.
 - Backing is recorded in units of the underlying asset (ounces, BTC, USD), not converted to USD.
   The API converts with the price at the same time.
 - Report dates are stored in UTC with the time the report states.
@@ -116,7 +119,9 @@ Every asset, issuer and chain has an icon. `src/icons.test.ts` checks that the f
 square view box, is at most 30 KB and has no text elements.
 
 - For a token or company, use the official logo from the issuer's website or press kit, or one of the
-  sources below. Logos stay the property of their owners and are used to identify the asset.
+  sources below, if the issuer's terms or brand guidelines allow its use to identify the token.
+  Otherwise use a generic placeholder until the issuer allows it. Logos stay the property of their
+  owners and are used to identify the asset.
 - For generic assets without a logo (for example Treasury bills or repurchase agreements), draw a simple
   icon in the style of the existing ones: a filled circle with a white glyph, as in `assets/rwa:USD` and
   `assets/rwa:USTB`. Variants of one asset share the glyph (when-issued Treasuries add a dashed ring).
