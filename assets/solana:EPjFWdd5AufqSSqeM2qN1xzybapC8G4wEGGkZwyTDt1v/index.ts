@@ -20,7 +20,7 @@ const details: bcked.asset.Details = {
     backing: {
         method: "reports",
         description:
-            "Circle's monthly attestation reports, for all chains together. USDC on Solana gets the Solana share of the reserves, by circulating supply.",
+            "Circle's monthly attestation reports, for all chains together. USDC on Solana gets the Solana share of the reserves, by circulating supply. Before November 2026 that share is known only for report dates with an archived Circle figure for Solana.",
         reference: "https://www.circle.com/transparency",
         reports: "token",
     },

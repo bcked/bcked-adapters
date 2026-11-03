@@ -21,7 +21,7 @@ const details: bcked.token.Details = {
     backing: {
         method: "reports",
         description:
-            "Tether's quarterly assurance reports (BDO), for all chains together. Each chain gets its share by circulating supply.",
+            "Tether's quarterly assurance reports (BDO), for all chains together. Each chain gets its share by circulating supply. From November 2018 to January 2021 Tether published no reports. For that time the backing is the monthly total from Tether's own transparency page, unaudited and without a breakdown.",
         reference: "https://tether.to/en/transparency/",
         reports: "token",
     },
