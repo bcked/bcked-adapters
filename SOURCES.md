@@ -61,8 +61,9 @@ on bcked.com.
   non-commercial use. Gold supply comes from USGS instead.
 - [wbtc.network](https://wbtc.network/terms-of-service): no automated access and no republishing. WBTC
   custody comes from Chainlink's Proof of Reserves instead.
-- BlackRock: its terms do not allow automated collection of fund data.
-  Circle's reserves come from Circle's reports.
+- [BlackRock](https://www.blackrock.com/corporate/compliance/terms-conditions): its terms do not allow
+  automated collection of fund data. Circle's reserves come from Circle's reports. BUIDL is tracked
+  with its supply on each chain, its holdings are not recorded until BlackRock allows it.
 - [PublicNode](https://www.publicnode.com/terms): no automated data gathering.
 - [dRPC](https://drpc.org/terms-of-use) public endpoints: its terms require an account.
 - [Solana public RPC](https://solana.org/tos): the Solana Foundation's terms forbid systematic data
