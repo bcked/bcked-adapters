@@ -6,6 +6,7 @@
  *   numbers are used as facts with attribution, like the figures from its reports.
  * - USDC, PYUSD and USDG: totalSupply of the token contract on the chain, read on-chain. These
  *   issuers mint on demand and hold no unissued tokens in a treasury.
+ * - Tokens on the XRP Ledger: the issuer's obligations in the currency, read on-chain.
  */
 import { ChainProxy } from "../chains/proxy";
 import { SolanaChain } from "../chains/solana";
