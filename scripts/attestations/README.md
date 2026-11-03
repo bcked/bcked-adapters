@@ -71,8 +71,7 @@ python3 write_backing.py xaut.json "<records>/assets/ethereum:0x68749665FF8D2d11
 
 Circle's reserves are recorded on the token `usdc`, from its attestation reports only. Each report
 lists two dates. `update.sh` adds new reports every week (`fetch_circle.py` takes the newest from the
-transparency page). Until 2025-11 the Circle Reserve Fund was crawled daily from BlackRock, whose
-terms do not allow that. Those rows were replaced by the report dates on 2026-10-30.
+transparency page).
 
 ```shell
 python3 extract_circle.py circle_manual.json /tmp/circle/*.pdf > circle.json

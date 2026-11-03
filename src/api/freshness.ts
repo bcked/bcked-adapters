@@ -86,8 +86,8 @@ for (const asset of assets) {
             ? MAX_REPORT_AGE_DAYS[asset.linkedEntities.issuer ?? ""]
             : undefined;
     // The backing check reads the backing ratio, which needs a price. The chain assets of a token
-    // get a ratio only where their supply is recorded at a report date: supply recorded before
-    // 2026-11-01 came from a source no longer used, so some chains get a ratio from the next report.
+    // get a ratio only where their supply is known at a report date, so some chains get a ratio
+    // from the next report.
     if (asset.token && !asset.collateral) {
         console.log(
             `${asset.symbol} (${asset.id}): no backing ratio yet, waits for the next report`
