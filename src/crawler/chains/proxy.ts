@@ -64,9 +64,12 @@ export class ChainProxy
             return await this.getInstance(system).getBalance(address, token, system);
         } catch (error) {
             console.log(error);
-            throw Error(`Error for query of balance of ${system}:${token} on address ${address}.`, {
-                cause: error,
-            });
+            throw Error(
+                `Error for query of balance of ${system}:${token ?? "native"} on address ${address}.`,
+                {
+                    cause: error,
+                }
+            );
         }
     }
 
