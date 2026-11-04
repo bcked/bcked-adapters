@@ -5,7 +5,7 @@
  * A token has the same price on every chain, so all chain versions of a token use its feed. Some
  * prices are derived from a feed: wstETH from stETH and the wstETH exchange rate, WBTC from the
  * WBTC/BTC and BTC/USD feeds, XAUt (one troy ounce of gold per token) from gold. The euro (rwa:EUR)
- * is priced by the EUR/USD feed.
+ * is priced by the EUR/USD feed, silver (rwa:XAG) by the XAG/USD feed.
  */
 import { formatUnits } from "ethers";
 
@@ -34,6 +34,7 @@ export const FEEDS = {
     SKY: { address: "0xee10fE5E7aa92dd7b136597449c3d5813cFC5F18", decimals: 8 },
     PAXG: { address: "0x9944D86CEB9160aF5C5feB251FD671923323f8C3", decimals: 8 },
     XAU: { address: "0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6", decimals: 8 },
+    XAG: { address: "0x379589227b15F1a12195D3f2d90bBc9F31f95235", decimals: 8 },
     STETH: { address: "0xCfE54B5cD566aB89272946F602D76Ea879CAb4a8", decimals: 8 },
     STRC: { address: "0xf4d2076277fff631EFC4385Ab36b1f7734218d23", decimals: 8 },
     USTBL: { address: "0x477e363c51Ab0C4D13B22CD6B57D56d4a3Cb7Abe", decimals: 6 }, // NAV per share
@@ -73,6 +74,7 @@ export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78": { feed: "PAXG" },
     "ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38": { feed: "XAU" }, // XAUt
     "rwa:XAU": { feed: "XAU" },
+    "rwa:XAG": { feed: "XAG" }, // silver, the backing of KAG
     "rwa:EUR": { feed: "EUR" },
     "rwa:STRC": { feed: "STRC" }, // Strategy's STRC preferred share, the collateral of STRCx
     "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84": { feed: "STETH" },
