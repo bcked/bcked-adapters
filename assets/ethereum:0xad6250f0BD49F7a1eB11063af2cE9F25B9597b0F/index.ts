@@ -62,6 +62,9 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getBacking(): Promise<bcked.asset.Backing[]> {
+        const { Chainlink } = await import("../../src/crawler/apis/chainlink");
+        const feeds = await new Chainlink().readFeeds(["TBILL"]);
+        console.log("TBILL feed", JSON.stringify(feeds), new Date(feeds.TBILL.updatedAt).toISOString());
         return [];
     }
 }
