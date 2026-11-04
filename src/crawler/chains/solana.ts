@@ -1,4 +1,4 @@
-import { unpackAccount } from "@solana/spl-token";
+import { amountToUiAmountForMintWithoutSimulation, unpackAccount } from "@solana/spl-token";
 import { Connection, PublicKey, type TokenAmount } from "@solana/web3.js";
 import { format, toISOString } from "../../utils/string_formatting";
 
@@ -69,5 +69,20 @@ export class SolanaChain implements bcked.query.ChainModule {
             burned: null, // TODO how to read out burned amount on SOL?
             issued: parseFloat(formatUnits(ta.amount, ta.decimals)),
         };
+    }
+
+    /**
+     * Supply of a Token-2022 mint with the Scaled UI Amount extension (rebasing tokens such as
+     * xStocks): the raw supply times the mint's current multiplier. Plain mints get the raw supply.
+     */
+    async getScaledSupply(token: bcked.asset.Address): Promise<number> {
+        const mint = new PublicKey(token);
+        const response = await this._connection.getTokenSupply(mint);
+        const ui = await amountToUiAmountForMintWithoutSimulation(
+            this._connection,
+            mint,
+            BigInt(response.value.amount)
+        );
+        return parseFloat(ui);
     }
 }

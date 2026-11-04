@@ -1,0 +1,14 @@
+[
+    {
+        "id": "ethereum:0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3",
+        "system": "ethereum",
+        "address": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3",
+        "decimals": 18
+    },
+    {
+        "id": "arbitrum:0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3",
+        "system": "arbitrum",
+        "address": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3",
+        "decimals": 18
+    }
+]
