@@ -5,6 +5,8 @@
  *
  * Usage: bun src/api/freshness.ts [API base URL]
  */
+import { PRICE_SOURCES } from "../crawler/apis/chainlink";
+
 const base = process.argv[2] ?? "https://api.bcked.com";
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -22,9 +24,9 @@ const MAX_REPORT_AGE_DAYS: Record<string, number> = {
 
 /** Assets whose price is constant or never crawled. */
 const STATIC_PRICES = (id: string) => id.startsWith("rwa:") && id !== "rwa:XAU";
-// Assets without a market price from a source bcked may use. BUSD has no Chainlink feed since
-// Paxos stopped minting it, so it has no price and no backing ratio.
-const NO_PRICE = new Set(["ethereum:0x4Fabb145d64652a948d72533023f6E7A623C7C53"]);
+// Only assets with a price source (a Chainlink feed) get a current price. Others, like a fund without
+// a feed or a token whose feed ended, have no price and so no backing ratio.
+const NO_PRICE = { has: (id: string) => !(id in PRICE_SOURCES) };
 
 interface Dated {
     date: string;
