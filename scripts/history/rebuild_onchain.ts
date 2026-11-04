@@ -1,14 +1,14 @@
 /**
  * Rebuilds daily on-chain history that does not depend on a third-party API:
  * - supply (totalSupply) of USDC on Ethereum, Arbitrum, Polygon and Base, PYUSD, USDG and RLUSD on
- *   Ethereum,
- *   the same reads the crawler makes (src/crawler/adapters/circulating.ts),
+ *   Ethereum, BUIDL on Ethereum, Arbitrum, Polygon and Avalanche, the same reads the crawler makes
+ *   (src/crawler/adapters/circulating.ts),
  * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed.
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
  * ALCHEMY_POLYGON set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
  * SYSTEMS=<chain,...> limits the run to these chains. Days that already have a row are kept. Reads need archive nodes, which Alchemy provides. The
- * official Base RPC serves archive reads too.
+ * official Base and Avalanche RPCs serve archive reads too.
  */
 import { Contract, JsonRpcProvider, formatUnits } from "ethers";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -38,6 +38,12 @@ const RPC: Record<string, { url: string; chainId: number; perDay: number; start:
         url: "https://mainnet.base.org",
         chainId: 8453,
         perDay: 43_200,
+        start: 1,
+    },
+    avalanche: {
+        url: "https://api.avax.network/ext/bc/C/rpc",
+        chainId: 43114,
+        perDay: 80_000,
         start: 1,
     },
 };
@@ -77,6 +83,37 @@ const SUPPLY: { id: string; system: string; address: string; decimals: number }[
         id: "ethereum:0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
         system: "ethereum",
         address: "0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
+        decimals: 6,
+    },
+    // BUIDL (tokens/buidl). On BNB Chain the public RPC has no archive, on Solana there are no archive calls.
+    {
+        id: "ethereum:0x7712c34205737192402172409a8F7ccef8aA2AEc",
+        system: "ethereum",
+        address: "0x7712c34205737192402172409a8F7ccef8aA2AEc",
+        decimals: 6,
+    },
+    {
+        id: "ethereum:0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041",
+        system: "ethereum",
+        address: "0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041",
+        decimals: 6,
+    },
+    {
+        id: "arbitrum:0xA6525Ae43eDCd03dC08E775774dCAbd3bb925872",
+        system: "arbitrum",
+        address: "0xA6525Ae43eDCd03dC08E775774dCAbd3bb925872",
+        decimals: 6,
+    },
+    {
+        id: "polygon:0x2893Ef551B6dD69F661Ac00F11D93E5Dc5Dc0e99",
+        system: "polygon",
+        address: "0x2893Ef551B6dD69F661Ac00F11D93E5Dc5Dc0e99",
+        decimals: 6,
+    },
+    {
+        id: "avalanche:0x53FC82f14F009009b440a706e31c9021E1196A2F",
+        system: "avalanche",
+        address: "0x53FC82f14F009009b440a706e31c9021E1196A2F",
         decimals: 6,
     },
     {
