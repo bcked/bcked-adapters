@@ -35,6 +35,7 @@ export const FEEDS = {
     PAXG: { address: "0x9944D86CEB9160aF5C5feB251FD671923323f8C3", decimals: 8 },
     XAU: { address: "0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6", decimals: 8 },
     STETH: { address: "0xCfE54B5cD566aB89272946F602D76Ea879CAb4a8", decimals: 8 },
+    USTBL: { address: "0x477e363c51Ab0C4D13B22CD6B57D56d4a3Cb7Abe", decimals: 6 }, // NAV per share
 } as const;
 type Feed = keyof typeof FEEDS;
 
@@ -54,9 +55,11 @@ const BY_SYMBOL: Record<string, Source> = {
     USDG: { feed: "USDG" },
     EURC: { feed: "EURC" },
     RLUSD: { feed: "RLUSD" },
+    USTBL: { feed: "USTBL" },
 };
 
-// Assets by id. Chain versions of USDT, USDC, PYUSD, USDG, EURC and RLUSD are added below from TOKEN_ASSETS.
+// Assets by id. Chain versions of USDT, USDC, PYUSD, USDG, EURC, RLUSD and USTBL are added below
+// from TOKEN_ASSETS.
 export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:ETH": { feed: "ETH" },
     "ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": { feed: "ETH" }, // WETH
@@ -107,6 +110,13 @@ const TOKEN_ASSETS: Record<string, string[]> = {
     RLUSD: [
         "ethereum:0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
         "xrpl:RLUSD.rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De",
+    ],
+    USTBL: [
+        "ethereum:0xe4880249745eAc5F1eD9d8F7DF844792D560e750",
+        "polygon:0xe4880249745eAc5F1eD9d8F7DF844792D560e750",
+        "base:0xe4880249745eAc5F1eD9d8F7DF844792D560e750",
+        "arbitrum:0x021289588cd81dC1AC87ea91e91607eEF68303F5",
+        "solana:3E2qphMMBQtH3HZH2ZSg7CkbF8gSLePuoy7yVpkDxHGn",
     ],
 };
 for (const [symbol, ids] of Object.entries(TOKEN_ASSETS))
