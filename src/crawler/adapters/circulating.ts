@@ -9,6 +9,7 @@
  * - EURC on Solana: Circle's own figure per chain (https://api.circle.com/v1/stablecoins). The token
  *   on Solana also counts tokens that Circle has not issued yet ("Tokens Allowed But Not Issued" in
  *   its reports), so its totalSupply is more than the EURC in circulation.
+ * - Tokens on the XRP Ledger: the issuer's obligations in the currency, read on-chain.
  */
 import { ChainProxy } from "../chains/proxy";
 import { SolanaChain } from "../chains/solana";

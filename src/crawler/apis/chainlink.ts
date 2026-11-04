@@ -53,9 +53,10 @@ const BY_SYMBOL: Record<string, Source> = {
     PYUSD: { feed: "PYUSD" },
     USDG: { feed: "USDG" },
     EURC: { feed: "EURC" },
+    RLUSD: { feed: "RLUSD" },
 };
 
-// Assets by id. Chain versions of USDT, USDC, PYUSD, USDG and EURC are added below from TOKEN_ASSETS.
+// Assets by id. Chain versions of USDT, USDC, PYUSD, USDG, EURC and RLUSD are added below from TOKEN_ASSETS.
 export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:ETH": { feed: "ETH" },
     "ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": { feed: "ETH" }, // WETH
@@ -63,7 +64,6 @@ export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": { feed: "WBTC_BTC", times: "BTC" },
     "ethereum:0x6B175474E89094C44Da98b954EedeAC495271d0F": { feed: "DAI" },
     "ethereum:0xdC035D45d973E3EC169d2276DDab16f1e407384F": { feed: "USDS" },
-    "ethereum:0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD": { feed: "RLUSD" },
     "ethereum:0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a": { feed: "AUSD" },
     "ethereum:0x56072C95FAA701256059aa122697B133aDEd9279": { feed: "SKY" },
     "ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78": { feed: "PAXG" },
@@ -103,6 +103,10 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "ethereum:0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
         "base:0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42",
         "solana:HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr",
+    ],
+    RLUSD: [
+        "ethereum:0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
+        "xrpl:RLUSD.rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De",
     ],
 };
 for (const [symbol, ids] of Object.entries(TOKEN_ASSETS))

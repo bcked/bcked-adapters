@@ -35,6 +35,7 @@ on bcked.com.
 | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Alchemy](https://www.alchemy.com/)                                                                              | RPC for Ethereum, Arbitrum, Polygon and Solana, archive calls, token transfers                                                                             | [Terms](https://legal.alchemy.com/). Contract calls, the results are facts                                                                                                                     |
 | Official public RPCs of Base, Avalanche, X Layer, Ink, Robinhood Chain, Plume, Moonbeam, Moonriver and BNB Chain | Contract calls on these chains                                                                                                                             | Run by the chains' developers for public use                                                                                                                                                   |
+| [Honeycluster](https://honeycluster.io/)                                                                         | JSON-RPC for the XRP Ledger: issued supply of RLUSD (the issuer's obligations)                                                                             | [Terms](https://honeycluster.io/terms). Ledger state, the results are facts                                                                                                                    |
 | [Sky Chainlog](https://chainlog.sky.money/)                                                                      | Addresses of the Sky contracts (Vat, Lite PSM, vault joins) for the reserves of DAI and USDS                                                               | Read on-chain from the Chainlog contract                                                                                                                                                       |
 | [Spark address registry](https://github.com/sparkdotfi/spark-address-registry)                                   | Contracts of the Spark allocator (ALM proxies, SparkLend, vaults) on Ethereum, Base and Arbitrum                                                           | AGPL-3.0 repository. Positions are read on-chain. The Obex proxy is taken from the USDS transfers of its allocator buffer                                                                      |
 | [Grove address registry](https://github.com/grove-labs/grove-address-registry)                                   | Contracts of the Grove allocator (ALM and PAU proxies, vaults, funds, off-chain deposit addresses) on Ethereum, Base, Avalanche, Plume and Robinhood Chain | AGPL-3.0 repository. Positions are read on-chain. USDC lent off-chain is summed from transfers with [Alchemy's transfer API](https://www.alchemy.com/docs/reference/alchemy-getassettransfers) |
@@ -61,15 +62,16 @@ on bcked.com.
   non-commercial use. Gold supply comes from USGS instead.
 - [wbtc.network](https://wbtc.network/terms-of-service): no automated access and no republishing. WBTC
   custody comes from Chainlink's Proof of Reserves instead.
-- BlackRock: its terms do not allow automated collection of fund data.
-  Circle's reserves come from Circle's reports.
+- [BlackRock](https://www.blackrock.com/corporate/compliance/terms-conditions): its terms do not allow
+  automated collection of fund data. Circle's reserves come from Circle's reports. BUIDL is tracked
+  with its supply on each chain, its holdings are not recorded until BlackRock allows it.
 - [PublicNode](https://www.publicnode.com/terms): no automated data gathering.
 - [dRPC](https://drpc.org/terms-of-use) public endpoints: its terms require an account.
 - [Solana public RPC](https://solana.org/tos): the Solana Foundation's terms forbid systematic data
   collection from its services. Solana is read through a keyed RPC.
 - [Ripple USD transparency reports](https://ripple.com/products/stablecoin/transparency/): monthly reserve
-  reports of RLUSD. RLUSD is tracked with price and supply, its backing is not recorded until Ripple
-  allows it.
+  reports of RLUSD. RLUSD is tracked with price and supply on Ethereum and the XRP Ledger, its
+  backing is not recorded until Ripple allows it.
 - [Agora attestations](https://developer.agora.finance/attestations): monthly reserve reports of AUSD.
   AUSD is tracked with price and supply and a generic icon, its backing is not recorded until Agora
   allows it.
