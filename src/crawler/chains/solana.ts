@@ -80,17 +80,16 @@ export class SolanaChain implements bcked.query.ChainModule {
 
     /** Raw token amount at an address: a token account of the mint, or all accounts of an owner. */
     private async _rawBalance(address: PublicKey, mint: PublicKey): Promise<bigint> {
+        // Keys are compared as base58: the token layouts decode keys with another web3.js version.
+        const programs = [TOKEN_PROGRAM_ID.toBase58(), TOKEN_2022_PROGRAM_ID.toBase58()];
         const info = await this._connection.getAccountInfo(address);
-        if (
-            info &&
-            (info.owner.equals(TOKEN_PROGRAM_ID) || info.owner.equals(TOKEN_2022_PROGRAM_ID))
-        ) {
+        if (info && programs.includes(info.owner.toBase58())) {
             const account = unpackAccount(
                 address,
                 { ...info, data: Buffer.from(info.data) },
                 info.owner
             );
-            return account.mint.equals(mint) ? account.amount : 0n;
+            return account.mint.toBase58() == mint.toBase58() ? account.amount : 0n;
         }
         const accounts = await this._connection.getTokenAccountsByOwner(address, { mint });
         let amount = 0n;
