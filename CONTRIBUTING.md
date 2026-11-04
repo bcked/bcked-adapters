@@ -29,9 +29,9 @@ A token is eligible if all of the following hold:
 Assets that back an already tracked token are always eligible, whatever their market cap, because the
 backing chain is incomplete without them.
 
-Tokens below the threshold are listed in [`watchlist.csv`](watchlist.csv) with their market cap, the
-date it was checked and the sources. The list is checked again from time to time. A token that grows
-past the threshold becomes a request.
+Tokens below the threshold, or not yet measured, are listed in [`watchlist.csv`](watchlist.csv) with
+official sources. Their market cap is measured on-chain (supply times price) when the list is checked
+again, with the date. A token that grows past the threshold becomes a request.
 
 ## How a token is defined
 
