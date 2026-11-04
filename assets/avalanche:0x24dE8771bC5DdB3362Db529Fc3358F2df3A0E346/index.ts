@@ -29,6 +29,12 @@ const details: bcked.asset.Details = {
         issuer: "avant",
     },
     reference: "https://docs.avantprotocol.com/security/contract-addresses",
+    backing: {
+        method: "not-tracked",
+        description:
+            "Avant publishes a breakdown of the backing, but bcked does not record it yet.",
+        reference: "https://app.avantprotocol.com/transparency",
+    },
     tags: ["stablecoin"],
 };
 

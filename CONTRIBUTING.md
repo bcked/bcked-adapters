@@ -57,6 +57,8 @@ tags) and a class with `getPrice`, `getSupply` and `getBacking`. Most tokens reu
 - Backing from attestation reports: the scripts in [`scripts/attestations`](scripts/attestations).
   Every report is listed in `evidence.csv` next to the records with its download URL and SHA-256
   hash. The reports belong to their issuers and auditors, so the PDFs are not published here.
+- No backing that can be recorded: declare it anyway, with `backing.method` `"not-tracked"` and the
+  reason in `backing.description`. The site then shows "Backing not tracked" instead of no reserves.
 
 Issuers are folders under `entities/` and chains under `systems/`. A product on several chains (USDT, USDC) is a folder under `tokens/`, with the reserves its issuer reports for all chains together. Each of its chain assets links it in `token` and gets its chain's share. Copy an existing asset as a starting
 point and change the details. Every asset, issuer and chain needs an `icon.svg`, and `bun test` fails

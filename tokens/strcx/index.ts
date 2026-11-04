@@ -15,6 +15,12 @@ const details: bcked.token.Details = {
     identifier: "strcx",
     issuer: "backed",
     reference: "https://docs.xstocks.fi/docs/product-legal-overview",
+    backing: {
+        method: "not-tracked",
+        description:
+            "The issuer publishes the STRC shares held as collateral, but bcked does not record them yet.",
+        reference: null,
+    },
     tags: ["real-world-asset"],
 };
 

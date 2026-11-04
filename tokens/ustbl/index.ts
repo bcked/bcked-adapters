@@ -13,6 +13,11 @@ const details: bcked.token.Details = {
     identifier: "ustbl",
     issuer: "spiko",
     reference: "https://github.com/spiko-tech/contracts",
+    backing: {
+        method: "not-tracked",
+        description: "Spiko publishes the fund's holdings, but bcked does not record them yet.",
+        reference: null,
+    },
     tags: ["real-world-asset"],
 };
 

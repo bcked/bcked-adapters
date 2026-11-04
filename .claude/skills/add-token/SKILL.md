@@ -44,7 +44,10 @@ Follow "How a token is defined" in CONTRIBUTING.md and copy the closest existing
 - Backing on-chain: `ChainProxy.getBalance` or `call` on the holding contracts (see WETH, DAI).
   Backing from reports: an extractor in `scripts/attestations`, reserves on the token or asset, and
   `getTokenBackingShare` for each chain (see USDC, USDG). Write the source and any limit in
-  `backing.description`, which the token page shows.
+  `backing.description`, which the token page shows. No usable backing source: set `backing` to
+  `{ method: "not-tracked", description: <what the issuer publishes and why it is not recorded, in
+neutral words, without discussing terms>, reference }` on the token or asset. An asset or token
+  without a backing source fails the pull request check.
 - Icons: the official logo only if the issuer's terms allow it, else a generic placeholder in the
   style of the existing ones. Check `src/icons.test.ts`.
 
@@ -72,6 +75,11 @@ records repository from a branch.
 ```shell
 bun test && bun run check && bun run lint && bunx prettier --check .
 ```
+
+The pull request check "Verify Changed Adapters" runs every changed adapter against the live chains
+and fails on errors, a missing supply, a missing price where a Chainlink feed exists, and a backing
+source that yields no backing. Run it before pushing with
+`gh workflow run "Verify Adapter" --ref <branch> -f targets="--strict assets/<id> tokens/<id>"`.
 
 Run the new adapters against the live chains. Without RPC keys locally, push the branch and use the
 workflow, which has them, then read its log:

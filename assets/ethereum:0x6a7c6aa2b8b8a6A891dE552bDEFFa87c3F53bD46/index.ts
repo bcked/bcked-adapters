@@ -23,6 +23,11 @@ const details: bcked.asset.Details = {
     },
     reference:
         "https://am.jpmorgan.com/us/en/asset-management/institutional/about-us/media/press-releases/jp-morgan-asset-management-launches-its-first-tokenized-money-market-fund/",
+    backing: {
+        method: "not-tracked",
+        description: "J.P. Morgan publishes no holdings of the fund that bcked can record.",
+        reference: null,
+    },
     tags: ["real-world-asset"],
 };
 
