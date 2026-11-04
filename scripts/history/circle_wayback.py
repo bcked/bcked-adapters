@@ -1,11 +1,12 @@
-"""Records USDC on Solana at USDC report dates, from archived copies of Circle's stablecoin data
-(https://api.circle.com/v1/stablecoins) in the Wayback Machine.
+"""Records USDC or EURC on Solana at its report dates, from archived copies of Circle's stablecoin
+data (https://api.circle.com/v1/stablecoins) in the Wayback Machine.
 
-Usage: python3 circle_wayback.py <records checkout>
+Usage: python3 circle_wayback.py <records checkout> [EURC]
 
-Past Solana token supply cannot be read from a Solana RPC. Circle's own data lists the USDC on
-each chain. For each report date in tokens/usdc/records/supply.csv, the snapshot closest in time
-(at most 3 days away) gives Solana's share of all USDC. That share of the reported total is
+Past Solana token supply cannot be read from a Solana RPC, and for EURC the token supply on Solana
+also counts tokens Circle has not issued. Circle's own data lists the tokens in circulation on
+each chain. For each report date in tokens/<token>/records/supply.csv, the snapshot closest in time
+(at most 3 days away) gives Solana's share of all tokens. That share of the reported total is
 written as the "Solana" column of the report row, and as circulating supply of the Solana asset
 at the report time, so its market cap exists at the report date. Existing values are kept.
 """
@@ -20,7 +21,11 @@ import urllib.request
 
 URL = "https://api.circle.com/v1/stablecoins"
 CHAIN, COLUMN = "SOL", "Solana"
-ASSET = "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+# Symbol: (token id, Solana asset, symbols in Circle's data). Older snapshots list EURC as "EUROC".
+TOKENS = {
+    "USDC": ("usdc", "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", ["USDC"]),
+    "EURC": ("eurc", "solana:HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr", ["EURC", "EUROC"]),
+}
 SUPPLY_COLUMNS = ["timestamp", "burned", "circulating", "issued", "max", "total"]
 MAX_DISTANCE = datetime.timedelta(days=3)
 HEADERS = {"User-Agent": "bcked.com history rebuild (https://bcked.com)"}
@@ -39,13 +44,13 @@ def snapshots():
     return [datetime.datetime.strptime(row[0], "%Y%m%d%H%M%S").replace(tzinfo=datetime.timezone.utc) for row in rows[1:]]
 
 
-def share(snapshot):
-    """Solana's share of all USDC in a snapshot, or None."""
+def share(snapshot, symbols):
+    """Solana's share of all tokens of a symbol in a snapshot, or None."""
     data = json.loads(get(f"https://web.archive.org/web/{snapshot:%Y%m%d%H%M%S}id_/{URL}"))["data"]
-    usdc = next((c for c in data if c["symbol"] == "USDC"), None)
-    if not usdc:
+    token = next((c for c in data if c["symbol"] in symbols), None)
+    if not token:
         return None
-    chains = {c["chain"]: float(c["amount"]) for c in usdc["chains"]}
+    chains = {c["chain"]: float(c["amount"]) for c in token["chains"]}
     total = sum(chains.values())
     return chains.get(CHAIN, 0) / total if total else None
 
@@ -58,8 +63,9 @@ def write(path, columns, rows):
             writer.writerow({c: rows[timestamp].get(c, "") for c in columns})
 
 
-def main(records):
-    path = os.path.join(records, "tokens", "usdc", "records", "supply.csv")
+def main(records, symbol="USDC"):
+    token, asset, symbols = TOKENS[symbol]
+    path = os.path.join(records, "tokens", token, "records", "supply.csv")
     with open(path) as f:
         reader = csv.DictReader(f)
         columns = list(reader.fieldnames)
@@ -67,7 +73,7 @@ def main(records):
     if COLUMN not in columns:
         columns.append(COLUMN)
     found = snapshots()
-    asset_path = os.path.join(records, "assets", ASSET, "records", "supply.csv")
+    asset_path = os.path.join(records, "assets", asset, "records", "supply.csv")
     asset_rows = {}
     if os.path.exists(asset_path):
         with open(asset_path) as f:
@@ -80,7 +86,7 @@ def main(records):
         closest = min(found, key=lambda t: abs(t - time_), default=None)
         if not closest or abs(closest - time_) > MAX_DISTANCE:
             continue
-        part = share(closest)
+        part = share(closest, symbols)
         if not part:
             continue
         value = round(part * float(row["total"]), 6)
@@ -96,4 +102,4 @@ def main(records):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(*sys.argv[1:3])
