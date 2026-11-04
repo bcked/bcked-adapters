@@ -192,7 +192,8 @@ const shared = new Map<
 // Days read at once. More gets throttled by the RPC provider, and the retries cost more than they save.
 const PARALLEL_DAYS = Number(process.env["PARALLEL_DAYS"] ?? 4);
 // SYSTEMS=base limits the run to some chains, e.g. to rebuild one without the Alchemy keys of the others.
-const systems = process.env["SYSTEMS"]?.split(",") ?? Object.keys(RPC);
+// Empty (the workflow's default) means all chains.
+const systems = process.env["SYSTEMS"] ? process.env["SYSTEMS"].split(",") : Object.keys(RPC);
 for (const system of systems) {
     const latest = await providers[system]!.getBlockNumber();
     const first = await blockAt(system, from, RPC[system]!.start, latest);

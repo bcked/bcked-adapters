@@ -23,6 +23,10 @@ on:
                 description: "First year of supply and custody"
                 required: false
                 default: "2020"
+            systems:
+                description: "Chains for supply and custody, comma separated, e.g. ethereum,base (empty: all)"
+                required: false
+                default: ""
 
 # Shares the group with the crawler, so both never push to the records at the same time.
 concurrency:
@@ -120,6 +124,7 @@ jobs:
                   ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
                   ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
                   ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
+                  SYSTEMS: ${{ inputs.systems }}
               run: |
                   to=$(( ${{ matrix.year }} + 1 ))-01-01
                   if [[ "$to" > "$(date -u +%F)" ]]; then to=""; fi
