@@ -6,8 +6,7 @@
  *   balance held by a contract, the share of it that matches the circulating supply,
  * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed,
  * - the backing of tokens whose entry names a Chainlink Proof of Reserves feed (`por`),
- * - the price of tokens whose entry names a Chainlink price feed on its chain (`price`),
- * - the backing of tokens whose entry names a module that reads it at a block (`backingAt`).
+ * - the price of tokens whose entry names a Chainlink price feed on its chain (`price`).
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
  * ALCHEMY_POLYGON set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
@@ -87,9 +86,6 @@ interface SupplyEntry {
     // The price is the answer of a Chainlink USD feed on the same chain. It is written for this asset
     // and for `assets`, the token on other chains.
     price?: { feed: string; decimals: number; assets?: string[] };
-    // The backing is computed by a module (path from the repository root) that exports
-    // backingAt(block): the amount per underlying asset id at that block, or null if unknown.
-    backingAt?: string;
 }
 const SUPPLY_DIR = path.join(import.meta.dir, "supply");
 const SUPPLY: SupplyEntry[] = readdirSync(SUPPLY_DIR)
@@ -310,28 +306,6 @@ for (const system of systems) {
                         rows: new Map(),
                     });
                 backings.get(token.id)!.rows.set(timestamp, [timestamp, share]);
-            }
-            if (token.backingAt) {
-                const module = (await import(
-                    path.join(import.meta.dir, "../..", token.backingAt)
-                )) as {
-                    backingAt: (block: number) => Promise<Record<string, number> | null>;
-                };
-                const underlying = await read(() => module.backingAt(block));
-                if (underlying) {
-                    const ids = Object.keys(underlying).sort();
-                    if (!backings.has(token.id))
-                        backings.set(token.id, {
-                            header: ["timestamp", ...ids.map((id) => `underlying.${id}`)],
-                            rows: new Map(),
-                        });
-                    backings
-                        .get(token.id)!
-                        .rows.set(timestamp, [
-                            timestamp,
-                            ...ids.map((id) => String(underlying[id])),
-                        ]);
-                }
             }
             if (token.por) {
                 const { id, feed, decimals } = token.por;
