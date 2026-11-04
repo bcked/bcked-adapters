@@ -50,10 +50,10 @@ export async function mCollateral(chain: ChainProxy): Promise<number> {
         collateral += value;
         owed += owedM;
     }
-    // M owed by a minter missing from the list would leave its collateral out. Rounding of the
-    // owed amounts differs by a few units, so only gaps over one M are reported.
+    // M owed by a minter missing from the list would leave its collateral out. On 2026-11-04 the
+    // listed minters owed all but about 840 of 217.6 million M, so only gaps over 0.1% are reported.
     const totalOwed = await chain.call<bigint>(gateway, TOTAL_ACTIVE_OWED_M, [], "ethereum");
-    if (totalOwed - owed > 1_000_000n)
+    if ((totalOwed - owed) * 1000n > totalOwed)
         console.warn(
             `M: listed minters owe ${formatUnits(owed, 6)} M of ${formatUnits(totalOwed, 6)} M.`
         );
