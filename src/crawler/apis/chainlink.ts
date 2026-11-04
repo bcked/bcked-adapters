@@ -1,5 +1,6 @@
 /**
- * Prices from Chainlink Data Feeds on Ethereum, read on-chain from the feed contracts.
+ * Prices from Chainlink Data Feeds, read on-chain from the feed contracts on Ethereum, or on another
+ * chain where a feed names one.
  * Feeds: https://docs.chain.link/data-feeds (addresses from Chainlink's feed directory).
  *
  * A token has the same price on every chain, so all chain versions of a token use its feed. Some
@@ -16,7 +17,7 @@ import { toISOString } from "../../utils/string_formatting";
 
 const LATEST = "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)";
 
-// Canonical Chainlink feeds on Ethereum (USD prices, 8 decimals unless noted).
+// Canonical Chainlink feeds on Ethereum, or on the chain given (USD prices, 8 decimals unless noted).
 export const FEEDS = {
     ETH: { address: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419", decimals: 8 },
     BTC: { address: "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c", decimals: 8 },
@@ -38,8 +39,23 @@ export const FEEDS = {
     STETH: { address: "0xCfE54B5cD566aB89272946F602D76Ea879CAb4a8", decimals: 8 },
     STRC: { address: "0xf4d2076277fff631EFC4385Ab36b1f7734218d23", decimals: 8 },
     USTBL: { address: "0x477e363c51Ab0C4D13B22CD6B57D56d4a3Cb7Abe", decimals: 6 }, // NAV per share
+    M: { address: "0xC28198Df9aee1c4990994B35ff51eFA4C769e534", decimals: 8 }, // M NAV
+    JTRSY: { address: "0x0C2e4Df738e99e8db80012f5bb2a303f3f48Ca74", decimals: 6 }, // NAV per share
+    TBILL: { address: "0xAbE7a3643615Ed32d3431e11E0Ee5A486Cb27d48", decimals: 8 }, // NAV per token
+    APXUSD: { address: "0x651b101f72F82630cf59c68E6EE4305aFBd3B1F5", decimals: 18 }, // Exchange Rate
+    USDAI: {
+        address: "0xF3d6b05E69918d71807Ab005791daCcEC5de8C78",
+        decimals: 8,
+        chain: "arbitrum",
+    },
 } as const;
 type Feed = keyof typeof FEEDS;
+
+/** The chain a feed is read on. */
+export function feedChain(feed: Feed): bcked.system.Id {
+    const source = FEEDS[feed];
+    return "chain" in source ? source.chain : "ethereum";
+}
 
 const WSTETH = "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0";
 const ST_ETH_PER_TOKEN = "function stEthPerToken() view returns (uint256)";
@@ -58,10 +74,15 @@ const BY_SYMBOL: Record<string, Source> = {
     EURC: { feed: "EURC" },
     RLUSD: { feed: "RLUSD" },
     USTBL: { feed: "USTBL" },
+    M: { feed: "M" },
+    USDAI: { feed: "USDAI" },
+    JTRSY: { feed: "JTRSY" },
+    TBILL: { feed: "TBILL" },
+    APXUSD: { feed: "APXUSD" },
 };
 
-// Assets by id. Chain versions of USDT, USDC, PYUSD, USDG, EURC, RLUSD and USTBL are added below
-// from TOKEN_ASSETS.
+// Assets by id. Chain versions of USDT, USDC, PYUSD, USDG, EURC, RLUSD, USTBL, M, USDai and TBILL are
+// added below from TOKEN_ASSETS.
 export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:ETH": { feed: "ETH" },
     "ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": { feed: "ETH" }, // WETH
@@ -98,6 +119,7 @@ const TOKEN_ASSETS: Record<string, string[]> = {
     PYUSD: [
         "ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
         "solana:2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+        "arbitrum:0x46850aD61C2B7d64d08c9C754F45254596696984",
     ],
     USDG: [
         "ethereum:0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
@@ -120,6 +142,34 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "polygon:0xe4880249745eAc5F1eD9d8F7DF844792D560e750",
         "base:0xe4880249745eAc5F1eD9d8F7DF844792D560e750",
         "arbitrum:0x021289588cd81dC1AC87ea91e91607eEF68303F5",
+    ],
+    M: [
+        "ethereum:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "arbitrum:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "base:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+    ],
+    USDAI: [
+        "arbitrum:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
+        "ethereum:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
+        "base:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
+        "solana:USDai5XCUzNebYzUk6EuRiFCvnyoyEdj7VSyijYcz2A",
+    ],
+    JTRSY: [
+        "ethereum:0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "base:0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "arbitrum:0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "bsc:0xa5d465251fBCc907f5Dd6bB2145488DFC6a2627b",
+        "plume:0xa5d465251fBCc907f5Dd6bB2145488DFC6a2627b",
+    ],
+    TBILL: [
+        "ethereum:0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a",
+        "bsc:0x5b4681F0d7A01B817675F25892D3Ad73572FD1D9",
+    ],
+    APXUSD: [
+        "ethereum:0x98A878b1Cd98131B271883B390f68D2c90674665",
+        "base:0xD993935E13851dd7517af10687EC7e5022127228",
+        "bsc:0x6b3788Fd6604BBF03c5378D24e57BB334BAAD4aF",
+        "solana:HAYQtfJEQ9DbDbaHEhxfGsWbSZ3ywthdsVB3PuB72DYe",
     ],
 };
 for (const [symbol, ids] of Object.entries(TOKEN_ASSETS))
@@ -144,33 +194,38 @@ export class Chainlink implements bcked.query.ApiModule {
         return latest;
     }
 
-    /** Latest answer of each feed, at the given block (latest if omitted). */
+    /**
+     * Latest answer of each feed, at the given Ethereum block (latest if omitted). Feeds on other
+     * chains are read at their latest block.
+     */
     async readFeeds(
         feeds: Feed[],
         blockTag?: number
     ): Promise<Record<Feed, { usd: number; updatedAt: number }>> {
-        const calls: Call[] = feeds.map((feed) => ({
-            target: FEEDS[feed].address,
-            signature: LATEST,
-        }));
-        const results = await multicall(this.chain, "ethereum", calls, blockTag);
-        return Object.fromEntries(
-            feeds.map((feed, i) => {
+        const values: Partial<Record<Feed, { usd: number; updatedAt: number }>> = {};
+        const chains = [...new Set(feeds.map(feedChain))];
+        for (const system of chains) {
+            const onChain = feeds.filter((feed) => feedChain(feed) == system);
+            const calls: Call[] = onChain.map((feed) => ({
+                target: FEEDS[feed].address,
+                signature: LATEST,
+            }));
+            const block = system == "ethereum" ? blockTag : undefined;
+            const results = await multicall(this.chain, system, calls, block);
+            onChain.forEach((feed, i) => {
                 const [, answer, , updatedAt] = results[i]! as unknown as [
                     bigint,
                     bigint,
                     bigint,
                     bigint,
                 ];
-                return [
-                    feed,
-                    {
-                        usd: parseFloat(formatUnits(answer, FEEDS[feed].decimals)),
-                        updatedAt: Number(updatedAt) * 1000,
-                    },
-                ];
-            })
-        ) as Record<Feed, { usd: number; updatedAt: number }>;
+                values[feed] = {
+                    usd: parseFloat(formatUnits(answer, FEEDS[feed].decimals)),
+                    updatedAt: Number(updatedAt) * 1000,
+                };
+            });
+        }
+        return values as Record<Feed, { usd: number; updatedAt: number }>;
     }
 
     /** stETH per wstETH, at the given block. */
