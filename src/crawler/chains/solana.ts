@@ -1,4 +1,10 @@
-import { amountToUiAmountForMintWithoutSimulation, unpackAccount } from "@solana/spl-token";
+import {
+    TOKEN_2022_PROGRAM_ID,
+    TOKEN_PROGRAM_ID,
+    getScaledUiAmountConfig,
+    unpackAccount,
+    unpackMint,
+} from "@solana/spl-token";
 import { Connection, PublicKey, type TokenAmount } from "@solana/web3.js";
 import { format, toISOString } from "../../utils/string_formatting";
 
@@ -11,7 +17,8 @@ function formatUnits(value: string | number | bigint, decimals: string | number 
 
     const whole = _value / multiplier;
     const fraction = _value % multiplier;
-    return `${whole}.${fraction}`;
+    // The fraction keeps its leading zeros: 105 with 2 decimals is 1.05.
+    return `${whole}.${fraction.toString().padStart(Number(_decimals), "0")}`;
 }
 
 export class SolanaChain implements bcked.query.ChainModule {
@@ -71,18 +78,61 @@ export class SolanaChain implements bcked.query.ChainModule {
         };
     }
 
+    /** Raw token amount at an address: a token account of the mint, or all accounts of an owner. */
+    private async _rawBalance(address: PublicKey, mint: PublicKey): Promise<bigint> {
+        const info = await this._connection.getAccountInfo(address);
+        if (
+            info &&
+            (info.owner.equals(TOKEN_PROGRAM_ID) || info.owner.equals(TOKEN_2022_PROGRAM_ID))
+        ) {
+            const account = unpackAccount(
+                address,
+                { ...info, data: Buffer.from(info.data) },
+                info.owner
+            );
+            return account.mint.equals(mint) ? account.amount : 0n;
+        }
+        const accounts = await this._connection.getTokenAccountsByOwner(address, { mint });
+        let amount = 0n;
+        for (const { pubkey, account } of accounts.value) {
+            amount += unpackAccount(
+                pubkey,
+                { ...account, data: Buffer.from(account.data) },
+                account.owner
+            ).amount;
+        }
+        return amount;
+    }
+
     /**
-     * Supply of a Token-2022 mint with the Scaled UI Amount extension (rebasing tokens such as
-     * xStocks): the raw supply times the mint's current multiplier. Plain mints get the raw supply.
+     * Supply of a mint in UI units, and the part held at the `locked` addresses (token accounts or
+     * their owners). For a Token-2022 mint with the Scaled UI Amount extension (rebasing tokens such
+     * as xStocks) the raw amounts are multiplied by the mint's current multiplier.
      */
-    async getScaledSupply(token: bcked.asset.Address): Promise<number> {
+    async getScaledSupply(
+        token: bcked.asset.Address,
+        locked: string[] = []
+    ): Promise<{ issued: number; locked: number }> {
         const mint = new PublicKey(token);
-        const response = await this._connection.getTokenSupply(mint);
-        const ui = await amountToUiAmountForMintWithoutSimulation(
-            this._connection,
-            mint,
-            BigInt(response.value.amount)
+        const info = await this._connection.getAccountInfo(mint);
+        if (!info) throw Error(`No mint account for ${token} on Solana.`);
+        const mintInfo = unpackMint(mint, { ...info, data: Buffer.from(info.data) }, info.owner);
+        const balances = await Promise.all(
+            locked.map((address) => this._rawBalance(new PublicKey(address), mint))
         );
-        return parseFloat(ui);
+        const config = getScaledUiAmountConfig(mintInfo);
+        let multiplier = 1;
+        if (config) {
+            const now = Date.now() / 1000;
+            multiplier =
+                now >= Number(config.newMultiplierEffectiveTimestamp)
+                    ? config.newMultiplier
+                    : config.multiplier;
+        }
+        const ui = (raw: bigint) => parseFloat(formatUnits(raw, mintInfo.decimals)) * multiplier;
+        return {
+            issued: ui(mintInfo.supply),
+            locked: ui(balances.reduce((sum, amount) => sum + amount, 0n)),
+        };
     }
 }

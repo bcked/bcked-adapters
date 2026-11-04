@@ -3,12 +3,28 @@
         "id": "ethereum:0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3",
         "system": "ethereum",
         "address": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3",
-        "decimals": 18
+        "decimals": 18,
+        "locked": [
+            "0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD",
+            "0xDFB7C32e55c43E28E2E1febbFcdA1e945f52f3b3",
+            "0xDAab44B861F2768A57d49d7344EAf2FEd0B1317B",
+            "0xBe0F93A8A46F756D9f16D90342C93B872793F90a",
+            "0x0A934Bc9c64309C9654451f23D8331C2DAD34C2a",
+            "0x9eC0e4A4c411493773E01e2ABF4D42395788846b"
+        ]
     },
     {
         "id": "arbitrum:0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3",
         "system": "arbitrum",
         "address": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3",
-        "decimals": 18
+        "decimals": 18,
+        "locked": [
+            "0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD",
+            "0xDFB7C32e55c43E28E2E1febbFcdA1e945f52f3b3",
+            "0xDAab44B861F2768A57d49d7344EAf2FEd0B1317B",
+            "0xBe0F93A8A46F756D9f16D90342C93B872793F90a",
+            "0x0A934Bc9c64309C9654451f23D8331C2DAD34C2a",
+            "0x9eC0e4A4c411493773E01e2ABF4D42395788846b"
+        ]
     }
 ]

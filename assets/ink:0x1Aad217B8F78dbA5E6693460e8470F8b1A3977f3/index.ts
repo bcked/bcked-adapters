@@ -3,12 +3,12 @@
  * Series A Perpetual Stretch Preferred Stock (STRC), issued by Backed Assets (JE) Limited. The issuer
  * lists the token address per chain in its public asset data: https://api.xstocks.fi/api/v2/public/assets/STRCx
  *
- * Supply is the token's totalSupply, read on-chain. The token rebases for dividends and splits, and
- * totalSupply already includes the multiplier. There is no price: STRCx has no Chainlink price feed.
+ * Supply is read on-chain. The token rebases for dividends and splits, and its balances already
+ * include the multiplier. Tokens in the issuer's own wallets and in the bridge pool are not
+ * circulating (src/crawler/adapters/xstocks.ts). There is no price: STRCx has no Chainlink price feed.
  * The shares held as collateral are not recorded, see tokens/strcx.
  */
-import { onChainSupply } from "../../src/crawler/adapters/circulating";
-import { toISOString } from "../../src/utils/string_formatting";
+import { xStockSupply } from "../../src/crawler/adapters/xstocks";
 
 const details: bcked.asset.Details = {
     name: "Strategy PP Variable xStock",
@@ -36,21 +36,7 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
-        // totalSupply of the token contract, read on-chain.
-        const circulating = await onChainSupply(
-            details.identifier.address,
-            details.identifier.system
-        );
-        return [
-            {
-                timestamp: toISOString(Date.now()),
-                circulating,
-                burned: null,
-                total: null,
-                issued: null,
-                max: null,
-            },
-        ];
+        return [await xStockSupply(details.identifier)];
     }
 
     async getBacking(): Promise<bcked.asset.Backing[]> {
