@@ -1,26 +1,41 @@
 /**
- * Rebuilds the history of Kinesis Silver (KAG) on the Kinesis KAG ledger:
+ * Rebuilds the history of the native coins on the Kinesis ledgers, Kinesis Silver (KAG) and Kinesis
+ * Gold (KAU):
  * - daily supply: the coins in circulation (minted less redeemed) at the start of each UTC day, from
  *   the dated records of the ledger's Horizon API (/coin_in_circulation). A record holds the
  *   circulation at the end of its day, so a day starts with the last record before it.
- * - backing: every round of Chainlink's KAG Proof of Reserves feed on Ethereum, the silver in troy
- *   ounces, one row per day (the day's last round), as the crawler records it.
+ * - backing: every round of the coin's Chainlink Proof of Reserves feed on Ethereum, one row per day
+ *   (the day's last round), as the crawler records it. KAG's feed reports troy ounces of silver,
+ *   KAU's feed grams of gold, which are converted to troy ounces.
  *
- * KAG on Ethereum is rebuilt by rebuild_onchain.ts (supply/kag.json).
+ * KAG and KAU on Ethereum are rebuilt by rebuild_onchain.ts (supply/kag.json, supply/kau.json).
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM or ETHEREUM_RPC set):
- *   bun <adapters>/scripts/history/kinesis.ts
- * Days that already have a row are kept.
+ *   bun <adapters>/scripts/history/kinesis.ts [KAG|KAU ...]
+ * Without arguments both coins are rebuilt. Days that already have a row are kept.
  */
 import { Contract, JsonRpcProvider, formatUnits } from "ethers";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { KAG_POR } from "../../assets/kinesis:KAG/index";
+import { GRAMS_PER_TROY_OUNCE, KAU_POR } from "../../assets/kinesis:KAU/index";
 import { KINESIS_HORIZON, type Circulation } from "../../src/crawler/chains/kinesis";
 
 const DAY = 24 * 60 * 60 * 1000;
-const ASSET = "kinesis:KAG";
+
+interface Coin {
+    /** Chainlink Proof of Reserves feed on Ethereum. */
+    por: string;
+    /** The backing asset and the factor from the feed's unit to its unit. */
+    underlying: string;
+    perUnit: number;
+}
+
+const COINS: Record<string, Coin> = {
+    KAG: { por: KAG_POR, underlying: "rwa:XAG", perUnit: 1 },
+    KAU: { por: KAU_POR, underlying: "rwa:XAU", perUnit: 1 / GRAMS_PER_TROY_OUNCE },
+};
 
 /** Merges rows by day into a CSV, keeping existing days. */
 function merge(file: string, header: string[], rows: Map<string, string[]>): number {
@@ -50,9 +65,9 @@ function merge(file: string, header: string[], rows: Map<string, string[]>): num
     return added;
 }
 
-async function supply(): Promise<Map<string, string[]>> {
+async function supply(coin: string): Promise<Map<string, string[]>> {
     const response = await fetch(
-        `${KINESIS_HORIZON["KAG"]}/coin_in_circulation?from=2019-01-01T00:00:00.000Z`
+        `${KINESIS_HORIZON[coin]}/coin_in_circulation?from=2019-01-01T00:00:00.000Z`
     );
     if (!response.ok) throw Error(`Horizon returned ${response.status}.`);
     const { records } = (await response.json()) as {
@@ -73,7 +88,7 @@ async function supply(): Promise<Map<string, string[]>> {
     return rows;
 }
 
-async function backing(): Promise<Map<string, string[]>> {
+async function backing(coin: string, { por, perUnit }: Coin): Promise<Map<string, string[]>> {
     const provider = new JsonRpcProvider(
         process.env["ETHEREUM_RPC"] ??
             `https://eth-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_ETHEREUM"]}`,
@@ -81,7 +96,7 @@ async function backing(): Promise<Map<string, string[]>> {
         { staticNetwork: true, batchMaxCount: 1 }
     );
     const proxy = new Contract(
-        KAG_POR,
+        por,
         [
             "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)",
             "function getRoundData(uint80) view returns (uint80, int256, uint256, uint256, uint80)",
@@ -122,10 +137,10 @@ async function backing(): Promise<Map<string, string[]>> {
                 const time = Number(round[3]) * 1000;
                 const day = new Date(time).toISOString().slice(0, 10);
                 if ((byDay.get(day)?.[0] ?? 0) <= time)
-                    byDay.set(day, [time, formatUnits(round[1], 18)]);
+                    byDay.set(day, [time, String(parseFloat(formatUnits(round[1], 18)) * perUnit)]);
             }
         }
-        console.log(`KAG Proof of Reserves phase ${phase}: ${last} rounds`);
+        console.log(`${coin} Proof of Reserves phase ${phase}: ${last} rounds`);
     }
     const rows = new Map<string, string[]>();
     for (const [time, ounces] of byDay.values()) {
@@ -135,19 +150,25 @@ async function backing(): Promise<Map<string, string[]>> {
     return rows;
 }
 
-const supplies = await supply();
-console.log(
-    `${ASSET}: ${merge(
-        path.join("assets", ASSET, "records", "supply.csv"),
-        ["timestamp", "burned", "circulating", "issued", "max", "total"],
-        supplies
-    )} supplies added`
-);
-const backings = await backing();
-console.log(
-    `${ASSET}: ${merge(
-        path.join("assets", ASSET, "records", "backing.csv"),
-        ["timestamp", "underlying.rwa:XAG"],
-        backings
-    )} backing rows added`
-);
+const coins = process.argv.length > 2 ? process.argv.slice(2) : Object.keys(COINS);
+for (const coin of coins) {
+    const config = COINS[coin];
+    if (!config) throw Error(`Unknown Kinesis coin ${coin}.`);
+    const asset = `kinesis:${coin}`;
+    const supplies = await supply(coin);
+    console.log(
+        `${asset}: ${merge(
+            path.join("assets", asset, "records", "supply.csv"),
+            ["timestamp", "burned", "circulating", "issued", "max", "total"],
+            supplies
+        )} supplies added`
+    );
+    const backings = await backing(coin, config);
+    console.log(
+        `${asset}: ${merge(
+            path.join("assets", asset, "records", "backing.csv"),
+            ["timestamp", `underlying.${config.underlying}`],
+            backings
+        )} backing rows added`
+    );
+}
