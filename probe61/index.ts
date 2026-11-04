@@ -68,6 +68,7 @@ export default class Probe {
         out.feed = feed.map(String);
         out.feedDesc = await chain.call<string>("0x8350b7De6a6a2C1368E7D4Bd968190e13E354297", "function description() view returns (string)", [], "ethereum");
 
+        console.log(JSON.stringify(out, null, 1));
         const topic = keccakId("NewWalletRegistered(bytes32,bytes20)");
         out.topic = topic;
         const latest = Number(await chain.send<string>("eth_blockNumber", [], "ethereum"));
@@ -84,7 +85,20 @@ export default class Probe {
                 await get(from, mid); await get(mid + 1, to);
             }
         }
-        await get(16_400_000, latest);
+        for (const span of [latest - 16_400_000, 1_000_000, 100_000, 10_000, 500]) {
+            try {
+                const r = await chain.send<typeof logs>("eth_getLogs", [{ address: BRIDGE, topics: [topic], fromBlock: "0x" + (latest - span).toString(16), toBlock: "0x" + latest.toString(16) }], "ethereum");
+                console.log("span", span, "ok", r.length);
+            } catch (e) { console.log("span", span, "ERR", String(e).slice(0, 300)); }
+        }
+        let step = 1_000_000;
+        for (let f = 16_400_000; f <= latest; f += step) {
+            try {
+                const r = await chain.send<typeof logs>("eth_getLogs", [{ address: BRIDGE, topics: [topic], fromBlock: "0x" + f.toString(16), toBlock: "0x" + Math.min(latest, f + step - 1).toString(16) }], "ethereum");
+                logs.push(...r);
+            } catch (e) { console.log("chunk ERR", f, String(e).slice(0, 200)); break; }
+        }
+        console.log("logs", logs.length);
         out.ranges = ranges.slice(0, 30);
         out.logCount = logs.length;
         out.firstLog = logs[0];
@@ -102,6 +116,7 @@ export default class Probe {
                 btc = (a.chain_stats.funded_txo_sum - a.chain_stats.spent_txo_sum) / 1e8;
                 total += btc;
             }
+            console.log(JSON.stringify([pkh, p2wpkh(pkh), state, btc]));
             wallets.push([pkh, p2wpkh(pkh), state, Number(s.createdAt), s.mainUtxoHash.slice(0, 10), btc, log.blockNumber]);
         }
         out.wallets = wallets;
