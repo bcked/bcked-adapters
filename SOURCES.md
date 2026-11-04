@@ -75,6 +75,9 @@ on bcked.com.
 - [Agora attestations](https://developer.agora.finance/attestations): monthly reserve reports of AUSD.
   AUSD is tracked with price and supply and a generic icon, its backing is not recorded until Agora
   allows it.
+- [J.P. Morgan Asset Management](https://am.jpmorgan.com/us/en/asset-management/institutional/terms-of-use/):
+  its website content may not be copied or stored without consent. MONY is tracked with supply and a
+  generic icon, its backing is not recorded.
 - [Avant transparency page](https://app.avantprotocol.com/transparency): breakdown of the strategies
   behind avUSD. Its [terms](https://docs.avantprotocol.com/legal-and-risk/terms-of-use) do not allow
   automated access. avUSD is tracked with supply and a generic icon, its backing is not recorded until
