@@ -1,4 +1,5 @@
 symbol,name,category,market_cap_usd,checked,note,sources
+DOLA,Dola (Inverse Finance),"stablecoin (crypto-backed, USD)",70600000,2026-11-03,"Circulating supply on Ethereum (total supply less DOLA held unlent in FiRM markets, the PSM and Frontier) times the Chainlink price. See #95",https://data.chain.link/feeds/ethereum/mainnet/dola-usd https://docs.inverse.finance/
 3USD,3USD,"stablecoin (crypto-backed, USD)",,,,
 A7A5,A7A5,"stablecoin (fiat-backed, RUB)",,,,
 ADAI,Aave DAI (v1),,,2026-10-28,"old backlog, replaced by Aave v2/v3 aTokens",

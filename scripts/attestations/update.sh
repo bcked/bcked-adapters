@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Adds new attestation reports of Paxos (PAXG, BUSD, PYUSD, USDG), Tether (USDT, XAUt) and Circle (USDC) to the records.
+# Adds new attestation reports of Paxos (PAXG, BUSD, PYUSD, USDG), Tether (USDT, XAUt) and Circle (USDC, EURC) to the records.
 #
 # Usage: scripts/attestations/update.sh <records checkout> [<evidence checkout>]
 #
@@ -68,6 +68,17 @@ python3 extract_circle.py circle_manual.json $(cat "$work/circle.txt") > "$work/
 python3 check_new.py "$work/circle.json" "$circle/backing.csv"
 # shellcheck disable=SC2046
 python3 write_backing.py "$work/circle.json" "$circle" USDC --append $(evidence_args tokens/usdc/records)
+
+# EURC: Circle reports for all chains, recorded on the token. Without records yet, all reports are read.
+eurc="$records/tokens/eurc/records"
+reports=$([ -f "$eurc/backing.csv" ] && echo 4 || echo 1000)
+python3 fetch_circle.py "$work/eurc" "$reports" EURC > "$work/eurc.txt"
+# shellcheck disable=SC2046
+python3 extract_eurc.py $(cat "$work/eurc.txt") > "$work/eurc.json"
+python3 check_new.py "$work/eurc.json" "$eurc/backing.csv"
+mkdir -p "$eurc"
+# shellcheck disable=SC2046
+python3 write_backing.py "$work/eurc.json" "$eurc" EURC --append $(evidence_args tokens/eurc/records)
 
 xaut="$records/assets/ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38/records"
 python3 fetch_xaut.py "$work/xaut" > "$work/xaut-reports.json"

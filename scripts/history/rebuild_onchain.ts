@@ -1,16 +1,18 @@
 /**
  * Rebuilds daily on-chain history that does not depend on a third-party API:
- * - supply (totalSupply) of USDC on Ethereum, Arbitrum, Polygon and Base, PYUSD and USDG on Ethereum,
- *   the same reads the crawler makes (src/crawler/adapters/circulating.ts),
+ * - supply (totalSupply) of the tokens listed in supply/<token>.json, the same reads the crawler
+ *   makes (src/crawler/adapters/circulating.ts and the asset adapters). Balances of `locked`
+ *   addresses are not circulating,
  * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed.
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
  * ALCHEMY_POLYGON set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
- * SYSTEMS=<chain,...> limits the run to these chains. Days that already have a row are kept. Reads need archive nodes, which Alchemy provides. The
- * official Base RPC serves archive reads too.
+ * SYSTEMS=<chain,...> limits the run to these chains. Days that already have a row are kept. Reads
+ * need archive nodes, which Alchemy provides. The official Base and Avalanche RPCs serve archive
+ * reads too. A new token adds its own file in supply/ instead of editing this script.
  */
 import { Contract, JsonRpcProvider, formatUnits } from "ethers";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 const DAY = 24 * 60 * 60;
@@ -39,46 +41,30 @@ const RPC: Record<string, { url: string; chainId: number; perDay: number; start:
         perDay: 43_200,
         start: 1,
     },
+    avalanche: {
+        url: "https://api.avax.network/ext/bc/C/rpc",
+        chainId: 43114,
+        perDay: 80_000,
+        start: 1,
+    },
 };
 
-const SUPPLY: { id: string; system: string; address: string; decimals: number }[] = [
-    {
-        id: "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        system: "ethereum",
-        address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        decimals: 6,
-    },
-    {
-        id: "arbitrum:0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-        system: "arbitrum",
-        address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-        decimals: 6,
-    },
-    {
-        id: "polygon:0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
-        system: "polygon",
-        address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
-        decimals: 6,
-    },
-    {
-        id: "base:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-        system: "base",
-        address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-        decimals: 6,
-    },
-    {
-        id: "ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
-        system: "ethereum",
-        address: "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
-        decimals: 6,
-    },
-    {
-        id: "ethereum:0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
-        system: "ethereum",
-        address: "0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
-        decimals: 6,
-    },
-];
+// Tokens whose daily supply is rebuilt: one file per token in supply/, a list of chain assets.
+// locked: addresses whose balance is not circulating on the chain, e.g. a bridge's lock pool.
+interface SupplyEntry {
+    id: string;
+    system: string;
+    address: string;
+    decimals: number;
+    locked?: string[];
+}
+const SUPPLY_DIR = path.join(import.meta.dir, "supply");
+const SUPPLY: SupplyEntry[] = readdirSync(SUPPLY_DIR)
+    .filter((file) => file.endsWith(".json"))
+    .sort()
+    .flatMap(
+        (file) => JSON.parse(readFileSync(path.join(SUPPLY_DIR, file), "utf8")) as SupplyEntry[]
+    );
 const WBTC = "ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
 const WBTC_POR = "0xa81FE04086865e63E12dD3776978E49DEEa2ea4e";
 
@@ -200,10 +186,26 @@ for (const system of systems) {
                     ).getFunction("totalSupply")({ blockTag: block }) as Promise<bigint>
             );
             if (supply === null || supply == 0n) continue;
+            let locked = 0n;
+            for (const holder of token.locked ?? []) {
+                const balance = await read(
+                    () =>
+                        new Contract(
+                            token.address,
+                            ["function balanceOf(address) view returns (uint256)"],
+                            providers[system]
+                        ).getFunction("balanceOf")(holder, { blockTag: block }) as Promise<bigint>
+                );
+                if (balance === null) throw Error(`No balance of ${holder} at block ${block}.`);
+                locked += balance;
+            }
             const amount = formatUnits(supply, token.decimals);
+            const circulating = formatUnits(supply - locked, token.decimals);
             if (!supplies.has(token.id)) supplies.set(token.id, new Map());
             // Same columns as the crawler: circulating, burned, issued, max, total.
-            supplies.get(token.id)!.set(timestamp, [timestamp, "", amount, amount, "", amount]);
+            supplies
+                .get(token.id)!
+                .set(timestamp, [timestamp, "", circulating, amount, "", amount]);
         }
         if (system == "ethereum") {
             const round = await read(
