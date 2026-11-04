@@ -75,3 +75,6 @@ on bcked.com.
 - [Agora attestations](https://developer.agora.finance/attestations): monthly reserve reports of AUSD.
   AUSD is tracked with price and supply and a generic icon, its backing is not recorded until Agora
   allows it.
+- [CFX Labs website](https://cfx.to/legal/terms-and-conditions): its terms allow informational,
+  non-commercial use only. MOVEUSD is tracked with supply and a generic icon, its backing is not
+  recorded until CFX allows it.
