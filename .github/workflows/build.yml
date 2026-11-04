@@ -45,7 +45,14 @@ jobs:
                   fetch-depth: 0
             - name: Find Changed Adapters
               id: targets
-              run: echo "list=$(scripts/changed_adapters.sh origin/${{ github.base_ref }} | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+              run: |
+                  list=$(scripts/changed_adapters.sh origin/${{ github.base_ref }} | tr '\n' ' ')
+                  echo "list=$list" >> "$GITHUB_OUTPUT"
+                  reports=false
+                  for dir in $list; do
+                      if grep -q 'method: "reports"' "$dir/index.ts"; then reports=true; fi
+                  done
+                  echo "reports=$reports" >> "$GITHUB_OUTPUT"
             - name: Checkout Records
               if: steps.targets.outputs.list != ''
               uses: actions/checkout@v7
@@ -65,8 +72,8 @@ jobs:
               run: bun install --frozen-lockfile
             - name: Add New Reports
               # Runs the attestation scripts of this branch on the records copy, so a new report-based
-              # token is checked with its reports. Only when a token or the scripts change.
-              if: contains(steps.targets.outputs.list, 'tokens/')
+              # token or asset is checked with its reports. Only when one of them has report backing.
+              if: steps.targets.outputs.reports == 'true'
               env:
                   ETHEREUM_RPC: https://eth-mainnet.g.alchemy.com/v2/${{ secrets.ALCHEMY_ETHEREUM }}
               run: |

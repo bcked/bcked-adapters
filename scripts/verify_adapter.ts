@@ -9,7 +9,8 @@
  * - an asset with a price source (getPrice or a Chainlink feed) but no positive price,
  * - no backing source in the details of the asset or its token (declare "not-tracked" with the reason
  *   when no backing is recorded),
- * - a backing source other than "not-tracked" that yields no backing.
+ * - a backing source other than "not-tracked" that yields no backing (for reports of the asset
+ *   alone: no rows in its records/backing.csv).
  *
  * Usage: bun scripts/verify_adapter.ts [--strict] <kind>/<id>... (kind: assets, tokens, entities, systems)
  * Example: bun scripts/verify_adapter.ts "assets/ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8"
@@ -73,7 +74,11 @@ async function check(target: string, results: Record<string, unknown>): Promise<
         source = (await (token["getDetails"] as () => Promise<bcked.token.Details>)()).backing;
     }
     if (!source) problems.push("no backing source in the asset or its token (use not-tracked)");
-    else if (source.method !== "not-tracked") {
+    else if (source.method === "reports" && source.reports !== "token" && details.backing) {
+        // Reports of this asset alone are written to its records by scripts/attestations.
+        if (csvRows(path.join("assets", id, "records", "backing.csv")) === 0)
+            problems.push("reports backing, but no rows in records/backing.csv");
+    } else if (source.method !== "not-tracked") {
         const backing = (results["getBacking"] as bcked.asset.Backing[] | undefined)?.at(-1);
         const amounts = Object.values(backing?.underlying ?? {}) as number[];
         const total = amounts.reduce((a, b) => a + b, 0);
