@@ -1,6 +1,6 @@
-"""Downloads the latest USDC attestation reports listed on https://www.circle.com/transparency.
+"""Downloads the latest USDC or EURC attestation reports listed on https://www.circle.com/transparency.
 
-Usage: python3 fetch_circle.py <output dir> [<number of reports>] > reports.txt
+Usage: python3 fetch_circle.py <output dir> [<number of reports> [USDC|EURC]] > reports.txt
 
 Prints the paths of the downloaded reports, newest last, and writes their download URLs to
 sources.json in the output dir. Only the newest reports are downloaded (default 4), update.sh only
@@ -15,6 +15,12 @@ import urllib.request
 
 PAGE = "https://www.circle.com/transparency"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
+# Folders of the reports on Circle's file host. The first EURC reports were published as "EUROC",
+# one of them in the USDC folder.
+REPORTS = {
+    "USDC": r"USDCAttestationReports/(?![^\"' ]*EUROC)",
+    "EURC": r"(?:EURC%20Attestations/|Euro%20Coin%20Attestations/|6778953/EUROC%20|USDCAttestationReports/(?=[^\"' ]*EUROC))",
+}
 MONTHS = "January February March April May June July August September October November December".split()
 
 
@@ -31,10 +37,10 @@ def month_of(url):
     return (int(year.group(1)), month) if year and month else None
 
 
-def main(out, count=4):
+def main(out, count=4, product="USDC"):
     os.makedirs(out, exist_ok=True)
     html = get(PAGE).decode("utf-8", "ignore")
-    urls = set(re.findall(r"https://[^\"' ]*USDCAttestationReports/[^\"' ]*\.pdf", html))
+    urls = set(re.findall(rf"https://[^\"' ]*{REPORTS[product]}[^\"' ]*\.pdf", html))
     dated = sorted((month_of(u), u) for u in urls if month_of(u))
     sources, paths = {}, []
     for _, url in dated[-int(count) :]:
@@ -50,4 +56,4 @@ def main(out, count=4):
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:3])
+    main(*sys.argv[1:4])

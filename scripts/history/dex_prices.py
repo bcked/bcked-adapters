@@ -2,7 +2,7 @@
 
 Usage: ETHEREUM_RPC=<archive RPC> python3 dex_prices.py <records dir> [--dry-run] [<asset address>...]
 
-Some assets have backing records before a Chainlink feed exists for them (PAXG, WBTC, USDC, USDG),
+Some assets have backing records before a Chainlink feed exists for them (PAXG, WBTC, USDC, USDG, EURC),
 and BUSD never had one. Without a price these records have no backing ratio. For each backing
 timestamp without a price within 12 hours, this reads the asset's price from Uniswap pools on
 Ethereum at the block of that time: the v2 reserves or the v3 pool price. Of the pools listed per
@@ -85,6 +85,22 @@ ASSETS = {
             "ink:0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
             "xlayer:0x4ae46a509F6b1D9056937BA4500cb143933D2dc8",
             "robinhood:0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+        ],
+    ),
+    # EURC: the Uniswap v3 pool addresses of EURC with USDC and WETH, derived from the factory.
+    # Pools that do not exist or hold less than $1M are skipped.
+    "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c": (
+        6,
+        [
+            ("0xD9961eA871A52456A5aD4bccb981d40eD7Fdb813", 3, USDC),  # 0.01%
+            ("0x95DBB3C7546F22BCE375900AbFdd64a4E5bD73d6", 3, USDC),  # 0.05%
+            ("0xE1DDa9BCf8864faBefCee44bB738c67778Ac97B0", 3, USDC),  # 0.3%
+            ("0x63519188E56E2A71CE95D7364223c0d23614C655", 3, WETH),  # 0.05%
+            ("0x6637D3D16bf761289e0E2dc7668135c49E9dD801", 3, WETH),  # 0.3%
+        ],
+        [
+            "base:0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42",
+            "solana:HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr",
         ],
     ),
 }
