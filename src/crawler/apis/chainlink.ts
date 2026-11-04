@@ -35,6 +35,7 @@ export const FEEDS = {
     PAXG: { address: "0x9944D86CEB9160aF5C5feB251FD671923323f8C3", decimals: 8 },
     XAU: { address: "0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6", decimals: 8 },
     STETH: { address: "0xCfE54B5cD566aB89272946F602D76Ea879CAb4a8", decimals: 8 },
+    STRC: { address: "0xf4d2076277fff631EFC4385Ab36b1f7734218d23", decimals: 8 },
     USTBL: { address: "0x477e363c51Ab0C4D13B22CD6B57D56d4a3Cb7Abe", decimals: 6 }, // NAV per share
 } as const;
 type Feed = keyof typeof FEEDS;
@@ -73,6 +74,7 @@ export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38": { feed: "XAU" }, // XAUt
     "rwa:XAU": { feed: "XAU" },
     "rwa:EUR": { feed: "EUR" },
+    "rwa:STRC": { feed: "STRC" }, // Strategy's STRC preferred share, the collateral of STRCx
     "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84": { feed: "STETH" },
     [`ethereum:${WSTETH}`]: { feed: "STETH", times: "wstETH" },
 };
