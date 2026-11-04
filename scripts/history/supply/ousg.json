@@ -1,0 +1,14 @@
+[
+    {
+        "id": "ethereum:0x1B19C19393e2d034D8Ff31ff34c81252FcBbee92",
+        "system": "ethereum",
+        "address": "0x1B19C19393e2d034D8Ff31ff34c81252FcBbee92",
+        "decimals": 18
+    },
+    {
+        "id": "polygon:0xbA11C5effA33c4D6F8f593CFA394241CfE925811",
+        "system": "polygon",
+        "address": "0xbA11C5effA33c4D6F8f593CFA394241CfE925811",
+        "decimals": 18
+    }
+]
