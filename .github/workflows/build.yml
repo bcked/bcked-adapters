@@ -30,3 +30,58 @@ jobs:
               run: bunx eslint .
             - name: Test
               run: bun test
+
+    verify:
+        # Runs the adapters a pull request adds or changes against the live chains, with the current
+        # records, and fails on data that would show up wrong on the site (see scripts/verify_adapter.ts).
+        # Needs the repository secrets, so only for branches of this repository, not forks.
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        runs-on: ubuntu-latest
+        name: Verify Changed Adapters
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+            - name: Find Changed Adapters
+              id: targets
+              run: echo "list=$(scripts/changed_adapters.sh origin/${{ github.base_ref }} | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+            - name: Checkout Records
+              if: steps.targets.outputs.list != ''
+              uses: actions/checkout@v7
+              with:
+                  # Private repository, read only here. Nothing is pushed back.
+                  repository: bcked/bcked-records
+                  ref: records
+                  path: .records
+                  ssh-key: ${{ secrets.RECORDS_DEPLOY_KEY }}
+            - name: Setup Bun
+              if: steps.targets.outputs.list != ''
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version-file: package.json
+            - name: Install Dependencies
+              if: steps.targets.outputs.list != ''
+              run: bun install --frozen-lockfile
+            - name: Add New Reports
+              # Runs the attestation scripts of this branch on the records copy, so a new report-based
+              # token is checked with its reports. Only when a token or the scripts change.
+              if: contains(steps.targets.outputs.list, 'tokens/')
+              env:
+                  ETHEREUM_RPC: https://eth-mainnet.g.alchemy.com/v2/${{ secrets.ALCHEMY_ETHEREUM }}
+              run: |
+                  sudo apt-get update && sudo apt-get install -y poppler-utils
+                  scripts/attestations/update.sh .records
+            - name: Load Records
+              if: steps.targets.outputs.list != ''
+              run: rsync -a --prune-empty-dirs --include='*/' --include='**/records/**' --exclude='*' .records/ ./
+            - name: Run Adapters
+              if: steps.targets.outputs.list != ''
+              timeout-minutes: 15
+              env:
+                  ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
+                  ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
+                  ALCHEMY_SOLANA: ${{ secrets.ALCHEMY_SOLANA }}
+                  ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
+                  TARGETS: ${{ steps.targets.outputs.list }}
+              run: bun scripts/verify_adapter.ts --strict $TARGETS
