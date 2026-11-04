@@ -78,3 +78,7 @@ on bcked.com.
 - [J.P. Morgan Asset Management](https://am.jpmorgan.com/us/en/asset-management/institutional/terms-of-use/):
   its website content may not be copied or stored without consent. MONY is tracked with supply and a
   generic icon, its backing is not recorded.
+- [Avant transparency page](https://app.avantprotocol.com/transparency): breakdown of the strategies
+  behind avUSD. Its [terms](https://docs.avantprotocol.com/legal-and-risk/terms-of-use) do not allow
+  automated access. avUSD is tracked with supply and a generic icon, its backing is not recorded until
+  Avant allows it.
