@@ -75,3 +75,6 @@ on bcked.com.
 - [Agora attestations](https://developer.agora.finance/attestations): monthly reserve reports of AUSD.
   AUSD is tracked with price and supply and a generic icon, its backing is not recorded until Agora
   allows it.
+- [J.P. Morgan Asset Management](https://am.jpmorgan.com/us/en/asset-management/institutional/terms-of-use/):
+  its website content may not be copied or stored without consent. MONY is tracked with supply and a
+  generic icon, its backing is not recorded.
