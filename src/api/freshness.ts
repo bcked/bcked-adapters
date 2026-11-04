@@ -27,6 +27,8 @@ const STATIC_PRICES = (id: string) => id.startsWith("rwa:") && id !== "rwa:XAU";
 // Only assets with a price source (a Chainlink feed) get a current price. Others, like a fund without
 // a feed or a token whose feed ended, have no price and so no backing ratio.
 const NO_PRICE = { has: (id: string) => !(id in PRICE_SOURCES) };
+// Assets with backing but no source for their supply.
+const NO_SUPPLY = new Set(["kinesis:KAU"]);
 
 interface Dated {
     date: string;
@@ -82,7 +84,8 @@ for (const asset of assets) {
     }
     if (!STATIC_PRICES(asset.id) && !NO_PRICE.has(asset.id))
         check(asset, "price", asset.price, MAX_AGE_DAYS);
-    if (asset.system !== "rwa") check(asset, "supply", asset.supply, MAX_AGE_DAYS);
+    if (asset.system !== "rwa" && !NO_SUPPLY.has(asset.id))
+        check(asset, "supply", asset.supply, MAX_AGE_DAYS);
     const reportAge =
         asset.backing == "reports"
             ? MAX_REPORT_AGE_DAYS[asset.linkedEntities.issuer ?? ""]
