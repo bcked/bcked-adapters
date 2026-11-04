@@ -1,0 +1,9 @@
+[
+    {
+        "id": "ethereum:0x57aB1E0003F623289CD798B1824Be09a793e4Bec",
+        "system": "ethereum",
+        "address": "0x57aB1E0003F623289CD798B1824Be09a793e4Bec",
+        "decimals": 18,
+        "backingAt": "src/crawler/adapters/resupply.ts"
+    }
+]
