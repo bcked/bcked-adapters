@@ -150,7 +150,6 @@ const TOKEN_ASSETS: Record<string, string[]> = {
     ],
     TBILL: [
         "ethereum:0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a",
-        "arbitrum:0xF84D28A8D28292842dD73D1c5F99476A80b6666A",
         "bsc:0x5b4681F0d7A01B817675F25892D3Ad73572FD1D9",
     ],
 };
