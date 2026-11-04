@@ -4,7 +4,8 @@
  *   makes (src/crawler/adapters/circulating.ts and the asset adapters). Balances of `locked`
  *   addresses are not circulating. A `backing` entry also rebuilds the on-chain backing: a token
  *   balance held by a contract, the share of it that matches the circulating supply,
- * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed.
+ * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed,
+ * - the backing of tokens whose entry names a Chainlink Proof of Reserves feed (`por`).
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
  * ALCHEMY_POLYGON set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
@@ -61,6 +62,9 @@ interface SupplyEntry {
     // The token is backed by `token` held by `holder` on the same chain (asset id `id`, `decimals`).
     // The chain asset gets the share of it that matches its circulating supply.
     backing?: { id: string; token: string; holder: string; decimals: number };
+    // The backing is the answer of a Chainlink Proof of Reserves feed on the same chain, in units
+    // of asset `id`.
+    por?: { id: string; feed: string; decimals: number };
 }
 const SUPPLY_DIR = path.join(import.meta.dir, "supply");
 const SUPPLY: SupplyEntry[] = readdirSync(SUPPLY_DIR)
@@ -229,6 +233,31 @@ for (const system of systems) {
                         rows: new Map(),
                     });
                 backings.get(token.id)!.rows.set(timestamp, [timestamp, share]);
+            }
+            if (token.por) {
+                const { id, feed, decimals } = token.por;
+                const round = await read(
+                    () =>
+                        new Contract(
+                            feed,
+                            [
+                                "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)",
+                            ],
+                            providers[system]
+                        ).getFunction("latestRoundData")({ blockTag: block }) as Promise<
+                            [bigint, bigint, bigint, bigint, bigint]
+                        >
+                );
+                if (round && round[1] > 0n) {
+                    if (!backings.has(token.id))
+                        backings.set(token.id, {
+                            header: ["timestamp", `underlying.${id}`],
+                            rows: new Map(),
+                        });
+                    backings
+                        .get(token.id)!
+                        .rows.set(timestamp, [timestamp, formatUnits(round[1], decimals)]);
+                }
             }
         }
         if (system == "ethereum") {
