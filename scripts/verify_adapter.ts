@@ -7,8 +7,9 @@
  * show up wrong on the site:
  * - an asset without a positive supply,
  * - an asset with a price source (getPrice or a Chainlink feed) but no positive price,
- * - no backing source in the details of the asset or its token (declare "not-tracked" with the reason
- *   when no backing is recorded),
+ * - an asset without a backing source in its details or its token's (declare "not-tracked" with the
+ *   reason when no backing is recorded),
+ * - a token with report backing but no reports in its records,
  * - a backing source other than "not-tracked" that yields no backing (for reports of the asset
  *   alone: no rows in its records/backing.csv).
  *
@@ -48,9 +49,9 @@ async function check(target: string, results: Record<string, unknown>): Promise<
         (bcked.asset.Details & bcked.token.Details) | undefined;
     if (!details) return problems; // getDetails failed, already counted
     if (kind === "tokens") {
-        if (!details.backing) problems.push("no backing source in details (use not-tracked)");
-        else if (
-            details.backing.method === "reports" &&
+        // The chain assets are checked on their own, with the token's backing source if they have none.
+        if (
+            details.backing?.method === "reports" &&
             csvRows(path.join("tokens", id, "records", "backing.csv")) === 0
         )
             problems.push("reports backing, but no rows in records/backing.csv");
