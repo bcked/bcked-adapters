@@ -10,6 +10,7 @@
  *   on Solana also counts tokens that Circle has not issued yet ("Tokens Allowed But Not Issued" in
  *   its reports), so its totalSupply is more than the EURC in circulation.
  * - Tokens on the XRP Ledger: the issuer's obligations in the currency, read on-chain.
+ * - KAU and KAG on the Kinesis ledgers: the coins in circulation (minted less redeemed), read on-chain.
  */
 import { ChainProxy } from "../chains/proxy";
 import { SolanaChain } from "../chains/solana";

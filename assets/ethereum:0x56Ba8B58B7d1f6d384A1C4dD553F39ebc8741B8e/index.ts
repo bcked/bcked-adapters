@@ -1,7 +1,8 @@
 /**
  * Kinesis Silver (KAG) on Ethereum. Kinesis lists this contract for KAG on Ethereum in its explorer
- * (https://explorer.kinesis.money/). The silver behind all KAG is recorded on the native coin
- * (assets/kinesis:KAG).
+ * (https://explorer.kinesis.money/). The silver in Chainlink's KAG Proof of Reserves feed is recorded
+ * on the native coin (assets/kinesis:KAG). How KAG on Ethereum relates to the coins on the Kinesis
+ * ledger is not published in a source bcked reads, so no backing is recorded for it here.
  */
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 
