@@ -2,7 +2,8 @@
  * Rebuilds daily on-chain history that does not depend on a third-party API:
  * - supply (totalSupply) of the tokens listed in supply/<token>.json, the same reads the crawler
  *   makes (src/crawler/adapters/circulating.ts and the asset adapters). Balances of `locked`
- *   addresses are not circulating,
+ *   addresses are not circulating. A `backing` entry also rebuilds the on-chain backing: a token
+ *   balance held by a contract, the share of it that matches the circulating supply,
  * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed.
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
@@ -57,6 +58,9 @@ interface SupplyEntry {
     address: string;
     decimals: number;
     locked?: string[];
+    // The token is backed by `token` held by `holder` on the same chain (asset id `id`, `decimals`).
+    // The chain asset gets the share of it that matches its circulating supply.
+    backing?: { id: string; token: string; holder: string; decimals: number };
 }
 const SUPPLY_DIR = path.join(import.meta.dir, "supply");
 const SUPPLY: SupplyEntry[] = readdirSync(SUPPLY_DIR)
@@ -150,6 +154,7 @@ const to = process.argv[3]
 
 const supplies = new Map<string, Map<string, string[]>>();
 const custody = new Map<string, string[]>();
+const backings = new Map<string, { header: string[]; rows: Map<string, string[]> }>();
 // Days read at once. More gets throttled by the RPC provider, and the retries cost more than they save.
 const PARALLEL_DAYS = Number(process.env["PARALLEL_DAYS"] ?? 4);
 // SYSTEMS=base limits the run to some chains, e.g. to rebuild one without the Alchemy keys of the others.
@@ -206,6 +211,25 @@ for (const system of systems) {
             supplies
                 .get(token.id)!
                 .set(timestamp, [timestamp, "", circulating, amount, "", amount]);
+            if (token.backing) {
+                const { id, token: reserve, holder, decimals } = token.backing;
+                const held = await read(
+                    () =>
+                        new Contract(
+                            reserve,
+                            ["function balanceOf(address) view returns (uint256)"],
+                            providers[system]
+                        ).getFunction("balanceOf")(holder, { blockTag: block }) as Promise<bigint>
+                );
+                if (held === null) continue;
+                const share = formatUnits((held * (supply - locked)) / supply, decimals);
+                if (!backings.has(token.id))
+                    backings.set(token.id, {
+                        header: ["timestamp", `underlying.${id}`],
+                        rows: new Map(),
+                    });
+                backings.get(token.id)!.rows.set(timestamp, [timestamp, share]);
+            }
         }
         if (system == "ethereum") {
             const round = await read(
@@ -241,6 +265,10 @@ for (const [id, rows] of supplies) {
         rows
     );
     console.log(`${id}: ${added} supplies added`);
+}
+for (const [id, { header, rows }] of backings) {
+    const added = merge(path.join("assets", id, "records", "backing.csv"), header, rows);
+    console.log(`${id}: ${added} backing rows added`);
 }
 const added = merge(
     path.join("assets", WBTC, "records", "backing.csv"),

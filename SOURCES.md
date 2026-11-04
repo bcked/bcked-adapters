@@ -82,3 +82,12 @@ on bcked.com.
   behind avUSD. Its [terms](https://docs.avantprotocol.com/legal-and-risk/terms-of-use) do not allow
   automated access. avUSD is tracked with supply and a generic icon, its backing is not recorded until
   Avant allows it.
+- [CFX Labs website](https://cfx.to/legal/terms-and-conditions): its terms allow informational,
+  non-commercial use only. MOVEUSD is tracked with supply and a generic icon, its backing is not
+  recorded until CFX allows it.
+- [Saturn](https://saturn.credit/legal/terms-conditions): its terms do not allow automated access to
+  its website and app or use of its marks without written permission. USDat is read on-chain only and
+  has a generic icon.
+- [Monad public RPCs](https://docs.monad.xyz/developer-essentials/network-information): the Monad
+  Foundation's [terms](https://www.monad.xyz/terms-of-service) allow personal, non-commercial use of
+  its websites and tools only. USDat on Monad is not tracked until Monad is read through a keyed RPC.
