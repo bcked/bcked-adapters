@@ -12,7 +12,17 @@ const ANY = [
     "function getCash() view returns (uint256)",
     "function name() view returns (string)",
     "function symbol() view returns (string)",
+    "function iToken() view returns (address)",
+    "function l1ArbiUSXGateway() view returns (address)",
+    "function l1OptiUSXGateway() view returns (address)",
+    "function cBridge() view returns (address)",
+    "function L2Bridge() view returns (address)",
+    "function vault() view returns (address)",
+    "function getProviders() view returns (address[])",
+    "function controller() view returns (address)",
+    "function owner() view returns (address)",
 ];
+const GETTERS = ["iToken", "l1ArbiUSXGateway", "l1OptiUSXGateway", "cBridge", "L2Bridge", "vault", "getProviders", "controller", "owner"];
 
 const k = process.env;
 const CHAINS: Record<string, { url: string; usx: string; msdc?: string; extra?: string[] }> = {
@@ -25,12 +35,14 @@ const CHAINS: Record<string, { url: string; usx: string; msdc?: string; extra?: 
             "0xd1254d280e7504836e1B0E36535eBFf248483cEE",
             "0xF54954BA7e3cdFDA23941753b48039aB5192AEa0",
             "0x5268b3c4afb0860D365a093C184985FCFcb65234",
+            "0x0c92617dF0753Af1CaB2d9Cc6A56173970d81740",
+            "0x3e5De9F2BA58bA036E84d93c81e8DFb0f002DAF6",
         ],
     },
     arbitrum: {
         url: `https://arb-mainnet.g.alchemy.com/v2/${k["ALCHEMY_ARBITRUM"]}`,
         usx: "0x641441c631e2F909700d2f41FD87F0aA6A6b4EDb",
-        extra: ["0x1D2eB423bC723DA7f927CA21B56A4C22aF6C72B4"],
+        extra: ["0x1D2eB423bC723DA7f927CA21B56A4C22aF6C72B4", "0x1De84422D17D7296F656B5307A9736044fEb71FA"],
     },
     polygon: {
         url: `https://polygon-mainnet.g.alchemy.com/v2/${k["ALCHEMY_POLYGON"]}`,
@@ -40,11 +52,7 @@ const CHAINS: Record<string, { url: string; usx: string; msdc?: string; extra?: 
     optimism_eth_key: {
         url: `https://opt-mainnet.g.alchemy.com/v2/${k["ALCHEMY_ETHEREUM"]}`,
         usx: "0xbfD291DA8A403DAAF7e5E9DC1ec0aCEaCd4848B9",
-        extra: ["0x70a35414FaD53752C9352401BE211779EC413BD4"],
-    },
-    optimism_arb_key: {
-        url: `https://opt-mainnet.g.alchemy.com/v2/${k["ALCHEMY_ARBITRUM"]}`,
-        usx: "0xbfD291DA8A403DAAF7e5E9DC1ec0aCEaCd4848B9",
+        extra: ["0x70a35414FaD53752C9352401BE211779EC413BD4", "0x5385bCC7420012BaBd14675A466e24FBE2f9b1D6"],
     },
 };
 
@@ -71,7 +79,19 @@ export default class Probe {
                     console.log(name, "minters", minters.join(","));
                     addrs.push(...minters);
                 }
-                for (const a of addrs) {
+                const seen = new Set<string>();
+                while (addrs.length) {
+                    const a = addrs.shift()!;
+                    if (seen.has(a.toLowerCase())) continue;
+                    seen.add(a.toLowerCase());
+                    const g = new Contract(a, ANY, p);
+                    for (const fn of GETTERS) {
+                        const v = await tryCall(g, fn);
+                        if (v !== "-") {
+                            console.log(name, a, fn, v);
+                            for (const x of v.split(",")) if (/^0x[0-9a-fA-F]{40}$/.test(x) && seen.size < 40) addrs.push(x);
+                        }
+                    }
                     const x = new Contract(a, ANY, p);
                     console.log(
                         name,
