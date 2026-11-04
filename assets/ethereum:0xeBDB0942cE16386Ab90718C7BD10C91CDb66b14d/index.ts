@@ -24,6 +24,12 @@ const details: bcked.asset.Details = {
         issuer: "moonpay",
     },
     reference: "https://www.moonpay.com/enterprise/pyusdx",
+    backing: {
+        method: "not-tracked",
+        description:
+            "MoonPay describes PYUSDx as backed by PayPal USD held in reserve, but publishes no reserve address or report.",
+        reference: "https://www.moonpay.com/enterprise/pyusdx",
+    },
     tags: ["stablecoin"],
 };
 

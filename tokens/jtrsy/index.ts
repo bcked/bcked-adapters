@@ -21,6 +21,11 @@ const details: bcked.token.Details = {
     identifier: "jtrsy",
     issuer: "anemoy",
     reference: "https://www.anemoy.io/funds/jtrsy",
+    backing: {
+        method: "not-tracked",
+        description: "Anemoy publishes no holdings of the fund that bcked can record.",
+        reference: "https://www.anemoy.io/funds/jtrsy",
+    },
     tags: ["real-world-asset"],
 };
 
