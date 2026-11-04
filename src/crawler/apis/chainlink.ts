@@ -42,6 +42,7 @@ export const FEEDS = {
     JTRSY: { address: "0x0C2e4Df738e99e8db80012f5bb2a303f3f48Ca74", decimals: 6 }, // NAV per share
     TBILL: { address: "0xAbE7a3643615Ed32d3431e11E0Ee5A486Cb27d48", decimals: 8 }, // NAV per token
     APXUSD: { address: "0x651b101f72F82630cf59c68E6EE4305aFBd3B1F5", decimals: 18 }, // Exchange Rate
+    TBTC: { address: "0x8350b7De6a6a2C1368E7D4Bd968190e13E354297", decimals: 8 },
     USDAI: {
         address: "0xF3d6b05E69918d71807Ab005791daCcEC5de8C78",
         decimals: 8,
@@ -78,6 +79,7 @@ const BY_SYMBOL: Record<string, Source> = {
     JTRSY: { feed: "JTRSY" },
     TBILL: { feed: "TBILL" },
     APXUSD: { feed: "APXUSD" },
+    TBTC: { feed: "TBTC" },
 };
 
 // Assets by id. Chain versions of USDT, USDC, PYUSD, USDG, EURC, RLUSD, USTBL, M, USDai and TBILL are
@@ -168,6 +170,12 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "base:0xD993935E13851dd7517af10687EC7e5022127228",
         "bsc:0x6b3788Fd6604BBF03c5378D24e57BB334BAAD4aF",
         "solana:HAYQtfJEQ9DbDbaHEhxfGsWbSZ3ywthdsVB3PuB72DYe",
+    ],
+    TBTC: [
+        "ethereum:0x18084fbA666a33d37592fA2633fD49a74DD93a88",
+        "arbitrum:0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40",
+        "base:0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b",
+        "solana:6DNSN2BJsaPFdFFc1zP37kkeNe4Usc1Sqkzr9C9vPWcU",
     ],
 };
 for (const [symbol, ids] of Object.entries(TOKEN_ASSETS))
