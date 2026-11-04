@@ -128,6 +128,7 @@ FEUSD,Felix feUSD,"stablecoin (crypto-backed, USD)",,,,
 FGRS,FGRS,tokenized stock,,,,
 FIDD,Fidelity Digital Dollar,"stablecoin (fiat-backed, USD)",,,,
 FIAT,Fixed Income Asset Token,"stablecoin (crypto-backed, USD)",,,,
+FLEXUSD,flexUSD (CoinFLEX),"stablecoin (crypto-backed, USD)",,2026-11-04,"Not measured. No Chainlink feed exists for flexUSD and its on-chain pools were not measured. The issuer's website coinflex.com no longer resolves and no reserve reports are published, so the backing cannot be checked. Contracts from the issuer's GitHub: Ethereum 0xa774FFB4AF6B0A91331C084E1aebAE6Ad535e6F3, smartBCH 0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72. See #86",https://github.com/coinflex-exchange/flexusd-ethereum https://github.com/coinflex-exchange/flexusd-smartbch
 FLOAT,Float Protocol Float,"stablecoin (algorithmic, VAR)",,,,
 ftUSD,Flying Tulip USD,"stablecoin (crypto-backed, USD)",,,,
 AUDF,Forte AUD,"stablecoin (fiat-backed, AUD)",,,,
