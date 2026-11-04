@@ -1,6 +1,7 @@
 /**
  * Rebuilds the daily price history of every asset priced by Chainlink (src/crawler/apis/chainlink.ts),
- * from the feed contracts on Ethereum at the first block of each UTC day.
+ * from the feed contracts on Ethereum at the first block of each UTC day. Feeds on other chains are
+ * rebuilt by rebuild_onchain.ts (`price` in supply/<token>.json).
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM or ETHEREUM_RPC set):
  *   bun <adapters>/scripts/history/rebuild_prices.ts [<from YYYY-MM-DD> [<to YYYY-MM-DD>]]
@@ -12,7 +13,7 @@ import { Contract, JsonRpcProvider, formatUnits } from "ethers";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { FEEDS, PRICE_SOURCES } from "../../src/crawler/apis/chainlink";
+import { FEEDS, PRICE_SOURCES, feedChain } from "../../src/crawler/apis/chainlink";
 
 const DAY = 24 * 60 * 60;
 const provider = new JsonRpcProvider(
@@ -70,17 +71,21 @@ async function blockAt(unix: number, guess: number, latest: number): Promise<num
 
 async function feedsAt(block: number): Promise<Partial<Record<keyof typeof FEEDS, number>>> {
     const entries = await Promise.all(
-        Object.entries(FEEDS).map(async ([name, feed]) => {
-            const round = await read(
-                () =>
-                    new Contract(feed.address, LATEST, provider).getFunction("latestRoundData")({
-                        blockTag: block,
-                    }) as Promise<[bigint, bigint, bigint, bigint, bigint]>
-            );
-            if (!round) return null;
-            const usd = parseFloat(formatUnits(round[1], feed.decimals));
-            return usd > 0 ? [name, usd] : null;
-        })
+        Object.entries(FEEDS)
+            .filter(([name]) => feedChain(name as keyof typeof FEEDS) == "ethereum")
+            .map(async ([name, feed]) => {
+                const round = await read(
+                    () =>
+                        new Contract(feed.address, LATEST, provider).getFunction("latestRoundData")(
+                            {
+                                blockTag: block,
+                            }
+                        ) as Promise<[bigint, bigint, bigint, bigint, bigint]>
+                );
+                if (!round) return null;
+                const usd = parseFloat(formatUnits(round[1], feed.decimals));
+                return usd > 0 ? [name, usd] : null;
+            })
     );
     return Object.fromEntries(entries.filter((entry) => entry !== null));
 }
