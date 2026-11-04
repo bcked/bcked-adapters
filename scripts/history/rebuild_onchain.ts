@@ -5,7 +5,8 @@
  *   addresses are not circulating. A `backing` entry also rebuilds the on-chain backing: a token
  *   balance held by a contract, the share of it that matches the circulating supply,
  * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed,
- * - the backing of tokens whose entry names a Chainlink Proof of Reserves feed (`por`).
+ * - the backing of tokens whose entry names a Chainlink Proof of Reserves feed (`por`),
+ * - the price of tokens whose entry names a Chainlink price feed on its chain (`price`).
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
  * ALCHEMY_POLYGON set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
@@ -60,11 +61,25 @@ interface SupplyEntry {
     decimals: number;
     locked?: string[];
     // The token is backed by `token` held by `holder` on the same chain (asset id `id`, `decimals`).
-    // The chain asset gets the share of it that matches its circulating supply.
-    backing?: { id: string; token: string; holder: string; decimals: number };
+    // The chain asset gets the share of it that matches its circulating supply. `bridged` names a
+    // function of the token that returns the supply on other chains, which shares the same backing
+    // (counted in the token's decimals). `assets` are the token on those chains: each gets the share
+    // that matches its circulating supply on the same day. Days without a balance of `token` are
+    // skipped.
+    backing?: {
+        id: string;
+        token: string;
+        holder: string;
+        decimals: number;
+        bridged?: string;
+        assets?: string[];
+    };
     // The backing is the answer of a Chainlink Proof of Reserves feed on the same chain, in units
     // of asset `id`.
     por?: { id: string; feed: string; decimals: number };
+    // The price is the answer of a Chainlink USD feed on the same chain. It is written for this asset
+    // and for `assets`, the token on other chains.
+    price?: { feed: string; decimals: number; assets?: string[] };
 }
 const SUPPLY_DIR = path.join(import.meta.dir, "supply");
 const SUPPLY: SupplyEntry[] = readdirSync(SUPPLY_DIR)
@@ -158,7 +173,13 @@ const to = process.argv[3]
 
 const supplies = new Map<string, Map<string, string[]>>();
 const custody = new Map<string, string[]>();
+const prices = new Map<string, Map<string, string[]>>();
 const backings = new Map<string, { header: string[]; rows: Map<string, string[]> }>();
+// Backing held on one chain for the token on other chains: per day the amount held and all supply.
+const shared = new Map<
+    string,
+    { id: string; assets: string[]; days: Map<string, [number, number]> }
+>();
 // Days read at once. More gets throttled by the RPC provider, and the retries cost more than they save.
 const PARALLEL_DAYS = Number(process.env["PARALLEL_DAYS"] ?? 4);
 // SYSTEMS=base limits the run to some chains, e.g. to rebuild one without the Alchemy keys of the others.
@@ -215,6 +236,27 @@ for (const system of systems) {
             supplies
                 .get(token.id)!
                 .set(timestamp, [timestamp, "", circulating, amount, "", amount]);
+            if (token.price) {
+                const { feed, decimals, assets } = token.price;
+                const round = await read(
+                    () =>
+                        new Contract(
+                            feed,
+                            [
+                                "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)",
+                            ],
+                            providers[system]
+                        ).getFunction("latestRoundData")({ blockTag: block }) as Promise<
+                            [bigint, bigint, bigint, bigint, bigint]
+                        >
+                );
+                if (round && round[1] > 0n)
+                    for (const id of [token.id, ...(assets ?? [])])
+                        (prices.get(id) ?? prices.set(id, new Map()).get(id)!).set(timestamp, [
+                            timestamp,
+                            formatUnits(round[1], decimals),
+                        ]);
+            }
             if (token.backing) {
                 const { id, token: reserve, holder, decimals } = token.backing;
                 const held = await read(
@@ -225,8 +267,33 @@ for (const system of systems) {
                             providers[system]
                         ).getFunction("balanceOf")(holder, { blockTag: block }) as Promise<bigint>
                 );
-                if (held === null) continue;
-                const share = formatUnits((held * (supply - locked)) / supply, decimals);
+                if (held === null || held == 0n) continue;
+                let all = supply;
+                if (token.backing.bridged) {
+                    const bridged = await read(
+                        () =>
+                            new Contract(
+                                token.address,
+                                [`function ${token.backing!.bridged} view returns (uint256)`],
+                                providers[system]
+                            ).getFunction(token.backing!.bridged!)({
+                                blockTag: block,
+                            }) as Promise<bigint>
+                    );
+                    if (bridged === null) continue;
+                    all += bridged;
+                }
+                const share = formatUnits((held * (supply - locked)) / all, decimals);
+                if (token.backing.assets) {
+                    if (!shared.has(token.id))
+                        shared.set(token.id, { id, assets: token.backing.assets, days: new Map() });
+                    shared
+                        .get(token.id)!
+                        .days.set(timestamp, [
+                            parseFloat(formatUnits(held, decimals)),
+                            parseFloat(formatUnits(all, token.decimals)),
+                        ]);
+                }
                 if (!backings.has(token.id))
                     backings.set(token.id, {
                         header: ["timestamp", `underlying.${id}`],
@@ -295,6 +362,24 @@ for (const [id, rows] of supplies) {
     );
     console.log(`${id}: ${added} supplies added`);
 }
+for (const [id, rows] of prices) {
+    const added = merge(
+        path.join("assets", id, "records", "price.csv"),
+        ["timestamp", "usd"],
+        rows
+    );
+    console.log(`${id}: ${added} prices added`);
+}
+for (const { id, assets, days } of shared.values())
+    for (const asset of assets)
+        for (const [timestamp, [held, all]] of days) {
+            const circulating = supplies.get(asset)?.get(timestamp)?.[2];
+            if (circulating === undefined) continue;
+            if (!backings.has(asset))
+                backings.set(asset, { header: ["timestamp", `underlying.${id}`], rows: new Map() });
+            const share = (held * parseFloat(circulating)) / all;
+            backings.get(asset)!.rows.set(timestamp, [timestamp, String(share)]);
+        }
 for (const [id, { header, rows }] of backings) {
     const added = merge(path.join("assets", id, "records", "backing.csv"), header, rows);
     console.log(`${id}: ${added} backing rows added`);
