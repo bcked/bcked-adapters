@@ -1,0 +1,9 @@
+[
+    {
+        "id": "ethereum:0x5E8422345238F34275888049021821E8E08CAa1f",
+        "system": "ethereum",
+        "address": "0x5E8422345238F34275888049021821E8E08CAa1f",
+        "decimals": 18,
+        "locked": ["0x8306300ffd616049FD7e4b0354a64Da835c1A81C"]
+    }
+]
