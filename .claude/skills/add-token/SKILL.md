@@ -53,8 +53,9 @@ Follow "How a token is defined" in CONTRIBUTING.md and copy the closest existing
 The crawler only records from the day an asset is added. Rebuild the past from the chain wherever
 possible:
 
-- Supply: add the token to `SUPPLY` in `scripts/history/rebuild_onchain.ts` (daily totalSupply
-  through archive calls). Add its chain to `RPC` there if needed.
+- Supply: add `scripts/history/supply/<token>.json` with one entry per chain asset (id, system,
+  address, decimals, optional `locked` addresses that are not circulating). Do not edit the list in
+  `rebuild_onchain.ts`. Add the chain to its `RPC` only if it is new and serves archive reads.
 - Price: a Chainlink feed in `PRICE_SOURCES` is rebuilt by `scripts/history/rebuild_prices.ts`. Before
   the feed existed: add the token's pools to `ASSETS` in `scripts/history/dex_prices.py` (at least
   $1M liquidity).
