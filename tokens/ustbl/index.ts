@@ -4,7 +4,8 @@
  * The price is the net asset value per share from the Chainlink USTBL NAV feed on Ethereum.
  *
  * The fund's holdings are not recorded: the terms of use of Spiko's website could not be read, so its
- * fund data is not collected. USTBL on Etherlink, Starknet and Stellar is not tracked yet.
+ * fund data is not collected. USTBL on Etherlink, Starknet and Stellar is not tracked yet. USTBL on
+ * Solana had no supply on 2026-11-04 and is not tracked yet.
  */
 const details: bcked.token.Details = {
     name: "Spiko US T-Bills Money Market Fund",

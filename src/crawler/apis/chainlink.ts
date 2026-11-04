@@ -116,7 +116,6 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "polygon:0xe4880249745eAc5F1eD9d8F7DF844792D560e750",
         "base:0xe4880249745eAc5F1eD9d8F7DF844792D560e750",
         "arbitrum:0x021289588cd81dC1AC87ea91e91607eEF68303F5",
-        "solana:3E2qphMMBQtH3HZH2ZSg7CkbF8gSLePuoy7yVpkDxHGn",
     ],
 };
 for (const [symbol, ids] of Object.entries(TOKEN_ASSETS))
