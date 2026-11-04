@@ -4,7 +4,8 @@
  *
  * A token has the same price on every chain, so all chain versions of a token use its feed. Some
  * prices are derived from a feed: wstETH from stETH and the wstETH exchange rate, WBTC from the
- * WBTC/BTC and BTC/USD feeds, XAUt (one troy ounce of gold per token) from gold.
+ * WBTC/BTC and BTC/USD feeds, XAUt (one troy ounce of gold per token) from gold, QQQB (records its
+ * supply in QQQ units) from QQQ.
  */
 import { formatUnits } from "ethers";
 
@@ -32,6 +33,7 @@ export const FEEDS = {
     PAXG: { address: "0x9944D86CEB9160aF5C5feB251FD671923323f8C3", decimals: 8 },
     XAU: { address: "0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6", decimals: 8 },
     STETH: { address: "0xCfE54B5cD566aB89272946F602D76Ea879CAb4a8", decimals: 8 },
+    QQQ: { address: "0xA1D955b4E582C784583df7071B8a3Fb6d4bcaC42", decimals: 8 }, // QQQ-USD (24/5)
 } as const;
 type Feed = keyof typeof FEEDS;
 
@@ -67,6 +69,7 @@ export const PRICE_SOURCES: Record<string, Source> = {
     "rwa:XAU": { feed: "XAU" },
     "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84": { feed: "STETH" },
     [`ethereum:${WSTETH}`]: { feed: "STETH", times: "wstETH" },
+    "bsc:0x205812CdBed920aFf76C6580abD681a46D11efc7": { feed: "QQQ" }, // QQQB
 };
 
 // Chain versions of tokens that share one price.

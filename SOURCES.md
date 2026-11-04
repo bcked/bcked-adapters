@@ -20,7 +20,7 @@ on bcked.com.
 
 | Source                                                        | Used for                                                                                                                                                                                                                                                         | Terms and notes                                                                        |
 | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| [Chainlink Data Feeds](https://docs.chain.link/data-feeds)    | Prices of all tokens, ETH, BTC and gold, and the bitcoin held by the WBTC custodians ([WBTC Proof of Reserves](https://data.chain.link/feeds/ethereum/mainnet/wbtc-por)). Read on-chain from the feed contracts on Ethereum                                      | Values published on-chain. Chainlink's software is MIT licensed                        |
+| [Chainlink Data Feeds](https://docs.chain.link/data-feeds)    | Prices of all tokens, ETH, BTC, gold and QQQ units (for QQQB), and the bitcoin held by the WBTC custodians ([WBTC Proof of Reserves](https://data.chain.link/feeds/ethereum/mainnet/wbtc-por)). Read on-chain from the feed contracts on Ethereum                | Values published on-chain. Chainlink's software is MIT licensed                        |
 | Token contracts on each chain                                 | Supply of every token (totalSupply), share prices of funds held by the Sky allocators (Centrifuge vaults)                                                                                                                                                        | Read on-chain. Contract state, the results are facts                                   |
 | [Uniswap](https://uniswap.org/) pools on Ethereum             | Prices of PAXG, WBTC, USDC, BUSD and USDG at report dates before their Chainlink feed (BUSD never had one). Pool price at the block of the report time, from the pool with the most liquidity (at least $1M), converted with the Chainlink price of WETH or USDC | Read on-chain. Contract state, the results are facts                                   |
 | [Orca](https://www.orca.so/) USDG/USDC pool on Solana         | Price of USDG from 2025-03 to 2025-05, before it had an Ethereum pool. Median of executed swaps within 6 hours of the report time, converted with the Chainlink USDC price                                                                                       | Read on-chain from Solana transactions through a keyed RPC. The transactions are facts |
@@ -75,3 +75,9 @@ on bcked.com.
 - [Agora attestations](https://developer.agora.finance/attestations): monthly reserve reports of AUSD.
   AUSD is tracked with price and supply and a generic icon, its backing is not recorded until Agora
   allows it.
+- [Binance bStocks proof of collateral](https://www.binance.com/en/proof-of-collateral/bstocks): custody of
+  the bStocks such as QQQB. Its terms could not be read. QQQB is tracked with price and supply, its
+  backing is not recorded.
+- [ADGM market disclosures](https://www.adgm.com/information/terms-and-conditions): prospectuses and
+  weekly disclosures of listed securities. Its terms do not allow automated data collection. The QQQB
+  prospectus is linked as a reference only.
