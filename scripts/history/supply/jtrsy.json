@@ -1,0 +1,26 @@
+[
+    {
+        "id": "ethereum:0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "system": "ethereum",
+        "address": "0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "decimals": 6
+    },
+    {
+        "id": "base:0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "system": "base",
+        "address": "0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "decimals": 6
+    },
+    {
+        "id": "arbitrum:0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "system": "arbitrum",
+        "address": "0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "decimals": 6
+    },
+    {
+        "id": "plume:0xa5d465251fBCc907f5Dd6bB2145488DFC6a2627b",
+        "system": "plume",
+        "address": "0xa5d465251fBCc907f5Dd6bB2145488DFC6a2627b",
+        "decimals": 6
+    }
+]
