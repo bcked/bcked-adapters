@@ -1,0 +1,14 @@
+[
+    {
+        "id": "ethereum:0x35fA164735182de50811E8e2E824cFb9B6118ac2",
+        "system": "ethereum",
+        "address": "0x35fA164735182de50811E8e2E824cFb9B6118ac2",
+        "decimals": 18,
+        "locked": ["0x0c83EAe1FE72c390A02E426572854931EefF93BA"],
+        "por": {
+            "id": "ethereum:ETH",
+            "feed": "0xC8cd82067eA907EA4af81b625d2bB653E21b5156",
+            "decimals": 18
+        }
+    }
+]
