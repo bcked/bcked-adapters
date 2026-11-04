@@ -138,7 +138,7 @@ async function priceDay(day: number) {
     const timestamp = new Date(day * 1000).toISOString();
     for (const [id, source] of Object.entries(PRICE_SOURCES)) {
         const base = feeds[source.feed];
-        if (base === undefined) continue;
+        if (base === undefined || (source.since && timestamp < source.since)) continue;
         const factor =
             source.times === undefined ? 1 : source.times == "wstETH" ? rate : feeds[source.times];
         if (factor === undefined) continue;

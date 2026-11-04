@@ -44,6 +44,8 @@ const ST_ETH_PER_TOKEN = "function stEthPerToken() view returns (uint256)";
 interface Source {
     feed: Feed;
     times?: Feed | "wstETH";
+    /** First day of the asset (YYYY-MM-DD), when its feed is older than the asset. */
+    since?: string;
 }
 
 const BY_SYMBOL: Record<string, Source> = {
@@ -69,7 +71,8 @@ export const PRICE_SOURCES: Record<string, Source> = {
     "rwa:XAU": { feed: "XAU" },
     "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84": { feed: "STETH" },
     [`ethereum:${WSTETH}`]: { feed: "STETH", times: "wstETH" },
-    "bsc:0x205812CdBed920aFf76C6580abD681a46D11efc7": { feed: "QQQ" }, // QQQB
+    // QQQB, from the date of its prospectus.
+    "bsc:0x205812CdBed920aFf76C6580abD681a46D11efc7": { feed: "QQQ", since: "2026-06-30" },
 };
 
 // Chain versions of tokens that share one price.
