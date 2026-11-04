@@ -311,6 +311,7 @@ SNDKB,SanDisk (bStocks),tokenized stock,,,,
 sUSDat,Saturn sUSDat,proof of reserve feed,,,,https://data.chain.link/feeds/ethereum/mainnet/susdat-nav
 SVUSD,Savvy USD,"stablecoin (fiat-backed, USD)",,,,
 EUROP,Schuman EUROP,"stablecoin (fiat-backed, EUR)",,,,
+SECZ,Securitize Corp.,tokenized stock,,2026-11-04,"Natively tokenized common stock of Securitize Corp. (NYSE: SECZ), recorded through its transfer agent, not a claim on separately held reserves. 1,012,614 SECZ on Solana (mint 5VzwKkvynPJzcgwhBe7ESEyNgqMbo15yBu7Sehssd9ED) read on-chain. No Chainlink feed for SECZ, so the market cap was not measured on-chain. Also issued on Avalanche, where the issuer publishes no contract address. See #76",https://stocks.securitize.io/asset/SECZ https://securitize.io/learn/press/securitize-tokenizes-secz-stock-onchain
 SOXLB,Semicon Bull 3X ETF (bStocks),tokenized stock,,,,
 SEUR,sEUR,"stablecoin (crypto-backed, EUR)",,,,
 BNBUSD,Sigma Money bnbUSD,"stablecoin (crypto-backed, USD)",,,,
