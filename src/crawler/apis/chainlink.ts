@@ -39,6 +39,7 @@ export const FEEDS = {
     STRC: { address: "0xf4d2076277fff631EFC4385Ab36b1f7734218d23", decimals: 8 },
     USTBL: { address: "0x477e363c51Ab0C4D13B22CD6B57D56d4a3Cb7Abe", decimals: 6 }, // NAV per share
     M: { address: "0xC28198Df9aee1c4990994B35ff51eFA4C769e534", decimals: 8 }, // M NAV
+    TBILL: { address: "0xAbE7a3643615Ed32d3431e11E0Ee5A486Cb27d48", decimals: 8 }, // NAV per token
     APXUSD: { address: "0x651b101f72F82630cf59c68E6EE4305aFBd3B1F5", decimals: 18 }, // Exchange Rate
     USDAI: {
         address: "0xF3d6b05E69918d71807Ab005791daCcEC5de8C78",
@@ -73,11 +74,12 @@ const BY_SYMBOL: Record<string, Source> = {
     USTBL: { feed: "USTBL" },
     M: { feed: "M" },
     USDAI: { feed: "USDAI" },
+    TBILL: { feed: "TBILL" },
     APXUSD: { feed: "APXUSD" },
 };
 
-// Assets by id. Chain versions of USDT, USDC, PYUSD, USDG, EURC, RLUSD, USTBL, M and USDai are added
-// below from TOKEN_ASSETS.
+// Assets by id. Chain versions of USDT, USDC, PYUSD, USDG, EURC, RLUSD, USTBL, M, USDai and TBILL are
+// added below from TOKEN_ASSETS.
 export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:ETH": { feed: "ETH" },
     "ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": { feed: "ETH" }, // WETH
@@ -147,6 +149,10 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "ethereum:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
         "base:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
         "solana:USDai5XCUzNebYzUk6EuRiFCvnyoyEdj7VSyijYcz2A",
+    ],
+    TBILL: [
+        "ethereum:0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a",
+        "bsc:0x5b4681F0d7A01B817675F25892D3Ad73572FD1D9",
     ],
     APXUSD: [
         "ethereum:0x98A878b1Cd98131B271883B390f68D2c90674665",
