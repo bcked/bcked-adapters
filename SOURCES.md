@@ -75,3 +75,7 @@ on bcked.com.
 - [Agora attestations](https://developer.agora.finance/attestations): monthly reserve reports of AUSD.
   AUSD is tracked with price and supply and a generic icon, its backing is not recorded until Agora
   allows it.
+- [Avant transparency page](https://app.avantprotocol.com/transparency): breakdown of the strategies
+  behind avUSD. Its [terms](https://docs.avantprotocol.com/legal-and-risk/terms-of-use) do not allow
+  automated access. avUSD is tracked with supply and a generic icon, its backing is not recorded until
+  Avant allows it.
