@@ -1,6 +1,7 @@
 import { InstanceProxy } from "../../utils/instance_proxy";
 import { EVMChain } from "./evm";
 import { SolanaChain } from "./solana";
+import { XrplChain } from "./xrpl";
 
 export class ChainProxy
     extends InstanceProxy<bcked.query.ChainModule>
@@ -21,6 +22,7 @@ export class ChainProxy
             xlayer: EVMChain,
             ink: EVMChain,
             solana: SolanaChain,
+            xrpl: XrplChain,
         });
     }
 
