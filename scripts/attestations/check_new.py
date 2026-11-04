@@ -9,12 +9,15 @@ categories are still in the unit of the total.
 """
 import csv
 import json
+import os
 import sys
 
 
 def main(extracted, backing):
-    with open(backing) as f:
-        latest = max((row["timestamp"] for row in csv.DictReader(f)), default="")
+    latest = ""
+    if os.path.exists(backing):  # A token without records yet: all report dates are new.
+        with open(backing) as f:
+            latest = max((row["timestamp"] for row in csv.DictReader(f)), default="")
     problems, new = [], 0
     for report in json.load(open(extracted)):
         for section in report["sections"]:

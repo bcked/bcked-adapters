@@ -19,6 +19,7 @@ const details: bcked.asset.Details = {
     },
     reference: "https://ripple.com/products/stablecoin/transparency/",
     tags: ["stablecoin", "real-world-asset"],
+    token: "rlusd",
 };
 
 export default class Adapter implements bcked.asset.Adapter {

@@ -63,6 +63,8 @@ export async function getTokenBackingShare(
     lastRecorded: bcked.asset.Backing | null
 ): Promise<bcked.asset.Backing[]> {
     const csvPath = path.join(PATHS.tokens, tokenId, PATHS.records, FILES.csv.backing);
+    // No reserves recorded for the token yet (e.g. a new token before its first reports are read).
+    if (!existsSync(csvPath)) return [];
     const reserves: bcked.asset.Backing[] = [];
     for await (const row of readCSV<bcked.asset.Backing>(csvPath)) reserves.push(row);
 
