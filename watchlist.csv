@@ -1,5 +1,6 @@
 symbol,name,category,market_cap_usd,checked,note,sources
 DOLA,Dola (Inverse Finance),"stablecoin (crypto-backed, USD)",70600000,2026-11-03,"Circulating supply on Ethereum (total supply less DOLA held unlent in FiRM markets, the PSM and Frontier) times the Chainlink price. See #95",https://data.chain.link/feeds/ethereum/mainnet/dola-usd https://docs.inverse.finance/
+USX,dForce USX,"stablecoin (crypto-backed, USD)",13800000,2026-11-04,"Circulating supply about 13.8M USX. Total supply per chain read on-chain (Ethereum, Arbitrum, Optimism, BNB Chain, Base, Avalanche, Polygon), less the USX locked on Ethereum for the bridged supply on Arbitrum and Optimism, and less the USX held by dForce's own contracts on Arbitrum and Optimism (the vUSX vault and the PDLP operators, about 112.3M of the 126.5M total). Valued at the 1:1 redemption into USDC, USDT or DAI stated by dForce, as there is no Chainlink feed. Kava, Conflux and zkSync were not measured. See #79",https://docs.usx.finance/developer/contracts https://github.com/dforce-network/PDLPOperator/tree/main/deployments https://docs.usx.finance/overview/faq
 3USD,3USD,"stablecoin (crypto-backed, USD)",,,,
 A7A5,A7A5,"stablecoin (fiat-backed, RUB)",,,,
 ADAI,Aave DAI (v1),,,2026-10-28,"old backlog, replaced by Aave v2/v3 aTokens",
