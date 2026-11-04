@@ -182,12 +182,22 @@ async function compileAsset(id: bcked.asset.Id) {
         composition,
     });
 
-    if (details?.backing) {
+    // A chain asset without a backing source of its own shows its token's, e.g. "not-tracked".
+    const backing =
+        details?.backing ??
+        (details?.token
+            ? (
+                  await readJson<bcked.token.DetailsRecord>(
+                      recordsPath(PATHS.tokens, details.token, FILES.json.details)
+                  )
+              )?.backing
+            : undefined);
+    if (backing) {
         const evidence =
-            details.backing.reports == "token" && details.token
+            backing.reports == "token" && details?.token
                 ? recordsPath(PATHS.tokens, details.token, FILES.csv.evidence)
                 : csv(FILES.csv.evidence);
-        await ASSET_RESOURCES.reports(id, details.backing, await readReports(evidence));
+        await ASSET_RESOURCES.reports(id, backing, await readReports(evidence));
     }
 
     compiledSeries.set(id, { marketCap, collateralizationRatio, collateral, composition });
@@ -202,7 +212,7 @@ async function compileAsset(id: bcked.asset.Id) {
         linkedEntities: details?.linkedEntities ?? {},
         assetClasses: details?.assetClasses ?? [],
         tags: details?.tags ?? [],
-        backing: details?.backing?.method ?? null,
+        backing: backing?.method ?? null,
         composition: latestComposition(composition),
         icon: iconPath(PATHS.assets, id),
         price: latestWithChange(price),
