@@ -4,9 +4,9 @@
  * RPC keys.
  *
  * With --strict (used on every pull request), an adapter also fails when it returns data that would
- * show up wrong on the site:
+ * show up wrong on the site (reserve kinds like rwa:USD are skipped):
  * - an asset without a positive supply,
- * - an asset with a price source (getPrice or a Chainlink feed) but no positive price,
+ * - an asset with a Chainlink feed but no positive price,
  * - an asset without a backing source in its details or its token's (declare "not-tracked" with the
  *   reason when no backing is recorded),
  * - a token with report backing but no reports in its records,
@@ -57,16 +57,16 @@ async function check(target: string, results: Record<string, unknown>): Promise<
             problems.push("reports backing, but no rows in records/backing.csv");
         return problems;
     }
-    if (kind !== "assets") return problems;
+    // Reserve kinds (rwa:USD, rwa:USTB, ...) only appear as backing: no supply, no backing of their own.
+    if (kind !== "assets" || id.startsWith("rwa:")) return problems;
 
     const supply = (results["getSupply"] as bcked.asset.Supply[] | undefined)?.at(-1);
     const amount = supply ? (supply.circulating ?? supply.total ?? supply.issued) : null;
     if (!(amount && amount > 0)) problems.push(`no positive supply (${JSON.stringify(supply)})`);
 
-    const prices = results["getPrice"] as bcked.asset.Price[] | undefined;
-    if (prices !== undefined || id in PRICE_SOURCES) {
-        const usd = prices?.at(-1)?.usd;
-        if (!(usd && usd > 0)) problems.push("has a price source but returned no positive price");
+    if (id in PRICE_SOURCES) {
+        const usd = (results["getPrice"] as bcked.asset.Price[] | undefined)?.at(-1)?.usd;
+        if (!(usd && usd > 0)) problems.push("has a Chainlink feed but returned no positive price");
     }
 
     let source = details.backing;
