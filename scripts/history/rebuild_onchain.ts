@@ -116,6 +116,13 @@ const SUPPLY: { id: string; system: string; address: string; decimals: number }[
         address: "0x53FC82f14F009009b440a706e31c9021E1196A2F",
         decimals: 6,
     },
+    // MONY
+    {
+        id: "ethereum:0x6a7c6aa2b8b8a6A891dE552bDEFFa87c3F53bD46",
+        system: "ethereum",
+        address: "0x6a7c6aa2b8b8a6A891dE552bDEFFa87c3F53bD46",
+        decimals: 4,
+    },
 ];
 const WBTC = "ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
 const WBTC_POR = "0xa81FE04086865e63E12dD3776978E49DEEa2ea4e";
