@@ -74,3 +74,6 @@ on bcked.com.
 - [Agora attestations](https://developer.agora.finance/attestations): monthly reserve reports of AUSD.
   AUSD is tracked with price and supply and a generic icon, its backing is not recorded until Agora
   allows it.
+- [Binance bStocks Proof of Collateral](https://www.binance.com/en/proof-of-collateral/bstocks): shares
+  held for bStocks. Binance's terms could not be read, so the page is not collected. MSTRB is tracked
+  with supply and a generic icon, its collateral is not recorded until Binance allows it.
