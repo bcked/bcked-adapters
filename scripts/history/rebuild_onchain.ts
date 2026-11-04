@@ -11,8 +11,8 @@
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
  * ALCHEMY_POLYGON set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
  * SYSTEMS=<chain,...> limits the run to these chains. Days that already have a row are kept. Reads
- * need archive nodes, which Alchemy provides. The official Base and Avalanche RPCs serve archive
- * reads too. A new token adds its own file in supply/ instead of editing this script.
+ * need archive nodes, which Alchemy provides. The official Base, Avalanche and Plume RPCs serve
+ * archive reads too. A new token adds its own file in supply/ instead of editing this script.
  */
 import { Contract, JsonRpcProvider, formatUnits } from "ethers";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -48,6 +48,12 @@ const RPC: Record<string, { url: string; chainId: number; perDay: number; start:
         url: "https://api.avax.network/ext/bc/C/rpc",
         chainId: 43114,
         perDay: 80_000,
+        start: 1,
+    },
+    plume: {
+        url: "https://rpc.plume.org",
+        chainId: 98866,
+        perDay: 200_000,
         start: 1,
     },
 };

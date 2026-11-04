@@ -39,6 +39,7 @@ export const FEEDS = {
     STRC: { address: "0xf4d2076277fff631EFC4385Ab36b1f7734218d23", decimals: 8 },
     USTBL: { address: "0x477e363c51Ab0C4D13B22CD6B57D56d4a3Cb7Abe", decimals: 6 }, // NAV per share
     M: { address: "0xC28198Df9aee1c4990994B35ff51eFA4C769e534", decimals: 8 }, // M NAV
+    JTRSY: { address: "0x0C2e4Df738e99e8db80012f5bb2a303f3f48Ca74", decimals: 6 }, // NAV per share
     TBILL: { address: "0xAbE7a3643615Ed32d3431e11E0Ee5A486Cb27d48", decimals: 8 }, // NAV per token
     APXUSD: { address: "0x651b101f72F82630cf59c68E6EE4305aFBd3B1F5", decimals: 18 }, // Exchange Rate
     USDAI: {
@@ -74,6 +75,7 @@ const BY_SYMBOL: Record<string, Source> = {
     USTBL: { feed: "USTBL" },
     M: { feed: "M" },
     USDAI: { feed: "USDAI" },
+    JTRSY: { feed: "JTRSY" },
     TBILL: { feed: "TBILL" },
     APXUSD: { feed: "APXUSD" },
 };
@@ -149,6 +151,13 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "ethereum:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
         "base:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
         "solana:USDai5XCUzNebYzUk6EuRiFCvnyoyEdj7VSyijYcz2A",
+    ],
+    JTRSY: [
+        "ethereum:0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "base:0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "arbitrum:0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "bsc:0xa5d465251fBCc907f5Dd6bB2145488DFC6a2627b",
+        "plume:0xa5d465251fBCc907f5Dd6bB2145488DFC6a2627b",
     ],
     TBILL: [
         "ethereum:0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a",
