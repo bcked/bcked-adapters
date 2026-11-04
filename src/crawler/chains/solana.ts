@@ -17,7 +17,7 @@ function formatUnits(value: string | number | bigint, decimals: string | number 
 
     const whole = _value / multiplier;
     const fraction = _value % multiplier;
-    // The fraction keeps its leading zeros: 105 with 2 decimals is 1.05.
+    // The fraction keeps its leading zeros: 5 base units with 6 decimals are 0.000005, not 0.5.
     return `${whole}.${fraction.toString().padStart(Number(_decimals), "0")}`;
 }
 
