@@ -263,7 +263,11 @@ export class LatestLookup<T extends primitive.Timestamped> {
     private next: T | undefined = undefined;
     private done = false;
 
-    constructor(public readonly csvPath: string) {
+    /** @param include Rows to consider, others are skipped (e.g. rows without a value). */
+    constructor(
+        public readonly csvPath: string,
+        private readonly include: (row: T) => boolean = () => true
+    ) {
         this.csvStream = readCSV<T>(csvPath);
     }
 
@@ -276,6 +280,7 @@ export class LatestLookup<T extends primitive.Timestamped> {
                     this.done = true;
                     break;
                 }
+                if (!this.include(value)) continue;
                 this.next = value;
             }
             if (new Date(this.next.timestamp).getTime() > time) break;
