@@ -16,9 +16,10 @@ import { round } from "../../utils/math";
 import { toISOString } from "../../utils/string_formatting";
 import { daysInMs, getDatesBetween } from "../../utils/time";
 
+/** The backing of an asset with its value, which needs only the prices of the underlying assets. */
 interface CollateralizationLookup {
     assetId: bcked.asset.Id;
-    lookup: LatestLookup<bcked.asset.Collateralization>;
+    lookup: LatestLookup<bcked.asset.Relationships>;
 }
 
 /**
@@ -36,19 +37,13 @@ async function createGraphForTimestamp(
     // Get closest prices to the current entry for all underlying assets
     await Promise.all(
         collateralizationLookups.map(async ({ assetId, lookup }) => {
-            const collateralization = await lookup.getLatest(timestamp, MAX_BACKING_AGE);
+            const backing = await lookup.getLatest(timestamp, MAX_BACKING_AGE);
 
-            if (!collateralization) return;
+            if (!backing) return;
 
-            graph.addNode(assetId, {
-                timestamp: collateralization.timestamp,
-                // Collateralization entries only exist where the collateral value is known.
-                value: collateralization.collateral.usd!,
-            });
+            graph.addNode(assetId, { timestamp: backing.timestamp, value: backing.usd! });
 
-            for (const [collateralAssetId, value] of Object.entries(
-                collateralization.collateral.breakdown
-            )) {
+            for (const [collateralAssetId, value] of Object.entries(backing.breakdown)) {
                 graph.addLink(assetId, collateralAssetId, { value: value.usd });
             }
         })
@@ -61,18 +56,18 @@ function initializeCollateralizationLookups(assetIds: bcked.asset.Id[]) {
     const collateralizationLookups: CollateralizationLookup[] = [];
 
     for (const assetId of assetIds) {
-        const csvPath = path.join(
-            PATHS.assets,
-            assetId,
-            PATHS.records,
-            FILES.csv.collateralizationRatio
-        );
+        const csvPath = path.join(PATHS.assets, assetId, PATHS.records, FILES.csv.underlyingAssets);
 
         if (!existsSync(csvPath)) continue;
 
         collateralizationLookups.push({
             assetId,
-            lookup: new LatestLookup<bcked.asset.Collateralization>(csvPath),
+            // Rows where a price of an underlying asset is missing have no value. The latest row
+            // with one is used instead, up to MAX_BACKING_AGE.
+            lookup: new LatestLookup<bcked.asset.Relationships>(
+                csvPath,
+                (row) => typeof row.usd === "number"
+            ),
         });
     }
 

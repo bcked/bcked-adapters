@@ -19,6 +19,11 @@ const details: bcked.asset.Details = {
         issuer: "agora",
     },
     reference: "https://developer.agora.finance/attestations",
+    backing: {
+        method: "not-tracked",
+        description: "Agora publishes monthly reserve reports, but bcked does not record them yet.",
+        reference: "https://developer.agora.finance/attestations",
+    },
     tags: ["stablecoin", "real-world-asset"],
 };
 

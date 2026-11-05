@@ -1,0 +1,32 @@
+[
+    {
+        "id": "ethereum:0x7712c34205737192402172409a8F7ccef8aA2AEc",
+        "system": "ethereum",
+        "address": "0x7712c34205737192402172409a8F7ccef8aA2AEc",
+        "decimals": 6
+    },
+    {
+        "id": "ethereum:0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041",
+        "system": "ethereum",
+        "address": "0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041",
+        "decimals": 6
+    },
+    {
+        "id": "arbitrum:0xA6525Ae43eDCd03dC08E775774dCAbd3bb925872",
+        "system": "arbitrum",
+        "address": "0xA6525Ae43eDCd03dC08E775774dCAbd3bb925872",
+        "decimals": 6
+    },
+    {
+        "id": "polygon:0x2893Ef551B6dD69F661Ac00F11D93E5Dc5Dc0e99",
+        "system": "polygon",
+        "address": "0x2893Ef551B6dD69F661Ac00F11D93E5Dc5Dc0e99",
+        "decimals": 6
+    },
+    {
+        "id": "avalanche:0x53FC82f14F009009b440a706e31c9021E1196A2F",
+        "system": "avalanche",
+        "address": "0x53FC82f14F009009b440a706e31c9021E1196A2F",
+        "decimals": 6
+    }
+]

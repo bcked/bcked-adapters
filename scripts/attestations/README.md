@@ -80,6 +80,17 @@ python3 write_backing.py circle.json "<records>/tokens/usdc/records" USDC
 
 The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs with "USDC" in the name).
 
+## Circle (EURC)
+
+EURC's reserves are recorded on the token `eurc`. `update.sh` reads all reports while the token has
+no records yet, and the newest after that.
+
+```shell
+python3 fetch_circle.py /tmp/eurc 1000 EURC > eurc.txt
+python3 extract_eurc.py $(cat eurc.txt) > eurc.json
+python3 write_backing.py eurc.json "<records>/tokens/eurc/records" EURC
+```
+
 ## How the reports are read
 
 - Report dates are at 5:00 PM New York time and stored in UTC.
@@ -119,5 +130,10 @@ The USDC report PDFs are linked on https://www.circle.com/transparency (all PDFs
   of cash and short-dated U.S. government obligations (`rwa:undefined`, "Composition not reported"). The 2022 reserve pages use a broken font, so the total is read from the auditor's
   letter. The May 2022 report is a scan and was read manually (`circle_manual.json`). From 2023:
   Treasuries by CUSIP, repurchase agreements and cash, checked against the total reserve assets.
+- EURC: euro cash at regulated financial institutions (`rwa:EUR`), with the EURC in circulation as
+  the token total. The 2022 reports (as "EUROC") have one date, at 11:59 PM Pacific time. From 2023
+  each report has two dates, at 11:59 PM Pacific time until 2024-08 and UTC from 2024-09. The June
+  2022 report only states that the reserve is at least the 2,186 EUROC in circulation, which is
+  recorded as the reserve. EURC in circulation excludes tokens on Solana that Circle has not issued.
 - Times: Paxos reports are at 5:00 PM New York time, Circle reports at 11:59 PM Pacific time, Tether
   reports at the end of the day (UTC). All are stored in UTC.

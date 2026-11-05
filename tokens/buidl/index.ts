@@ -13,6 +13,11 @@ const details: bcked.token.Details = {
     issuer: "blackrock",
     reference:
         "https://www.blackrock.com/corporate/compliance/scams-and-fraud/blackrock-token-addresses",
+    backing: {
+        method: "not-tracked",
+        description: "BlackRock publishes the fund's holdings, but bcked does not record them yet.",
+        reference: null,
+    },
     tags: ["real-world-asset"],
 };
 
