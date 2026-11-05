@@ -13,7 +13,7 @@ import { Contract, JsonRpcProvider, formatUnits } from "ethers";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { FEEDS, PRICE_SOURCES, feedChain } from "../../src/crawler/apis/chainlink";
+import { FEEDS, PRICE_SOURCES, WEETH, feedChain } from "../../src/crawler/apis/chainlink";
 
 const DAY = 24 * 60 * 60;
 const provider = new JsonRpcProvider(
@@ -45,6 +45,7 @@ const WSTETH = new Contract(
     ["function stEthPerToken() view returns (uint256)"],
     provider
 );
+const WEETH_CONTRACT = new Contract(WEETH, ["function getRate() view returns (uint256)"], provider);
 
 const blockTimes = new Map<number, number>();
 async function timeOf(block: number): Promise<number> {
@@ -140,6 +141,14 @@ async function priceDay(day: number) {
               )
             : null;
     const rate = rawRate === null ? undefined : parseFloat(formatUnits(rawRate, 18));
+    const rawWeEthRate =
+        feeds.WEETH_ETH !== undefined
+            ? await read(
+                  () =>
+                      WEETH_CONTRACT.getFunction("getRate")({ blockTag: block }) as Promise<bigint>
+              )
+            : null;
+    const weEthRate = rawWeEthRate === null ? undefined : parseFloat(formatUnits(rawWeEthRate, 18));
     const timestamp = new Date(day * 1000).toISOString();
     for (const [id, source] of Object.entries(PRICE_SOURCES)) {
         const base = feeds[source.feed];
@@ -147,7 +156,9 @@ async function priceDay(day: number) {
         const factor =
             source.times === undefined ? 1 : source.times == "wstETH" ? rate : feeds[source.times];
         if (factor === undefined) continue;
-        (prices[id] ??= new Map()).set(timestamp, base * factor);
+        const divisor = source.per == "weETH" ? weEthRate : 1;
+        if (!divisor) continue;
+        (prices[id] ??= new Map()).set(timestamp, (base * factor) / divisor);
     }
 }
 

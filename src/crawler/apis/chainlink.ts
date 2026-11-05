@@ -4,7 +4,8 @@
  * Feeds: https://docs.chain.link/data-feeds (addresses from Chainlink's feed directory).
  *
  * A token has the same price on every chain, so all chain versions of a token use its feed. Some
- * prices are derived from a feed: wstETH from stETH and the wstETH exchange rate, WBTC from the
+ * prices are derived from a feed: wstETH from stETH and the wstETH exchange rate, eETH from weETH and
+ * the weETH exchange rate, WBTC from the
  * WBTC/BTC and BTC/USD feeds, XAUt (one troy ounce of gold per token) from gold. The euro (rwa:EUR)
  * is priced by the EUR/USD feed, silver (rwa:XAG) by the XAG/USD feed.
  */
@@ -20,6 +21,7 @@ const LATEST = "function latestRoundData() view returns (uint80, int256, uint256
 // Canonical Chainlink feeds on Ethereum, or on the chain given (USD prices, 8 decimals unless noted).
 export const FEEDS = {
     ETH: { address: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419", decimals: 8 },
+    WEETH_ETH: { address: "0x5c9C449BbC9a6075A2c061dF312a35fd1E05fF22", decimals: 18 }, // weETH in ETH
     BTC: { address: "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c", decimals: 8 },
     WBTC_BTC: { address: "0xfdFD9C85aD200c506Cf9e21F1FD8dd01932FBB23", decimals: 8 },
     USDT: { address: "0x3E7d1eAB13ad0104d2750B8863b489D65364e32D", decimals: 8 },
@@ -60,11 +62,17 @@ export function feedChain(feed: Feed): bcked.system.Id {
 
 const WSTETH = "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0";
 const ST_ETH_PER_TOKEN = "function stEthPerToken() view returns (uint256)";
+// Wrapped eETH, from ether.fi's deployed contracts:
+// https://etherfi.gitbook.io/etherfi/developers/contracts-and-integrations/deployed-contracts
+export const WEETH = "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee";
+const EETH_PER_WEETH = "function getRate() view returns (uint256)";
 
 /** How each asset is priced: a feed, or a feed times a factor read on-chain. */
 interface Source {
     feed: Feed;
     times?: Feed | "wstETH";
+    /** Divided by eETH per weETH, read on-chain: eETH from the weETH price. */
+    per?: "weETH";
 }
 
 const BY_SYMBOL: Record<string, Source> = {
@@ -102,6 +110,12 @@ export const PRICE_SOURCES: Record<string, Source> = {
     "rwa:STRC": { feed: "STRC" }, // Strategy's STRC preferred share, the collateral of STRCx
     "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84": { feed: "STETH" },
     [`ethereum:${WSTETH}`]: { feed: "STETH", times: "wstETH" },
+    // eETH: the weETH/ETH feed in USD, divided by the eETH one weETH holds.
+    "ethereum:0x35fA164735182de50811E8e2E824cFb9B6118ac2": {
+        feed: "WEETH_ETH",
+        times: "ETH",
+        per: "weETH",
+    },
 };
 
 // Chain versions of tokens that share one price.
@@ -187,14 +201,19 @@ for (const [symbol, ids] of Object.entries(TOKEN_ASSETS))
 let latest: Promise<{
     feeds: Record<Feed, { usd: number; updatedAt: number }>;
     rate: number;
+    weEthRate: number;
 }> | null = null;
 
 export class Chainlink implements bcked.query.ApiModule {
     chain = new ChainProxy();
 
     private latest() {
-        latest ??= Promise.all([this.readFeeds(Object.keys(FEEDS) as Feed[]), this.wstEthRate()])
-            .then(([feeds, rate]) => ({ feeds, rate }))
+        latest ??= Promise.all([
+            this.readFeeds(Object.keys(FEEDS) as Feed[]),
+            this.wstEthRate(),
+            this.weEthRate(),
+        ])
+            .then(([feeds, rate, weEthRate]) => ({ feeds, rate, weEthRate }))
             .catch((error: unknown) => {
                 latest = null;
                 throw error;
@@ -247,6 +266,17 @@ export class Chainlink implements bcked.query.ApiModule {
         return parseFloat(formatUnits(rate![0] as bigint, 18));
     }
 
+    /** eETH per weETH, at the given block. */
+    async weEthRate(blockTag?: number): Promise<number> {
+        const [rate] = await multicall(
+            this.chain,
+            "ethereum",
+            [{ target: WEETH, signature: EETH_PER_WEETH }],
+            blockTag
+        );
+        return parseFloat(formatUnits(rate![0] as bigint, 18));
+    }
+
     async getPrices(
         identifiers: bcked.asset.Identifier[]
     ): Promise<Partial<Record<bcked.asset.Id, bcked.asset.Price>>> {
@@ -255,13 +285,17 @@ export class Chainlink implements bcked.query.ApiModule {
             .filter((entry): entry is readonly [bcked.asset.Id, Source] => !!entry[1]);
         if (!wanted.length) return {};
 
-        const { feeds: values, rate } = await this.latest();
+        const { feeds: values, rate, weEthRate } = await this.latest();
 
         return Object.fromEntries(
             wanted.map(([id, source]) => {
                 const base = values[source.feed];
                 const factor =
-                    source.times == "wstETH" ? rate : source.times ? values[source.times].usd : 1;
+                    (source.times == "wstETH"
+                        ? rate
+                        : source.times
+                          ? values[source.times].usd
+                          : 1) / (source.per == "weETH" ? weEthRate : 1);
                 // A feed's latest answer is its valid price at the time it is read, even when the
                 // feed last updated hours ago (feeds update on a deviation or once a day).
                 return [id, { timestamp: toISOString(Date.now()), usd: base.usd * factor }];
