@@ -176,7 +176,7 @@ jobs:
 
     feeds:
         # Backing of assets on chains without an archive RPC, from the whole round history of their
-        # Chainlink Proof of Reserves feed on Ethereum (Kinesis Gold, scripts/history/kinesis_por.ts).
+        # Chainlink Proof of Reserves feed on Ethereum (Kinesis Gold and Silver, scripts/history/kinesis_por.ts).
         needs: onchain
         if: ${{ always() && (inputs.part == 'both' || inputs.part == 'onchain') && needs.onchain.result != 'failure' }}
         runs-on: ubuntu-latest

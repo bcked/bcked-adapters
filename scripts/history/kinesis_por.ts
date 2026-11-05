@@ -1,10 +1,10 @@
 /**
- * Rebuilds the backing history of Kinesis Gold (KAU) on the Kinesis blockchain from Chainlink's KAU
- * Proof of Reserves feed on Ethereum: every round of the feed, one row per day (the day's last
- * round), as the crawler records it. The feed reports grams of gold, which are converted to troy
- * ounces (rwa:XAU).
+ * Rebuilds the backing history of Kinesis Gold (KAU) and Kinesis Silver (KAG) on the Kinesis
+ * blockchain from their Chainlink Proof of Reserves feeds on Ethereum: every round of each feed, one
+ * row per day (the day's last round), as the crawler records it. The KAU feed reports grams of gold,
+ * converted to troy ounces (rwa:XAU). The KAG feed reports troy ounces of silver (rwa:XAG).
  *
- * KAU on Ethereum is rebuilt by rebuild_onchain.ts (supply/kau.json).
+ * KAU and KAG on Ethereum are rebuilt by rebuild_onchain.ts (supply/kau.json, supply/kag.json).
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM or ETHEREUM_RPC set):
  *   bun <adapters>/scripts/history/kinesis_por.ts
@@ -14,6 +14,7 @@ import { Contract, JsonRpcProvider, formatUnits } from "ethers";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+import { KAG_POR } from "../../assets/kinesis:KAG/index";
 import { GRAMS_PER_TROY_OUNCE, KAU_POR } from "../../assets/kinesis:KAU/index";
 
 interface Coin {
@@ -26,6 +27,8 @@ interface Coin {
 
 const COINS: Record<string, Coin> = {
     KAU: { por: KAU_POR, underlying: "rwa:XAU", perUnit: 1 / GRAMS_PER_TROY_OUNCE },
+    // The KAG feed reports troy ounces.
+    KAG: { por: KAG_POR, underlying: "rwa:XAG", perUnit: 1 },
 };
 
 /** Merges rows by day into a CSV, keeping existing days. */

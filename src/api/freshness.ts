@@ -24,7 +24,7 @@ const MAX_REPORT_AGE_DAYS: Record<string, number> = {
 };
 
 /** Assets whose price is constant or never crawled. */
-const STATIC_PRICES = (id: string) => id.startsWith("rwa:") && id !== "rwa:XAU";
+const STATIC_PRICES = (id: string) => id.startsWith("rwa:") && id !== "rwa:XAU" && id !== "rwa:XAG";
 // Only assets with a price source (a Chainlink feed) get a current price. Others, like a fund without
 // a feed or a token whose feed ended, have no price and so no backing ratio.
 const NO_PRICE = { has: (id: string) => !(id in PRICE_SOURCES) };
