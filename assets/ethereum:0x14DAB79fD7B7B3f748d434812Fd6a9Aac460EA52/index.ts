@@ -20,6 +20,12 @@ const details: bcked.asset.Details = {
         issuer: "kms-labs",
     },
     reference: "https://kmslabs.money/",
+    backing: {
+        method: "not-tracked",
+        description:
+            "KMS Labs states that each token is backed by native KAU it holds, but does not publish the wallets that hold it.",
+        reference: "https://kmslabs.money/kms-labs-tcs/",
+    },
     tags: ["real-world-asset"],
 };
 

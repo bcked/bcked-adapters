@@ -6,6 +6,7 @@
  * Usage: bun src/api/freshness.ts [API base URL]
  */
 import { PRICE_SOURCES } from "../crawler/apis/chainlink";
+import { NO_SUPPLY } from "../constants";
 
 const base = process.argv[2] ?? "https://api.bcked.com";
 
@@ -27,8 +28,6 @@ const STATIC_PRICES = (id: string) => id.startsWith("rwa:") && id !== "rwa:XAU";
 // Only assets with a price source (a Chainlink feed) get a current price. Others, like a fund without
 // a feed or a token whose feed ended, have no price and so no backing ratio.
 const NO_PRICE = { has: (id: string) => !(id in PRICE_SOURCES) };
-// Assets with backing but no source for their supply.
-const NO_SUPPLY = new Set(["kinesis:KAU"]);
 
 interface Dated {
     date: string;
