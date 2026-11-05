@@ -11,9 +11,11 @@
  * The backing is the ETH held for eETH, from Chainlink's eETH Proof of Reserves feed on Ethereum
  * (https://data.chain.link/feeds/ethereum/mainnet/eeth-por).
  *
- * There is no Chainlink eETH price feed, so there is no price.
+ * Price: Chainlink's weETH/ETH feed in USD, divided by the eETH one weETH holds (getRate of weETH),
+ * see src/crawler/apis/chainlink.ts. There is no feed for eETH itself.
  */
 import { formatUnits } from "ethers";
+import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { multicall } from "../../src/crawler/chains/multicall";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 import { toISOString } from "../../src/utils/string_formatting";
@@ -46,9 +48,11 @@ const details: bcked.asset.Details = {
 };
 
 export default class Adapter implements bcked.asset.Adapter {
+    api: ApiProxy;
     chain: ChainProxy;
 
     constructor() {
+        this.api = new ApiProxy();
         this.chain = new ChainProxy();
     }
 
@@ -57,7 +61,8 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getPrice(): Promise<bcked.asset.Price[]> {
-        return [];
+        const price = await this.api.getPrice(details.identifier);
+        return price ? [price] : [];
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
