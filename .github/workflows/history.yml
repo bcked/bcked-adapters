@@ -14,7 +14,7 @@ on:
                 required: true
                 default: "both"
                 type: choice
-                options: [both, prices, onchain]
+                options: [both, prices, onchain, dex]
             from_year:
                 description: "First year of prices"
                 required: false
@@ -35,7 +35,7 @@ concurrency:
 
 jobs:
     prices:
-        if: ${{ inputs.part != 'onchain' }}
+        if: ${{ inputs.part == 'both' || inputs.part == 'prices' }}
         runs-on: ubuntu-latest
         timeout-minutes: 340
         name: Prices ${{ matrix.year }}
@@ -85,9 +85,43 @@ jobs:
                   commit_author: actions-user <action@github.com>
                   file_pattern: "*.csv"
 
+    dex:
+        # Uniswap prices at report dates without a Chainlink price (scripts/history/dex_prices.py), for
+        # backing records from before an asset had a feed. Runs after the Chainlink prices, since it
+        # only fills what they leave open.
+        needs: prices
+        if: ${{ always() && inputs.part != 'onchain' && (needs.prices.result == 'success' || needs.prices.result == 'skipped') }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 340
+        name: DEX prices
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v7
+            - name: Checkout Records
+              uses: actions/checkout@v7
+              with:
+                  # Private repository. Needs a deploy key of bcked/bcked-records with write access.
+                  repository: bcked/bcked-records
+                  ref: records
+                  path: .records
+                  ssh-key: ${{ secrets.RECORDS_DEPLOY_KEY }}
+            - name: Add DEX Prices
+              env:
+                  ETHEREUM_RPC: https://eth-mainnet.g.alchemy.com/v2/${{ secrets.ALCHEMY_ETHEREUM }}
+              run: python3 -I scripts/history/dex_prices.py .records
+            - name: Commit Results
+              uses: stefanzweifel/git-auto-commit-action@v7
+              with:
+                  repository: .records
+                  commit_message: Add DEX prices at report dates without a Chainlink price
+                  commit_user_name: GitHub Action
+                  commit_user_email: action@github.com
+                  commit_author: actions-user <action@github.com>
+                  file_pattern: "*.csv"
+
     onchain:
         needs: prices
-        if: ${{ always() && inputs.part != 'prices' && (needs.prices.result == 'success' || needs.prices.result == 'skipped') }}
+        if: ${{ always() && (inputs.part == 'both' || inputs.part == 'onchain') && (needs.prices.result == 'success' || needs.prices.result == 'skipped') }}
         runs-on: ubuntu-latest
         timeout-minutes: 340
         name: Supply and custody ${{ matrix.year }}
