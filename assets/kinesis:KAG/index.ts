@@ -1,8 +1,10 @@
 /**
  * Kinesis Silver (KAG), the native coin of the Kinesis KAG network. One KAG stands for one troy ounce
- * of silver held in allocated storage. Kinesis mints KAG when silver is added and burns it on
- * redemption, so the supply is the coins in circulation, minted less redeemed, that the Kinesis KAG
- * ledger reports (src/crawler/chains/kinesis.ts).
+ * of silver held in allocated storage.
+ *
+ * The supply on the Kinesis ledger is not recorded: the ledger is read through the Horizon API that
+ * Kinesis runs, and the Kinesis terms of use (https://kinesis.money/about-us/documents/terms-of-use/)
+ * do not allow reusing its data without permission. The asset is listed in NO_SUPPLY.
  *
  * The backing is the silver in Chainlink's KAG Proof of Reserves feed on Ethereum
  * (https://data.chain.link/feeds/ethereum/mainnet/kag-por), in troy ounces.
@@ -33,7 +35,7 @@ const details: bcked.asset.Details = {
     backing: {
         method: "custodian",
         description:
-            "The silver behind KAG in troy ounces, from Chainlink's KAG Proof of Reserves feed on Ethereum. Updated daily. KAG has no price feed, so there is no backing ratio.",
+            "The silver behind KAG in troy ounces, from Chainlink's KAG Proof of Reserves feed on Ethereum. Updated daily. The supply of KAG and its price are not recorded, so there is no backing ratio.",
         reference: "https://data.chain.link/feeds/ethereum/mainnet/kag-por",
     },
 };
@@ -55,12 +57,8 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
-        // Coins in circulation on the Kinesis KAG ledger: minted less redeemed.
-        const { timestamp, issued } = await this.chain.getSupply(
-            details.identifier.address,
-            details.identifier.system
-        );
-        return [{ timestamp, circulating: null, burned: null, total: issued, issued, max: null }];
+        // Not recorded, see above.
+        return [];
     }
 
     async getBacking(): Promise<bcked.asset.Backing[]> {

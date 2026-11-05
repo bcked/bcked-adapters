@@ -1,8 +1,10 @@
 /**
- * Kinesis Silver (KAG) on Ethereum. Kinesis lists this contract for KAG on Ethereum in its explorer
- * (https://explorer.kinesis.money/). The silver in Chainlink's KAG Proof of Reserves feed is recorded
- * on the native coin (assets/kinesis:KAG). How KAG on Ethereum relates to the coins on the Kinesis
- * ledger is not published in a source bcked reads, so no backing is recorded for it here.
+ * Kinesis Silver (KAG) on Ethereum, an ERC-20 token issued by KMS Labs. The address is the contract
+ * address in the KMS Labs terms and conditions (https://kmslabs.money/kms-labs-tcs/).
+ *
+ * KMS Labs backs each token 1:1 with native KAG on the Kinesis blockchain, held in segregated
+ * wallets. Those wallets and their balance are not published in a source bcked may use, so no
+ * backing is recorded here. The silver behind all native KAG is recorded on assets/kinesis:KAG.
  */
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 
@@ -15,9 +17,15 @@ const details: bcked.asset.Details = {
     },
     assetClasses: ["cryptocurrency", "derivative", "commodity", "tangible-asset"],
     linkedEntities: {
-        issuer: "kinesis",
+        issuer: "kms-labs",
     },
-    reference: "https://kinesis.money/silver/",
+    reference: "https://kmslabs.money/",
+    backing: {
+        method: "not-tracked",
+        description:
+            "KMS Labs states that each token is backed by native KAG it holds, but does not publish the wallets that hold it.",
+        reference: "https://kmslabs.money/kms-labs-tcs/",
+    },
     tags: ["real-world-asset"],
 };
 

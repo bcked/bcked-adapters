@@ -45,4 +45,4 @@ export const FILES = {
  * Assets that have backing but no source for their supply, so they have no market cap. The strict
  * adapter check and the freshness check skip their supply. Each needs a reason in its adapter.
  */
-export const NO_SUPPLY = new Set(["kinesis:KAU"]);
+export const NO_SUPPLY = new Set(["kinesis:KAU", "kinesis:KAG"]);
