@@ -6,6 +6,7 @@
  * Usage: bun src/api/freshness.ts [API base URL]
  */
 import { PRICE_SOURCES } from "../crawler/apis/chainlink";
+import { NO_SUPPLY } from "../constants";
 
 const base = process.argv[2] ?? "https://api.bcked.com";
 
@@ -82,7 +83,8 @@ for (const asset of assets) {
     }
     if (!STATIC_PRICES(asset.id) && !NO_PRICE.has(asset.id))
         check(asset, "price", asset.price, MAX_AGE_DAYS);
-    if (asset.system !== "rwa") check(asset, "supply", asset.supply, MAX_AGE_DAYS);
+    if (asset.system !== "rwa" && !NO_SUPPLY.has(asset.id))
+        check(asset, "supply", asset.supply, MAX_AGE_DAYS);
     const reportAge =
         asset.backing == "reports"
             ? MAX_REPORT_AGE_DAYS[asset.linkedEntities.issuer ?? ""]

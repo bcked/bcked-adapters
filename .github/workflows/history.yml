@@ -173,3 +173,43 @@ jobs:
                   commit_user_email: action@github.com
                   commit_author: actions-user <action@github.com>
                   file_pattern: "*.csv"
+
+    feeds:
+        # Backing of assets on chains without an archive RPC, from the whole round history of their
+        # Chainlink Proof of Reserves feed on Ethereum (Kinesis Gold, scripts/history/kinesis_por.ts).
+        needs: onchain
+        if: ${{ always() && (inputs.part == 'both' || inputs.part == 'onchain') && needs.onchain.result != 'failure' }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 120
+        name: Proof of Reserves feeds
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v7
+            - name: Checkout Records
+              uses: actions/checkout@v7
+              with:
+                  # Private repository. Needs a deploy key of bcked/bcked-records with write access.
+                  repository: bcked/bcked-records
+                  ref: records
+                  path: .records
+                  ssh-key: ${{ secrets.RECORDS_DEPLOY_KEY }}
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version-file: package.json
+            - name: Install Dependencies
+              run: bun install --frozen-lockfile
+            - name: Rebuild Kinesis Backing
+              working-directory: .records
+              env:
+                  ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
+              run: bun ../scripts/history/kinesis_por.ts
+            - name: Commit Results
+              uses: stefanzweifel/git-auto-commit-action@v7
+              with:
+                  repository: .records
+                  commit_message: Rebuild backing from Proof of Reserves feeds
+                  commit_user_name: GitHub Action
+                  commit_user_email: action@github.com
+                  commit_author: actions-user <action@github.com>
+                  file_pattern: "*.csv"

@@ -5,7 +5,7 @@
  *
  * With --strict (used on every pull request), an adapter also fails when it returns data that would
  * show up wrong on the site (reserve kinds like rwa:USD are skipped):
- * - an asset without a positive supply,
+ * - an asset without a positive supply, unless it is listed in NO_SUPPLY (src/constants.ts),
  * - an asset with a Chainlink feed but no positive price,
  * - an asset without a backing source in its details or its token's (declare "not-tracked" with the
  *   reason when no backing is recorded),
@@ -19,6 +19,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { PRICE_SOURCES } from "../src/crawler/apis/chainlink";
+import { NO_SUPPLY } from "../src/constants";
 
 type Adapter = Record<string, ((...args: unknown[]) => Promise<unknown>) | unknown>;
 
@@ -62,7 +63,8 @@ async function check(target: string, results: Record<string, unknown>): Promise<
 
     const supply = (results["getSupply"] as bcked.asset.Supply[] | undefined)?.at(-1);
     const amount = supply ? (supply.circulating ?? supply.total ?? supply.issued) : null;
-    if (!(amount && amount > 0)) problems.push(`no positive supply (${JSON.stringify(supply)})`);
+    if (!NO_SUPPLY.has(id) && !(amount && amount > 0))
+        problems.push(`no positive supply (${JSON.stringify(supply)})`);
 
     if (id in PRICE_SOURCES) {
         const usd = (results["getPrice"] as bcked.asset.Price[] | undefined)?.at(-1)?.usd;
