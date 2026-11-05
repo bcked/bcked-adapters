@@ -156,22 +156,35 @@ const compiledSeries = new Map<
         marketCap: DailySeries;
         collateralizationRatio: DailySeries;
         collateral: DailySeries;
+        /** Reserves on the days that also have a market cap, which the ratio is computed from. */
+        ratedCollateral: DailySeries;
         composition: Record<string, DailySeries>;
     }
 >();
 
 async function compileAsset(id: bcked.asset.Id) {
     const csv = (file: string) => recordsPath(PATHS.assets, id, file);
-    const [details, price, supply, marketCap, collateralizationRatio, collateral, composition] =
-        await Promise.all([
-            readJson<bcked.asset.DetailsRecord>(csv(FILES.json.details)),
-            dailySeries(csv(FILES.csv.price), "usd"),
-            dailySeries(csv(FILES.csv.supplyAmount), "amount"),
-            dailySeries(csv(FILES.csv.marketCap), "usd"),
-            dailySeries(csv(FILES.csv.collateralizationRatio), "ratio"),
-            dailySeries(csv(FILES.csv.collateralizationRatio), "collateral.usd"),
-            dailyComposition(csv(FILES.csv.underlyingAssets)),
-        ]);
+    const [
+        details,
+        price,
+        supply,
+        marketCap,
+        collateralizationRatio,
+        ratedCollateral,
+        collateral,
+        composition,
+    ] = await Promise.all([
+        readJson<bcked.asset.DetailsRecord>(csv(FILES.json.details)),
+        dailySeries(csv(FILES.csv.price), "usd"),
+        dailySeries(csv(FILES.csv.supplyAmount), "amount"),
+        dailySeries(csv(FILES.csv.marketCap), "usd"),
+        dailySeries(csv(FILES.csv.collateralizationRatio), "ratio"),
+        dailySeries(csv(FILES.csv.collateralizationRatio), "collateral.usd"),
+        // Reserves from the backing alone, so a token without a price of its own still shows
+        // them. They need only the prices of the underlying assets.
+        dailySeries(csv(FILES.csv.underlyingAssets), "usd"),
+        dailyComposition(csv(FILES.csv.underlyingAssets)),
+    ]);
 
     await ASSET_RESOURCES.series(id, {
         price,
@@ -182,15 +195,31 @@ async function compileAsset(id: bcked.asset.Id) {
         composition,
     });
 
-    if (details?.backing) {
+    // A chain asset without a backing source of its own shows its token's, e.g. "not-tracked".
+    const backing =
+        details?.backing ??
+        (details?.token
+            ? (
+                  await readJson<bcked.token.DetailsRecord>(
+                      recordsPath(PATHS.tokens, details.token, FILES.json.details)
+                  )
+              )?.backing
+            : undefined);
+    if (backing) {
         const evidence =
-            details.backing.reports == "token" && details.token
+            backing.reports == "token" && details?.token
                 ? recordsPath(PATHS.tokens, details.token, FILES.csv.evidence)
                 : csv(FILES.csv.evidence);
-        await ASSET_RESOURCES.reports(id, details.backing, await readReports(evidence));
+        await ASSET_RESOURCES.reports(id, backing, await readReports(evidence));
     }
 
-    compiledSeries.set(id, { marketCap, collateralizationRatio, collateral, composition });
+    compiledSeries.set(id, {
+        marketCap,
+        collateralizationRatio,
+        collateral,
+        ratedCollateral,
+        composition,
+    });
 
     return {
         id,
@@ -202,7 +231,7 @@ async function compileAsset(id: bcked.asset.Id) {
         linkedEntities: details?.linkedEntities ?? {},
         assetClasses: details?.assetClasses ?? [],
         tags: details?.tags ?? [],
-        backing: details?.backing?.method ?? null,
+        backing: backing?.method ?? null,
         composition: latestComposition(composition),
         icon: iconPath(PATHS.assets, id),
         price: latestWithChange(price),
@@ -263,16 +292,19 @@ async function compileToken(
 
     const marketCap = addSeries(series.map((s) => s.marketCap));
     const collateral = addSeries(series.map((s) => s.collateral));
+    // The ratio counts only chains with a market cap on the day: reserves of a chain without a price
+    // would raise it otherwise.
+    const ratedCollateral = addSeries(series.map((s) => s.ratedCollateral));
     const marketCapThen = addSeries(
         series.map((s) => {
             const ratios = new Map(s.collateralizationRatio);
-            return s.collateral
+            return s.ratedCollateral
                 .filter(([date]) => ratios.get(date))
                 .map(([date, usd]): [string, number] => [date, usd / ratios.get(date)!]);
         })
     );
     const thenByDate = new Map(marketCapThen);
-    const collateralizationRatio: DailySeries = collateral
+    const collateralizationRatio: DailySeries = ratedCollateral
         .filter(([date]) => thenByDate.get(date))
         .map(([date, usd]) => [date, usd / thenByDate.get(date)!]);
     const composition: Record<string, DailySeries> = {};

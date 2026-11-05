@@ -1,17 +1,21 @@
 /**
  * Rebuilds daily on-chain history that does not depend on a third-party API:
- * - supply (totalSupply) of USDC on Ethereum, Arbitrum, Polygon and Base, PYUSD and USDG on Ethereum,
- *   BUIDL on Ethereum, Arbitrum, Polygon and Avalanche, the same reads the crawler makes
- *   (src/crawler/adapters/circulating.ts),
- * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed.
+ * - supply (totalSupply) of the tokens listed in supply/<token>.json, the same reads the crawler
+ *   makes (src/crawler/adapters/circulating.ts and the asset adapters). Balances of `locked`
+ *   addresses are not circulating. A `backing` entry also rebuilds the on-chain backing: a token
+ *   balance held by a contract, the share of it that matches the circulating supply,
+ * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed,
+ * - the backing of tokens whose entry names a Chainlink Proof of Reserves feed (`por`),
+ * - the price of tokens whose entry names a Chainlink price feed on its chain (`price`).
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
  * ALCHEMY_POLYGON set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
- * SYSTEMS=<chain,...> limits the run to these chains. Days that already have a row are kept. Reads need archive nodes, which Alchemy provides. The
- * official Base and Avalanche RPCs serve archive reads too.
+ * SYSTEMS=<chain,...> limits the run to these chains. Days that already have a row are kept. Reads
+ * need archive nodes, which Alchemy provides. The official Base, Avalanche and Plume RPCs serve
+ * archive reads too. A new token adds its own file in supply/ instead of editing this script.
  */
 import { Contract, JsonRpcProvider, formatUnits } from "ethers";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 const DAY = 24 * 60 * 60;
@@ -46,77 +50,50 @@ const RPC: Record<string, { url: string; chainId: number; perDay: number; start:
         perDay: 80_000,
         start: 1,
     },
+    plume: {
+        url: "https://rpc.plume.org",
+        chainId: 98866,
+        perDay: 200_000,
+        start: 1,
+    },
 };
 
-const SUPPLY: { id: string; system: string; address: string; decimals: number }[] = [
-    {
-        id: "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        system: "ethereum",
-        address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        decimals: 6,
-    },
-    {
-        id: "arbitrum:0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-        system: "arbitrum",
-        address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-        decimals: 6,
-    },
-    {
-        id: "polygon:0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
-        system: "polygon",
-        address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
-        decimals: 6,
-    },
-    {
-        id: "base:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-        system: "base",
-        address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-        decimals: 6,
-    },
-    {
-        id: "ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
-        system: "ethereum",
-        address: "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
-        decimals: 6,
-    },
-    {
-        id: "ethereum:0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
-        system: "ethereum",
-        address: "0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
-        decimals: 6,
-    },
-    // BUIDL (tokens/buidl). On BNB Chain the public RPC has no archive, on Solana there are no archive calls.
-    {
-        id: "ethereum:0x7712c34205737192402172409a8F7ccef8aA2AEc",
-        system: "ethereum",
-        address: "0x7712c34205737192402172409a8F7ccef8aA2AEc",
-        decimals: 6,
-    },
-    {
-        id: "ethereum:0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041",
-        system: "ethereum",
-        address: "0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041",
-        decimals: 6,
-    },
-    {
-        id: "arbitrum:0xA6525Ae43eDCd03dC08E775774dCAbd3bb925872",
-        system: "arbitrum",
-        address: "0xA6525Ae43eDCd03dC08E775774dCAbd3bb925872",
-        decimals: 6,
-    },
-    {
-        id: "polygon:0x2893Ef551B6dD69F661Ac00F11D93E5Dc5Dc0e99",
-        system: "polygon",
-        address: "0x2893Ef551B6dD69F661Ac00F11D93E5Dc5Dc0e99",
-        decimals: 6,
-    },
-    {
-        id: "avalanche:0x53FC82f14F009009b440a706e31c9021E1196A2F",
-        system: "avalanche",
-        address: "0x53FC82f14F009009b440a706e31c9021E1196A2F",
-        decimals: 6,
-    },
-];
+// Tokens whose daily supply is rebuilt: one file per token in supply/, a list of chain assets.
+// locked: addresses whose balance is not circulating on the chain, e.g. a bridge's lock pool.
+interface SupplyEntry {
+    id: string;
+    system: string;
+    address: string;
+    decimals: number;
+    locked?: string[];
+    // The token is backed by `token` held by `holder` on the same chain (asset id `id`, `decimals`).
+    // The chain asset gets the share of it that matches its circulating supply. `bridged` names a
+    // function of the token that returns the supply on other chains, which shares the same backing
+    // (counted in the token's decimals). `assets` are the token on those chains: each gets the share
+    // that matches its circulating supply on the same day. Days without a balance of `token` are
+    // skipped.
+    backing?: {
+        id: string;
+        token: string;
+        holder: string;
+        decimals: number;
+        bridged?: string;
+        assets?: string[];
+    };
+    // The backing is the answer of a Chainlink Proof of Reserves feed on the same chain, in units
+    // of asset `id`.
+    por?: { id: string; feed: string; decimals: number };
+    // The price is the answer of a Chainlink USD feed on the same chain. It is written for this asset
+    // and for `assets`, the token on other chains.
+    price?: { feed: string; decimals: number; assets?: string[] };
+}
+const SUPPLY_DIR = path.join(import.meta.dir, "supply");
+const SUPPLY: SupplyEntry[] = readdirSync(SUPPLY_DIR)
+    .filter((file) => file.endsWith(".json"))
+    .sort()
+    .flatMap(
+        (file) => JSON.parse(readFileSync(path.join(SUPPLY_DIR, file), "utf8")) as SupplyEntry[]
+    );
 const WBTC = "ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
 const WBTC_POR = "0xa81FE04086865e63E12dD3776978E49DEEa2ea4e";
 
@@ -129,16 +106,19 @@ const providers = Object.fromEntries(
 
 /** Retries a read, except for a revert or missing contract (null: not deployed yet). */
 async function read<T>(call: () => Promise<T>): Promise<T | null> {
+    let last: unknown;
     for (const delay of [1000, 3000, 8000, 20000]) {
         try {
             return await call();
         } catch (error) {
             const code = (error as { code?: string }).code;
             if (code == "CALL_EXCEPTION" || code == "BAD_DATA") return null;
+            last = error;
             await new Promise((resolve) => setTimeout(resolve, delay));
         }
     }
-    throw Error("RPC reads keep failing, stopping without writing.");
+    const reason = last instanceof Error ? last.message : String(last);
+    throw Error(`RPC reads keep failing, stopping without writing. Last error: ${reason}`);
 }
 
 const times = new Map<string, number>();
@@ -202,10 +182,18 @@ const to = process.argv[3]
 
 const supplies = new Map<string, Map<string, string[]>>();
 const custody = new Map<string, string[]>();
+const prices = new Map<string, Map<string, string[]>>();
+const backings = new Map<string, { header: string[]; rows: Map<string, string[]> }>();
+// Backing held on one chain for the token on other chains: per day the amount held and all supply.
+const shared = new Map<
+    string,
+    { id: string; assets: string[]; days: Map<string, [number, number]> }
+>();
 // Days read at once. More gets throttled by the RPC provider, and the retries cost more than they save.
 const PARALLEL_DAYS = Number(process.env["PARALLEL_DAYS"] ?? 4);
 // SYSTEMS=base limits the run to some chains, e.g. to rebuild one without the Alchemy keys of the others.
-const systems = process.env["SYSTEMS"]?.split(",") ?? Object.keys(RPC);
+// Empty (the workflow's default) means all chains.
+const systems = process.env["SYSTEMS"] ? process.env["SYSTEMS"].split(",") : Object.keys(RPC);
 for (const system of systems) {
     const latest = await providers[system]!.getBlockNumber();
     const first = await blockAt(system, from, RPC[system]!.start, latest);
@@ -238,10 +226,116 @@ for (const system of systems) {
                     ).getFunction("totalSupply")({ blockTag: block }) as Promise<bigint>
             );
             if (supply === null || supply == 0n) continue;
+            let locked = 0n;
+            for (const holder of token.locked ?? []) {
+                const balance = await read(
+                    () =>
+                        new Contract(
+                            token.address,
+                            ["function balanceOf(address) view returns (uint256)"],
+                            providers[system]
+                        ).getFunction("balanceOf")(holder, { blockTag: block }) as Promise<bigint>
+                );
+                if (balance === null) throw Error(`No balance of ${holder} at block ${block}.`);
+                locked += balance;
+            }
             const amount = formatUnits(supply, token.decimals);
+            const circulating = formatUnits(supply - locked, token.decimals);
             if (!supplies.has(token.id)) supplies.set(token.id, new Map());
             // Same columns as the crawler: circulating, burned, issued, max, total.
-            supplies.get(token.id)!.set(timestamp, [timestamp, "", amount, amount, "", amount]);
+            supplies
+                .get(token.id)!
+                .set(timestamp, [timestamp, "", circulating, amount, "", amount]);
+            if (token.price) {
+                const { feed, decimals, assets } = token.price;
+                const round = await read(
+                    () =>
+                        new Contract(
+                            feed,
+                            [
+                                "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)",
+                            ],
+                            providers[system]
+                        ).getFunction("latestRoundData")({ blockTag: block }) as Promise<
+                            [bigint, bigint, bigint, bigint, bigint]
+                        >
+                );
+                if (round && round[1] > 0n)
+                    for (const id of [token.id, ...(assets ?? [])])
+                        (prices.get(id) ?? prices.set(id, new Map()).get(id)!).set(timestamp, [
+                            timestamp,
+                            formatUnits(round[1], decimals),
+                        ]);
+            }
+            if (token.backing) {
+                const { id, token: reserve, holder, decimals } = token.backing;
+                const held = await read(
+                    () =>
+                        new Contract(
+                            reserve,
+                            ["function balanceOf(address) view returns (uint256)"],
+                            providers[system]
+                        ).getFunction("balanceOf")(holder, { blockTag: block }) as Promise<bigint>
+                );
+                if (held === null || held == 0n) continue;
+                let all = supply;
+                if (token.backing.bridged) {
+                    const bridged = await read(
+                        () =>
+                            new Contract(
+                                token.address,
+                                [`function ${token.backing!.bridged} view returns (uint256)`],
+                                providers[system]
+                            ).getFunction(token.backing!.bridged!)({
+                                blockTag: block,
+                            }) as Promise<bigint>
+                    );
+                    if (bridged === null) continue;
+                    all += bridged;
+                }
+                const share = formatUnits((held * (supply - locked)) / all, decimals);
+                if (token.backing.assets) {
+                    if (!shared.has(token.id))
+                        shared.set(token.id, { id, assets: token.backing.assets, days: new Map() });
+                    shared
+                        .get(token.id)!
+                        .days.set(timestamp, [
+                            parseFloat(formatUnits(held, decimals)),
+                            parseFloat(formatUnits(all, token.decimals)),
+                        ]);
+                }
+                if (!backings.has(token.id))
+                    backings.set(token.id, {
+                        header: ["timestamp", `underlying.${id}`],
+                        rows: new Map(),
+                    });
+                backings.get(token.id)!.rows.set(timestamp, [timestamp, share]);
+            }
+            if (token.por) {
+                const { id, feed, decimals } = token.por;
+                const round = await read(
+                    () =>
+                        new Contract(
+                            feed,
+                            [
+                                "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)",
+                            ],
+                            providers[system]
+                        ).getFunction("latestRoundData")({ blockTag: block }) as Promise<
+                            [bigint, bigint, bigint, bigint, bigint]
+                        >
+                );
+                if (round && round[1] > 0n) {
+                    if (!backings.has(token.id))
+                        backings.set(token.id, {
+                            header: ["timestamp", `underlying.${id}`],
+                            rows: new Map(),
+                        });
+                    backings
+                        .get(token.id)!
+                        .rows.set(timestamp, [timestamp, formatUnits(round[1], decimals)]);
+                }
+            }
         }
         if (system == "ethereum") {
             const round = await read(
@@ -277,6 +371,28 @@ for (const [id, rows] of supplies) {
         rows
     );
     console.log(`${id}: ${added} supplies added`);
+}
+for (const [id, rows] of prices) {
+    const added = merge(
+        path.join("assets", id, "records", "price.csv"),
+        ["timestamp", "usd"],
+        rows
+    );
+    console.log(`${id}: ${added} prices added`);
+}
+for (const { id, assets, days } of shared.values())
+    for (const asset of assets)
+        for (const [timestamp, [held, all]] of days) {
+            const circulating = supplies.get(asset)?.get(timestamp)?.[2];
+            if (circulating === undefined) continue;
+            if (!backings.has(asset))
+                backings.set(asset, { header: ["timestamp", `underlying.${id}`], rows: new Map() });
+            const share = (held * parseFloat(circulating)) / all;
+            backings.get(asset)!.rows.set(timestamp, [timestamp, String(share)]);
+        }
+for (const [id, { header, rows }] of backings) {
+    const added = merge(path.join("assets", id, "records", "backing.csv"), header, rows);
+    console.log(`${id}: ${added} backing rows added`);
 }
 const added = merge(
     path.join("assets", WBTC, "records", "backing.csv"),
