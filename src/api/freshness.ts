@@ -6,6 +6,7 @@
  * Usage: bun src/api/freshness.ts [API base URL]
  */
 import { PRICE_SOURCES } from "../crawler/apis/chainlink";
+import { NO_SUPPLY } from "../constants";
 
 const base = process.argv[2] ?? "https://api.bcked.com";
 
@@ -36,7 +37,7 @@ interface AssetSummary {
     id: string;
     symbol: string;
     system: string;
-    backing: "reports" | "on-chain" | "custodian" | null;
+    backing: "reports" | "on-chain" | "custodian" | "not-tracked" | null;
     token?: string;
     linkedEntities: { issuer?: string };
     price: Dated | null;
@@ -82,7 +83,8 @@ for (const asset of assets) {
     }
     if (!STATIC_PRICES(asset.id) && !NO_PRICE.has(asset.id))
         check(asset, "price", asset.price, MAX_AGE_DAYS);
-    if (asset.system !== "rwa") check(asset, "supply", asset.supply, MAX_AGE_DAYS);
+    if (asset.system !== "rwa" && !NO_SUPPLY.has(asset.id))
+        check(asset, "supply", asset.supply, MAX_AGE_DAYS);
     const reportAge =
         asset.backing == "reports"
             ? MAX_REPORT_AGE_DAYS[asset.linkedEntities.issuer ?? ""]
@@ -90,7 +92,9 @@ for (const asset of assets) {
     // The backing check reads the backing ratio, which needs a price. The chain assets of a token
     // get a ratio only where their supply is known at a report date, so some chains get a ratio
     // from the next report.
-    if (asset.token && !asset.collateral) {
+    if (asset.backing == "not-tracked") {
+        // No backing is recorded on purpose, the details say why.
+    } else if (asset.token && !asset.collateral) {
         console.log(
             `${asset.symbol} (${asset.id}): no backing ratio yet, waits for the next report`
         );

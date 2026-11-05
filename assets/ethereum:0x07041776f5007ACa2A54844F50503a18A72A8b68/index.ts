@@ -24,6 +24,12 @@ const details: bcked.asset.Details = {
         issuer: "anchorage",
     },
     reference: "https://www.anchorage.com/usat-policies-disclosures",
+    backing: {
+        method: "not-tracked",
+        description:
+            "Anchorage Digital publishes monthly reserve reports, but bcked does not record them yet.",
+        reference: "https://www.anchorage.com/platform/usat-reserve-attestations",
+    },
     tags: ["stablecoin", "real-world-asset"],
 };
 

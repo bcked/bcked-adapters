@@ -1,0 +1,21 @@
+[
+    {
+        "id": "ethereum:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "system": "ethereum",
+        "address": "0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "decimals": 6,
+        "locked": ["0xD925C84b55E4e44a53749fF5F2a5A13F63D128fd"]
+    },
+    {
+        "id": "arbitrum:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "system": "arbitrum",
+        "address": "0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "decimals": 6
+    },
+    {
+        "id": "base:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "system": "base",
+        "address": "0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "decimals": 6
+    }
+]

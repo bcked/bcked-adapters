@@ -93,7 +93,7 @@ job("API Job", async () => {
         executeInWorker(
             path.resolve(WORKERS_PATH, "precompile_collateralization_graph.ts"),
             assetIds
-        ), // Depends on "precompile_collateralization_ratio.ts"
+        ), // Depends on "precompile_underlying_assets.ts"
     ]);
 
     await Promise.all([

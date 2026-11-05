@@ -17,6 +17,11 @@ const details: bcked.asset.Details = {
         issuer: "sky",
     },
     reference: "https://sky.money/",
+    backing: {
+        method: "not-tracked",
+        description: "SKY is a governance token and is not backed by reserves.",
+        reference: null,
+    },
     tags: ["governance-token"],
 };
 
