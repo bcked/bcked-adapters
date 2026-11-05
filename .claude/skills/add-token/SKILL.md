@@ -61,7 +61,8 @@ possible:
   `rebuild_onchain.ts`. Add the chain to its `RPC` only if it is new and serves archive reads.
 - Price: a Chainlink feed in `PRICE_SOURCES` is rebuilt by `scripts/history/rebuild_prices.ts`. Before
   the feed existed: add the token's pools to `ASSETS` in `scripts/history/dex_prices.py` (at least
-  $1M liquidity).
+  $1M liquidity). The maintainer runs it with
+  `gh workflow run "Rebuild History" -f part=dex`.
 - On-chain backing: extend `rebuild_onchain.ts` with the balance or call the adapter reads, at the
   same daily blocks.
 - Report backing: extract all past reports, not only the latest.
