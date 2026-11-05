@@ -29,6 +29,12 @@ const details: bcked.asset.Details = {
         issuer: "btech",
     },
     reference: "https://www.bstocks.finance/en/",
+    backing: {
+        method: "not-tracked",
+        description:
+            "The issuer states that each token is backed by one share held at a US broker-custodian, but publishes no holdings that bcked can record.",
+        reference: "https://www.bstocks.finance/en/",
+    },
     tags: ["real-world-asset"],
 };
 

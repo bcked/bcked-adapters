@@ -19,6 +19,12 @@ const details: bcked.asset.Details = {
         issuer: "cfx",
     },
     reference: "https://cfx.to/on-chain",
+    backing: {
+        method: "not-tracked",
+        description:
+            "CFX Labs states that each token is backed by US dollar deposits at partner banks, but publishes no reserve figures.",
+        reference: "https://cfx.to/on-chain",
+    },
     tags: ["stablecoin", "real-world-asset"],
 };
 

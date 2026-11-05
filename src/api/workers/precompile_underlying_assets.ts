@@ -30,9 +30,10 @@ async function createPriceSource(priceCsv: string): Promise<PriceSource> {
 async function lookupUnderlyingPrice(
     timestamp: string,
     amount: number,
-    source: PriceSource,
+    source: PriceSource | null,
     window: number = hoursToMilliseconds(12)
 ): Promise<bcked.asset.Relationship> {
+    if (!source) return { amount };
     const price =
         "constant" in source ? source.constant : await source.lookup.getClosest(timestamp, window);
     if (!price) return { amount };
@@ -54,7 +55,8 @@ async function* match(
 
     const backingEntries = readCSV<bcked.asset.Backing>(backingCsv);
 
-    let priceLookup: { assetId: bcked.asset.Id; source: PriceSource }[] | undefined = undefined;
+    let priceLookup: { assetId: bcked.asset.Id; source: PriceSource | null }[] | undefined =
+        undefined;
 
     for await (const backingEntry of backingEntries) {
         // Initialize price lookup if not yet done
@@ -68,11 +70,10 @@ async function* match(
                     FILES.csv.price
                 );
 
-                if (!existsSync(priceCsv)) continue;
-
+                // An underlying asset without any price leaves the total unknown, not 0.
                 priceLookup.push({
                     assetId: underlyingAssetId as bcked.asset.Id,
-                    source: await createPriceSource(priceCsv),
+                    source: existsSync(priceCsv) ? await createPriceSource(priceCsv) : null,
                 });
             }
         }

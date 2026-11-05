@@ -17,6 +17,12 @@ const details: bcked.token.Details = {
     identifier: "tbill",
     issuer: "openeden",
     reference: "https://docs.openeden.com/tbill/introduction",
+    backing: {
+        method: "not-tracked",
+        description:
+            "OpenEden shows the fund's holdings only to its investors, so bcked does not record them.",
+        reference: "https://docs.openeden.com/tbill/introduction",
+    },
     tags: ["real-world-asset"],
 };
 

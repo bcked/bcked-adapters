@@ -10,6 +10,12 @@ const details: bcked.token.Details = {
     identifier: "rlusd",
     issuer: "ripple",
     reference: "https://ripple.com/products/stablecoin/transparency/",
+    backing: {
+        method: "not-tracked",
+        description:
+            "Ripple publishes monthly reserve reports, but bcked does not record them yet.",
+        reference: "https://ripple.com/products/stablecoin/transparency/",
+    },
     tags: ["stablecoin", "real-world-asset"],
 };
 

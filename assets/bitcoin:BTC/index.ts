@@ -18,6 +18,11 @@ const details: bcked.asset.Details = {
     assetClasses: ["cryptocurrency"],
     linkedEntities: {},
     reference: "https://ethereum.org/en/",
+    backing: {
+        method: "not-tracked",
+        description: "Bitcoin is the native coin of its chain and is not backed by other assets.",
+        reference: null,
+    },
     tags: ["chain-token"],
 };
 

@@ -13,6 +13,12 @@ const details: bcked.token.Details = {
     identifier: "apxusd",
     issuer: "apyx",
     reference: "https://docs.apyx.fi/product-overview/apxusd-overview",
+    backing: {
+        method: "not-tracked",
+        description:
+            "The reserves of apxUSD, preferred shares and cash held by the issuer, are not recorded yet.",
+        reference: "https://docs.apyx.fi/product-overview/apxusd-overview",
+    },
     tags: ["stablecoin"],
 };
 

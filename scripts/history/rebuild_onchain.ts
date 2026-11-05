@@ -106,16 +106,19 @@ const providers = Object.fromEntries(
 
 /** Retries a read, except for a revert or missing contract (null: not deployed yet). */
 async function read<T>(call: () => Promise<T>): Promise<T | null> {
+    let last: unknown;
     for (const delay of [1000, 3000, 8000, 20000]) {
         try {
             return await call();
         } catch (error) {
             const code = (error as { code?: string }).code;
             if (code == "CALL_EXCEPTION" || code == "BAD_DATA") return null;
+            last = error;
             await new Promise((resolve) => setTimeout(resolve, delay));
         }
     }
-    throw Error("RPC reads keep failing, stopping without writing.");
+    const reason = last instanceof Error ? last.message : String(last);
+    throw Error(`RPC reads keep failing, stopping without writing. Last error: ${reason}`);
 }
 
 const times = new Map<string, number>();
@@ -189,7 +192,8 @@ const shared = new Map<
 // Days read at once. More gets throttled by the RPC provider, and the retries cost more than they save.
 const PARALLEL_DAYS = Number(process.env["PARALLEL_DAYS"] ?? 4);
 // SYSTEMS=base limits the run to some chains, e.g. to rebuild one without the Alchemy keys of the others.
-const systems = process.env["SYSTEMS"]?.split(",") ?? Object.keys(RPC);
+// Empty (the workflow's default) means all chains.
+const systems = process.env["SYSTEMS"] ? process.env["SYSTEMS"].split(",") : Object.keys(RPC);
 for (const system of systems) {
     const latest = await providers[system]!.getBlockNumber();
     const first = await blockAt(system, from, RPC[system]!.start, latest);
