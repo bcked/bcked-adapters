@@ -34,6 +34,7 @@ export const FEEDS = {
     USDE: { address: "0xa569d910839Ae8865Da8F8e70FfFb0cBA869F961", decimals: 8 },
     CBBTC: { address: "0x2665701293fCbEB223D11A08D826563EDcCE423A", decimals: 8 },
     USD1: { address: "0xF0d9bb015Cd7BfAb877B7156146dc09Bf461370d", decimals: 8 },
+    USYC: { address: "0xE8E65Fb9116875012F5990Ecaab290B3531DbeB9", decimals: 8 }, // NAV (Aave LlamaGuard)
     USDG: { address: "0x14f0737d6b705259e521EA6E9E3506AC78dBd311", decimals: 8 },
     EURC: { address: "0x04F84020Fdf10d9ee64D1dcC2986EDF2F556DA11", decimals: 8 },
     EUR: { address: "0xb49f677943BC038e9857d61E7d053CaA2C1734C1", decimals: 8 },
@@ -88,6 +89,7 @@ interface Source {
 const BY_SYMBOL: Record<string, Source> = {
     CBBTC: { feed: "CBBTC" },
     USD1: { feed: "USD1" },
+    USYC: { feed: "USYC" },
     USDT: { feed: "USDT" },
     USDC: { feed: "USDC" },
     PYUSD: { feed: "PYUSD" },
@@ -135,6 +137,11 @@ export const PRICE_SOURCES: Record<string, Source> = {
 
 // Chain versions of tokens that share one price.
 const TOKEN_ASSETS: Record<string, string[]> = {
+    USYC: [
+        "ethereum:0x136471a34f6ef19fE571EFFC1CA711fdb8E49f2b",
+        "bsc:0x8D0fA28f221eB5735BC71d3a0Da67EE5bC821311",
+        "solana:7LWanZteUKtvFjv4MHYgKXXdAuCQYFPJysL9pxxdRQGn",
+    ],
     USD1: [
         "ethereum:0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d",
         "bsc:0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d",
