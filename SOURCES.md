@@ -58,6 +58,7 @@ on bcked.com.
 | [Circle developer docs](https://developers.circle.com/tokenized/usyc/smart-contracts)                            | Addresses of the USYC token contracts on Ethereum, BNB Chain and Solana                                                                                    | Facts only                                                                                                                                                                                     |
 | [Falcon Finance docs](https://docs.falcon.finance/resources/smart-contracts/)                                    | Address of the USDf token contract on Ethereum                                                                                                             | Facts only, the Falcon Finance logo is not used                                                                                                                                                |
 | [United Stables multichain page](https://www.u.tech/ecosystem/multichain/)                                       | Address of the U token contract on BNB Chain and Ethereum                                                                                                  | Facts only, the logo is not used                                                                                                                                                               |
+| [Anchorage Digital stablecoin docs](https://docs.anchorage.com/knowledge-base/platform/users/stablecoins)        | Addresses of the USAT and USDGO token contracts                                                                                                            | Facts only                                                                                                                                                                                     |
 | [OpenEden vault repository](https://github.com/OpenEdenHQ/openeden.vault.audit)                                  | Confirms the TBILL Vault addresses                                                                                                                         | MIT licensed repository                                                                                                                                                                        |
 | [KMS Labs terms and conditions](https://kmslabs.money/kms-labs-tcs/)                                             | Addresses of the ERC-20 KAU and KAG contracts on Ethereum                                                                                                  | Facts only, the KMS Labs logo is not used                                                                                                                                                      |
 
@@ -126,8 +127,8 @@ on bcked.com.
   terms could not be read. CRCLB and SPCXB are tracked with supply and a generic icon, their backing is
   not recorded until the issuer allows it.
 - [Anchorage Digital](https://www.anchorage.com/terms-and-conditions): its terms do not allow automated
-  collection from its website, which publishes the USAT reserve attestations. USAT is tracked with its
-  supply on Ethereum and a generic icon.
+  collection from its website, which publishes the USAT and USDGO reserve attestations. USAT and USDGO
+  are tracked with their supply and generic icons.
 - [Celo public RPC](https://docs.celo.org/build/tools/nodes/forno): the [cLabs terms](https://clabs.co/terms)
   allow personal, non-commercial use only. USAT on Celo is not tracked until Celo is read through a
   keyed RPC.
