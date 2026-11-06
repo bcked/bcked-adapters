@@ -1,5 +1,5 @@
 /**
- * USD1 by World Liberty Financial on Ethereum, BNB Chain and Solana. The addresses are listed in
+ * USD1 by World Liberty Financial on Ethereum, BNB Chain, Solana and Tron. The addresses are listed in
  * World Liberty Financial's docs (https://docs.worldlibertyfinancial.com/usd1-token/contract-addresses).
  * USD1 is issued natively on Ethereum, BNB Chain, Solana, Tron, Aptos and Tempo. On the other chains it
  * is minted against USD1 locked in Chainlink CCIP pools on a native chain, so the supply on the native
@@ -7,9 +7,8 @@
  *
  * The backing is not recorded. A Chainlink oracle on Ethereum (0x691b74146cdba162449012aa32d3cbf5df77d4c4,
  * named in World Liberty Financial's MIT licensed dashboard, https://github.com/worldliberty/cre-por-dashboard)
- * reports the reserves for USD1 on all chains together: $3.58B on 2026-11-06, while Ethereum, BNB Chain
- * and Solana held 3.55B USD1. The rest is on Tron, Aptos and Tempo, which bcked does not read, so the
- * share of each tracked chain cannot be measured.
+ * reports the reserves for USD1 on all chains together. USD1 on Aptos and Tempo is not read (the
+ * Aptos Labs API requires an account), so the share of each tracked chain cannot be measured.
  */
 const details: bcked.token.Details = {
     name: "USD1",

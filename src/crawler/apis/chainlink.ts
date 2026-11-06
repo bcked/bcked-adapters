@@ -230,6 +230,7 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "ethereum:0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d",
         "bsc:0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d",
         "solana:USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB",
+        "tron:TPFqcBAaaUMCSVRCqPaQ9QnzKhmuoLR6Rc",
     ],
     CBBTC: [
         "ethereum:0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
