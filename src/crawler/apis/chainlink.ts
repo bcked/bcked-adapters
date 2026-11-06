@@ -53,6 +53,7 @@ export const FEEDS = {
     USTBL: { address: "0x477e363c51Ab0C4D13B22CD6B57D56d4a3Cb7Abe", decimals: 6 }, // NAV per share
     M: { address: "0xC28198Df9aee1c4990994B35ff51eFA4C769e534", decimals: 8 }, // M NAV
     JTRSY: { address: "0x0C2e4Df738e99e8db80012f5bb2a303f3f48Ca74", decimals: 6 }, // NAV per share
+    JAAA: { address: "0x3BbccB2301759D2e4A5692bA72DAb4b75dC43B1a", decimals: 6 }, // NAV per share
     TBILL: { address: "0xAbE7a3643615Ed32d3431e11E0Ee5A486Cb27d48", decimals: 8 }, // NAV per token
     APXUSD: { address: "0x651b101f72F82630cf59c68E6EE4305aFBd3B1F5", decimals: 18 }, // Exchange Rate
     TBTC: { address: "0x8350b7De6a6a2C1368E7D4Bd968190e13E354297", decimals: 8 },
@@ -115,6 +116,7 @@ const BY_SYMBOL: Record<string, Source> = {
     M: { feed: "M" },
     USDAI: { feed: "USDAI" },
     JTRSY: { feed: "JTRSY" },
+    JAAA: { feed: "JAAA" },
     TBILL: { feed: "TBILL" },
     APXUSD: { feed: "APXUSD" },
     TBTC: { feed: "TBTC" },
@@ -159,6 +161,10 @@ export const PRICE_SOURCES: Record<string, Source> = {
 
 // Chain versions of tokens that share one price.
 const TOKEN_ASSETS: Record<string, string[]> = {
+    JAAA: [
+        "ethereum:0x5a0F93D040De44e78F251b03c43be9CF317Dcf64",
+        "base:0x5a0F93D040De44e78F251b03c43be9CF317Dcf64",
+    ],
     FBTC: [
         "ethereum:0xC96dE26018A54D51c097160568752c4E3BD6C364",
         "bsc:0xC96dE26018A54D51c097160568752c4E3BD6C364",
