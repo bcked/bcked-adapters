@@ -75,6 +75,8 @@ export const FEEDS = {
         chain: "arbitrum",
     },
     // syrupUSDC in USDC, Chainlink's exchange rate feed on Arbitrum.
+    // USDD in USDC, Chainlink's exchange rate feed.
+    USDD_USDC: { address: "0xBfC7d98Eea35380ceEC0a1DC1702Ea186723602C", decimals: 18 },
     SYRUPUSDC_USDC: {
         address: "0xF8722c901675C4F2F7824E256B8A6477b2c105FB",
         decimals: 18,
@@ -111,6 +113,7 @@ const BY_SYMBOL: Record<string, Source> = {
     USD1: { feed: "USD1" },
     USDTB: { feed: "USDTB" },
     TUSD: { feed: "TUSD" },
+    USDD: { feed: "USDD_USDC", times: "USDC" },
     USYC: { feed: "USYC" },
     U: { feed: "U" },
     OUSD: { feed: "OUSD" },
@@ -171,6 +174,11 @@ export const PRICE_SOURCES: Record<string, Source> = {
 
 // Chain versions of tokens that share one price.
 const TOKEN_ASSETS: Record<string, string[]> = {
+    USDD: [
+        "tron:TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz",
+        "ethereum:0x4f8e5DE400DE08B164E7421B3EE387f461beCD1A",
+        "bsc:0x45E51bc23D592EB2DBA86da3985299f7895d66Ba",
+    ],
     TUSD: [
         "ethereum:0x0000000000085d4780B73119b644AE5ecd22b376",
         "bsc:0x40af3827F39D0EAcBF4A168f8D4ee67c121D11c9",
