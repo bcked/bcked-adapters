@@ -58,6 +58,7 @@ const RPC_URLS: Record<string, string> = {
     ink: "https://rpc-gel.inkonchain.com",
     plume: "https://rpc.plume.org",
     tron: "https://api.trongrid.io/jsonrpc",
+    tempo: "https://tempo-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
 };
 
 const NO_BATCH = new Set(["xlayer"]);
@@ -76,6 +77,7 @@ const CHAIN_IDS: Record<string, number> = {
     xlayer: 196,
     ink: 57073,
     tron: 728126428,
+    tempo: 4217,
 };
 
 export class EVMChain implements bcked.query.ChainModule {

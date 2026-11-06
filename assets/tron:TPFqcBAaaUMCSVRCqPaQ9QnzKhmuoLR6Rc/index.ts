@@ -1,6 +1,8 @@
 /** USD1 by World Liberty Financial on Tron, see tokens/usd1. */
+import { porBackingShare } from "../../src/crawler/adapters/por_share";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
+import { USD1_ASSETS, USD1_POR } from "../../tokens/usd1";
 
 const details: bcked.asset.Details = {
     name: "USD1",
@@ -44,7 +46,8 @@ export default class Adapter implements bcked.asset.Adapter {
         return [{ timestamp, circulating: null, burned: null, total: issued, issued, max: null }];
     }
 
-    async getBacking(): Promise<bcked.asset.Backing[]> {
-        return [];
+    async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
+        const { address, system } = details.identifier;
+        return porBackingShare(USD1_POR, USD1_ASSETS, `${system}:${address}`, lastRecorded);
     }
 }
