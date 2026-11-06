@@ -231,6 +231,8 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "bsc:0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d",
         "solana:USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB",
         "tron:TPFqcBAaaUMCSVRCqPaQ9QnzKhmuoLR6Rc",
+        "aptos:0x05fabd1b12e39967a3c24e91b7b8f67719a6dacee74f3c8b9fb7d93e855437d2",
+        "tempo:0x20C000000000000000000000111111111E910F0f",
     ],
     CBBTC: [
         "ethereum:0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
