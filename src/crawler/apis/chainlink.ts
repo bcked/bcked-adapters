@@ -40,6 +40,7 @@ export const FEEDS = {
     FBTC_BTC: { address: "0xe5346a4Fd329768A99455d969724768a00CA63FB", decimals: 18 }, // FBTC in BTC
     LBTC_BTC: { address: "0x5c29868C58b6e15e2b962943278969Ab6a7D3212", decimals: 8 }, // LBTC in BTC
     USD1: { address: "0xF0d9bb015Cd7BfAb877B7156146dc09Bf461370d", decimals: 8 },
+    USDTB: { address: "0x66704DAD467A7cA508B3be15865D9B9F3E186c90", decimals: 8 },
     USYC: { address: "0xE8E65Fb9116875012F5990Ecaab290B3531DbeB9", decimals: 8 }, // NAV (Aave LlamaGuard)
     U: { address: "0xF6351B2dCF0110E76c71C1d319Af2f410454B6f3", decimals: 18 },
     OUSD: { address: "0xaf0311CCc42d22D2624fEC8024119cb71bBc7418", decimals: 8 }, // Open USD
@@ -106,6 +107,7 @@ const BY_SYMBOL: Record<string, Source> = {
     FBTC: { feed: "FBTC_BTC", times: "BTC" },
     LBTC: { feed: "LBTC_BTC", times: "BTC" },
     USD1: { feed: "USD1" },
+    USDTB: { feed: "USDTB" },
     USYC: { feed: "USYC" },
     U: { feed: "U" },
     OUSD: { feed: "OUSD" },
@@ -165,6 +167,10 @@ export const PRICE_SOURCES: Record<string, Source> = {
 
 // Chain versions of tokens that share one price.
 const TOKEN_ASSETS: Record<string, string[]> = {
+    USDTB: [
+        "ethereum:0xC139190F447e929f090Edeb554D95AbB8b18aC1C",
+        "solana:8yXrtJ54jZtE84xEBzTESKuegjcAkAuDrdAhRd8i8n3T",
+    ],
     LBTC: [
         "ethereum:0x8236a87084f8B84306f72007F36F2618A5634494",
         "base:0xecAc9C5F704e954931349Da37F60E39f515c11c1",
