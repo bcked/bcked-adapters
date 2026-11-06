@@ -32,6 +32,7 @@ export const FEEDS = {
     RLUSD: { address: "0x26C46B7aD0012cA71F2298ada567dC9Af14E7f2A", decimals: 8 },
     AUSD: { address: "0xB00341502DfEA6Ced8A5786b4059d29dA5E4D1FD", decimals: 18 },
     USDE: { address: "0xa569d910839Ae8865Da8F8e70FfFb0cBA869F961", decimals: 8 },
+    CBBTC: { address: "0x2665701293fCbEB223D11A08D826563EDcCE423A", decimals: 8 },
     USDG: { address: "0x14f0737d6b705259e521EA6E9E3506AC78dBd311", decimals: 8 },
     EURC: { address: "0x04F84020Fdf10d9ee64D1dcC2986EDF2F556DA11", decimals: 8 },
     EUR: { address: "0xb49f677943BC038e9857d61E7d053CaA2C1734C1", decimals: 8 },
@@ -84,6 +85,7 @@ interface Source {
 }
 
 const BY_SYMBOL: Record<string, Source> = {
+    CBBTC: { feed: "CBBTC" },
     USDT: { feed: "USDT" },
     USDC: { feed: "USDC" },
     PYUSD: { feed: "PYUSD" },
@@ -131,6 +133,10 @@ export const PRICE_SOURCES: Record<string, Source> = {
 
 // Chain versions of tokens that share one price.
 const TOKEN_ASSETS: Record<string, string[]> = {
+    CBBTC: [
+        "ethereum:0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+        "base:0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+    ],
     USDT: [
         "ethereum:0xdAC17F958D2ee523a2206206994597C13D831ec7",
         "tron:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
