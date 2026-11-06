@@ -1,8 +1,10 @@
 /**
  * Backing of USDD, read on-chain from its Vats. USDD is a fork of the Maker protocol with a separate
- * set of contracts on Tron, Ethereum and BNB Chain. USDD moves between these chains, so a chain's
- * Vat does not match the USDD on that chain: the collateral of all three Vats is summed, and each
- * chain asset gets the share that matches its supply. The joins are listed in the USDD docs
+ * set of contracts on Tron, Ethereum and BNB Chain. USDD moves between chains, also to chains
+ * without a Vat that bcked does not read (e.g. BitTorrent Chain), so a chain's Vat does not match
+ * the USDD on that chain. The collateral of all three Vats is summed, and each chain asset gets the
+ * share that its supply has of all USDD minted, the summed debt of the vaults. The USDD on chains
+ * bcked does not read keeps its share. The joins are listed in the USDD docs
  * (https://docs.usdd.io/introduction/collateral-asset-contract-addresses).
  *
  * Each join names its vault type (ilk) and its collateral token (gem):
@@ -16,7 +18,7 @@ import { formatUnits } from "ethers";
 import { ChainProxy } from "../chains/proxy";
 import { toHex } from "../chains/tron";
 import { toISOString } from "../../utils/string_formatting";
-import { supplyShare } from "./por_share";
+import { readSupplies } from "./por_share";
 
 const UNTRACKED = "rwa:UNTRACKED";
 const ILKS = "function ilks(bytes32) view returns (uint256, uint256, uint256, uint256, uint256)";
@@ -85,12 +87,21 @@ export const DEPLOYMENTS: Record<string, Deployment> = {
 
 const chain = new ChainProxy();
 
-/** The collateral in one chain's Vat, added to `underlying`. */
+interface Reserves {
+    underlying: Partial<Record<bcked.asset.Id, number>>;
+    /** USDD minted by the vaults. */
+    debt: number;
+}
+
+/** The collateral and debt in one chain's Vat, added to `reserves`. */
 async function readVat(
     system: bcked.system.Id,
     deployment: Deployment,
-    add: (id: bcked.asset.Id, amount: number) => void
+    reserves: Reserves
 ): Promise<void> {
+    const add = (id: bcked.asset.Id, amount: number) => {
+        if (amount > 0) reserves.underlying[id] = (reserves.underlying[id] ?? 0) + amount;
+    };
     for (const join of deployment.joins) {
         const [ilk, gem] = await Promise.all([
             chain.call<string>(join, "function ilk() view returns (bytes32)", [], system),
@@ -98,6 +109,7 @@ async function readVat(
         ]);
         const [art, rate] = await chain.call<bigint[]>(deployment.vat, ILKS, [ilk], system);
         const debt = parseFloat(formatUnits(art! * rate!, 45));
+        reserves.debt += debt;
         const asset = Object.entries(deployment.collateral).find(
             ([address]) => address.toLowerCase() == gem.toLowerCase()
         )?.[1];
@@ -119,18 +131,15 @@ async function readVat(
     }
 }
 
-// The collateral of all Vats, read once per process and shared by the chain assets.
-let reserves: Promise<Partial<Record<bcked.asset.Id, number>>> | null = null;
+// The collateral and debt of all Vats, read once per process and shared by the chain assets.
+let reserves: Promise<Reserves> | null = null;
 
-function readReserves(): Promise<Partial<Record<bcked.asset.Id, number>>> {
+function readReserves(): Promise<Reserves> {
     reserves ??= (async () => {
-        const underlying: Partial<Record<bcked.asset.Id, number>> = {};
-        const add = (id: bcked.asset.Id, amount: number) => {
-            if (amount > 0) underlying[id] = (underlying[id] ?? 0) + amount;
-        };
+        const result: Reserves = { underlying: {}, debt: 0 };
         for (const [system, deployment] of Object.entries(DEPLOYMENTS))
-            await readVat(system, deployment, add);
-        return underlying;
+            await readVat(system, deployment, result);
+        return result;
     })().catch((error: unknown) => {
         reserves = null;
         throw error;
@@ -139,7 +148,8 @@ function readReserves(): Promise<Partial<Record<bcked.asset.Id, number>>> {
 }
 
 /**
- * The backing of one USDD chain asset: its share of the collateral of all Vats, by supply.
+ * The backing of one USDD chain asset: its share of the collateral of all Vats, by its supply over
+ * all USDD minted.
  *
  * @param assets Every chain asset of USDD, as system:address
  * @param asset The chain asset to get the backing for
@@ -148,8 +158,15 @@ export async function getUsddBacking(
     assets: bcked.asset.Id[],
     asset: bcked.asset.Id
 ): Promise<bcked.asset.Backing[]> {
-    const [underlying, share] = await Promise.all([readReserves(), supplyShare(assets, asset)]);
-    if (share === null) return [];
+    const [{ underlying, debt }, supplies] = await Promise.all([
+        readReserves(),
+        readSupplies(assets),
+    ]);
+    const supply = supplies[assets.indexOf(asset)];
+    if (supply === undefined) throw Error(`${asset} is not one of the USDD assets`);
+    if (!(debt > 0)) return [];
+    const share = Math.min(1, supply / debt);
+    console.log(`USDD: ${asset} holds ${supply.toFixed(0)} of ${debt.toFixed(0)} minted`);
     const backing: Partial<Record<bcked.asset.Id, number>> = {};
     for (const [id, amount] of Object.entries(underlying))
         backing[id as bcked.asset.Id] = amount! * share;

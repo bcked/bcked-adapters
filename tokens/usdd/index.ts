@@ -5,8 +5,9 @@
  * TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn) is a different token and not tracked. Supply is read on-chain.
  * The price is Chainlink's USDD/USDC exchange rate times USDC/USD.
  *
- * The backing is the collateral in the Vats on all three chains, read on-chain and split by supply
- * (src/crawler/adapters/usdd.ts).
+ * The backing is the collateral in the Vats on all three chains, read on-chain. Each chain gets the
+ * share that its supply has of all USDD minted (src/crawler/adapters/usdd.ts), so USDD on chains
+ * bcked does not read, like BitTorrent Chain, keeps its share.
  */
 
 export const USDD_ASSETS: bcked.asset.Id[] = [
@@ -23,7 +24,7 @@ const details: bcked.token.Details = {
     backing: {
         method: "on-chain",
         description:
-            "The collateral in USDD's Vats on Tron, Ethereum and BNB Chain, read on-chain. Each chain gets the share that matches its supply. Vaults whose collateral bcked does not track, like the Smart Allocator, count at their debt.",
+            "The collateral in USDD's Vats on Tron, Ethereum and BNB Chain, read on-chain. Each chain gets the share that its supply has of all USDD minted. Vaults whose collateral bcked does not track, like the Smart Allocator, count at their debt.",
         reference: "https://docs.usdd.io/introduction/collateral-asset-contract-addresses",
     },
     tags: ["stablecoin"],
