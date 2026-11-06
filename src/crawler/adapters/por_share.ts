@@ -18,7 +18,7 @@ const supplies = new Map<string, Promise<number[]>>();
  * totalSupply of each asset, read one chain after another: public RPCs reject bursts. One failed
  * read drops the cache entry, so the next asset tries again.
  */
-function readSupplies(assets: bcked.asset.Id[]): Promise<number[]> {
+export function readSupplies(assets: bcked.asset.Id[]): Promise<number[]> {
     const key = assets.join(",");
     let cached = supplies.get(key);
     if (cached) return cached;
@@ -44,6 +44,21 @@ function readSupplies(assets: bcked.asset.Id[]): Promise<number[]> {
     });
     supplies.set(key, cached);
     return cached;
+}
+
+/**
+ * Share of one chain asset in the summed supply of all of a token's chain assets, or null if the
+ * total is not positive.
+ */
+export async function supplyShare(
+    assets: bcked.asset.Id[],
+    asset: bcked.asset.Id
+): Promise<number | null> {
+    const amounts = await readSupplies(assets);
+    const total = amounts.reduce((a, b) => a + b, 0);
+    const own = amounts[assets.indexOf(asset)];
+    if (own === undefined) throw Error(`${asset} is not one of the token's assets`);
+    return total > 0 ? own / total : null;
 }
 
 export interface PorFeed {
@@ -79,11 +94,8 @@ export async function porBackingShare(
     const timestamp = toISOString(Number(updatedAt) * 1000);
     if (lastRecorded && lastRecorded.timestamp >= timestamp) return [];
 
-    const amounts = await readSupplies(assets);
-    const total = amounts.reduce((a, b) => a + b, 0);
-    const own = amounts[assets.indexOf(asset)];
-    if (own === undefined) throw Error(`${asset} is not one of the token's assets`);
-    if (!(total > 0)) return [];
+    const share = await supplyShare(assets, asset);
+    if (share === null) return [];
     const reserves = parseFloat(formatUnits(answer, Number(decimals![0])));
-    return [{ timestamp, underlying: { [feed.underlying]: (reserves * own) / total } }];
+    return [{ timestamp, underlying: { [feed.underlying]: reserves * share } }];
 }

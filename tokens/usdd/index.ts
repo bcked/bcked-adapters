@@ -5,11 +5,16 @@
  * TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn) is a different token and not tracked. Supply is read on-chain.
  * The price is Chainlink's USDD/USDC exchange rate times USDC/USD.
  *
- * The backing is not recorded yet. Each chain's Vat holds its own collateral (TRX, sTRX, WBTC and
- * USDT on Tron, ETH and WBTC on Ethereum), stablecoins in the peg stability modules, and USDD lent
- * out by the Smart Allocator vault (SA001). All of it is on-chain, but the reading of the vaults is
- * not built yet.
+ * The backing is the collateral in the Vats on all three chains, read on-chain. Each chain gets the
+ * share that its supply has of all USDD minted (src/crawler/adapters/usdd.ts), so USDD on chains
+ * bcked does not read, like BitTorrent Chain, keeps its share.
  */
+
+export const USDD_ASSETS: bcked.asset.Id[] = [
+    "tron:TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz",
+    "ethereum:0x4f8e5DE400DE08B164E7421B3EE387f461beCD1A",
+    "bsc:0x45E51bc23D592EB2DBA86da3985299f7895d66Ba",
+];
 const details: bcked.token.Details = {
     name: "USDD",
     symbol: "USDD",
@@ -17,9 +22,9 @@ const details: bcked.token.Details = {
     issuer: "usdd",
     reference: "https://docs.usdd.io/introduction/collateral-asset-contract-addresses",
     backing: {
-        method: "not-tracked",
+        method: "on-chain",
         description:
-            "USDD is backed by collateral in on-chain vaults on Tron, Ethereum and BNB Chain, which bcked does not read yet.",
+            "The collateral in USDD's Vats on Tron, Ethereum and BNB Chain, read on-chain. Each chain gets the share that its supply has of all USDD minted. Vaults whose collateral bcked does not track, like the Smart Allocator, count at their debt.",
         reference: "https://docs.usdd.io/introduction/collateral-asset-contract-addresses",
     },
     tags: ["stablecoin"],

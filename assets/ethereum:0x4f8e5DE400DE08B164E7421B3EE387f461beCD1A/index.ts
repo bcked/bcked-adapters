@@ -1,6 +1,8 @@
 /** USDD on Ethereum, see tokens/usdd. */
+import { getUsddBacking } from "../../src/crawler/adapters/usdd";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
+import { USDD_ASSETS } from "../../tokens/usdd";
 
 const details: bcked.asset.Details = {
     name: "USDD",
@@ -45,6 +47,7 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getBacking(): Promise<bcked.asset.Backing[]> {
-        return [];
+        const { address, system } = details.identifier;
+        return getUsddBacking(USDD_ASSETS, `${system}:${address}`);
     }
 }
