@@ -44,10 +44,7 @@ jobs:
               run: rsync -a --prune-empty-dirs --include='*/' --include='**/records/**' --exclude='*' .records/ ./
             - name: Execute Job
               env:
-                  ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
-                  ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
-                  ALCHEMY_SOLANA: ${{ secrets.ALCHEMY_SOLANA }}
-                  ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
+                  ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
                   BCKED_WATCHER_BOT_TOKEN: ${{ secrets.BCKED_WATCHER_BOT_TOKEN }}
               run: bun run crawler
             - name: Store Records

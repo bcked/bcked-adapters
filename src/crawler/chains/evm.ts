@@ -46,14 +46,14 @@ const TOKEN_ABI = {
 
 const RPC_URLS: Record<string, string> = {
     bsc: "https://bsc-dataseed3.binance.org/",
-    ethereum: "https://eth-mainnet.g.alchemy.com/v2/{ALCHEMY_ETHEREUM}",
+    ethereum: "https://eth-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
     moonbeam: "https://rpc.api.moonbeam.network",
     moonriver: "https://rpc.api.moonriver.moonbeam.network",
-    polygon: "https://polygon-mainnet.g.alchemy.com/v2/{ALCHEMY_POLYGON}",
-    arbitrum: "https://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_ARBITRUM}",
+    polygon: "https://polygon-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+    arbitrum: "https://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
     base: "https://mainnet.base.org",
     robinhood: "https://rpc.mainnet.chain.robinhood.com",
-    avalanche: "https://api.avax.network/ext/bc/C/rpc",
+    avalanche: "https://avax-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
     xlayer: "https://rpc.xlayer.tech",
     ink: "https://rpc-gel.inkonchain.com",
     plume: "https://rpc.plume.org",
@@ -114,9 +114,7 @@ export class EVMChain implements bcked.query.ChainModule {
         }
         return replace
             ? format(url, {
-                  ALCHEMY_ETHEREUM: process.env["ALCHEMY_ETHEREUM"]!,
-                  ALCHEMY_POLYGON: process.env["ALCHEMY_POLYGON"]!,
-                  ALCHEMY_ARBITRUM: process.env["ALCHEMY_ARBITRUM"]!,
+                  ALCHEMY_API_KEY: process.env["ALCHEMY_API_KEY"]!,
               })
             : url;
     }

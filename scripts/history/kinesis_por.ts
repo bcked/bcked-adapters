@@ -6,7 +6,7 @@
  *
  * KAU and KAG on Ethereum are rebuilt by rebuild_onchain.ts (supply/kau.json, supply/kag.json).
  *
- * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM or ETHEREUM_RPC set):
+ * Usage (in a records checkout as working directory, with ALCHEMY_API_KEY or ETHEREUM_RPC set):
  *   bun <adapters>/scripts/history/kinesis_por.ts
  * Days that already have a row are kept.
  */
@@ -62,7 +62,7 @@ function merge(file: string, header: string[], rows: Map<string, string[]>): num
 async function backing(coin: string, { por, perUnit }: Coin): Promise<Map<string, string[]>> {
     const provider = new JsonRpcProvider(
         process.env["ETHEREUM_RPC"] ??
-            `https://eth-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_ETHEREUM"]}`,
+            `https://eth-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_API_KEY"]}`,
         1,
         { staticNetwork: true, batchMaxCount: 1 }
     );

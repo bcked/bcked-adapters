@@ -8,8 +8,8 @@
  * - the backing of tokens whose entry names a Chainlink Proof of Reserves feed (`por`),
  * - the price of tokens whose entry names a Chainlink price feed on its chain (`price`).
  *
- * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM, ALCHEMY_ARBITRUM and
- * ALCHEMY_POLYGON set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
+ * Usage (in a records checkout as working directory, with ALCHEMY_API_KEY
+ * set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
  * SYSTEMS=<chain,...> limits the run to these chains. Days that already have a row are kept. Reads
  * need archive nodes, which Alchemy provides. The official Base, Avalanche and Plume RPCs serve
  * archive reads too. A new token adds its own file in supply/ instead of editing this script.
@@ -21,19 +21,19 @@ import path from "node:path";
 const DAY = 24 * 60 * 60;
 const RPC: Record<string, { url: string; chainId: number; perDay: number; start: number }> = {
     ethereum: {
-        url: `https://eth-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_ETHEREUM"]}`,
+        url: `https://eth-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_API_KEY"]}`,
         chainId: 1,
         perDay: 7100,
         start: 7_000_000,
     },
     arbitrum: {
-        url: `https://arb-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_ARBITRUM"]}`,
+        url: `https://arb-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_API_KEY"]}`,
         chainId: 42161,
         perDay: 345_000,
         start: 1,
     },
     polygon: {
-        url: `https://polygon-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_POLYGON"]}`,
+        url: `https://polygon-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_API_KEY"]}`,
         chainId: 137,
         perDay: 40_000,
         start: 1,
@@ -45,7 +45,7 @@ const RPC: Record<string, { url: string; chainId: number; perDay: number; start:
         start: 1,
     },
     avalanche: {
-        url: "https://api.avax.network/ext/bc/C/rpc",
+        url: `https://avax-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_API_KEY"]}`,
         chainId: 43114,
         perDay: 80_000,
         start: 1,

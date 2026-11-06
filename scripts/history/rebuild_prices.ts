@@ -3,7 +3,7 @@
  * from the feed contracts on Ethereum at the first block of each UTC day. Feeds on other chains are
  * rebuilt by rebuild_onchain.ts (`price` in supply/<token>.json).
  *
- * Usage (in a records checkout as working directory, with ALCHEMY_ETHEREUM or ETHEREUM_RPC set):
+ * Usage (in a records checkout as working directory, with ALCHEMY_API_KEY or ETHEREUM_RPC set):
  *   bun <adapters>/scripts/history/rebuild_prices.ts [<from YYYY-MM-DD> [<to YYYY-MM-DD>]]
  *
  * Days before a feed existed have no row. Existing rows of a day are kept, so the script can run
@@ -18,7 +18,7 @@ import { FEEDS, PRICE_SOURCES, WEETH, feedChain } from "../../src/crawler/apis/c
 const DAY = 24 * 60 * 60;
 const provider = new JsonRpcProvider(
     process.env["ETHEREUM_RPC"] ??
-        `https://eth-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_ETHEREUM"]}`,
+        `https://eth-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_API_KEY"]}`,
     1,
     { staticNetwork: true, batchMaxCount: 1 }
 );
