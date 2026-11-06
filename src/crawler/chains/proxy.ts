@@ -1,6 +1,7 @@
 import { InstanceProxy } from "../../utils/instance_proxy";
 import { EVMChain } from "./evm";
 import { SolanaChain } from "./solana";
+import { TronChain } from "./tron";
 import { XrplChain } from "./xrpl";
 
 export class ChainProxy
@@ -22,6 +23,7 @@ export class ChainProxy
             xlayer: EVMChain,
             ink: EVMChain,
             solana: SolanaChain,
+            tron: TronChain,
             xrpl: XrplChain,
         });
     }
