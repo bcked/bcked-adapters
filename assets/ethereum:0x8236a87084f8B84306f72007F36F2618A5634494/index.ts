@@ -1,6 +1,4 @@
 /** Lombard Staked BTC (LBTC) on Ethereum, see tokens/lbtc. */
-import { formatUnits } from "ethers";
-import { multicall } from "../../src/crawler/chains/multicall";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 
@@ -47,8 +45,6 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getBacking(): Promise<bcked.asset.Backing[]> {
-        const [round] = await multicall(this.chain, "ethereum", [{ target: "0x70c158c7731Da2C14BC84aEBa39A4FF703DDc7d2", signature: "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)" }]);
-        const [, answer] = round! as unknown as [bigint, bigint];
-        return [{ timestamp: new Date().toISOString(), underlying: { "bitcoin:BTC": parseFloat(formatUnits(answer, 8)) } }];
+        return [];
     }
 }
