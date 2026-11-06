@@ -1,6 +1,8 @@
 /** U by United Stables on BNB Chain, see tokens/u. */
+import { porBackingShare } from "../../src/crawler/adapters/por_share";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
+import { U_ASSETS, U_POR } from "../../tokens/u";
 
 const details: bcked.asset.Details = {
     name: "United Stables",
@@ -44,7 +46,7 @@ export default class Adapter implements bcked.asset.Adapter {
         return [{ timestamp, circulating: null, burned: null, total: issued, issued, max: null }];
     }
 
-    async getBacking(): Promise<bcked.asset.Backing[]> {
-        return [];
+    async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
+        return porBackingShare(U_POR, U_ASSETS, `bsc:${details.identifier.address}`, lastRecorded);
     }
 }

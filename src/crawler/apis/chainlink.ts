@@ -208,6 +208,7 @@ const TOKEN_ASSETS: Record<string, string[]> = {
     U: [
         "bsc:0xcE24439F2D9C6a2289F741120FE202248B666666",
         "ethereum:0xcE24439F2D9C6a2289F741120FE202248B666666",
+        "tron:TFNirp6PbqYE1ZTtWuCMUKJWLNZkoCoeFJ",
     ],
     USYC: [
         "ethereum:0x136471a34f6ef19fE571EFFC1CA711fdb8E49f2b",

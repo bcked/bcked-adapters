@@ -1,13 +1,26 @@
 /**
- * U by United Stables on BNB Chain and Ethereum. The address, the same on both chains, is listed on
- * United Stables' multichain page (https://www.u.tech/ecosystem/multichain/). U on Tron is not
- * tracked: bcked does not read Tron. Supply is read on-chain. The price is the Chainlink U/USD feed.
+ * U by United Stables on BNB Chain, Ethereum and Tron, the chains listed on United Stables'
+ * multichain page (https://www.u.tech/ecosystem/multichain/). Supply is read on-chain. The price is
+ * the Chainlink U/USD feed.
  *
- * The backing is not recorded. Chainlink's United Stables U Reserves feed on BNB Chain
- * (0xFa8e834DD2200923C706e6438d9030dB029B0c18, named on United Stables' proof of reserves page)
- * reports the reserves for U on all chains together ($1.65B on 2026-11-06), while BNB Chain and
- * Ethereum held 1.53B U. The rest is on Tron, so the share of each tracked chain cannot be measured.
+ * The backing is Chainlink's United Stables U Reserves feed on BNB Chain, named on United Stables'
+ * proof of reserves page (https://www.u.tech/por/). It reports the reserves for U on all chains
+ * together. Each chain gets the share that matches its supply (src/crawler/adapters/por_share.ts).
  */
+import type { PorFeed } from "../../src/crawler/adapters/por_share";
+
+export const U_POR: PorFeed = {
+    address: "0xFa8e834DD2200923C706e6438d9030dB029B0c18",
+    system: "bsc",
+    underlying: "rwa:USD",
+};
+
+export const U_ASSETS: bcked.asset.Id[] = [
+    "bsc:0xcE24439F2D9C6a2289F741120FE202248B666666",
+    "ethereum:0xcE24439F2D9C6a2289F741120FE202248B666666",
+    "tron:TFNirp6PbqYE1ZTtWuCMUKJWLNZkoCoeFJ",
+];
+
 const details: bcked.token.Details = {
     name: "United Stables",
     symbol: "U",
@@ -15,9 +28,9 @@ const details: bcked.token.Details = {
     issuer: "united-stables",
     reference: "https://www.u.tech/por/",
     backing: {
-        method: "not-tracked",
+        method: "custodian",
         description:
-            "Chainlink's Proof of Reserves reports the reserves behind U on all chains together, but the U on Tron, which bcked does not track, cannot be measured, so the share of each tracked chain is not recorded.",
+            "Chainlink's Proof of Reserves feed reports the reserves behind U on all chains together. Each chain gets the share that matches its supply.",
         reference: "https://www.u.tech/por/",
     },
     tags: ["stablecoin"],
