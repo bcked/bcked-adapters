@@ -63,6 +63,21 @@ export default class Adapter implements bcked.asset.Adapter {
             this.chain.call<bigint>(STABLECOIN_LENS, CIRCULATING_SUPPLY, [], system),
         ]);
         const circulating = parseFloat(formatUnits(raw, 18));
+        const f = (x: bigint) => parseFloat(formatUnits(x, 18));
+        const FACTORY = "0xC9332fdCB1C491Dcc683bAe86Fe3cb70360738BC";
+        const bal = (h: string) => this.chain.call<bigint>(address, "function balanceOf(address) view returns (uint256)", [h], system);
+        const n = await this.chain.call<bigint>(FACTORY, "function n_collaterals() view returns (uint256)", [], system);
+        let held = await bal(FACTORY); let debt = 0n;
+        console.log("factory", f(held), "flash", f(await bal("0x26dE7861e213A5351F6ED767d00e0839930e9eE1")), "n", n);
+        for (let i = 0n; i < n; i++) {
+            const c = await this.chain.call<string>(FACTORY, "function controllers(uint256) view returns (address)", [i], system);
+            const b = await bal(c); const d = await this.chain.call<bigint>(c, "function total_debt() view returns (uint256)", [], system);
+            held += b; debt += d; console.log("ctrl", c, f(b), f(d));
+        }
+        for (const pk of ["0x9201da0D97CaAAff53f01B2fB56767C7072dE340","0xFb726F57d251aB5C731E5C64eD4F5F94351eF9F3","0x3fA20eAa107DE08B38a8734063D605d5842fe09C","0x338Cb2D827112d989A861cDe87CD9FfD913A1f9D"]) {
+            const d = await this.chain.call<bigint>(pk, "function debt() view returns (uint256)", [], system); debt += d; console.log("pk", pk, f(d));
+        }
+        console.log("SUMMARY held", f(held), "debt", f(debt), "lens", circulating);
         return [{ timestamp, circulating, burned: null, total: issued, issued, max: null }];
     }
 
