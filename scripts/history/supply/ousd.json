@@ -1,0 +1,14 @@
+[
+    {
+        "id": "ethereum:0x9f6F3991D525015a6F8CaF062C83b62fD3AC4436",
+        "system": "ethereum",
+        "address": "0x9f6F3991D525015a6F8CaF062C83b62fD3AC4436",
+        "decimals": 6
+    },
+    {
+        "id": "base:0xB2000000000000000000002fEb517dFeC7415344",
+        "system": "base",
+        "address": "0xB2000000000000000000002fEb517dFeC7415344",
+        "decimals": 6
+    }
+]
