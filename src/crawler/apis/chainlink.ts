@@ -51,6 +51,13 @@ export const FEEDS = {
         decimals: 8,
         chain: "arbitrum",
     },
+    // frxETH in ETH, Chainlink's frxETH-ETH exchange rate feed (the "Low" one, the plain rate; the
+    // "High" feed is an upper band).
+    FRXETH_ETH: {
+        address: "0x1bD872f3A606471787B1a304cE0356e4e87Af930",
+        decimals: 18,
+        chain: "arbitrum",
+    },
 } as const;
 type Feed = keyof typeof FEEDS;
 
@@ -110,6 +117,8 @@ export const PRICE_SOURCES: Record<string, Source> = {
     "rwa:STRC": { feed: "STRC" }, // Strategy's STRC preferred share, the collateral of STRCx
     "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84": { feed: "STETH" },
     [`ethereum:${WSTETH}`]: { feed: "STETH", times: "wstETH" },
+    // frxETH on Ethereum: the frxETH-ETH feed on Arbitrum in USD.
+    "ethereum:0x5E8422345238F34275888049021821E8E08CAa1f": { feed: "FRXETH_ETH", times: "ETH" },
     // eETH: the weETH/ETH feed in USD, divided by the eETH one weETH holds.
     "ethereum:0x35fA164735182de50811E8e2E824cFb9B6118ac2": {
         feed: "WEETH_ETH",
