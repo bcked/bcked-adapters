@@ -34,6 +34,7 @@ export const FEEDS = {
     USDE: { address: "0xa569d910839Ae8865Da8F8e70FfFb0cBA869F961", decimals: 8 },
     SUSDE: { address: "0xFF3BC18cCBd5999CE63E788A1c250a88626aD099", decimals: 8 },
     USDF: { address: "0xb177857a1799aA5F7fEb5799Fdf12CbE8fdF78B1", decimals: 8 },
+    GHO: { address: "0x3f12643D3f6f874d39C2a4c9f2Cd6f2DbAC877FC", decimals: 8 },
     CBBTC: { address: "0x2665701293fCbEB223D11A08D826563EDcCE423A", decimals: 8 },
     USD1: { address: "0xF0d9bb015Cd7BfAb877B7156146dc09Bf461370d", decimals: 8 },
     USYC: { address: "0xE8E65Fb9116875012F5990Ecaab290B3531DbeB9", decimals: 8 }, // NAV (Aave LlamaGuard)
@@ -130,6 +131,7 @@ export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:0x4c9EDD5852cd905f086C759E8383e09bff1E68B3": { feed: "USDE" },
     "ethereum:0x9D39A5DE30e57443BfF2A8307A4256c8797A3497": { feed: "SUSDE" },
     "ethereum:0xFa2B947eEc368f42195f24F36d2aF29f7c24CeC2": { feed: "USDF" },
+    "ethereum:0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f": { feed: "GHO" },
     "ethereum:0x56072C95FAA701256059aa122697B133aDEd9279": { feed: "SKY" },
     "ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78": { feed: "PAXG" },
     "ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38": { feed: "XAU" }, // XAUt
