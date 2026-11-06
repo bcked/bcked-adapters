@@ -12,7 +12,7 @@ import { toISOString } from "../../utils/string_formatting";
 const chain = new ChainProxy();
 
 // Supplies of each token's chains, read once per process and shared by all of its chain assets.
-const supplies: Record<string, Promise<number[]>> = {};
+const supplies = new Map<string, Promise<number[]>>();
 
 /**
  * totalSupply of each asset, read one chain after another: public RPCs reject bursts. One failed
@@ -20,7 +20,9 @@ const supplies: Record<string, Promise<number[]>> = {};
  */
 function readSupplies(assets: bcked.asset.Id[]): Promise<number[]> {
     const key = assets.join(",");
-    supplies[key] ??= (async () => {
+    let cached = supplies.get(key);
+    if (cached) return cached;
+    cached = (async () => {
         const result: number[] = [];
         for (const id of assets) {
             const [system, address] = id.split(":") as [bcked.system.Id, string];
@@ -37,10 +39,11 @@ function readSupplies(assets: bcked.asset.Id[]): Promise<number[]> {
         }
         return result;
     })().catch((error: unknown) => {
-        delete supplies[key];
+        supplies.delete(key);
         throw error;
     });
-    return supplies[key];
+    supplies.set(key, cached);
+    return cached;
 }
 
 export interface PorFeed {
