@@ -65,6 +65,12 @@ export const FEEDS = {
         decimals: 18,
         chain: "arbitrum",
     },
+    // syrupUSDC in USDC, Chainlink's exchange rate feed on Arbitrum.
+    SYRUPUSDC_USDC: {
+        address: "0xF8722c901675C4F2F7824E256B8A6477b2c105FB",
+        decimals: 18,
+        chain: "arbitrum",
+    },
 } as const;
 type Feed = keyof typeof FEEDS;
 
@@ -133,6 +139,10 @@ export const PRICE_SOURCES: Record<string, Source> = {
     [`ethereum:${WSTETH}`]: { feed: "STETH", times: "wstETH" },
     // frxETH on Ethereum: the frxETH-ETH feed on Arbitrum in USD.
     "ethereum:0x5E8422345238F34275888049021821E8E08CAa1f": { feed: "FRXETH_ETH", times: "ETH" },
+    "ethereum:0x80ac24aA929eaF5013f6436cdA2a7ba190f5Cc0b": {
+        feed: "SYRUPUSDC_USDC",
+        times: "USDC",
+    },
     // eETH: the weETH/ETH feed in USD, divided by the eETH one weETH holds.
     "ethereum:0x35fA164735182de50811E8e2E824cFb9B6118ac2": {
         feed: "WEETH_ETH",
