@@ -36,14 +36,18 @@ Follow "How a token is defined" in CONTRIBUTING.md and copy the closest existing
   `tokens/<id>/index.ts`, and each chain asset sets `token`.
 - Issuer: `entities/<id>/`. Chain: `systems/<id>/`, plus its RPC in `RPC_URLS` and `CHAIN_IDS`
   (`src/crawler/chains/evm.ts`) and in `src/crawler/chains/proxy.ts`. Use Alchemy where it supports
-  the chain, otherwise the official RPC after its terms are checked.
+  the chain, otherwise the official RPC after its terms are checked. Tron is read through TronGrid
+  (`src/crawler/chains/tron.ts`): base58 addresses work as contract addresses, but addresses passed
+  as call arguments must be converted with `toHex`.
 - Price: a Chainlink feed in `FEEDS` and `PRICE_SOURCES` (`src/crawler/apis/chainlink.ts`). No feed:
   no price, and say so in the pull request.
 - Supply: `onChainSupply` (`src/crawler/adapters/circulating.ts`) or `ChainProxy.getSupply`. Exclude
   tokens the issuer holds itself if they are identifiable on-chain.
 - Backing on-chain: `ChainProxy.getBalance` or `call` on the holding contracts (see WETH, DAI).
   Backing from reports: an extractor in `scripts/attestations`, reserves on the token or asset, and
-  `getTokenBackingShare` for each chain (see USDC, USDG). Write the source and any limit in
+  `getTokenBackingShare` for each chain (see USDC, USDG). Backing from a Chainlink Proof of Reserves feed that
+  covers all chains: `porBackingShare` (`src/crawler/adapters/por_share.ts`, see U, TUSD), only if
+  every chain the token is native on is read. Otherwise declare it not-tracked. Write the source and any limit in
   `backing.description`, which the token page shows. No usable backing source: set `backing` to
   `{ method: "not-tracked", description: <what the issuer publishes and why it is not recorded, in
 neutral words, without discussing terms>, reference }` on the token or asset. An asset or token

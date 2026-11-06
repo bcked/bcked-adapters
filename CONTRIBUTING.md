@@ -54,6 +54,9 @@ tags) and a class with `getPrice`, `getSupply` and `getBacking`. Most tokens reu
 - Backing on-chain: `ChainProxy.getBalance` for tokens held by a contract (see WETH).
 - Backing of an issuer that reports for all chains together: record the reserves on the issuer entity
   and use `getTokenBackingShare` (see USDT and USDC).
+- Backing from a Chainlink Proof of Reserves feed that covers a token on all chains: `porBackingShare`
+  (see U and TUSD). Each chain gets the share that matches its supply, so every chain the token is
+  native on has to be read.
 - Backing from attestation reports: the scripts in [`scripts/attestations`](scripts/attestations).
   Every report is listed in `evidence.csv` next to the records with its download URL and SHA-256
   hash. The reports belong to their issuers and auditors, so the PDFs are not published here.
