@@ -31,6 +31,7 @@ export const FEEDS = {
     PYUSD: { address: "0x8f1dF6D7F2db73eECE86a18b4381F4707b918FB1", decimals: 8 },
     RLUSD: { address: "0x26C46B7aD0012cA71F2298ada567dC9Af14E7f2A", decimals: 8 },
     AUSD: { address: "0xB00341502DfEA6Ced8A5786b4059d29dA5E4D1FD", decimals: 18 },
+    USDE: { address: "0xa569d910839Ae8865Da8F8e70FfFb0cBA869F961", decimals: 8 },
     USDG: { address: "0x14f0737d6b705259e521EA6E9E3506AC78dBd311", decimals: 8 },
     EURC: { address: "0x04F84020Fdf10d9ee64D1dcC2986EDF2F556DA11", decimals: 8 },
     EUR: { address: "0xb49f677943BC038e9857d61E7d053CaA2C1734C1", decimals: 8 },
@@ -108,6 +109,7 @@ export const PRICE_SOURCES: Record<string, Source> = {
     "ethereum:0x6B175474E89094C44Da98b954EedeAC495271d0F": { feed: "DAI" },
     "ethereum:0xdC035D45d973E3EC169d2276DDab16f1e407384F": { feed: "USDS" },
     "ethereum:0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a": { feed: "AUSD" },
+    "ethereum:0x4c9EDD5852cd905f086C759E8383e09bff1E68B3": { feed: "USDE" },
     "ethereum:0x56072C95FAA701256059aa122697B133aDEd9279": { feed: "SKY" },
     "ethereum:0x45804880De22913dAFE09f4980848ECE6EcbAf78": { feed: "PAXG" },
     "ethereum:0x68749665FF8D2d112Fa859AA293F07A622782F38": { feed: "XAU" }, // XAUt
