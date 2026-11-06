@@ -1,4 +1,6 @@
 /** Ignition FBTC on Ethereum, see tokens/fbtc. */
+import { formatUnits } from "ethers";
+import { multicall } from "../../src/crawler/chains/multicall";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 
@@ -45,6 +47,8 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getBacking(): Promise<bcked.asset.Backing[]> {
-        return [];
+        const [round] = await multicall(this.chain, "ethereum", [{ target: "0x75A0d3264a949C2C920d7F25Df174af1FaF73399", signature: "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)" }]);
+        const [, answer] = round! as unknown as [bigint, bigint];
+        return [{ timestamp: new Date().toISOString(), underlying: { "bitcoin:BTC": parseFloat(formatUnits(answer, 8)) } }];
     }
 }
