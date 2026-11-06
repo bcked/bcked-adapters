@@ -69,7 +69,7 @@ jobs:
               if: ${{ matrix.year >= fromJSON(inputs.from_year) }}
               working-directory: .records
               env:
-                  ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
+                  ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
               run: |
                   to=$(( ${{ matrix.year }} + 1 ))-01-01
                   if [[ "$to" > "$(date -u +%F)" ]]; then to=""; fi
@@ -107,7 +107,7 @@ jobs:
                   ssh-key: ${{ secrets.RECORDS_DEPLOY_KEY }}
             - name: Add DEX Prices
               env:
-                  ETHEREUM_RPC: https://eth-mainnet.g.alchemy.com/v2/${{ secrets.ALCHEMY_ETHEREUM }}
+                  ETHEREUM_RPC: https://eth-mainnet.g.alchemy.com/v2/${{ secrets.ALCHEMY_API_KEY }}
               run: python3 -I scripts/history/dex_prices.py .records
             - name: Commit Results
               uses: stefanzweifel/git-auto-commit-action@v7
@@ -155,9 +155,7 @@ jobs:
               if: ${{ matrix.year >= fromJSON(inputs.onchain_from_year) }}
               working-directory: .records
               env:
-                  ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
-                  ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
-                  ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
+                  ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
                   SYSTEMS: ${{ inputs.systems }}
               run: |
                   to=$(( ${{ matrix.year }} + 1 ))-01-01
@@ -202,7 +200,7 @@ jobs:
             - name: Rebuild Kinesis Backing
               working-directory: .records
               env:
-                  ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
+                  ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
               run: bun ../scripts/history/kinesis_por.ts
             - name: Commit Results
               uses: stefanzweifel/git-auto-commit-action@v7

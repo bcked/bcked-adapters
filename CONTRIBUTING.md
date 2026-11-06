@@ -91,8 +91,8 @@ cd bcked-adapters
 bun install
 ```
 
-API keys for the data sources are read from a `.env` file in the project root
-(`ALCHEMY_ETHEREUM`, `ALCHEMY_POLYGON`, `ALCHEMY_SOLANA`, `ALCHEMY_ARBITRUM`).
+The Alchemy API key is read from a `.env` file in the project root (`ALCHEMY_API_KEY`, one key
+for every chain read through Alchemy).
 Bun loads it automatically.
 
 ## How to locally run the adapters?

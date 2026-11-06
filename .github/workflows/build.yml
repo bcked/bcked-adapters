@@ -75,7 +75,7 @@ jobs:
               # token or asset is checked with its reports. Only when one of them has report backing.
               if: steps.targets.outputs.reports == 'true'
               env:
-                  ETHEREUM_RPC: https://eth-mainnet.g.alchemy.com/v2/${{ secrets.ALCHEMY_ETHEREUM }}
+                  ETHEREUM_RPC: https://eth-mainnet.g.alchemy.com/v2/${{ secrets.ALCHEMY_API_KEY }}
               run: |
                   sudo apt-get update && sudo apt-get install -y poppler-utils
                   scripts/attestations/update.sh .records
@@ -86,9 +86,6 @@ jobs:
               if: steps.targets.outputs.list != ''
               timeout-minutes: 15
               env:
-                  ALCHEMY_ETHEREUM: ${{ secrets.ALCHEMY_ETHEREUM }}
-                  ALCHEMY_POLYGON: ${{ secrets.ALCHEMY_POLYGON }}
-                  ALCHEMY_SOLANA: ${{ secrets.ALCHEMY_SOLANA }}
-                  ALCHEMY_ARBITRUM: ${{ secrets.ALCHEMY_ARBITRUM }}
+                  ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
                   TARGETS: ${{ steps.targets.outputs.list }}
               run: bun scripts/verify_adapter.ts --strict $TARGETS

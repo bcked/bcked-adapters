@@ -46,7 +46,7 @@ jobs:
               # Fails without writing if a new report does not add up (see scripts/attestations/check_new.py).
               env:
                   # Archive RPC for the Chainlink prices in convert_prices.py.
-                  ETHEREUM_RPC: https://eth-mainnet.g.alchemy.com/v2/${{ secrets.ALCHEMY_ETHEREUM }}
+                  ETHEREUM_RPC: https://eth-mainnet.g.alchemy.com/v2/${{ secrets.ALCHEMY_API_KEY }}
               run: scripts/attestations/update.sh .records ${{ env.HAS_EVIDENCE_KEY == 'true' && '.evidence' || '' }}
             - name: Commit Results on records Branch
               uses: stefanzweifel/git-auto-commit-action@v7

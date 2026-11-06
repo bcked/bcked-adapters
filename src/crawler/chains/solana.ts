@@ -8,7 +8,7 @@ import {
 import { Connection, PublicKey, type TokenAmount } from "@solana/web3.js";
 import { format, toISOString } from "../../utils/string_formatting";
 
-const RPC_URL = "https://solana-mainnet.g.alchemy.com/v2/{ALCHEMY_SOLANA}";
+const RPC_URL = "https://solana-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}";
 
 function formatUnits(value: string | number | bigint, decimals: string | number | bigint): string {
     const _value = BigInt(value);
@@ -30,7 +30,7 @@ export class SolanaChain implements bcked.query.ChainModule {
 
     private getRpcUrl(replace = false): string {
         return replace
-            ? format(RPC_URL, { ALCHEMY_SOLANA: process.env["ALCHEMY_SOLANA"]! })
+            ? format(RPC_URL, { ALCHEMY_API_KEY: process.env["ALCHEMY_API_KEY"]! })
             : RPC_URL;
     }
 
