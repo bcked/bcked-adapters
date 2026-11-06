@@ -5,8 +5,8 @@
  * (https://docs.anchorage.com/knowledge-base/platform/users/stablecoins). Supply is read on-chain. The
  * price is the Chainlink USDtb/USD feed.
  *
- * The reserves are reported monthly by Anchorage Digital, but Anchorage Digital's terms do not allow automated collection
- * (https://www.anchorage.com/terms-and-conditions), so the backing is not recorded yet.
+ * The reserves are reported monthly by Anchorage Digital, but its terms do not allow automated
+ * collection (https://www.anchorage.com/terms-and-conditions), so the backing is not recorded yet.
  */
 const details: bcked.token.Details = {
     name: "USDtb",
