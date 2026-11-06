@@ -13,7 +13,9 @@
  * backing. Curve and Convex liquidity positions of the treasury hold frxETH and other tokens, so
  * they are counted at the US dollar value of the ETH value Frax states for them (rwa:UNTRACKED).
  *
- * There is no Chainlink frxETH feed on Ethereum, so there is no price.
+ * Price: Chainlink's frxETH-ETH exchange rate feed on Arbitrum, in USD with ETH/USD
+ * (src/crawler/apis/chainlink.ts). Recorded from the crawl on, the price history reads only feeds
+ * on Ethereum.
  */
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
@@ -76,7 +78,8 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getPrice(): Promise<bcked.asset.Price[]> {
-        return [];
+        const price = await this.api.getPrice(details.identifier);
+        return price ? [price] : [];
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
