@@ -1,6 +1,6 @@
 const details: bcked.system.Details = {
     name: "Tron",
-    native: null,
+    native: "tron:TRX",
     explorer: "https://tronscan.org/#/token20/",
 };
 
