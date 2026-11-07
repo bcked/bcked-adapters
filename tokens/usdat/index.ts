@@ -1,7 +1,6 @@
 /**
  * Saturn Dollar (USDat) on every tracked chain, see src/crawler/adapters/usdat.ts. The backing is
  * PYUSDx held by the USDat contract on Ethereum, read on-chain. Each chain asset gets its share.
- * USDat on Monad is not tracked yet.
  */
 const details: bcked.token.Details = {
     name: "Saturn Dollar",
