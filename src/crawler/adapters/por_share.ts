@@ -139,8 +139,12 @@ export async function porBackingShare(
     asset: bcked.asset.Id,
     lastRecorded: bcked.asset.Backing | null
 ): Promise<bcked.asset.Backing[]> {
-    const { reserves, timestamp } = await readFeed(feed);
-    if (lastRecorded && lastRecorded.timestamp >= timestamp) return [];
+    const { reserves, timestamp: updated } = await readFeed(feed);
+    // A row per feed update. It carries the time the supplies are read, not the feed's time: the
+    // share is from today's supplies, and the ratio compares the backing with the market cap at its
+    // time, so a chain whose supply moved since the update would show a skewed ratio.
+    if (lastRecorded && lastRecorded.timestamp >= updated) return [];
+    const timestamp = toISOString(Date.now());
 
     const share = await supplyShare(assets, asset);
     if (share === null) return [];
