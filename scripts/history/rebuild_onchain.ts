@@ -10,7 +10,9 @@
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_API_KEY
  * set): bun <adapters>/scripts/history/rebuild_onchain.ts [<from> [<to>]]
- * SYSTEMS=<chain,...> limits the run to these chains. Days that already have a row are kept. Reads
+ * SYSTEMS=<chain,...> limits the run to these chains, TOKENS=<file,...> to these files in supply/
+ * (without .json). Days that already have a row are kept. REPLACE=1 overwrites the rows this script
+ * wrote before (at the same timestamp), e.g. after a token's entry gained `locked` addresses. Reads
  * need archive nodes, which Alchemy provides. The official Base, Avalanche and Plume RPCs serve
  * archive reads too. A new token adds its own file in supply/ instead of editing this script.
  */
@@ -88,8 +90,11 @@ interface SupplyEntry {
     price?: { feed: string; decimals: number; assets?: string[] };
 }
 const SUPPLY_DIR = path.join(import.meta.dir, "supply");
+const TOKENS = process.env["TOKENS"] ? process.env["TOKENS"].split(",") : null;
+const REPLACE = process.env["REPLACE"] == "1";
 const SUPPLY: SupplyEntry[] = readdirSync(SUPPLY_DIR)
     .filter((file) => file.endsWith(".json"))
+    .filter((file) => !TOKENS || TOKENS.includes(file.slice(0, -".json".length)))
     .sort()
     .flatMap(
         (file) => JSON.parse(readFileSync(path.join(SUPPLY_DIR, file), "utf8")) as SupplyEntry[]
@@ -145,7 +150,10 @@ async function blockAt(system: string, unix: number, guess: number, latest: numb
     return low;
 }
 
-/** Merges rows by day into a CSV, keeping existing days. */
+/**
+ * Merges rows by day into a CSV, keeping existing days. With REPLACE, a row at the same timestamp
+ * (one this script wrote before) is overwritten.
+ */
 function merge(file: string, header: string[], rows: Map<string, string[]>) {
     mkdirSync(path.dirname(file), { recursive: true });
     const existing = new Map<string, string>();
@@ -158,7 +166,7 @@ function merge(file: string, header: string[], rows: Map<string, string[]>) {
     const days = new Set([...existing.keys()].map((t) => t.slice(0, 10)));
     let added = 0;
     for (const [timestamp, values] of rows) {
-        if (days.has(timestamp.slice(0, 10))) continue;
+        if (days.has(timestamp.slice(0, 10)) && !(REPLACE && existing.has(timestamp))) continue;
         const record: Record<string, string> = Object.fromEntries(
             header.map((h, i) => [h, values[i] ?? ""])
         );
