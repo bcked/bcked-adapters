@@ -24,6 +24,7 @@ export class ChainProxy
             xlayer: EVMChain,
             ink: EVMChain,
             tempo: EVMChain,
+            rootstock: EVMChain,
             solana: SolanaChain,
             aptos: AptosChain,
             tron: TronChain,
