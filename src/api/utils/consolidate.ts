@@ -4,10 +4,10 @@
  * GitHub Pages syncs a deployment within 10 minutes, and a file per data point made the API too
  * many files for that (1.34 million in November 2026). Months that end more than CONSOLIDATE_DAYS
  * ago hold their data points inline (`data`), and their day and hour files are not written. Links
- * to such a point (low, median, high) name the month file and the point's timestamp. The latest
- * point of a history always keeps its own hour file.
+ * to such a point name the month file and the point's hour. The latest point of a history always
+ * keeps its own hour file.
  */
-import { getDateParts, setDateParts } from "../../utils/time";
+import { getDateParts } from "../../utils/time";
 
 export const CONSOLIDATE_DAYS = 90;
 
@@ -35,19 +35,26 @@ export function monthOf(id: string): string | undefined {
 }
 
 /**
- * A link to the data point at `timestamp` of a history at `path`
- * (`<path>/{year}/{month}/{day}/{hour}`): the hour file, or for a consolidated month the month file
- * with the point's timestamp.
+ * Rewrites links to days and hours of consolidated months, anywhere in a resource: the month
+ * resource plus the `hour` ("yyyy-mm-ddThh") or `day` ("yyyy-mm-dd") the point is in. Returns the
+ * resource itself, changed in place.
  */
-export function pointRef(
-    template: string,
-    timestamp: primitive.ISODateTimeString
-): { $ref: string; timestamp?: primitive.ISODateTimeString } {
-    const { year, month, day, hour } = getDateParts(timestamp);
-    const base = template.replace("/{year}/{month}/{day}/{hour}", "");
-    const hourId = `${base}/${year}/${month}/${day}/${hour}`;
-    if (base != template && isConsolidated(hourId)) {
-        return { $ref: `${base}/${year}/${month}`, timestamp };
-    }
-    return { $ref: setDateParts(template, timestamp) };
+export function relink<T>(resource: T): T {
+    const visit = (node: unknown): void => {
+        if (Array.isArray(node)) {
+            node.forEach(visit);
+        } else if (node && typeof node === "object") {
+            const object = node as Record<string, unknown>;
+            const ref = object["$ref"];
+            if (typeof ref === "string" && isConsolidated(ref)) {
+                const [, base, year, month, day, hour] = POINT_ID.exec(ref)!;
+                object["$ref"] = `${base}/${year}/${month}`;
+                if (hour) object["hour"] = `${year}-${month}-${day}T${hour}`;
+                else object["day"] = `${year}-${month}-${day}`;
+            }
+            Object.values(object).forEach(visit);
+        }
+    };
+    visit(resource);
+    return resource;
 }
