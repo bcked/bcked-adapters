@@ -27,6 +27,15 @@ on:
                 description: "Chains for supply and custody, comma separated, e.g. ethereum,base (empty: all)"
                 required: false
                 default: ""
+            tokens:
+                description: "Supply and custody only for these files in scripts/history/supply, comma separated, e.g. gho (empty: all)"
+                required: false
+                default: ""
+            replace:
+                description: "Overwrite supply and custody rows written by an earlier rebuild"
+                required: false
+                default: false
+                type: boolean
 
 # Shares the group with the crawler, so both never push to the records at the same time.
 concurrency:
@@ -157,6 +166,8 @@ jobs:
               env:
                   ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
                   SYSTEMS: ${{ inputs.systems }}
+                  TOKENS: ${{ inputs.tokens }}
+                  REPLACE: ${{ inputs.replace && '1' || '' }}
               run: |
                   to=$(( ${{ matrix.year }} + 1 ))-01-01
                   if [[ "$to" > "$(date -u +%F)" ]]; then to=""; fi
