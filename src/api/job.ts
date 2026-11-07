@@ -5,6 +5,10 @@ import { FILES, PATHS } from "../constants";
 import { writeJson } from "../utils/files";
 import { job } from "../utils/job";
 import { executeInWorker, executeInWorkerPool } from "../utils/worker_pool";
+import { consolidateBefore } from "./utils/consolidate";
+
+// One cutoff for the whole build: the workers inherit the environment.
+process.env["API_CONSOLIDATE_BEFORE"] ??= consolidateBefore();
 import { compileSummaries } from "./compile_summaries";
 import { INDEX_RESOURCES } from "./resources";
 import { ASSET_RESOURCES } from "./resources/assets";

@@ -4,6 +4,7 @@ import oas from "swagger-jsdoc";
 import { FILES, PATHS } from "../../constants";
 import { writeJson } from "../../utils/files";
 import { Template } from "../../utils/template";
+import { isConsolidated } from "./consolidate";
 
 interface Spec {
     openapi?: string | undefined;
@@ -112,6 +113,8 @@ export abstract class JsonResources {
             return async function (this: any, ...args: any[]): Promise<any> {
                 const resource = await target.call(this, ...args);
                 if (!resource) return;
+                // Days and hours of consolidated months live in their month resource.
+                if (isConsolidated(resource.$id)) return resource;
                 const filePath = path.join(PATHS.api, resource.$id, FILES.json.index);
                 await writeJson(filePath, resource);
                 return resource;

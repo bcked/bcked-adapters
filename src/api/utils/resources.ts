@@ -1,5 +1,6 @@
 import { Stats } from "../../utils/stream";
 import { setDateParts } from "../../utils/time";
+import { pointRef } from "./consolidate";
 
 /**
  * Converts the statistics object to a summary object.
@@ -14,15 +15,9 @@ export function statsToSummary<T extends primitive.Timestamped>(path: string, st
     }
 
     return {
-        low: {
-            $ref: setDateParts(path, stats.min.timestamp),
-        },
-        median: {
-            $ref: setDateParts(path, stats.median.timestamp),
-        },
-        high: {
-            $ref: setDateParts(path, stats.max.timestamp),
-        },
+        low: pointRef(path, stats.min.timestamp),
+        median: pointRef(path, stats.median.timestamp),
+        high: pointRef(path, stats.max.timestamp),
     };
 }
 
