@@ -6,6 +6,7 @@
  */
 import { AbiCoder, formatUnits } from "ethers";
 import { multicall } from "../chains/multicall";
+import { retry } from "../chains/evm";
 import { ChainProxy } from "../chains/proxy";
 import { toISOString } from "../../utils/string_formatting";
 
@@ -30,7 +31,8 @@ export function readSupplies(assets: bcked.asset.Id[]): Promise<number[]> {
         for (const id of assets) {
             const [system, address] = id.split(":") as [bcked.system.Id, string];
             if (NOT_EVM.has(system)) {
-                result.push((await chain.getSupply(address, system)).issued);
+                // Retried after a pause: Alchemy answers bursts with 429.
+                result.push((await retry(() => chain.getSupply(address, system))).issued);
                 continue;
             }
             const [supply, decimals] = await Promise.all([

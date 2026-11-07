@@ -17,7 +17,7 @@ const RETRY_DELAYS = [1000, 3000, 8000];
  * Runs a read and retries it after a pause if it fails. RPC providers reject bursts of requests
  * (rate limits), which shows up as failed calls.
  */
-async function retry<T>(read: () => Promise<T>): Promise<T> {
+export async function retry<T>(read: () => Promise<T>): Promise<T> {
     for (const delay of RETRY_DELAYS) {
         try {
             return await read();
