@@ -11,7 +11,8 @@ import _ from "lodash";
 import { toId } from "../../utils/helper";
 import { format, toISOString } from "../../utils/string_formatting";
 
-const RETRY_DELAYS = [1000, 3000, 8000];
+// Alchemy's free tier limits compute units per second, so a burst can need a longer pause.
+const RETRY_DELAYS = [1000, 3000, 8000, 20000];
 
 /**
  * Runs a read and retries it after a pause if it fails. RPC providers reject bursts of requests

@@ -7,6 +7,7 @@
  * Tokens bridged with the xStocks bridge (Chainlink CCIP) are held by the bridge's pool or custody
  * account on the source chain and are not circulating there either.
  */
+import { retry } from "../chains/evm";
 import { ChainProxy } from "../chains/proxy";
 import { SolanaChain } from "../chains/solana";
 import { toISOString } from "../../utils/string_formatting";
@@ -45,10 +46,10 @@ export async function xStockSupply(
 ): Promise<bcked.asset.Supply> {
     const { address, system } = identifier;
     if (system == "solana") {
-        const { issued, locked } = await solana.getScaledSupply(address, [
-            ...ISSUER_WALLETS.solana,
-            ...custody,
-        ]);
+        // Retried after a pause: Alchemy answers bursts with 429.
+        const { issued, locked } = await retry(() =>
+            solana.getScaledSupply(address, [...ISSUER_WALLETS.solana, ...custody])
+        );
         return {
             timestamp: toISOString(Date.now()),
             circulating: issued - locked,
