@@ -4,7 +4,11 @@
         "system": "ethereum",
         "address": "0x23238f20b894f29041f48D88eE91131C395Aaa71",
         "decimals": 6,
-        "locked": ["0xA0dE671eb84dE9dEe1d311d996d25c41F63a0D86"],
+        "locked": [
+            "0xA0dE671eb84dE9dEe1d311d996d25c41F63a0D86",
+            "0x80992FD38Ba9cA5948771832956F9FFaE1b30FCD",
+            "0x294c10d55E6b7580aB88DfF5a873572E8db6DEdc"
+        ],
         "backing": {
             "id": "ethereum:0xeBDB0942cE16386Ab90718C7BD10C91CDb66b14d",
             "token": "0xeBDB0942cE16386Ab90718C7BD10C91CDb66b14d",

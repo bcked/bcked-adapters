@@ -60,6 +60,7 @@ const RPC_URLS: Record<string, string> = {
     tron: "https://api.trongrid.io/jsonrpc",
     tempo: "https://tempo-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
     rootstock: "https://rootstock-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+    monad: "https://monad-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
 };
 
 const NO_BATCH = new Set(["xlayer"]);
@@ -80,6 +81,7 @@ const CHAIN_IDS: Record<string, number> = {
     tron: 728126428,
     tempo: 4217,
     rootstock: 30,
+    monad: 143,
 };
 
 export class EVMChain implements bcked.query.ChainModule {

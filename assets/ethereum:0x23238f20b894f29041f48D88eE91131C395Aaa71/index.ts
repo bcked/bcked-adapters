@@ -2,15 +2,15 @@
  * Saturn Dollar (USDat) on Ethereum, issued by Saturn. Ethereum is its native chain, see
  * src/crawler/adapters/usdat.ts.
  *
- * Supply is read on-chain. USDat bridged to other chains is locked in the Chainlink CCIP Lock &
- * Release pool on Ethereum, so the circulating supply on Ethereum excludes the pool balance.
+ * Supply is read on-chain. USDat bridged to other chains is locked on Ethereum by Chainlink CCIP
+ * (the pool and its lockbox), so the circulating supply on Ethereum excludes it.
  * There is no Chainlink feed for USDat, so there is no price.
  *
  * The backing is the Ethereum share of the PYUSDx held by the USDat contract, read on-chain. The
  * icon is generic: Saturn's terms do not allow using its marks without written permission.
  */
 import { ChainProxy } from "../../src/crawler/chains/proxy";
-import { USDAT_BRIDGE_POOL, usdatBacking } from "../../src/crawler/adapters/usdat";
+import { usdatBacking, usdatLocked } from "../../src/crawler/adapters/usdat";
 
 const details: bcked.asset.Details = {
     name: "Saturn Dollar",
@@ -53,9 +53,9 @@ export default class Adapter implements bcked.asset.Adapter {
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
         const { address, system } = details.identifier;
-        const [{ timestamp, issued, burned }, { balance: locked }] = await Promise.all([
+        const [{ timestamp, issued, burned }, locked] = await Promise.all([
             this.chain.getSupply(address, system),
-            this.chain.getBalance(USDAT_BRIDGE_POOL, address, system),
+            usdatLocked(this.chain),
         ]);
         const total = issued - (burned ?? 0);
         return [
