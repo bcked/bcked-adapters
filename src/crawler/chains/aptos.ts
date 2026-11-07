@@ -1,5 +1,6 @@
 import { formatUnits } from "ethers";
 import { format, toISOString } from "../../utils/string_formatting";
+import { retry } from "./evm";
 
 /**
  * Aptos through Alchemy's Aptos node API (the Aptos REST API, https://aptos.dev/build/apis). Tokens
@@ -10,7 +11,12 @@ const RPC_URL = "https://aptos-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}/v1";
 const METADATA = "0x1::fungible_asset::Metadata";
 
 export class AptosChain implements bcked.query.ChainModule {
-    private async view<T>(fn: string, args: string[]): Promise<T> {
+    /** Calls a view function, retried after a pause: Alchemy answers bursts with 429. */
+    private view<T>(fn: string, args: string[]): Promise<T> {
+        return retry(() => this.viewOnce<T>(fn, args));
+    }
+
+    private async viewOnce<T>(fn: string, args: string[]): Promise<T> {
         const url = format(RPC_URL, { ALCHEMY_API_KEY: process.env["ALCHEMY_API_KEY"]! });
         const response = await fetch(`${url}/view`, {
             method: "POST",
