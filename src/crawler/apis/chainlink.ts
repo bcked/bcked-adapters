@@ -281,6 +281,7 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "ethereum:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
         "arbitrum:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
         "base:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "monad:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
     ],
     USDAI: [
         "arbitrum:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
