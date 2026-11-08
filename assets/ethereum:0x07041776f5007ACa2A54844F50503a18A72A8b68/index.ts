@@ -9,6 +9,7 @@
  * (https://www.anchorage.com/terms-and-conditions), so the backing is not recorded yet. USAT on Celo
  * is not tracked yet. The icon is generic until the use of the USAT logo is agreed with Tether.
  */
+import { poolPrice } from "../../src/crawler/apis/pools";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
 
@@ -47,8 +48,15 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getPrice(): Promise<bcked.asset.Price[]> {
-        const price = await this.api.getPrice(details.identifier);
-        return price ? [price] : [];
+        // No Chainlink feed for USAT. The Curve USAT/USDT pool on Ethereum.
+        return poolPrice({
+            kind: "curve",
+            system: "ethereum",
+            pool: "0x0bdb2c3af83ee1d3196fa64d3162e54624b5f6b0",
+            token: 0,
+            quote: 1,
+            quoteSymbol: "USDT",
+        });
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {

@@ -9,6 +9,7 @@
  * are generic placeholders.
  */
 import { onChainSupply } from "../../src/crawler/adapters/circulating";
+import { poolPrice } from "../../src/crawler/apis/pools";
 import { JsonApi } from "../../src/utils/requests";
 import { toISOString } from "../../src/utils/string_formatting";
 
@@ -57,8 +58,13 @@ export default class Adapter implements bcked.asset.Adapter {
     }
 
     async getPrice(): Promise<bcked.asset.Price[]> {
-        // No Chainlink feed for CASH.
-        return [];
+        // No Chainlink feed for CASH. The Orca CASH/USDC Whirlpool on Solana.
+        return poolPrice({
+            kind: "whirlpool",
+            pool: "3wijQvPKm6jHQrAkfPpok5o8WjCWPm1DGG17NmeW8q1w",
+            tokenMint: details.identifier.address,
+            quoteSymbol: "USDC",
+        });
     }
 
     async getSupply(): Promise<bcked.asset.Supply[]> {
