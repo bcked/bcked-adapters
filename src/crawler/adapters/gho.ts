@@ -12,7 +12,8 @@
  *   GHO left in the market. Recorded as loans (rwa:LOAN) at the borrowed amount; the borrowers'
  *   collateral is not traced.
  * - The GSMs on Ethereum, Arbitrum, Plasma and Monad: the stablecoins they hold, unwrapped from the
- *   Aave wrapper tokens they hold them in. Stablecoins without an asset in bcked count as not traced.
+ *   Aave wrapper tokens they hold them in. Stablecoins without an asset in bcked count as not traced:
+ *   USDT0 on Plasma, whose backing (USDT locked on Ethereum) covers USDT0 on chains bcked cannot read.
  * GHO on Ethereum gets the share of this that matches its share of all GHO in circulation.
  */
 import { formatUnits } from "ethers";
@@ -68,6 +69,8 @@ const COLLATERAL: Record<string, bcked.asset.Id> = {
         "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
     "arbitrum:0xaf88d065e77c8cc2239327c5edb3a432268e5831":
         "arbitrum:0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC
+    "monad:0x754704bc059f8c67012fed69bc8a327a5aafb603":
+        "monad:0x754704Bc059F8C67012fEd69BC8A327a5aafb603", // USDC
 };
 
 const BALANCE = "function balanceOf(address) view returns (uint256)";

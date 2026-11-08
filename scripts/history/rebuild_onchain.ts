@@ -58,6 +58,18 @@ const RPC: Record<string, { url: string; chainId: number; perDay: number; start:
         perDay: 200_000,
         start: 1,
     },
+    monad: {
+        url: `https://monad-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_API_KEY"]}`,
+        chainId: 143,
+        perDay: 284_000,
+        start: 1,
+    },
+    plasma: {
+        url: `https://plasma-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_API_KEY"]}`,
+        chainId: 9745,
+        perDay: 86_000,
+        start: 1,
+    },
 };
 
 // Tokens whose daily supply is rebuilt: one file per token in supply/, a list of chain assets.
