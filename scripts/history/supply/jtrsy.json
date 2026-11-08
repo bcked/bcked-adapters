@@ -22,5 +22,11 @@
         "system": "plume",
         "address": "0xa5d465251fBCc907f5Dd6bB2145488DFC6a2627b",
         "decimals": 6
+    },
+    {
+        "id": "bsc:0xa5d465251fBCc907f5Dd6bB2145488DFC6a2627b",
+        "system": "bsc",
+        "address": "0xa5d465251fBCc907f5Dd6bB2145488DFC6a2627b",
+        "decimals": 6
     }
 ]

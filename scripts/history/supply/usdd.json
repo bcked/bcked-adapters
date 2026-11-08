@@ -1,0 +1,14 @@
+[
+    {
+        "id": "ethereum:0x4f8e5DE400DE08B164E7421B3EE387f461beCD1A",
+        "system": "ethereum",
+        "address": "0x4f8e5DE400DE08B164E7421B3EE387f461beCD1A",
+        "decimals": 18
+    },
+    {
+        "id": "bsc:0x45E51bc23D592EB2DBA86da3985299f7895d66Ba",
+        "system": "bsc",
+        "address": "0x45E51bc23D592EB2DBA86da3985299f7895d66Ba",
+        "decimals": 18
+    }
+]

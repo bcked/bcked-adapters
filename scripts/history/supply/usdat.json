@@ -21,5 +21,17 @@
         "system": "ethereum",
         "address": "0xeBDB0942cE16386Ab90718C7BD10C91CDb66b14d",
         "decimals": 6
+    },
+    {
+        "id": "bsc:0x0Bb150DFa86EA5d7742F07FEfCD8E8edA81D64eF",
+        "system": "bsc",
+        "address": "0x0Bb150DFa86EA5d7742F07FEfCD8E8edA81D64eF",
+        "decimals": 6
+    },
+    {
+        "id": "monad:0x0Bb150DFa86EA5d7742F07FEfCD8E8edA81D64eF",
+        "system": "monad",
+        "address": "0x0Bb150DFa86EA5d7742F07FEfCD8E8edA81D64eF",
+        "decimals": 6
     }
 ]

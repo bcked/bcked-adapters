@@ -10,5 +10,17 @@
         "system": "base",
         "address": "0xecAc9C5F704e954931349Da37F60E39f515c11c1",
         "decimals": 8
+    },
+    {
+        "id": "avalanche:0xecAc9C5F704e954931349Da37F60E39f515c11c1",
+        "system": "avalanche",
+        "address": "0xecAc9C5F704e954931349Da37F60E39f515c11c1",
+        "decimals": 8
+    },
+    {
+        "id": "bsc:0xecAc9C5F704e954931349Da37F60E39f515c11c1",
+        "system": "bsc",
+        "address": "0xecAc9C5F704e954931349Da37F60E39f515c11c1",
+        "decimals": 8
     }
 ]

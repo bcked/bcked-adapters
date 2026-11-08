@@ -11,5 +11,11 @@
         "system": "base",
         "address": "0xD993935E13851dd7517af10687EC7e5022127228",
         "decimals": 18
+    },
+    {
+        "id": "bsc:0x6b3788Fd6604BBF03c5378D24e57BB334BAAD4aF",
+        "system": "bsc",
+        "address": "0x6b3788Fd6604BBF03c5378D24e57BB334BAAD4aF",
+        "decimals": 18
     }
 ]
