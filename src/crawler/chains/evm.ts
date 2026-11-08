@@ -62,6 +62,7 @@ const RPC_URLS: Record<string, string> = {
     tempo: "https://tempo-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
     rootstock: "https://rootstock-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
     monad: "https://monad-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+    plasma: "https://plasma-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
 };
 
 const NO_BATCH = new Set(["xlayer"]);
@@ -83,6 +84,7 @@ const CHAIN_IDS: Record<string, number> = {
     tempo: 4217,
     rootstock: 30,
     monad: 143,
+    plasma: 9745,
 };
 
 export class EVMChain implements bcked.query.ChainModule {
