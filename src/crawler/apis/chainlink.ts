@@ -249,6 +249,7 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "base:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         "arbitrum:0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
         "polygon:0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+        "monad:0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
     ],
     PYUSD: [
         "ethereum:0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
