@@ -48,7 +48,7 @@ Follow "How a token is defined" in CONTRIBUTING.md and copy the closest existing
   `getTokenBackingShare` for each chain (see USDC, USDG). Backing from a Chainlink Proof of Reserves feed that
   covers all chains: `porBackingShare` (`src/crawler/adapters/por_share.ts`, see U, TUSD), only if
   every chain the token is native on is read. Otherwise declare it not-tracked. Write the source and any limit in
-  `backing.description`, which the token page shows. No usable backing source: set `backing` to
+  `backing.description`, which the token page shows. Not backed by other assets (native coin, governance token): `method: "unbacked"`. No usable backing source: set `backing` to
   `{ method: "not-tracked", description: <what the issuer publishes and why it is not recorded, in
 neutral words, without discussing terms>, reference }` on the token or asset. An asset or token
   without a backing source fails the pull request check.

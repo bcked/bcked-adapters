@@ -7,10 +7,10 @@
  * show up wrong on the site (reserve kinds like rwa:USD are skipped):
  * - an asset without a positive supply, unless it is listed in NO_SUPPLY (src/constants.ts),
  * - an asset with a Chainlink feed but no positive price,
- * - an asset without a backing source in its details or its token's (declare "not-tracked" with the
- *   reason when no backing is recorded),
+ * - an asset without a backing source in its details or its token's (declare "unbacked" for an
+ *   asset without backing, "not-tracked" with the reason when backing exists but is not recorded),
  * - a token with report backing but no reports in its records,
- * - a backing source other than "not-tracked" that yields no backing (for reports of the asset
+ * - a backing source other than "unbacked" or "not-tracked" that yields no backing (for reports of the asset
  *   alone: no rows in its records/backing.csv).
  *
  * Usage: bun scripts/verify_adapter.ts [--strict] <kind>/<id>... (kind: assets, tokens, entities, systems)
@@ -81,7 +81,7 @@ async function check(target: string, results: Record<string, unknown>): Promise<
         // Reports of this asset alone are written to its records by scripts/attestations.
         if (csvRows(path.join("assets", id, "records", "backing.csv")) === 0)
             problems.push("reports backing, but no rows in records/backing.csv");
-    } else if (source.method !== "not-tracked") {
+    } else if (source.method !== "not-tracked" && source.method !== "unbacked") {
         const backing = (results["getBacking"] as bcked.asset.Backing[] | undefined)?.at(-1);
         const amounts = Object.values(backing?.underlying ?? {}) as number[];
         const total = amounts.reduce((a, b) => a + b, 0);
