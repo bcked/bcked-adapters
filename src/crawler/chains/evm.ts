@@ -63,6 +63,10 @@ const RPC_URLS: Record<string, string> = {
     rootstock: "https://rootstock-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
     monad: "https://monad-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
     plasma: "https://plasma-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+    mantle: "https://mantle-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+    bob: "https://bob-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+    sonic: "https://sonic-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+    pharos: "https://pharos-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
 };
 
 const NO_BATCH = new Set(["xlayer"]);
@@ -85,6 +89,10 @@ const CHAIN_IDS: Record<string, number> = {
     rootstock: 30,
     monad: 143,
     plasma: 9745,
+    mantle: 5000,
+    bob: 60808,
+    sonic: 146,
+    pharos: 1672,
 };
 
 export class EVMChain implements bcked.query.ChainModule {
