@@ -31,6 +31,8 @@ export class ChainProxy
             bob: EVMChain,
             sonic: EVMChain,
             pharos: EVMChain,
+            linea: EVMChain,
+            soneium: EVMChain,
             solana: SolanaChain,
             aptos: AptosChain,
             tron: TronChain,
