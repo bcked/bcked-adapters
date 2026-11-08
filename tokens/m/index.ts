@@ -1,7 +1,7 @@
 /**
  * M by M0 on every tracked chain, see src/crawler/adapters/m0.ts. The backing is the collateral of
  * the minters recorded by the MinterGateway on Ethereum, read on-chain. Each chain asset gets its
- * share. M on OP Mainnet, Sei, Plasma, Solana, Noble, Hyperliquid, Monad and Plume is not tracked yet.
+ * share. M on OP Mainnet, Sei, Plasma, Solana, Noble, Hyperliquid and Plume is not tracked yet.
  */
 const details: bcked.token.Details = {
     name: "M by M0",
