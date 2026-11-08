@@ -39,6 +39,7 @@ export const FEEDS = {
     CBBTC: { address: "0x2665701293fCbEB223D11A08D826563EDcCE423A", decimals: 8 },
     FBTC_BTC: { address: "0xe5346a4Fd329768A99455d969724768a00CA63FB", decimals: 18 }, // FBTC in BTC
     LBTC_BTC: { address: "0x5c29868C58b6e15e2b962943278969Ab6a7D3212", decimals: 8 }, // LBTC in BTC
+    SOLVBTC_BTC: { address: "0x936B31C428C29713343E05D631e69304f5cF5f49", decimals: 8 }, // SolvBTC in BTC
     USD1: { address: "0xF0d9bb015Cd7BfAb877B7156146dc09Bf461370d", decimals: 8 },
     USDTB: { address: "0x66704DAD467A7cA508B3be15865D9B9F3E186c90", decimals: 8 },
     TUSD: { address: "0xec746eCF986E2927Abd291a2A1716c940100f8Ba", decimals: 8 },
@@ -111,6 +112,7 @@ const BY_SYMBOL: Record<string, Source> = {
     CBBTC: { feed: "CBBTC" },
     FBTC: { feed: "FBTC_BTC", times: "BTC" },
     LBTC: { feed: "LBTC_BTC", times: "BTC" },
+    SOLVBTC: { feed: "SOLVBTC_BTC", times: "BTC" },
     USD1: { feed: "USD1" },
     USDTB: { feed: "USDTB" },
     TUSD: { feed: "TUSD" },
@@ -176,6 +178,10 @@ export const PRICE_SOURCES: Record<string, Source> = {
 
 // Chain versions of tokens that share one price.
 const TOKEN_ASSETS: Record<string, string[]> = {
+    SOLVBTC: [
+        "ethereum:0x7A56E1C57C7475CCf742a1832B028F0456652F97",
+        "bsc:0x4aae823a6a0b376De6A78e74eCC5b079d38cBCf7",
+    ],
     USDD: [
         "tron:TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz",
         "ethereum:0x4f8e5DE400DE08B164E7421B3EE387f461beCD1A",
