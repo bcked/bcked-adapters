@@ -1,7 +1,9 @@
 /**
  * Rebuilds the daily price history of every asset priced by Chainlink (src/crawler/apis/chainlink.ts),
- * from the feed contracts on Ethereum at the first block of each UTC day. Feeds on other chains are
- * rebuilt by rebuild_onchain.ts (`price` in supply/<token>.json).
+ * from the feed contracts at a block near the start of each UTC day: on Ethereum, and on the other
+ * chains a feed is on (`chain` in FEEDS, e.g. Arbitrum, BNB Chain), at that chain's block for the
+ * day. Feeds on other chains can also be rebuilt by rebuild_onchain.ts (`price` in
+ * supply/<token>.json).
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_API_KEY or ETHEREUM_RPC set):
  *   bun <adapters>/scripts/history/rebuild_prices.ts [<from YYYY-MM-DD> [<to YYYY-MM-DD>]]
@@ -70,6 +72,93 @@ async function blockAt(unix: number, guess: number, latest: number): Promise<num
     return low;
 }
 
+// Alchemy endpoints of the other chains with feeds.
+const OTHER_RPC: Record<string, { url: string; chainId: number }> = {
+    arbitrum: { url: "https://arb-mainnet.g.alchemy.com/v2/", chainId: 42161 },
+    bsc: { url: "https://bnb-mainnet.g.alchemy.com/v2/", chainId: 56 },
+};
+
+/** Finds a block near a time on another chain, by interpolation and a few steps. */
+class OtherChain {
+    provider: JsonRpcProvider;
+    times = new Map<number, number>();
+    latest = 0;
+    now = 0;
+
+    constructor(system: string) {
+        const rpc = OTHER_RPC[system];
+        if (!rpc) throw Error(`No archive RPC for feeds on ${system}`);
+        this.provider = new JsonRpcProvider(
+            `${rpc.url}${process.env["ALCHEMY_API_KEY"]!}`,
+            rpc.chainId,
+            {
+                staticNetwork: true,
+                batchMaxCount: 1,
+            }
+        );
+    }
+
+    async timeOf(block: number): Promise<number> {
+        if (!this.times.has(block)) {
+            const found = await read(() => this.provider.getBlock(block));
+            this.times.set(block, found!.timestamp);
+        }
+        return this.times.get(block)!;
+    }
+
+    async init() {
+        this.latest = await this.provider.getBlockNumber();
+        this.now = await this.timeOf(this.latest);
+    }
+
+    /** A block within about a minute of the time, or null before the chain existed. */
+    async blockNear(day: number): Promise<number | null> {
+        const genesis = await this.timeOf(1);
+        if (day < genesis) return null;
+        let block = Math.round(
+            1 + ((day - genesis) * (this.latest - 1)) / Math.max(1, this.now - genesis)
+        );
+        for (let step = 0; step < 8; step++) {
+            const time = await this.timeOf(block);
+            const perBlock = (this.now - genesis) / Math.max(1, this.latest - 1);
+            const offset = Math.round((day - time) / perBlock);
+            if (Math.abs(offset * perBlock) <= 60) break;
+            block = Math.min(this.latest, Math.max(1, block + offset));
+        }
+        return block;
+    }
+}
+
+const otherChains = new Map<string, OtherChain>();
+for (const name of Object.keys(FEEDS) as (keyof typeof FEEDS)[]) {
+    const system = feedChain(name);
+    if (system != "ethereum" && !otherChains.has(system))
+        otherChains.set(system, new OtherChain(system));
+}
+for (const chain of otherChains.values()) await chain.init();
+
+/** Answers of the feeds on other chains, at each chain's block for the day. */
+async function otherFeedsAt(day: number): Promise<Partial<Record<keyof typeof FEEDS, number>>> {
+    const result: Partial<Record<keyof typeof FEEDS, number>> = {};
+    for (const [system, chain] of otherChains) {
+        const block = await chain.blockNear(day);
+        if (block === null) continue;
+        for (const [name, feed] of Object.entries(FEEDS)) {
+            if (feedChain(name as keyof typeof FEEDS) != system) continue;
+            const round = await read(
+                () =>
+                    new Contract(feed.address, LATEST, chain.provider).getFunction(
+                        "latestRoundData"
+                    )({ blockTag: block }) as Promise<[bigint, bigint, bigint, bigint, bigint]>
+            );
+            if (!round) continue;
+            const value = parseFloat(formatUnits(round[1], feed.decimals));
+            if (value > 0) result[name as keyof typeof FEEDS] = value;
+        }
+    }
+    return result;
+}
+
 async function feedsAt(block: number): Promise<Partial<Record<keyof typeof FEEDS, number>>> {
     const entries = await Promise.all(
         Object.entries(FEEDS)
@@ -132,7 +221,7 @@ async function blockNear(day: number): Promise<number> {
 
 async function priceDay(day: number) {
     const block = await blockNear(day);
-    const feeds = await feedsAt(block);
+    const feeds = { ...(await feedsAt(block)), ...(await otherFeedsAt(day)) };
     if (!Object.keys(feeds).length) return;
     const rawRate =
         feeds.STETH !== undefined

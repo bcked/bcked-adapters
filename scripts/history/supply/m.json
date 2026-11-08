@@ -17,5 +17,11 @@
         "system": "base",
         "address": "0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
         "decimals": 6
+    },
+    {
+        "id": "monad:0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "system": "monad",
+        "address": "0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b",
+        "decimals": 6
     }
 ]

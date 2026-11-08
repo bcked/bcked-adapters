@@ -1,0 +1,26 @@
+[
+    {
+        "id": "ethereum:0xcBaDe7D9BdEe88411CB6cbCbB29952b742036992",
+        "system": "ethereum",
+        "address": "0xcBaDe7D9BdEe88411CB6cbCbB29952b742036992",
+        "decimals": 5
+    },
+    {
+        "id": "polygon:0x6F64f47F95cf656f21B40E14798F6b49f80b3dc5",
+        "system": "polygon",
+        "address": "0x6F64f47F95cf656f21B40E14798F6b49f80b3dc5",
+        "decimals": 5
+    },
+    {
+        "id": "arbitrum:0x0C709396739b9cFB72bcea6ac691Ce0Ddf66479C",
+        "system": "arbitrum",
+        "address": "0x0C709396739b9cFB72bcea6ac691Ce0Ddf66479C",
+        "decimals": 5
+    },
+    {
+        "id": "base:0x0BB754d8940e283D9Ff6855ab5dAfBC14165c059",
+        "system": "base",
+        "address": "0x0BB754d8940e283D9Ff6855ab5dAfBC14165c059",
+        "decimals": 5
+    }
+]

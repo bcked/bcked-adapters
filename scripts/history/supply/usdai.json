@@ -36,5 +36,11 @@
         "system": "base",
         "address": "0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
         "decimals": 18
+    },
+    {
+        "id": "plasma:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
+        "system": "plasma",
+        "address": "0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
+        "decimals": 18
     }
 ]

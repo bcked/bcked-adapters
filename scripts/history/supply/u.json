@@ -4,5 +4,11 @@
         "system": "ethereum",
         "address": "0xcE24439F2D9C6a2289F741120FE202248B666666",
         "decimals": 18
+    },
+    {
+        "id": "bsc:0xcE24439F2D9C6a2289F741120FE202248B666666",
+        "system": "bsc",
+        "address": "0xcE24439F2D9C6a2289F741120FE202248B666666",
+        "decimals": 18
     }
 ]

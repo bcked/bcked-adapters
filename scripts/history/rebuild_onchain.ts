@@ -58,6 +58,12 @@ const RPC: Record<string, { url: string; chainId: number; perDay: number; start:
         perDay: 200_000,
         start: 1,
     },
+    bsc: {
+        url: `https://bnb-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_API_KEY"]}`,
+        chainId: 56,
+        perDay: 192_000,
+        start: 1,
+    },
     monad: {
         url: `https://monad-mainnet.g.alchemy.com/v2/${process.env["ALCHEMY_API_KEY"]}`,
         chainId: 143,

@@ -4,5 +4,11 @@
         "system": "ethereum",
         "address": "0x43415eB6ff9DB7E26A15b704e7A3eDCe97d31C4e",
         "decimals": 6
+    },
+    {
+        "id": "plume:0xe4fa682f94610ccd170680cc3b045d77d9e528a8",
+        "system": "plume",
+        "address": "0xe4fa682f94610ccd170680cc3b045d77d9e528a8",
+        "decimals": 6
     }
 ]

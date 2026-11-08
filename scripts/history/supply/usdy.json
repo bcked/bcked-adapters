@@ -1,0 +1,20 @@
+[
+    {
+        "id": "ethereum:0x96F6eF951840721AdBF46Ac996b59E0235CB985C",
+        "system": "ethereum",
+        "address": "0x96F6eF951840721AdBF46Ac996b59E0235CB985C",
+        "decimals": 18
+    },
+    {
+        "id": "bsc:0x608593d17A2decBbc4399e4185bE4922F97eD32E",
+        "system": "bsc",
+        "address": "0x608593d17A2decBbc4399e4185bE4922F97eD32E",
+        "decimals": 18
+    },
+    {
+        "id": "arbitrum:0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
+        "system": "arbitrum",
+        "address": "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
+        "decimals": 18
+    }
+]
