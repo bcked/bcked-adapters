@@ -293,6 +293,7 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "ethereum:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
         "base:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
         "solana:USDai5XCUzNebYzUk6EuRiFCvnyoyEdj7VSyijYcz2A",
+        "plasma:0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
     ],
     JTRSY: [
         "ethereum:0x8c213ee79581Ff4984583C6a801e5263418C4b86",

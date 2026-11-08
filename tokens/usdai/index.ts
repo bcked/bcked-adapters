@@ -1,7 +1,6 @@
 /**
  * USDai by USD.AI on every tracked chain, see src/crawler/adapters/usdai.ts. The backing is PYUSD
- * held by the USDai contract on Arbitrum, read on-chain. Each chain asset gets its share. USDai on
- * Plasma is not tracked yet.
+ * held by the USDai contract on Arbitrum, read on-chain. Each chain asset gets its share.
  */
 const details: bcked.token.Details = {
     name: "USDai",
