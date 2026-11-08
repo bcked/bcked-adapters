@@ -33,6 +33,7 @@ export class ChainProxy
             pharos: EVMChain,
             linea: EVMChain,
             soneium: EVMChain,
+            sei: EVMChain,
             solana: SolanaChain,
             aptos: AptosChain,
             tron: TronChain,
