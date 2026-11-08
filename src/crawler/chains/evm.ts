@@ -69,6 +69,7 @@ const RPC_URLS: Record<string, string> = {
     pharos: "https://pharos-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
     linea: "https://linea-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
     soneium: "https://soneium-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+    sei: "https://sei-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
 };
 
 const NO_BATCH = new Set(["xlayer"]);
@@ -97,6 +98,7 @@ const CHAIN_IDS: Record<string, number> = {
     pharos: 1672,
     linea: 59144,
     soneium: 1868,
+    sei: 1329,
 };
 
 export class EVMChain implements bcked.query.ChainModule {
