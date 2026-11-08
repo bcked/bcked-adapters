@@ -1,6 +1,8 @@
 /** Ignition FBTC on BNB Chain, see tokens/fbtc. */
+import { porBackingShare } from "../../src/crawler/adapters/por_share";
 import { ApiProxy } from "../../src/crawler/apis/proxy";
 import { ChainProxy } from "../../src/crawler/chains/proxy";
+import { FBTC_ASSETS, FBTC_POR } from "../../tokens/fbtc";
 
 const details: bcked.asset.Details = {
     name: "Ignition FBTC",
@@ -44,7 +46,8 @@ export default class Adapter implements bcked.asset.Adapter {
         return [{ timestamp, circulating: null, burned: null, total: issued, issued, max: null }];
     }
 
-    async getBacking(): Promise<bcked.asset.Backing[]> {
-        return [];
+    async getBacking(lastRecorded: bcked.asset.Backing | null): Promise<bcked.asset.Backing[]> {
+        const { address, system } = details.identifier;
+        return porBackingShare(FBTC_POR, FBTC_ASSETS, `${system}:${address}`, lastRecorded);
     }
 }
