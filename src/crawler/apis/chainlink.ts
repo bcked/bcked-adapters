@@ -56,6 +56,8 @@ export const FEEDS = {
     STETH: { address: "0xCfE54B5cD566aB89272946F602D76Ea879CAb4a8", decimals: 8 },
     STRC: { address: "0xf4d2076277fff631EFC4385Ab36b1f7734218d23", decimals: 8 },
     USTBL: { address: "0x477e363c51Ab0C4D13B22CD6B57D56d4a3Cb7Abe", decimals: 6 }, // NAV per share
+    // SAFO (Spiko Dollar class) NAV per share in USD.
+    SAFO: { address: "0xC1E5FA6d48ba11cA163b03f2aBf843471eB7B2fB", decimals: 6 },
     M: { address: "0xC28198Df9aee1c4990994B35ff51eFA4C769e534", decimals: 8 }, // M NAV
     JTRSY: { address: "0x0C2e4Df738e99e8db80012f5bb2a303f3f48Ca74", decimals: 6 }, // NAV per share
     JAAA: { address: "0x3BbccB2301759D2e4A5692bA72DAb4b75dC43B1a", decimals: 6 }, // NAV per share
@@ -127,6 +129,7 @@ const BY_SYMBOL: Record<string, Source> = {
     EURC: { feed: "EURC" },
     RLUSD: { feed: "RLUSD" },
     USTBL: { feed: "USTBL" },
+    SAFO: { feed: "SAFO" },
     M: { feed: "M" },
     USDAI: { feed: "USDAI" },
     JTRSY: { feed: "JTRSY" },
@@ -178,6 +181,13 @@ export const PRICE_SOURCES: Record<string, Source> = {
 
 // Chain versions of tokens that share one price.
 const TOKEN_ASSETS: Record<string, string[]> = {
+    SAFO: [
+        "ethereum:0xcBaDe7D9BdEe88411CB6cbCbB29952b742036992",
+        "polygon:0x6F64f47F95cf656f21B40E14798F6b49f80b3dc5",
+        "arbitrum:0x0C709396739b9cFB72bcea6ac691Ce0Ddf66479C",
+        "base:0x0BB754d8940e283D9Ff6855ab5dAfBC14165c059",
+        "solana:BYwEFWHUQp7Biqye6TvcjSF1ZYbL1StE5BuFRkKejexo",
+    ],
     SOLVBTC: [
         "ethereum:0x7A56E1C57C7475CCf742a1832B028F0456652F97",
         "bsc:0x4aae823a6a0b376De6A78e74eCC5b079d38cBCf7",
