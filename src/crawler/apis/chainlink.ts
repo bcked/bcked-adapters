@@ -215,6 +215,7 @@ const TOKEN_ASSETS: Record<string, string[]> = {
         "ethereum:0x9f6F3991D525015a6F8CaF062C83b62fD3AC4436",
         "base:0xB2000000000000000000002fEb517dFeC7415344",
         "solana:ousd2mJsPEckLHcSCDxyKD7NDGARZcfLbDZkKiatYHB",
+        "tempo:0x20c0000000000000000000006a37DA5C996874BE",
     ],
     U: [
         "bsc:0xcE24439F2D9C6a2289F741120FE202248B666666",
