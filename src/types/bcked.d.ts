@@ -121,11 +121,13 @@ declare namespace bcked {
          * - reports: attestation or assurance reports, listed in evidence.csv of the asset or its issuer
          * - on-chain: read from the contract or address that holds it
          * - custodian: published by the custodian or issuer (API or page), without reports
-         * - not-tracked: no backing is recorded, e.g. for a native coin or when no usable source exists.
-         *   The description says why. Without any backing source, the verification fails.
+         * - unbacked: the asset is not backed by other assets, e.g. a native coin or a governance token.
+         *   It can still back other assets.
+         * - not-tracked: the asset is backed, but no backing is recorded because no usable source
+         *   exists yet. The description says why. Without any backing source, the verification fails.
          */
         interface BackingSource {
-            method: "reports" | "on-chain" | "custodian" | "not-tracked";
+            method: "reports" | "on-chain" | "custodian" | "unbacked" | "not-tracked";
             /** One or two sentences on how the values are obtained, or why they are not tracked. */
             description: string;
             /** Page where the issuer publishes the backing. */

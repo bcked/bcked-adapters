@@ -17,7 +17,7 @@ const details: bcked.asset.Details = {
     linkedEntities: {},
     reference: "https://tron.network/",
     backing: {
-        method: "not-tracked",
+        method: "unbacked",
         description: "TRX is the native coin of its chain and is not backed by other assets.",
         reference: null,
     },

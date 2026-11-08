@@ -17,7 +17,7 @@ const details: bcked.asset.Details = {
     },
     reference: "https://ethereum.org/en/",
     backing: {
-        method: "not-tracked",
+        method: "unbacked",
         description: "Ether is the native coin of its chain and is not backed by other assets.",
         reference: null,
     },
