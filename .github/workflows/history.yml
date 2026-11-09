@@ -19,6 +19,10 @@ on:
                 description: "First year of prices"
                 required: false
                 default: "2020"
+            feeds:
+                description: "Prices only for these feeds (names in src/crawler/apis/chainlink.ts), comma separated, e.g. TRX (empty: all)"
+                required: false
+                default: ""
             onchain_from_year:
                 description: "First year of supply and custody"
                 required: false
@@ -79,6 +83,7 @@ jobs:
               working-directory: .records
               env:
                   ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+                  FEEDS: ${{ inputs.feeds }}
               run: |
                   to=$(( ${{ matrix.year }} + 1 ))-01-01
                   if [[ "$to" > "$(date -u +%F)" ]]; then to=""; fi

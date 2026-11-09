@@ -9,11 +9,14 @@
  *   bun <adapters>/scripts/history/rebuild_prices.ts [<from YYYY-MM-DD> [<to YYYY-MM-DD>]]
  *
  * Days before a feed existed have no row. Existing rows of a day are kept, so the script can run
- * again. Reads need an archive node, which Alchemy provides.
+ * again. FEEDS=<name,...> limits the run to these feeds (names in FEEDS of chainlink.ts), e.g. to
+ * rebuild one feed after its rows were removed. Reads need an archive node, which Alchemy provides.
  */
 import { Contract, JsonRpcProvider, formatUnits } from "ethers";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+
+import { blockNear as findBlock } from "./blocks";
 
 import { FEEDS, PRICE_SOURCES, WEETH, feedChain } from "../../src/crawler/apis/chainlink";
 
@@ -83,7 +86,6 @@ class OtherChain {
     provider: JsonRpcProvider;
     times = new Map<number, number>();
     latest = 0;
-    now = 0;
 
     constructor(system: string) {
         const rpc = OTHER_RPC[system];
@@ -108,29 +110,22 @@ class OtherChain {
 
     async init() {
         this.latest = await this.provider.getBlockNumber();
-        this.now = await this.timeOf(this.latest);
     }
 
     /** A block within about a minute of the time, or null before the chain existed. */
     async blockNear(day: number): Promise<number | null> {
         const genesis = await this.timeOf(1);
         if (day < genesis) return null;
-        let block = Math.round(
-            1 + ((day - genesis) * (this.latest - 1)) / Math.max(1, this.now - genesis)
-        );
-        for (let step = 0; step < 8; step++) {
-            const time = await this.timeOf(block);
-            const perBlock = (this.now - genesis) / Math.max(1, this.latest - 1);
-            const offset = Math.round((day - time) / perBlock);
-            if (Math.abs(offset * perBlock) <= 60) break;
-            block = Math.min(this.latest, Math.max(1, block + offset));
-        }
-        return block;
+        return findBlock((block) => this.timeOf(block), day, 1, this.latest);
     }
 }
 
+// FEEDS=TRX limits the run to some feeds. Empty (the workflow's default) means all feeds.
+const ONLY = process.env["FEEDS"] ? new Set(process.env["FEEDS"].split(",")) : null;
+const included = (name: string) => !ONLY || ONLY.has(name);
+
 const otherChains = new Map<string, OtherChain>();
-for (const name of Object.keys(FEEDS) as (keyof typeof FEEDS)[]) {
+for (const name of (Object.keys(FEEDS) as (keyof typeof FEEDS)[]).filter(included)) {
     const system = feedChain(name);
     if (system != "ethereum" && !otherChains.has(system))
         otherChains.set(system, new OtherChain(system));
@@ -144,7 +139,7 @@ async function otherFeedsAt(day: number): Promise<Partial<Record<keyof typeof FE
         const block = await chain.blockNear(day);
         if (block === null) continue;
         for (const [name, feed] of Object.entries(FEEDS)) {
-            if (feedChain(name as keyof typeof FEEDS) != system) continue;
+            if (feedChain(name as keyof typeof FEEDS) != system || !included(name)) continue;
             const round = await read(
                 () =>
                     new Contract(feed.address, LATEST, chain.provider).getFunction(
@@ -162,7 +157,9 @@ async function otherFeedsAt(day: number): Promise<Partial<Record<keyof typeof FE
 async function feedsAt(block: number): Promise<Partial<Record<keyof typeof FEEDS, number>>> {
     const entries = await Promise.all(
         Object.entries(FEEDS)
-            .filter(([name]) => feedChain(name as keyof typeof FEEDS) == "ethereum")
+            .filter(
+                ([name]) => feedChain(name as keyof typeof FEEDS) == "ethereum" && included(name)
+            )
             .map(async ([name, feed]) => {
                 const round = await read(
                     () =>
@@ -197,26 +194,14 @@ const today = process.argv[3]
 const latest = await provider.getBlockNumber();
 const prices: Record<string, Map<string, number>> = {};
 
-// Guess each day's block by interpolating between the first day and now, then search near it.
 const first = await blockAt(from, 7_000_000, latest);
-const now = await timeOf(latest);
-const guessFor = (day: number) =>
-    Math.round(first + ((day - from) * (latest - first)) / Math.max(1, now - from));
-
-const secondsPerBlock = (now - (await timeOf(first))) / Math.max(1, latest - first);
 
 /**
- * A block close to a time (within about a minute): a few steps from the interpolated guess. A
- * daily price does not need the exact first block of the day.
+ * A block close to a time (within about a minute, see blocks.ts). A daily price does not need the
+ * exact first block of the day.
  */
 async function blockNear(day: number): Promise<number> {
-    let block = Math.min(latest, Math.max(first, guessFor(day)));
-    for (let step = 0; step < 4; step++) {
-        const offset = Math.round((day - (await timeOf(block))) / secondsPerBlock);
-        if (Math.abs(offset) <= 5) break;
-        block = Math.min(latest, Math.max(1, block + offset));
-    }
-    return block;
+    return findBlock(timeOf, day, first, latest);
 }
 
 async function priceDay(day: number) {

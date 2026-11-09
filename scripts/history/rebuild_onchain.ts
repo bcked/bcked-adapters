@@ -20,6 +20,8 @@ import { Contract, JsonRpcProvider, formatUnits } from "ethers";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+import { blockNear as findBlock } from "./blocks";
+
 const DAY = 24 * 60 * 60;
 const RPC: Record<string, { url: string; chainId: number; perDay: number; start: number }> = {
     ethereum: {
@@ -223,21 +225,9 @@ const systems = process.env["SYSTEMS"] ? process.env["SYSTEMS"].split(",") : Obj
 for (const system of systems) {
     const latest = await providers[system]!.getBlockNumber();
     const first = await blockAt(system, from, RPC[system]!.start, latest);
-    const now = await timeOf(system, latest);
-    const guessFor = (day: number) =>
-        Math.round(first + ((day - from) * (latest - first)) / Math.max(1, now - from));
-
-    const secondsPerBlock = (now - (await timeOf(system, first))) / Math.max(1, latest - first);
-    // A block close to the time (within about a minute), in a few steps from the guess.
-    const blockNear = async (day: number) => {
-        let block = Math.min(latest, Math.max(first, guessFor(day)));
-        for (let step = 0; step < 4; step++) {
-            const offset = Math.round((day - (await timeOf(system, block))) / secondsPerBlock);
-            if (Math.abs(offset) * secondsPerBlock <= 60) break;
-            block = Math.min(latest, Math.max(1, block + offset));
-        }
-        return block;
-    };
+    // A block within about a minute of the time (see blocks.ts).
+    const blockNear = (day: number) =>
+        findBlock((block) => timeOf(system, block), day, first, latest);
 
     const readDay = async (day: number) => {
         const block = await blockNear(day);
