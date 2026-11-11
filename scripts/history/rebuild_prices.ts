@@ -120,9 +120,24 @@ class OtherChain {
     }
 }
 
-// FEEDS=TRX limits the run to some feeds. Empty (the workflow's default) means all feeds.
+// FEEDS=TRX limits the run to the prices of some feeds. Empty (the workflow's default) means all
+// feeds. The feeds these prices are multiplied with (`times`, e.g. ETH for frxETH) are read too.
 const ONLY = process.env["FEEDS"] ? new Set(process.env["FEEDS"].split(",")) : null;
-const included = (name: string) => !ONLY || ONLY.has(name);
+const NEEDED = ONLY
+    ? new Set([
+          ...ONLY,
+          ...Object.values(PRICE_SOURCES)
+              .filter((source) => ONLY.has(source.feed) && source.times && source.times != "wstETH")
+              .map((source) => source.times as string),
+      ])
+    : null;
+const included = (name: string) => !NEEDED || NEEDED.has(name);
+
+// Days before which a feed's answers are not used. The syrupUSDC-USDC feed on Arbitrum answered
+// a tenth of the exchange rate (about 0.1116 at 18 decimals) until its update of 2025-08-11.
+const FEED_START: Partial<Record<keyof typeof FEEDS, string>> = {
+    SYRUPUSDC_USDC: "2025-08-12",
+};
 
 const otherChains = new Map<string, OtherChain>();
 for (const name of (Object.keys(FEEDS) as (keyof typeof FEEDS)[]).filter(included)) {
@@ -225,6 +240,8 @@ async function priceDay(day: number) {
     const weEthRate = rawWeEthRate === null ? undefined : parseFloat(formatUnits(rawWeEthRate, 18));
     const timestamp = new Date(day * 1000).toISOString();
     for (const [id, source] of Object.entries(PRICE_SOURCES)) {
+        if (ONLY && !ONLY.has(source.feed)) continue;
+        if (timestamp.slice(0, 10) < (FEED_START[source.feed] ?? "")) continue;
         const base = feeds[source.feed];
         if (base === undefined) continue;
         const factor =
