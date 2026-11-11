@@ -3,6 +3,12 @@
         "id": "ethereum:0x80ac24aA929eaF5013f6436cdA2a7ba190f5Cc0b",
         "system": "ethereum",
         "address": "0x80ac24aA929eaF5013f6436cdA2a7ba190f5Cc0b",
-        "decimals": 6
+        "decimals": 6,
+        "vault": {
+            "asset": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "id": "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "decimals": 6,
+            "rest": "rwa:LOAN"
+        }
     }
 ]

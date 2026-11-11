@@ -5,7 +5,8 @@
  *   addresses are not circulating. A `backing` entry also rebuilds the on-chain backing: a token
  *   balance held by a contract, the share of it that matches the circulating supply,
  * - the bitcoin held by the WBTC custodians, from Chainlink's WBTC Proof of Reserves feed,
- * - the backing of tokens whose entry names a Chainlink Proof of Reserves feed (`por`),
+ * - the backing of tokens whose entry names a Chainlink Proof of Reserves feed (`por`), whose
+ *   backing is their own total supply (`pooled`) or the assets of a vault (`vault`),
  * - the price of tokens whose entry names a Chainlink price feed on its chain (`price`).
  *
  * Usage (in a records checkout as working directory, with ALCHEMY_API_KEY
@@ -105,6 +106,12 @@ interface SupplyEntry {
     // The backing is the answer of a Chainlink Proof of Reserves feed on the same chain, in units
     // of asset `id`.
     por?: { id: string; feed: string; decimals: number };
+    // The backing is the token's own total supply, in units of asset `pooled`: stETH, whose supply
+    // is the ETH pooled in Lido.
+    pooled?: string;
+    // The token is an ERC-4626 vault: the backing is its balance of `asset` (asset id `id`,
+    // `decimals`), and the rest of totalAssets() is asset `rest`, e.g. loans for syrupUSDC.
+    vault?: { asset: string; id: string; decimals: number; rest: string };
     // The price is the answer of a Chainlink USD feed on the same chain. It is written for this asset
     // and for `assets`, the token on other chains.
     price?: { feed: string; decimals: number; assets?: string[] };
@@ -350,6 +357,52 @@ for (const system of systems) {
                     backings
                         .get(token.id)!
                         .rows.set(timestamp, [timestamp, formatUnits(round[1], decimals)]);
+                }
+            }
+            if (token.pooled) {
+                if (!backings.has(token.id))
+                    backings.set(token.id, {
+                        header: ["timestamp", `underlying.${token.pooled}`],
+                        rows: new Map(),
+                    });
+                backings.get(token.id)!.rows.set(timestamp, [timestamp, amount]);
+            }
+            if (token.vault) {
+                const { asset, id, decimals, rest } = token.vault;
+                const [cash, total] = await Promise.all([
+                    read(
+                        () =>
+                            new Contract(
+                                asset,
+                                ["function balanceOf(address) view returns (uint256)"],
+                                providers[system]
+                            ).getFunction("balanceOf")(token.address, {
+                                blockTag: block,
+                            }) as Promise<bigint>
+                    ),
+                    read(
+                        () =>
+                            new Contract(
+                                token.address,
+                                ["function totalAssets() view returns (uint256)"],
+                                providers[system]
+                            ).getFunction("totalAssets")({ blockTag: block }) as Promise<bigint>
+                    ),
+                ]);
+                if (cash !== null && total !== null) {
+                    if (!backings.has(token.id))
+                        backings.set(token.id, {
+                            header: ["timestamp", `underlying.${id}`, `underlying.${rest}`],
+                            rows: new Map(),
+                        });
+                    const other = total > cash ? total - cash : 0n;
+                    backings
+                        .get(token.id)!
+                        .rows.set(timestamp, [
+                            timestamp,
+                            formatUnits(cash, decimals),
+                            formatUnits(other, decimals),
+                        ]);
                 }
             }
         }
