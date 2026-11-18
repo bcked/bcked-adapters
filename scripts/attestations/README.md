@@ -12,7 +12,8 @@ the records folder of the asset, e.g. `assets/<asset id>/records`.
 The workflow `Attestation Update` runs `update.sh` every Monday. It downloads the Paxos, Tether and
 Circle reports, checks every report date after the latest recorded row against the report total
 (`check_new.py`) and appends those rows, listing each report in `evidence.csv` with its download URL
-and SHA-256 hash (`write_backing.py --append`). With the secret `EVIDENCE_DEPLOY_KEY` (a deploy key of
+and SHA-256 hash (`write_backing.py --append`). For USDT it also adds the supply on Ethereum, Tron and Solana at each
+new report date (`../history/usdt_wayback.py`), which their backing ratio needs. With the secret `EVIDENCE_DEPLOY_KEY` (a deploy key of
 the private repository bcked/bcked-evidence), the PDFs are also copied there.
 If a new report does not add up, for example because its layout changed, the run fails and nothing
 is written. Extract that report by hand with the commands below.

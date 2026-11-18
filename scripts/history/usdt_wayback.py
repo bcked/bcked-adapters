@@ -17,6 +17,7 @@ import json
 import os
 import sys
 import time
+import urllib.error
 import urllib.request
 
 URL = "https://app.tether.to/transparency.json"
@@ -32,8 +33,16 @@ HEADERS = {"User-Agent": "bcked.com history rebuild (https://bcked.com)"}
 
 
 def get(url):
-    with urllib.request.urlopen(urllib.request.Request(url, headers=HEADERS), timeout=120) as response:
-        data = response.read()
+    # The Wayback Machine often answers 503 for a while, so retry with a growing delay.
+    for attempt in range(5):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=HEADERS), timeout=120) as response:
+                data = response.read()
+            break
+        except urllib.error.HTTPError as error:
+            if error.code < 500 or attempt == 4:
+                raise
+            time.sleep(30 * (attempt + 1))
     while data[:2] == b"\x1f\x8b":  # the archive stores the data gzip-compressed, sometimes twice
         data = gzip.decompress(data)
     return data

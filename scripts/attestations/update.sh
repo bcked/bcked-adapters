@@ -60,6 +60,10 @@ python3 check_new.py "$work/tether.json" "$tether/backing.csv"
 python3 convert_prices.py "$work/tether.json" "$tether/backing.csv" > "$work/tether-units.json"
 # shellcheck disable=SC2046
 python3 write_backing.py "$work/tether-units.json" "$tether" USDT --append $(evidence_args tokens/usdt/records)
+# USDT on Ethereum, Tron and Solana needs supply near each report date for its backing ratio. The
+# crawler records supply only from the day an asset was added, so read it from archived copies of
+# Tether's transparency data. Report dates that already have supply are skipped.
+python3 ../history/usdt_wayback.py "$records"
 
 circle="$records/tokens/usdc/records"
 python3 fetch_circle.py "$work/circle" > "$work/circle.txt"
