@@ -45,79 +45,107 @@ interface AssetSummary {
     collateral: Dated | null;
 }
 
-// GitHub Pages serves cached copies for a few minutes after a deploy. A unique query string skips
-// the cache, so the check sees the summary that was just deployed.
-const response = await fetch(`${base}/assets/summary/?t=${Date.now()}`, { cache: "no-store" });
-if (!response.ok) throw new Error(`${base}/assets/summary/ returned ${response.status}`);
-const { assets } = (await response.json()) as { assets: AssetSummary[] };
+/** Messages about one check of the deployed summary: values that are too old, and notes. */
+interface Result {
+    assets: number;
+    problems: string[];
+    notes: string[];
+}
 
-const now = Date.now();
-const problems: string[] = [];
+async function checkSummary(): Promise<Result> {
+    // GitHub Pages serves cached copies for a few minutes after a deploy. A unique query string
+    // skips most of the cache, so the check sees the summary that was just deployed.
+    const response = await fetch(`${base}/assets/summary/?t=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`${base}/assets/summary/ returned ${response.status}`);
+    const { assets } = (await response.json()) as { assets: AssetSummary[] };
 
-function check(asset: AssetSummary, field: string, value: Dated | null, maxDays: number): void {
-    if (!value) {
-        problems.push(`${asset.symbol} (${asset.id}): no ${field}`);
-        return;
+    const now = Date.now();
+    const problems: string[] = [];
+    const notes: string[] = [];
+
+    function check(asset: AssetSummary, field: string, value: Dated | null, maxDays: number): void {
+        if (!value) {
+            problems.push(`${asset.symbol} (${asset.id}): no ${field}`);
+            return;
+        }
+        const age = (now - Date.parse(value.date)) / DAY;
+        if (age > maxDays + 1)
+            problems.push(
+                `${asset.symbol} (${asset.id}): ${field} from ${value.date} is ${Math.floor(age)} days old (allowed ${maxDays})`
+            );
     }
-    const age = (now - Date.parse(value.date)) / DAY;
-    if (age > maxDays + 1)
-        problems.push(
-            `${asset.symbol} (${asset.id}): ${field} from ${value.date} is ${Math.floor(age)} days old (allowed ${maxDays})`
-        );
-}
 
-// Latest backing of each token on any chain. All chains of a token share the same reports.
-const latestByToken = new Map<string, string>();
-for (const asset of assets) {
-    if (!asset.token || !asset.collateral) continue;
-    const latest = latestByToken.get(asset.token);
-    if (!latest || asset.collateral.date > latest)
-        latestByToken.set(asset.token, asset.collateral.date);
-}
-
-for (const asset of assets) {
-    // Added since the last crawl: no details, price or supply yet. The next crawl records them.
-    if (asset.symbol == null) {
-        console.log(`${asset.id}: not crawled yet, skipped`);
-        continue;
+    // Latest backing of each token on any chain. All chains of a token share the same reports.
+    const latestByToken = new Map<string, string>();
+    for (const asset of assets) {
+        if (!asset.token || !asset.collateral) continue;
+        const latest = latestByToken.get(asset.token);
+        if (!latest || asset.collateral.date > latest)
+            latestByToken.set(asset.token, asset.collateral.date);
     }
-    if (!STATIC_PRICES(asset.id) && !NO_PRICE.has(asset.id))
-        check(asset, "price", asset.price, MAX_AGE_DAYS);
-    if (asset.system !== "rwa" && !NO_SUPPLY.has(asset.id))
-        check(asset, "supply", asset.supply, MAX_AGE_DAYS);
-    const reportAge =
-        asset.backing == "reports"
-            ? MAX_REPORT_AGE_DAYS[asset.linkedEntities.issuer ?? ""]
-            : undefined;
-    // The backing check reads the backing ratio, which needs a price. The chain assets of a token
-    // get a ratio only where their supply is known at a report date, so some chains get a ratio
-    // from the next report.
-    if (asset.backing == "not-tracked" || asset.backing == "unbacked") {
-        // No backing is recorded on purpose, the details say why.
-    } else if (asset.token && !asset.collateral) {
-        console.log(
-            `${asset.symbol} (${asset.id}): no backing ratio yet, waits for the next report`
-        );
-    } else if (
-        asset.token &&
-        asset.collateral &&
-        reportAge !== undefined &&
-        (now - Date.parse(asset.collateral.date)) / DAY > reportAge + 1 &&
-        (now - Date.parse(latestByToken.get(asset.token)!)) / DAY <= reportAge + 1
-    ) {
-        // Another chain of the token has a current report, so the reports are fresh. This chain
-        // has no supply recorded at the newer report dates yet (USDC on Solana before 2026-11).
-        console.log(
-            `${asset.symbol} (${asset.id}): backing from ${asset.collateral.date}, newer reports have no supply for this chain yet`
-        );
-    } else if (!NO_PRICE.has(asset.id) && (reportAge !== undefined || asset.collateral))
-        check(asset, "backing", asset.collateral, reportAge ?? MAX_AGE_DAYS);
+
+    for (const asset of assets) {
+        // Added since the last crawl: no details, price or supply yet. The next crawl records them.
+        if (asset.symbol == null) {
+            notes.push(`${asset.id}: not crawled yet, skipped`);
+            continue;
+        }
+        if (!STATIC_PRICES(asset.id) && !NO_PRICE.has(asset.id))
+            check(asset, "price", asset.price, MAX_AGE_DAYS);
+        if (asset.system !== "rwa" && !NO_SUPPLY.has(asset.id))
+            check(asset, "supply", asset.supply, MAX_AGE_DAYS);
+        const reportAge =
+            asset.backing == "reports"
+                ? MAX_REPORT_AGE_DAYS[asset.linkedEntities.issuer ?? ""]
+                : undefined;
+        // The backing check reads the backing ratio, which needs a price. The chain assets of a token
+        // get a ratio only where their supply is known at a report date, so some chains get a ratio
+        // from the next report.
+        if (asset.backing == "not-tracked" || asset.backing == "unbacked") {
+            // No backing is recorded on purpose, the details say why.
+        } else if (asset.token && !asset.collateral) {
+            notes.push(
+                `${asset.symbol} (${asset.id}): no backing ratio yet, waits for the next report`
+            );
+        } else if (
+            asset.token &&
+            asset.collateral &&
+            reportAge !== undefined &&
+            (now - Date.parse(asset.collateral.date)) / DAY > reportAge + 1 &&
+            (now - Date.parse(latestByToken.get(asset.token)!)) / DAY <= reportAge + 1
+        ) {
+            // Another chain of the token has a current report, so the reports are fresh. This chain
+            // has no supply recorded at the newer report dates yet (USDC on Solana before 2026-11).
+            notes.push(
+                `${asset.symbol} (${asset.id}): backing from ${asset.collateral.date}, newer reports have no supply for this chain yet`
+            );
+        } else if (!NO_PRICE.has(asset.id) && (reportAge !== undefined || asset.collateral))
+            check(asset, "backing", asset.collateral, reportAge ?? MAX_AGE_DAYS);
+    }
+
+    return { assets: assets.length, problems, notes };
 }
 
-if (problems.length) {
-    console.error(`Found ${problems.length} outdated values:`);
-    for (const problem of problems) console.error(`- ${problem}`);
+// Even with the query string, Pages can serve the previous summary for a minute or two right after
+// a deploy. Outdated values are checked again a few times before the check fails.
+const ATTEMPTS = 5;
+const RETRY_DELAY_MS = 60 * 1000;
+
+let result = await checkSummary();
+for (let attempt = 2; attempt <= ATTEMPTS && result.problems.length; attempt++) {
+    console.log(
+        `${result.problems.length} outdated values, checking again in ${RETRY_DELAY_MS / 1000} s (attempt ${attempt} of ${ATTEMPTS})`
+    );
+    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+    result = await checkSummary();
+}
+
+for (const note of result.notes) console.log(note);
+
+if (result.problems.length) {
+    console.error(`Found ${result.problems.length} outdated values:`);
+    for (const problem of result.problems) console.error(`- ${problem}`);
     process.exit(1);
 }
 
-console.log(`All ${assets.length} assets have recent data.`);
+console.log(`All ${result.assets} assets have recent data.`);
