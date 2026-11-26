@@ -10,6 +10,7 @@ import _ from "lodash";
 
 import { toId } from "../../utils/helper";
 import { format, toISOString } from "../../utils/string_formatting";
+import { ThrottledProvider } from "./throttled";
 
 // Alchemy's free tier limits compute units per second, so a burst can need a longer pause.
 const RETRY_DELAYS = [1000, 3000, 8000, 20000];
@@ -74,6 +75,13 @@ const RPC_URLS: Record<string, string> = {
 
 const NO_BATCH = new Set(["xlayer"]);
 
+// RPCs with a strict rate limit get batches of at most `batch` calls, sent one at a time with a
+// gap in milliseconds (see throttled.ts). TronGrid without an API key: 300 credits per second, which
+// allows about three eth_calls per second and no batches.
+const THROTTLED: Record<string, { batch: number; gap: number }> = {
+    tron: { batch: 1, gap: 400 },
+};
+
 const CHAIN_IDS: Record<string, number> = {
     bsc: 56,
     ethereum: 1,
@@ -111,11 +119,19 @@ export class EVMChain implements bcked.query.ChainModule {
         // ethers v6 batches concurrent JSON-RPC calls into one request by default.
         // A static network skips network detection, which otherwise retries in the background.
         const network = Network.from(CHAIN_IDS[chain]);
-        const provider = new JsonRpcProvider(this.getRpcUrl(chain, true), network, {
-            staticNetwork: network,
-            // Some public RPCs do not accept batched requests.
-            ...(NO_BATCH.has(chain) ? { batchMaxCount: 1 } : {}),
-        });
+        const throttled = THROTTLED[chain];
+        const provider = throttled
+            ? new ThrottledProvider(
+                  this.getRpcUrl(chain, true),
+                  network,
+                  { staticNetwork: network, batchMaxCount: throttled.batch },
+                  throttled.gap
+              )
+            : new JsonRpcProvider(this.getRpcUrl(chain, true), network, {
+                  staticNetwork: network,
+                  // Some public RPCs do not accept batched requests.
+                  ...(NO_BATCH.has(chain) ? { batchMaxCount: 1 } : {}),
+              });
         this._providers[chain] = provider;
         return provider;
     }
